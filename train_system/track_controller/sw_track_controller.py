@@ -86,7 +86,7 @@ class TrackController:
 
     def emergency_stop(self):
         """
-        Performs an emergency stop of a train if necessary
+        Performs an emergency stop of a train if notices two trains are going to crash into eachother
         
         """
     
