@@ -211,7 +211,7 @@ class TrainController:
             
             current_speed += power_command * self.T
             
-            print(f"Power Command: {power_command}, Current Speed: {self.current_speed}")
+            print(f"Power Command: {power_command}, Current Speed: {current_speed}")
 
             return current_speed
         
