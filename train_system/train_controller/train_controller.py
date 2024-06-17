@@ -25,6 +25,9 @@ checkFault
 -if fault is found, call fix/act function
 """
 
+'''
+Storing previous beacon data: How are we going to do that and what will it look like
+'''
 
 # Functions with the word "update" in the name are updated from the Train Model and takes the Train Model as an argument
 # Train Controller only talks with Train Model
@@ -40,8 +43,8 @@ class TrainController:
         self.ac = self.AC(train_model)          # AC holds temperature status
 
         # Driver variables
-        self.driver_mode = "manual"
-        self.setpoint_speed = 0
+        self.driver_mode = "manual" # Driver mode can be "automatic" or "manual"
+        self.setpoint_speed = 0     # Setpoint speed for manual mode
 
         # Train Model inputs
         self.current_speed = None    # Current speed of the train
@@ -176,10 +179,13 @@ class TrainController:
             self.u_k = 0 # Power command
             self.e_k_integral = 0 # Error integral
             self.u_k_integral = 0 # Power integral
+
+            self.SPEED_MAX = 19.4444 # 70 km/h in m/s
             
         # PID controller to compute the power command
         # Input) desired_speed: float, current_speed: float, engineer: Engineer object
         # Return) the power command to be applied to the train
+        ### If fault exists, return 0
         def compute_power_command(self, desired_speed: float, current_speed: float, engineer):
             # Get kp and ki from engineer
             kp, ki = engineer.get_engineer()
@@ -214,6 +220,11 @@ class TrainController:
             print(f"Power Command: {power_command}, Current Speed: {current_speed}")
 
             return current_speed
+        
+        # Accessor function
+        #
+        def get_speed_max(self):
+            return self.SPEED_MAX
         
     ## Door class to hold door status
     # Door status = bool
@@ -277,7 +288,7 @@ class TrainController:
         def update_status(self, train_model):
             return train_model.get_lights()
         def update_lights(self, train_model):
-            self.lights = not train_model.get_underground_status()
+            self.lights = train_model.get_underground_status()
 
     ## AC class to hold temperature status
     # Commanded temperature from driver (initialized to 69)
@@ -306,74 +317,75 @@ class TrainController:
             return self.current_temp
 
 
+# Does beacon need to be encrypted
+# All information from MBO needs to be encrypted
 class TrainModel:
-    # Float or int??
+    # Float
     def get_current_speed(self):
         # Logic to get current speed of the train
         return 0
 
-    # 2 floats? 2 ints? block?
+    # 1 floats
+    # Distance from starting point (or relative point 0)
+    # Distance from previous beacon
+    # Still need to figure out how to do this
     def get_position(self):
         # Logic to get current position of the train (GPS)
         return 0
 
-    # Iterative (float representing meters)? Absolute (position representing when to stop by)? 
+    # Iterative (float representing meters)? Absolute (position representing when to stop by)?
     def get_authority(self):
         # Logic to get the authority from the train model
         return 0
 
-    # Float or int??
+    # Float
     def get_commanded_speed(self):
         # Logic to get commanded speed from the train model
         return 0
 
-    # Int
+    # float
     def get_train_temp(self):
         # Logic to get the temperature inside the train
         return 0
 
     # String or station ID?
+    # Need to decrypt the information and figure it out from that
+    # Is the full name even needed
     def get_station_name(self):
         # Logic to get the name of the current station
         return 0
+    
+    # Char
+    # Used for underground logic
+    def get_block(self):
+        # Logic to get the block number
+        return 0
 
-    # Bool? Distance? Starting and ending position?
+    # List of chars (list of blocks)
     def get_underground_status(self):
         # Logic to get the underground status of the train
         return 0
 
     # String? Bool[2]? Int?
+    # [left door, right door]
     def get_exit_door(self):
         # Logic to get the status of the exit door
         return 0
 
     # List of bools? Individual bools?
+    # [engine, brake, signal]
+    # No fault = [0, 0, 0]
     def get_fault_statuses(self):
         # Logic to get the fault status of the train
         return 0
 
-    # Float or int??
+    # Float
     def get_speed_limit(self):
         # Logic to get the speed limit of the train
         return 100
 
 
     ## Potentially needed functions ##
-
-    # Get left door status
-    def get_left_door(self):
-        # Logic to get the status of the left door
-        return 0
-
-    # Get right door status
-    def get_right_door(self):
-        # Logic to get the status of the right door
-        return 0
-
-    # Get lights status
-    def get_lights(self):
-        # Logic to get the status of the lights
-        return 0
 
     # Get distance traveled (Could be calculated based on current speed * time step)
     def get_distance_traveled(self):
