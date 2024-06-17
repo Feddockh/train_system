@@ -27,6 +27,7 @@ class TrackController:
             new_track_occupancies(bool): List of bool values for track occupancies
         
         """
+        self.track_occupancies = new_track_occupancies;
 
     def send_track_occupancy(self):
         """
@@ -35,6 +36,7 @@ class TrackController:
         Returns:
             array(bool): List of bools representing track occupancies
         """
+        return self.track_occupancies;
 
     def get_authority(self, new_authorities):
         """
@@ -44,22 +46,45 @@ class TrackController:
             new_authorities(float): List of float values for track authorities
         
         """
+        self.train_authorities = new_authorities;
 
     def send_authority(self):
          """
-        Sends track occupancies to Track Model
+        Sends track authorities to Track Model
         
         Returns:
             array(float): List of floats representing authorities
         """
-         
-    def get_track_model(self, trackModel):
+         return self.train_authorities;
+
+
+    def get_speed(self, new_speeds):
         """
+        Recieves speed from CTC office & updates current speed list
+
+        Args:
+            new_speeds(float): List of float values for track speeds
+        
+        """
+
+    def send_speed(self):
+        """
+        Sends track speeds to Track Model
+        
+        Returns:
+            array(float): List of floats representing authorities
+        """
+        return self.train_speeds;
+
+
+    """     
+    def get_track_model(self, trackModel):
+        
         Used for test bench - Takes in Excel file and reads data from it
         
         Args:
             trackModel(file): Excel file of track model data
-        """
+        
         trackModel = "C:\\Users\\Isabella\\Downloads\\Track Layout & Vehicle Data vF2.xlsx";
         require_cols = [2,6];
 
@@ -67,6 +92,7 @@ class TrackController:
 
 
         print(datasheet);
+    """
 
 
     def get_PLC_program(self, plc_program):
@@ -89,7 +115,4 @@ class TrackController:
         Performs an emergency stop of a train if notices two trains are going to crash into eachother
         
         """
-    
-
-test = TrackController();
-test.get_track_model("track");
+     

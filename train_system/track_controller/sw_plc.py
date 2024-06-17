@@ -50,6 +50,8 @@ def plc(self):
     else:
         cross = 0
         print("Crossing Signal is up.")
+
+    return self.switch, self.crossing, self.light         
     
 
 
