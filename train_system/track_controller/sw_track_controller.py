@@ -12,11 +12,12 @@ class TrackController:
         self.track_occupancies = {}
         self.train_speeds = {}
         self.train_authorities = {}
-        self.switch_states = {};
-        self.signal_states = {};
-        self.crossing_states = {};
-        self.plc_program_uploaded = False;
-        self.switch_positions = {};
+        self.switch_states = {}
+        self.signal_states = {}
+        self.crossing_states = {}
+        self.plc_program_uploaded = False
+        self.switch_positions = {}
+        self.plc_program = ""
     
     
     def get_track_occupancy(self, new_track_occupancies):
@@ -66,6 +67,7 @@ class TrackController:
             new_speeds(float): List of float values for track speeds
         
         """
+        new_speeds = self.train_speeds
 
     def send_speed(self):
         """
@@ -74,7 +76,7 @@ class TrackController:
         Returns:
             array(float): List of floats representing authorities
         """
-        return self.train_speeds;
+        return self.train_speeds
 
 
     """     
@@ -91,7 +93,7 @@ class TrackController:
         datasheet = pd.read_excel(trackModel, sheet_name = 1, usecols = require_cols);
 
 
-        print(datasheet);
+        print(datasheet)
     """
 
 
@@ -103,12 +105,16 @@ class TrackController:
             plc_program(file): Python file containting PLC program code
         
         """
+        self.plc_program_uploaded = True
+        self.plc_program = plc_program
 
     def run_PLC_program(self):
         """
-        Runs the PLC program
+        Continuously runs the PLC program.
         
         """
+
+
 
     def emergency_stop(self):
         """

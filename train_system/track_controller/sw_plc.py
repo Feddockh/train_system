@@ -5,12 +5,8 @@ class SWPLC:
         """
         Initialize values used in PLC program
         """
-        self.track_occupancies = new_track_occupancies
-        self.switch = False
-        self.light = False
-        self.crossing = False
 
-def plc(self):
+def plc(self, switch, light , crossing, track_occupancies):
     """
     PLC program used to determine switch, crossing, and light state.
     Representing a scenario where one train is going to Station B and
@@ -24,34 +20,34 @@ def plc(self):
     """
     
     #Determining light status
-    if (self.switch == False and self.track_occupancies(6)):
-        self.light = True
+    if (switch == False and track_occupancies(6)):
+        light = True
         print("Light is red.")
-    elif (self.switch == False and self.track_occupancies(11)):
-        self.light = True
+    elif (switch == False and track_occupancies(11)):
+        light = True
         print("Light is red.")
     else:
-        self.light = False
+        light = False
         print("Light is green.")
     
     #Determining switch position
-    if (self.track_occupancies(6) or self.track_occupancies(7) or self.track_occupancies(8)
-       or self.track_occupancies(9) or self.track_occupancies(10)):
-        self.switch = 1
+    if (track_occupancies(6) or track_occupancies(7) or track_occupancies(8)
+       or track_occupancies(9) or track_occupancies(10)):
+        switch = 1
         print("Switch is connected to Block 6.")
     else:
-        self.switch = 0
+        switch = 0
         print("Switch is connected to Block 11.")
 
     #Determing crossing signal
-    if (self.track_occupancies(7) or self.track_occupancies(8) or self.track_occupancies(9)):
+    if (track_occupancies(7) or track_occupancies(8) or track_occupancies(9)):
         cross = 1
         print("Crossing Signal is down.")
     else:
         cross = 0
         print("Crossing Signal is up.")
 
-    return self.switch, self.crossing, self.light         
+    return switch, crossing, light    
     
 
 
