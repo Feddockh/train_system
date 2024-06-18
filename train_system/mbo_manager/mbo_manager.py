@@ -4,9 +4,6 @@ class MBOController:
         """
         Initialize the MBO Controller
         """
-        self.train_commanded_speeds = {}
-        self.train_authorities = {}
-        self.block_maintanece = {}
         
         self.dispatch_mode = {} #manual and mbo 
         self.mbo_mode = {}  #fixed block or mbo 
@@ -22,18 +19,68 @@ class MBOController:
         self.crew = ["Crew 1", "Crew 2", "Crew 3", "Crew 4", "Crew 5", "Crew 6"]
         
        
-    def kmhr_to_ms(self, blue_speed_limit):
-        return(self.blue_speed_limit * (1000/3600))
-        
-    def distance_between(self): #?? idk, or time to travel based of distance between?
+    def kmhr_to_ms(self, km_hr):
+        """convert km/hr to m/s
+
+        Args:
+            km_hr (float?): km/hr that needs to be converted to m/s, mostly for setting commanded speed based of speed limit 
         """
-        finding the distance in bettween 
-            stations?
-            
-        """ 
-        #yard to b = 500m 
-        #b to c = 
+        return(km_hr * (1000/3600))
     
+    def emergency_breaking_distance(self):
+     """
+     distance the train will travel after emergency break is pulled
+        (+ some wiggle room? )
+     """ 
+     emergency_brake_acceleration = 2.73 #m/s^2
+     v = self.commanded_speed(self.enable_s_and_a)
+     breaking_distance = -1* (1/2)*(v)*(-1 * emergency_brake_acceleration)
+    
+     print(breaking_distance)
+     return (breaking_distance)
+    
+    def enable_mbo_mode(self, dispatch_mode, enable_s_and_a):
+        """
+        If dispatcher selects MBO mode, enable sending speed and authority 
+        """  
+        #print in command prompt for test bench purposes? 
+        
+        if self.dispatch_mode == 'MBO': 
+            self.enable_s_and_a = 1;  
+        
+        else:
+            self.enable_s_and_a = 0;
+        
+    def commanded_speed(self, enable_s_and_a ):
+        """
+        Calculate trains commanded speed
+        Arg = enable_s_and_a to know if MBO has control to send speed
+         
+        return commanded_speed which is just equal to the speed limit 
+                (will need to be the speed limit for the section/block)
+        """
+        if(enable_s_and_a):
+        #do i need to adjust speed when train needs to stop? 
+            self.speed = self.kmhr_to_ms(self.blue_speed_limit)
+            return(self.speed)
+    
+    
+    def authorirty(self):
+        """
+        Calculate trains authority such that more than one train can be in a block 
+        """
+        print(self.trains_positions)
+        
+        #for each train 
+            #if train is within emerg braking distance of another train 
+                #then authority = emerg breaking distance + c
+            #elif train is a block away from block under maint
+                #then authority = emerg breaking distance + c 
+            #else
+                #distance to next stop (station or yard)
+     
+       
+
     def create_schedules(self, selected_day, selected_start_time):
         """
         Create schedule options 
@@ -77,42 +124,7 @@ class MBOController:
         med_file.close()
         high_file.close()
         
-     
-    def enable_mbo_mode(self, dispatch_mode, enable_s_and_a):
-        """
-        If dispatcher selects MBO mode, enable sending speed and authority 
-        """  
-        #print in command prompt for test bench purposes? 
-        
-        if self.dispatch_mode == 'MBO': 
-            self.enable_s_and_a = 1;  
-        
-        else:
-            self.enable_s_and_a = 0;
-        
-    def commanded_speed(self, enable_s_and_a ):
-        """
-        Calculate trains commanded speed 
-        """
-        if(enable_s_and_a):
-        #do i need to adjust speed when train needs to stop? 
-        
-            return(self.blue_speed_limit)
-        
-    def authorirty(self):
-        """
-        Calculate trains authority such that more than one train can be in a block 
-        """
-        print(self.trains_positions)
-        #leaving yard authorirty is 250 m 
-        #station b to station c authority?
-        #station c to yard is 250 m 
-        
-        #if entering a block and the next block is under maintance, authority = length of block 
-        
-        #if train is x meters away from the train infront of it, set authority to emergency breaking distance?
-            #emergency break = 2.73m/s2
-            #how far will train travel if break is applied while traveling 50km/hr 
+    
             
     
         

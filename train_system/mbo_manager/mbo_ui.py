@@ -17,6 +17,7 @@ class MBOWindow(QMainWindow):
         
         #name window
         self.setWindowTitle("MBO Controller")
+        self.setFixedSize(1222, 702)
         
         self.MBO_mode_window = None
         #button to navigate to MBO mode view, see trains postitions, commanded speed and authority in real time? 
@@ -93,6 +94,7 @@ class MBOModeView(QWidget):
         super(MBOModeView, self).__init__()
         
         self.setWindowTitle("MBO Mode View")
+        self.setFixedSize(1222, 702)
         
         self.MBO_mode_view = QPushButton('MBO Mode View', self)
         self.MBO_mode_view.clicked.connect(self.close_MBO_mode_view)
@@ -108,6 +110,7 @@ class TestBench(QMainWindow):
         
         #label for page window 
         self.setWindowTitle("MBO Test Bench")
+        self.setFixedSize(1222, 702)
         
         #labels for table header
         self.trains_header = QLabel('Trains')
@@ -134,6 +137,10 @@ class TestBench(QMainWindow):
         self.train3_position = QTextEdit()
     
         
+        self.train1_commanded_speed = QLabel('-')
+        self.train2_commanded_speed = QLabel('-')
+        self.train3_commanded_speed = QLabel('-')
+        
           
         #button to run test bench
         self.test = QPushButton("Run Test")
@@ -151,10 +158,17 @@ class TestBench(QMainWindow):
         self.layout_position_text.addWidget(self.train2_position)
         self.layout_position_text.addWidget(self.train3_position)
         
-
+        #vert aligning layout of commanded speeds 
+        self.layout_speed = QVBoxLayout()
+        self.layout_speed.addWidget(self.train1_commanded_speed)
+        self.layout_speed.addWidget(self.train2_commanded_speed)
+        self.layout_speed.addWidget(self.train3_commanded_speed)
+        
+        #horz aligning columns in table 
         self.column_layout = QHBoxLayout()
         self.column_layout.addLayout(self.layout_position_labels)
         self.column_layout.addLayout(self.layout_position_text)
+        self.column_layout.addLayout(self.layout_speed)
         
         self.table_layout = QVBoxLayout()
         self.table_layout.addLayout(self.header_layout)
@@ -180,11 +194,21 @@ class TestBench(QMainWindow):
     def run_test_bench(self):
         x = MBOController() 
         
+        x.enable_s_and_a = 1
+        
         #need a check to make sure these text boxes are not empty! will crash! 
         
         #send out positions 
         x.trains_positions = {"Train1": int(self.train1_position.toPlainText()), "Train2": int(self.train2_position.toPlainText()), "Train3": int(self.train3_position.toPlainText())}
-        x.authorirty()
+        
+        c = x.commanded_speed(x.enable_s_and_a)
+        self.train1_commanded_speed.setText(str(c))
+        self.train2_commanded_speed.setText(str(c))
+        self.train3_commanded_speed.setText(str(c))
+        
+        x.emergency_breaking_distance()
+        
+        pass # x.authorirty()
         
         
         
