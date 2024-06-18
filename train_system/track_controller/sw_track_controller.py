@@ -125,6 +125,11 @@ class TrackController:
                 }
             exec(code, {}, local_vars)
 
+            self.switch_states = local_vars["switch"]
+            self.signal_states = local_vars["light"]
+            self.crossing_states = local_vars["cross"]
+            self.track_occupancies = local_vars["track_occupancies"]
+
     def emergency_stop(self):
         """
         Performs an emergency stop of a train if notices two trains are going to crash into eachother

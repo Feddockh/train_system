@@ -26,26 +26,21 @@ else:
 #Determining switch position
 if (track_occupancies[5] or track_occupancies[6] or track_occupancies[7]
     or track_occupancies[8] or track_occupancies[9]):
-    switch = 1
+    switch = True
     print("Switch is connected to Block 11.")
 else:
-    switch = 0
+    switch = False
     print("Switch is connected to Block 6.")
 
 #Determing crossing signal
 if (track_occupancies[6] or track_occupancies[7] or track_occupancies[8]):
-    cross = 1
+    cross = True
     print("Crossing Signal is down.")
 else:
-    cross = 0
+    cross = False
     print("Crossing Signal is up.")
+   
 
-#return switch, crossing, light    
-
-
-"""
-Testing code exec
-"""
     
 
 
