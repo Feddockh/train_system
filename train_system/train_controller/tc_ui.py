@@ -2,6 +2,7 @@ import sys
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import Qt
 from tc_widgets import CircleWidget, TinyCircleWidget
+from train_controller import TrainController
 
 GREEN = "#29C84C"
 RED = "#FF4444"
@@ -15,7 +16,7 @@ KI_MIN = 0
 KI_MAX = 5
 
 class TestBenchWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, train_controller):
         super().__init__()
 
         self.setWindowTitle("Test Bench")
@@ -27,10 +28,26 @@ class TestBenchWindow(QMainWindow):
         #turn lights on/off
         #kp and ki instead of location???
 
+class AutoDriverWindow(QMainWindow):
+    def __init__(self, train_controller):
+        super().__init__()
+
+        self.setWindowTitle("Driver-Automatic")
+
+
 
 class DriverWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, train_controller):
         super().__init__()
+        
+        self.train = train_controller
+
+        self.test_window = None
+        self.auto_window = None
+
+        self.curr_speed = self.train.current_speed
+        self.comm_speed = self.train.commanded_speed
+        self.authority = self.train.authority
 
         self.setWindowTitle("Driver-Manual")
 
@@ -115,11 +132,13 @@ class DriverWindow(QMainWindow):
         """
         ###ALL OF THESE STATS WITH 00... WILL NEED TO BE CONNECTED TO THE RIGHT VARIABLE
         THE LABELS WILL THEN CHANGE TO EITHER QLABEL(STR(STAT) + "MPH") OR SELF.LABEL.SETTEXT(STR(STAT) + "MPH")
+        ---DONE---
         """
-        curr_speed_stat = QLabel("00 mph") 
+        curr_speed_stat = QLabel(str(self.curr_speed) + " mph") 
         curr_speed_stat.setFixedSize(50, 25)
         curr_speed_stat.setStyleSheet("background-color: #C8C8C8; color: black;")
 
+        #create a font that will be used for
         data_font = curr_speed_stat.font()
         data_font.setPointSize(11)
         curr_speed_stat.setFont(data_font)
@@ -129,7 +148,7 @@ class DriverWindow(QMainWindow):
         comm_speed_label.setFixedSize(150, 25)
         comm_speed_label.setFont(header_font)
 
-        comm_speed_stat = QLabel("00 mph")
+        comm_speed_stat = QLabel(str(self.comm_speed) + " mph")
         comm_speed_stat.setFixedSize(50, 25)
         comm_speed_stat.setFont(data_font)
         comm_speed_stat.setStyleSheet("background-color: #C8C8C8; color: black;")
@@ -139,7 +158,7 @@ class DriverWindow(QMainWindow):
         curr_authority_label.setFixedSize(150, 25)
         curr_authority_label.setFont(header_font)
 
-        curr_authority_stat = QLabel("00 ft")
+        curr_authority_stat = QLabel(str(self.authority) + " ft")
         curr_authority_stat.setFixedSize(50, 25)
         curr_authority_stat.setFont(data_font)
         curr_authority_stat.setStyleSheet("background-color: #C8C8C8; color: black;")
@@ -165,6 +184,7 @@ class DriverWindow(QMainWindow):
         mode_label.setFont(header_font)
         mode_button = QPushButton("")
         mode_button.setFixedSize(75, 75)
+        mode_button.clicked.connect(self.navigate_automatic_mode)
 
         #add button and label to the mode layout
         mode_layout.addWidget(mode_label)
@@ -281,9 +301,11 @@ class DriverWindow(QMainWindow):
         #create a button to navigate to test bench
         """
         CREATE A FUNCTION TO NAVIGATE TO TEST BENCH
+        ---DONE
         """
         test_button = QPushButton("Test Bench")
         test_button.setFixedSize(75, 75)
+        test_button.clicked.connect(self.navigate_test_page)
 
         #display current temp
         """
@@ -362,20 +384,40 @@ class DriverWindow(QMainWindow):
         widget.setLayout(main_layout)
         self.setCentralWidget(widget)
 
+    def navigate_automatic_mode(self, checked):
+        #check that window is not already opened before opening
+        if self.auto_window is None:
+            self.auto_window = AutoDriverWindow(self.train)
+            self.auto_window.show()
+        else:
+            self.auto_window.close()
+            self.auto_window = None
+
+    def navigate_test_page(self, checked):
+        #check that window is not already opened before opening
+        if self.test_window is None:
+            self.test_window = TestBenchWindow(self.train)
+            self.test_window.show()
+        else:
+            self.test_window.close()
+            self.test_window = None
+
+
 
 class EngineerWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, train_controller):
         super().__init__()
 
         self.test_window = None
         self.driver_window = None
+        self.train = train_controller
 
         """
         ###I THINK USING SOMETHING LIKE THIS WILL BE A GOOD WAY TO CONNECT VARIABLES
         I HAVE MEMBER VARIABLES WHICH ARE CONNECTED TO YOURS???
         """
-        self.ki_val = 0
-        self.kp_val = 0
+        self.ki_val = self.train.engineer.get_kp()
+        self.kp_val = self.train.engineer.get_ki()
 
         self.setWindowTitle("Train Controller UI")
 
@@ -435,7 +477,7 @@ class EngineerWindow(QMainWindow):
         dropdown_layout.addWidget(train_label, 2, 2)
 
         """
-        ###CONNECT KP AND KI VARIABLES
+        ###CONNECT KP AND KI VARIABLES - DONE
         FIX MIN AND MAX
         SEE SELF.KP(OR KI)_SLIDER_POSITION FUNCTION FOR HOW VARIABLES ARE CHANGING ON SCREEN
         """
@@ -497,7 +539,7 @@ class EngineerWindow(QMainWindow):
     def navigate_test_bench(self, checked):
         #check that window is not already opened before opening
         if self.test_window is None:
-            self.test_window = TestBenchWindow()
+            self.test_window = TestBenchWindow(self.train)
             self.test_window.show()
         else:
             self.test_window.close()
@@ -506,7 +548,7 @@ class EngineerWindow(QMainWindow):
     def navigate_driver_page(self, checked):
         #check that window is not already opened before opening
         if self.driver_window is None:
-            self.driver_window = DriverWindow()
+            self.driver_window = DriverWindow(self.train)
             self.driver_window.show()
         else:
             self.driver_window.close()
@@ -515,13 +557,16 @@ class EngineerWindow(QMainWindow):
     def kp_slider_position(self, p):
         self.kp_val = p
         self.kp_label.setText("Kp: " + str(p))
+        self.train.engineer.set_kp(self.kp_val)
     
     def ki_slider_position(self, p):
         self.ki_val = p
         self.ki_label.setText("Ki: " + str(p))
+        self.train.engineer.set_ki(self.ki_val)
+    
+    def get_ki_val(self):
+        return self.ki_val
+    
+    def get_kp_val(self):
+        return self.kp_val
 
-app = QApplication(sys.argv)
-window = EngineerWindow()
-window.show()
-
-app.exec()

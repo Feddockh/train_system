@@ -49,6 +49,9 @@ class TrainController:
 
     def get_commanded_speed(self):
         return self.commanded_speed
+    
+    def get_current_speed(self):
+        return self.current_speed
 
     def update_commanded_speed(self, train_model):
         self.commanded_speed = train_model.get_commanded_speed()
