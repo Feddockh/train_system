@@ -9,16 +9,15 @@ class TrackController:
         Initialize the Track Controller.
         """
         
-        self.track_occupancies = {}
-        self.train_speeds = {}
-        self.train_authorities = {}
-        self.switch_states = {}
-        self.signal_states = {}
-        self.crossing_states = {}
+        self.track_occupancies = [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+        self.train_speeds = []
+        self.train_authorities = []
+        self.switch_states = False
+        self.signal_states = False
+        self.crossing_states = False
         self.plc_program_uploaded = False
-        self.switch_positions = {}
+        self.switch_positions = []
         self.plc_program = ""
-    
     
     def get_track_occupancy(self, new_track_occupancies):
         """
@@ -99,12 +98,13 @@ class TrackController:
 
     def get_PLC_program(self, plc_program):
         """
-        Recieves PLC program
+        Recieves PLC program & updates self values 
 
         Args:
-            plc_program(file): Python file containting PLC program code
+            plc_program(file): File path of a Python program
         
         """
+        #Updates that PLC program has been uploaded & file path
         self.plc_program_uploaded = True
         self.plc_program = plc_program
 
@@ -113,12 +113,34 @@ class TrackController:
         Continuously runs the PLC program.
         
         """
-
-
+        #Will only run if PLC program has been uploaded
+        if (self.plc_program_uploaded == True):
+            with open (self.plc_program, mode = "r", encoding="utf-8") as plc_code:
+                code = plc_code.read()
+            local_vars = {
+                    "switch": self.switch_states,
+                    "light": self.signal_states,
+                    "cross": self.crossing_states,
+                    "track_occupancies": self.track_occupancies
+                }
+            exec(code, {}, local_vars)
 
     def emergency_stop(self):
         """
         Performs an emergency stop of a train if notices two trains are going to crash into eachother
         
         """
-     
+
+#Testing program
+test = TrackController();
+test.plc_program_uploaded = True
+test.plc_program = "C:/Users/Isabella/Trains/train_system/train_system/track_controller/sw_plc.py"
+test.run_PLC_program()
+test.get_track_occupancy([True, False, False, False, False, False, False, False, False, False, False, False, False, False, False])
+test.run_PLC_program()
+test.get_track_occupancy(([False, False, False, False, True, False, False, False, False, False, False, False, False, False, False]))
+test.run_PLC_program()
+test.get_track_occupancy(([False, False, False, False, False, True, False, False, False, False, False, False, False, False, False]))
+test.run_PLC_program()
+test.get_track_occupancy(([False, False, False, False, False, False, True, False, False, False, False, False, False, False, False]))
+test.run_PLC_program()

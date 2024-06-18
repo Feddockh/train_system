@@ -1,16 +1,26 @@
 import sys
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPalette, QColor
 
-def window():
-    app = QApplication(sys.argv)
-    win = QMainWindow()
-    win.setGeometry(0, 0, 1900, 1080)
-    win.setWindowTitle("SW Programmer UI")
+class TestBenchWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
 
-    
+        self.setWindowTitle("Test Bench")
+        
 
-    win.show();
-    sys.exit(app.exec())
+class MainWindow(QMainWindow):
 
-window()
+    def __init__(self):
+        super(MainWindow, self).__init__()
+
+        self.setWindowTitle("Programmer UI")
+
+
+
+app = QApplication(sys.argv)
+window = MainWindow()
+window.show()
+
+app.exec()
