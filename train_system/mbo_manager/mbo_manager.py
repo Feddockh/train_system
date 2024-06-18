@@ -27,6 +27,13 @@ class MBOController:
         """
         return(km_hr * (1000/3600))
     
+    def ms_to_mph(self, ms):
+        """
+        convert m/s to mph for UI display 
+        """
+        
+        return(ms * 2.237)
+    
     def emergency_breaking_distance(self):
      """
      distance the train will travel after emergency break is pulled
@@ -125,9 +132,7 @@ class MBOController:
         high_file.close()
         
     
-            
-    
-        
+                 
 
 if __name__ == "__main__":
     MBO = MBOController()

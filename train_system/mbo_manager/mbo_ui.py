@@ -201,7 +201,7 @@ class TestBench(QMainWindow):
         #send out positions 
         x.trains_positions = {"Train1": int(self.train1_position.toPlainText()), "Train2": int(self.train2_position.toPlainText()), "Train3": int(self.train3_position.toPlainText())}
         
-        c = x.commanded_speed(x.enable_s_and_a)
+        c =x.ms_to_mph( x.commanded_speed(x.enable_s_and_a) )
         self.train1_commanded_speed.setText(str(c))
         self.train2_commanded_speed.setText(str(c))
         self.train3_commanded_speed.setText(str(c))
