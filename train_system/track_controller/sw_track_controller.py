@@ -115,6 +115,7 @@ class TrackController:
         """
         #Will only run if PLC program has been uploaded
         if (self.plc_program_uploaded == True):
+            #Opening & running PLC code
             with open (self.plc_program, mode = "r", encoding="utf-8") as plc_code:
                 code = plc_code.read()
             local_vars = {
