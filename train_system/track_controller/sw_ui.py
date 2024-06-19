@@ -2,18 +2,49 @@ import os
 import sys
 from PyQt6.QtWidgets import *
 from PyQt6.QtGui import QPainter, QColor
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QRect
 from PyQt6 import QtCore, QtGui, QtWidgets, uic, QtWidgets
 from sw_widgets import RectangleWidget
 from sw_track_controller import TrackController
 
 #Colors
 DARK_GREY = "#C8C8C8"
+WHITE = "#FFFFFF"
+RED = "#FF0000"
+GREEN = "#00FF00"
 
 class CenterDelegate(QtWidgets.QStyledItemDelegate):
     def initStyleOption(self, option, index):
         super().initStyleOption(option, index)
         option.displayAlignment = QtCore.Qt.AlignmentFlag.AlignCenter
+
+class CrossingSignal(QTableWidgetItem):
+    def __init__(self, text='', background_color=None):
+        super().__init__(text)
+        if background_color:
+            self.setBackground(QtGui.QColor(background_color))
+
+class Rectangle(QWidget):
+
+    def __init__(self, x, y, width, height, color, parent=None):
+        super().__init__(parent)
+        self.setGeometry(x, y, width, height)
+        self.color = color
+
+    def paintEvent(self, event):
+        painter = QtGui.QPainter(self)
+
+        pen = QtGui.QPen()
+        pen.setWidth(0)
+
+        brush = QtGui.QBrush()
+        brush.setColor(QtGui.QColor(self.color))
+        brush.setStyle(Qt.BrushStyle.Dense4Pattern)
+
+        painter.setPen(pen)
+        painter.setBrush(brush)
+        rect = QRect(0, 0, self.width() - 1, self.height() - 1)
+        painter.drawRect(rect)
 
 
 class ProgrammerUI(QtWidgets.QMainWindow):
@@ -32,6 +63,7 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         #Central widget layout
         self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName("centralwidget")
+        self.setCentralWidget(self.centralwidget)
 
         #Used in multiple widgets
         waysides = ['Wayside 1']
@@ -54,32 +86,44 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         self.label.setObjectName("label")
         self.label.setFont(font)
 
-        """
-        #Create Rectange for Wayside Table
-        waysideRec = RectangleWidget(200, 100, 100, 100, DARK_GREY)
-        test_layout.addWidget(waysideRec, 0, 0)
-        """
+        #Create Rectangle for Wayside Table
+        self.waysideRec = Rectangle(60, 30, 415, 50, DARK_GREY, self.centralwidget)
+        self.waysideRec.lower()
+        self.backWayRec = Rectangle(60, 250, 415, 400, WHITE, self.centralwidget)
+        self.backWayRec.lower()
 
         #Wayside Data Table
-        self.tableView = QtWidgets.QTableView(parent=self.centralwidget)
+        self.tableView = QtWidgets.QTableWidget(parent=self.centralwidget)
         self.tableView.setGeometry(QtCore.QRect(60, 250, 415, 400))
         self.tableView.setObjectName("tableView")
+        self.tableView.setColumnCount(4)
+        self.tableView.setRowCount(15)
 
         self.tableView.verticalHeader().setVisible(False)
         self.tableView.setItemDelegate(CenterDelegate(self.tableView))
 
+        self.tableView.setHorizontalHeaderLabels(['Block #', 'Occupied', 'Switch', 'Signal'])
+        self.tableView.horizontalHeader().setFont(font)
+        """
         self.model = QtGui.QStandardItemModel()
         self.model.setHorizontalHeaderLabels(['Block #', 'Occupied', 'Switch', 'Signal'])
         self.tableView.setModel(self.model)
+        """
         self.add_wayside_table_data()
         self.tableView.setFont(font)
 
-        #Wayside Data Table ComboBox
-        self.comboBox_2 = QtWidgets.QComboBox(parent=self.centralwidget)
-        self.comboBox_2.setGeometry(QtCore.QRect(60, 215, 415, 35))
-        self.comboBox_2.setObjectName("comboBox_2")
-        self.comboBox_2.addItems(waysides)
-        self.comboBox_2.setFont(font)
+        #Wayside data combo
+        self.comboBox_3 = QtWidgets.QComboBox(parent=self.centralwidget)
+        self.comboBox_3.setGeometry(QtCore.QRect(60, 35, 415, 35))
+        self.comboBox_3.setObjectName("comboBox_3")
+        self.comboBox_3.addItems(lines)
+        self.comboBox_3.setFont(font)
+
+        #Waysides and Blocks rec
+        self.waysideBlkRec = Rectangle(60, 200, 415, 50, DARK_GREY, self.centralwidget)
+        self.waysideBlkRec.lower()
+        self.backWaysideBlkRec = Rectangle(60, 80, 415, 100, WHITE, self.centralwidget)
+        self.backWaysideBlkRec.lower()
 
         #Waysides and Blocks their responsible for table
         self.waysideBlkTable = QtWidgets.QTableWidget(parent=self.centralwidget)
@@ -97,15 +141,20 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         self.waysideBlkTable.setColumnWidth(1, 206)
         
         self.add_wayside_blk_table_data()
-        #self.waysideBlkTable.resizeColumnsToContents()
         self.waysideBlkTable.setFont(font)
 
-        #Combo box for waysideBlockTable
-        self.comboBox_3 = QtWidgets.QComboBox(parent=self.centralwidget)
-        self.comboBox_3.setGeometry(QtCore.QRect(60, 45, 415, 35))
-        self.comboBox_3.setObjectName("comboBox_3")
-        self.comboBox_3.addItems(lines)
-        self.comboBox_3.setFont(font)
+        #Wayside and blocks combo
+        self.comboBox_2 = QtWidgets.QComboBox(parent=self.centralwidget)
+        self.comboBox_2.setGeometry(QtCore.QRect(60, 205, 415, 35))
+        self.comboBox_2.setObjectName("comboBox_2")
+        self.comboBox_2.addItems(waysides)
+        self.comboBox_2.setFont(font)
+
+        #Block info rec
+        self.blockInfoRec = Rectangle(550, 220, 615, 110, DARK_GREY, self.centralwidget)
+        self.blockInfoRec.lower()
+        self.backBlockInfoRec = Rectangle(550, 330, 615, 320, WHITE, self.centralwidget)
+        self.backBlockInfoRec.lower()
 
         #Block info table
         self.blockInfoTable = QtWidgets.QTableWidget(parent=self.centralwidget)
@@ -123,7 +172,7 @@ class ProgrammerUI(QtWidgets.QMainWindow):
 
         #Combobox for block info table
         self.comboBox = QtWidgets.QComboBox(parent=self.centralwidget)
-        self.comboBox.setGeometry(QtCore.QRect(570, 220, 575, 35))
+        self.comboBox.setGeometry(QtCore.QRect(570, 230, 575, 35))
         self.comboBox.setObjectName("comboBox")
         self.comboBox.addItems(lines)
         self.comboBox.setFont(font)
@@ -208,10 +257,21 @@ class ProgrammerUI(QtWidgets.QMainWindow):
             ['14', self.display_occupied_tracks(13), '-', '-'],
             ['15', self.display_occupied_tracks(14), '-', '-']
         ]
-
+        """
         for row in data:
             items = [QtGui.QStandardItem(item) for item in row]
             self.model.appendRow(items)
+        """
+        
+        for i, row in enumerate(data):
+            for j, item in enumerate(row):
+                self.tableView.setItem(i, j, QtWidgets.QTableWidgetItem(str(item))) 
+        
+        #If crossing is up
+        if(self.track_controller.crossing_states == False):
+            self.tableView.setItem(3, 11, CrossingSignal('', GREEN))
+        else:
+            self.tableView.setItem(3, 11, CrossingSignal('', RED))
 
     def add_block_info_table_data(self):
         data = [
@@ -219,7 +279,7 @@ class ProgrammerUI(QtWidgets.QMainWindow):
             ['2', self.display_occupied_tracks(1), self.track_controller.train_authorities[1], self.track_controller.train_authorities[1],'-', '-'],
             ['3', self.display_occupied_tracks(2), self.track_controller.train_authorities[2], self.track_controller.train_authorities[2],'-', '-'],
             ['4', self.display_occupied_tracks(3), self.track_controller.train_authorities[3], self.track_controller.train_authorities[3],'-', '-'],
-            ['5', self.display_occupied_tracks(4), self.track_controller.train_authorities[4], self.track_controller.train_authorities[4],self.display_switch_pos(5), '-'],
+            ['5', self.display_occupied_tracks(4), self.track_controller.train_authorities[4], self.track_controller.train_authorities[4],self.display_switch_pos(5), ' '],
             ['6', self.display_occupied_tracks(5), self.track_controller.train_authorities[5], self.track_controller.train_authorities[5],self.display_switch_pos(6), '-'],
             ['7', self.display_occupied_tracks(6), self.track_controller.train_authorities[6], self.track_controller.train_authorities[6],'-', '-'],
             ['8', self.display_occupied_tracks(7), self.track_controller.train_authorities[7], self.track_controller.train_authorities[7],'-', '-'],
@@ -235,6 +295,12 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         for i, row in enumerate(data):
             for j, item in enumerate(row):
                 self.blockInfoTable.setItem(i, j, QtWidgets.QTableWidgetItem(str(item)))
+
+        #If crossing is up
+        if(self.track_controller.crossing_states == False):
+            self.blockInfoTable.setItem(3, 11, CrossingSignal('', GREEN))
+        else:
+            self.blockInfoTable.setItem(3, 11, CrossingSignal('', RED))
 
     def add_wayside_blk_table_data(self):
         data = [
