@@ -15,6 +15,10 @@ KP_MAX = 50
 KI_MIN = 0
 KI_MAX = 5
 
+SPEED_MIN = 0
+SPEED_MAX = 43
+
+
 class TestBenchWindow(QMainWindow):
     def __init__(self, train_controller):
         super().__init__()
@@ -45,9 +49,18 @@ class DriverWindow(QMainWindow):
         self.test_window = None
         self.auto_window = None
 
-        self.curr_speed = self.train.current_speed
-        self.comm_speed = self.train.commanded_speed
-        self.authority = self.train.authority
+        self.faults_list = self.train.faults
+        self.curr_speed = self.convert_to_mph(self.train.current_speed)
+        self.comm_speed = self.convert_to_mph(self.train.commanded_speed)
+        self.authority = self.convert_to_ft(self.train.authority)
+        self.setpoint_speed = self.convert_to_mph(self.train.setpoint_speed)
+        self.power = self.train.get_power_command() ###units???
+        self.light_status = self.train.lights.get_status()
+        self.left_door = self.train.doors.get_left()
+        self.right_door = self.train.doors.get_right()
+        self.temp = self.train.train_temp #units???
+        self.comm_temp = self.train.ac.get_commanded_temp() #units???
+        self.position = self.train.position #units???
 
         self.setWindowTitle("Driver-Manual")
 
@@ -95,19 +108,29 @@ class DriverWindow(QMainWindow):
 
         #create the engine fault signal
         """
-        ###THESE CIRCLES WILL NEED TO BE CONNECTED TO FAULT VARIABLES TO DETERMINE IF THEY ARE RED OR GREEn
+        ###THESE CIRCLES WILL NEED TO BE CONNECTED TO FAULT VARIABLES TO DETERMINE IF THEY ARE RED OR GREEN
+        ---DONE---
         """
-        engine_circle = CircleWidget(10, 300, GREEN)
+        if(self.faults_list[0] == False):
+            engine_circle = CircleWidget(10, 300, GREEN)
+        else:
+            engine_circle = CircleWidget(10, 300, RED)
         engine_label = QLabel("Train Engine")
         engine_label.setFixedSize(100, 50)
 
         #create the brake fault signal
-        brake_circle = CircleWidget(20, 300, GREEN)
+        if(self.faults_list[1] == False):
+            brake_circle = CircleWidget(20, 300, GREEN)
+        else:
+            brake_circle = CircleWidget(20, 300, RED)
         brake_label = QLabel("Brake Function")
         brake_label.setFixedSize(100, 50)
 
         #create the signal fault signal
-        signal_circle = CircleWidget(30, 300, RED)
+        if(self.faults_list[2] == False):
+            signal_circle = CircleWidget(30, 300, GREEN)
+        else:
+            signal_circle = CircleWidget(30, 300, RED)
         signal_label = QLabel("Signal Pickup")
         signal_label.setFixedSize(100, 50)
 
@@ -177,6 +200,7 @@ class DriverWindow(QMainWindow):
 
         """
         ADD FUNCTION TO NAVIGATE TO DRIVER-AUTOMATIC PAGE
+        ---DONE---
         """
         #create control mode button and label
         mode_label = QLabel("Change Control Mode")
@@ -193,14 +217,15 @@ class DriverWindow(QMainWindow):
 
         """
         ###CONNECT THIS VALUE TO MEMBER VARIABLE AND LINE EDIT
-        FIX MIN, MAX, AND STEP
         CONVERT FROM INPUTTED M/S TO MPH
+        ---DONE---
         """
         #create the adjustable arrow box for setpoint speed and its label
         speed_adjust = QSpinBox() #adjust by 5
-        speed_adjust.setMinimum(-10) #min 0
-        speed_adjust.setMaximum(10) #max 43, convert from m/s to mph, display in mph
+        speed_adjust.setMinimum(SPEED_MIN)
+        speed_adjust.setMaximum(SPEED_MAX) 
         speed_adjust.setFixedSize(50, 50)
+        speed_adjust.valueChanged.connect(self.setpoint_spinbox_changed)
 
         setpoint_label = QLabel("Setpoint Speed")
         setpoint_label.setFixedSize(125, 50)
@@ -209,20 +234,25 @@ class DriverWindow(QMainWindow):
         """
         ###CONNECT THIS VALUE TO MEMBER VARIABLE AND SPINBOX
         SAME AS ABOVE
+        ---DONE---
         """
         #create the type input box for setpoint speed
-        speed_input = QLineEdit()
-        speed_input.setPlaceholderText("Enter Speed")
-        speed_input.setFixedSize(75, 50)
+        self.speed_input = QLineEdit()
+        self.speed_input.setPlaceholderText("Enter Speed")
+        self.speed_input.setFixedSize(75, 50)
+        self.speed_input.textChanged.connect(self.setpoint_edit_changed)
 
         #create the service brake button and its label
         """
         ###CONNECT TO SPEED AND BRAKE STATUS
         WRITE FUNCTION FOR WHEN CLICKED
+
         """
         service_brake_button = QPushButton("X")
         service_brake_button.setFixedSize(75, 75)
         service_brake_button.setStyleSheet("background-color: #FFB800; color: black;")
+        #service_brake_button.setCheckable(True)
+        service_brake_button.clicked.connect(self.service_brake_toggled)
 
         service_brake_label = QLabel("Service Brake")
         service_brake_label.setFixedSize(125, 50)
@@ -235,7 +265,7 @@ class DriverWindow(QMainWindow):
         #add widgets to the setpoint layout
         setpoint_layout.addWidget(speed_adjust, 1, 0)
         setpoint_layout.addWidget(setpoint_label, 0, 0)
-        setpoint_layout.addWidget(speed_input, 1, 1)
+        setpoint_layout.addWidget(self.speed_input, 1, 1)
         setpoint_layout.addWidget(setpoint_mph_label, 1, 2)
 
         #create the label and output for power
@@ -245,8 +275,9 @@ class DriverWindow(QMainWindow):
 
         """
         ###CONNECT TO MEMBER VARIABLE (SIMILAR TO OTHER STATS)
+        ---DONE---
         """
-        power_stat = QLabel("00 kW")
+        power_stat = QLabel(str(self.power) + " kW")
         power_stat.setFixedSize(75, 50)
         power_stat.setFont(data_font)
         power_stat.setStyleSheet("background-color: #C8C8C8; color: black;")
@@ -275,16 +306,27 @@ class DriverWindow(QMainWindow):
         brake_status_label.setFixedSize(75, 50)
         brake_status_label.setStyleSheet("background-color: #29C84C; color: white;")
 
-
+        """---DONE---"""
         light_staus_label = QLabel("Light Status")
         light_staus_label.setFixedSize(75, 50)
-        light_staus_label.setStyleSheet("background-color: #FF4444; color: white;")
+        if(self.light_status == True): ###might change colors
+            light_staus_label.setStyleSheet("background-color: #29C84C; color: white;")
+        else:
+            light_staus_label.setStyleSheet("background-color: #FF4444; color: white;")
 
-        right_door_label = QLabel("Right Door Status: Open")
+        """---DONE---"""
+        if(self.right_door == True):
+            right_door_label = QLabel("Right Door Status: Open")
+        else:
+            right_door_label = QLabel("Right Door Status: Closed")
         right_door_label.setFixedSize(150, 50)
 
-        left_door_label = QLabel("Left Door Status: Closed")
-        left_door_label.setFixedSize(150, 50)
+        """---DONE---"""
+        if(self.left_door == True):
+            left_door_label = QLabel("Left Door Status: Open")
+        else:
+            left_door_label = QLabel("Left Door Status: Closed")
+        left_door_label.setFixedSize(150, 50)   
 
         #add statuses to layout
         status_layout.addWidget(brake_status_label, 0, 0) 
@@ -301,7 +343,7 @@ class DriverWindow(QMainWindow):
         #create a button to navigate to test bench
         """
         CREATE A FUNCTION TO NAVIGATE TO TEST BENCH
-        ---DONE
+        ---DONE---
         """
         test_button = QPushButton("Test Bench")
         test_button.setFixedSize(75, 75)
@@ -312,8 +354,9 @@ class DriverWindow(QMainWindow):
         ###CONNECT CURRENT AND COMMANDED TRAIN TEMP VARIABLES
         CURR TEMP WILL BE DISPLAYED AND EDITED LIKE PREVIOUS STATS
         COMM TEMP WILL BE CHANGED LIKE OTHER INPUTS
+        ---DONE---
         """
-        curr_temp = QLabel("Train Temperature: 69 F")
+        curr_temp = QLabel("Train Temperature: " + str(self.temp) + " F")
         curr_temp.setFixedSize(150, 50)
         curr_temp_font = curr_temp.font()
         curr_temp_font.setBold(True)
@@ -323,15 +366,16 @@ class DriverWindow(QMainWindow):
         comm_temp_label = QLabel("Commanded Train Temp")
         comm_temp_label.setFixedSize(150, 50)
 
-        comm_temp_input = QLineEdit()
-        comm_temp_input.setPlaceholderText("Enter Temp")
-        comm_temp_input.setFixedSize(100, 50)
+        self.comm_temp_input = QLineEdit()
+        self.comm_temp_input.setPlaceholderText("Enter Temp")
+        self.comm_temp_input.setFixedSize(100, 50)
+        self.comm_temp_input.textChanged.connect(self.comm_temp_changed)
 
         temp_unit_label = QLabel("F")
         temp_unit_label.setFixedSize(50, 50)
 
         comm_temp_layout.addWidget(comm_temp_label, 0, 0)
-        comm_temp_layout.addWidget(comm_temp_input, 1, 0)
+        comm_temp_layout.addWidget(self.comm_temp_input, 1, 0)
         comm_temp_layout.addWidget(temp_unit_label, 1, 1)
 
         #create labels for location and destination
@@ -342,10 +386,11 @@ class DriverWindow(QMainWindow):
         """###CONNECT TO MEMBER VARIABLES FOR LOCATION AND DESTINATION
         WILL BE CHANGED LIKE OTHER LABEL STATS
         """
-        loc_label = QLabel("Block: ") 
+        """---DONE---"""
+        loc_label = QLabel("Block: " + str(self.position)) 
         loc_label.setFixedSize(100, 50)
 
-        des_label = QLabel("South Hills Village")
+        des_label = QLabel("South Hills Village") ###will update with tc function
         des_label.setFixedSize(100, 50)
 
         #create emergency brake
@@ -401,6 +446,53 @@ class DriverWindow(QMainWindow):
         else:
             self.test_window.close()
             self.test_window = None
+
+    def convert_to_mph(self, ms_speed):
+        mph = ms_speed * 2.23694
+        return mph
+    
+    def convert_to_ms(self, mph_speed):
+        ms = mph_speed / 2.23694
+        return ms
+    
+    def convert_to_ft(self, m):
+        ft = m * 3.28084
+        return ft
+    
+    def convert_to_m(self, ft):
+        m = ft / 3.28084
+        return m
+
+    def setpoint_spinbox_changed(self, x):
+        self.setpoint_speed = x
+        self.train.setpoint_speed = self.convert_to_ms(x)
+
+
+    """
+    NEEDS ERROR CHECKING
+    """
+    def setpoint_edit_changed(self, x):
+        if(x != ""):
+            self.setpoint_speed = float(x)
+            self.train.setpoint_speed = self.convert_to_ms(float(x))
+
+    """
+    DOESNT WORK
+    """
+    def service_brake_toggled(self, check):
+        self.comm_speed = 0
+        self.setpoint_speed = 0
+        self.train.setpoint_speed = 0
+        self.train.commanded_speed = 0
+
+    """
+    NEEDS ERROR CHECKING
+    """
+    def comm_temp_changed(self, x):
+        if(x != ""):
+            self.comm_temp = int(x)
+            self.train.ac.set_commanded_temp(int(x))
+
 
 
 
@@ -483,8 +575,8 @@ class EngineerWindow(QMainWindow):
         """
         #create the Kp slider
         kp_slider = QSlider() #make horizontal
-        kp_slider.setMinimum(-10) #eventually use constants
-        kp_slider.setMaximum(10) #check for kp and ki member variable/ default
+        kp_slider.setMinimum(KP_MIN) #eventually use constants
+        kp_slider.setMaximum(KP_MAX) #check for kp and ki member variable/ default
         kp_slider.setFixedSize(50, 100)
         kp_slider.sliderMoved.connect(self.kp_slider_position)
         slider_layout.addWidget(kp_slider, 0, 1)
@@ -495,8 +587,8 @@ class EngineerWindow(QMainWindow):
 
         #create the Ki slider
         ki_slider = QSlider()
-        ki_slider.setMinimum(-10) #eventually use constants
-        ki_slider.setMaximum(10)
+        ki_slider.setMinimum(KI_MIN) #eventually use constants
+        ki_slider.setMaximum(KI_MAX)
         ki_slider.setFixedSize(50, 100)
         ki_slider.sliderMoved.connect(self.ki_slider_position)
         slider_layout.addWidget(ki_slider, 1, 1)
