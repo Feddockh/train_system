@@ -98,15 +98,16 @@ class TrackController:
 
     def get_PLC_program(self, plc_program):
         """
-        Recieves PLC program & updates self values 
+        Recieves PLC program & updates self values - Only allows upload once
 
         Args:
             plc_program(file): File path of a Python program
         
         """
         #Updates that PLC program has been uploaded & file path
-        self.plc_program_uploaded = True
-        self.plc_program = plc_program
+        if(self.plc_program_uploaded == False):
+            self.plc_program_uploaded = True
+            self.plc_program = plc_program
 
     def run_PLC_program(self):
         """
@@ -137,6 +138,7 @@ class TrackController:
         
         """
 
+"""
 #Testing program
 test = TrackController();
 test.plc_program_uploaded = True
@@ -150,3 +152,4 @@ test.get_track_occupancy(([False, False, False, False, False, True, False, False
 test.run_PLC_program()
 test.get_track_occupancy(([False, False, False, False, False, False, True, False, False, False, False, False, False, False, False]))
 test.run_PLC_program()
+"""

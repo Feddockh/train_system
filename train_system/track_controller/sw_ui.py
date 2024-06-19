@@ -3,21 +3,28 @@ import sys
 from PyQt6.QtWidgets import *
 from PyQt6.QtGui import QPainter, QColor
 from PyQt6.QtCore import Qt
-from PyQt6 import QtCore, QtGui, QtWidgets, uic
+from PyQt6 import QtCore, QtGui, QtWidgets, uic, QtWidgets
+from sw_widgets import RectangleWidget
 from sw_track_controller import TrackController
 
 #Colors
 DARK_GREY = "#C8C8C8"
 
-class QMainWindow(QWidget):
-    def setupUi(self, MainWindow):
+class ProgrammerUI(QtWidgets.QMainWindow):
+
+    #def setupUi(self, MainWindow):
+    def __init__(self, track_controller):
+        super().__init__()
+
+        #Setting track controller
+        self.track_controller = track_controller
 
         #Programmer UI name & size
-        MainWindow.setObjectName("Programmer UI")
-        MainWindow.resize(860, 520)
+        self.setObjectName("Programmer UI")
+        self.resize(1222, 702)
 
         #Central widget layout
-        self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
+        self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName("centralwidget")
 
         #FileUpload button
@@ -31,7 +38,12 @@ class QMainWindow(QWidget):
         self.label.setGeometry(QtCore.QRect(330, 60, 120, 20))
         self.label.setObjectName("label")
 
-        #Table
+        """
+        #Create Rectange for Wayside Table
+        self.waysideRec = RectangleWidget(200, 100, 100, 100, DARK_GREY, parent=self.centralWidget)
+        """
+
+        #Wayside Table
         self.tableView = QtWidgets.QTableView(parent=self.centralwidget)
         self.tableView.setGeometry(QtCore.QRect(30, 200, 261, 231))
         self.tableView.setObjectName("tableView")
@@ -69,27 +81,28 @@ class QMainWindow(QWidget):
         self.comboBox_3.setGeometry(QtCore.QRect(30, 20, 261, 31))
         self.comboBox_3.setObjectName("comboBox_3")
 
-        MainWindow.setCentralWidget(self.centralwidget)
+        #Setting central widget
+        self.setCentralWidget(self.centralwidget)
 
         #Menubar code
-        self.menubar = QtWidgets.QMenuBar(parent=MainWindow)
+        self.menubar = QtWidgets.QMenuBar(parent=self)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 855, 26))
         self.menubar.setObjectName("menubar")
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtWidgets.QStatusBar(parent=MainWindow)
+        self.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(parent=self)
         self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
+        self.setStatusBar(self.statusbar)
 
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        self.retranslateUi()
+        QtCore.QMetaObject.connectSlotsByName(self)
 
-    def retranslateUi(self, MainWindow):
+    def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.fileUploadPushButton.setText(_translate("MainWindow", "Upload File"))
-        self.label.setText(_translate("MainWindow", "Select PLC Program:"))
+        self.setWindowTitle(_translate("ProgrammerUI", "ProgrammerUI"))
+        self.fileUploadPushButton.setText(_translate("ProgrammerUI", "Upload File"))
+        self.label.setText(_translate("ProgrammerUI", "Select PLC Program:"))
 
-    #Allows User to select PLC Program
+    #Allows User to select PLC Program from directory
     def getFileName(self):    
         file_filter = 'Data File (*.py)'
         response = QFileDialog.getOpenFileName (
@@ -99,8 +112,10 @@ class QMainWindow(QWidget):
             filter = file_filter,
             initialFilter = 'Data File (*.py)'
         )
+        self.track_controller.get_PLC_program(response[0])
 
 
+"""
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
@@ -109,3 +124,4 @@ if __name__ == "__main__":
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec())
+"""
