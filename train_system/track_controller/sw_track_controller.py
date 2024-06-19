@@ -77,25 +77,6 @@ class TrackController:
         """
         return self.train_speeds
 
-
-    """     
-    def get_track_model(self, trackModel):
-        
-        Used for test bench - Takes in Excel file and reads data from it
-        
-        Args:
-            trackModel(file): Excel file of track model data
-        
-        trackModel = "C:\\Users\\Isabella\\Downloads\\Track Layout & Vehicle Data vF2.xlsx";
-        require_cols = [2,6];
-
-        datasheet = pd.read_excel(trackModel, sheet_name = 1, usecols = require_cols);
-
-
-        print(datasheet)
-    """
-
-
     def get_PLC_program(self, plc_program):
         """
         Recieves PLC program & updates self values - Only allows upload once
@@ -108,6 +89,8 @@ class TrackController:
         if(self.plc_program_uploaded == False):
             self.plc_program_uploaded = True
             self.plc_program = plc_program
+            print(self.plc_program_uploaded)
+            print(self.plc_program)
 
     def run_PLC_program(self):
         """
