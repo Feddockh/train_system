@@ -6,8 +6,8 @@ from PyQt6.QtCore import Qt
 from PyQt6 import QtCore, QtGui, QtWidgets, uic
 
 class RectangleWidget(QtWidgets.QWidget):
-    def __init__(self, x, y, width, height, color, parent=None):
-        super().__init__(parent)
+    def __init__(self, x, y, width, height, color):
+        super().__init__()
         self.x = x
         self.y = y
         self.width = width
