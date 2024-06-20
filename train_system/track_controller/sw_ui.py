@@ -13,6 +13,7 @@ WHITE = "#FFFFFF"
 RED = "#FF0000"
 GREEN = "#00FF00"
 
+
 class CenterDelegate(QtWidgets.QStyledItemDelegate):
     def initStyleOption(self, option, index):
         super().initStyleOption(option, index)
@@ -23,6 +24,7 @@ class CrossingSignal(QTableWidgetItem):
         super().__init__(text)
         if background_color:
             self.setBackground(QtGui.QColor(background_color))
+
 
 class Rectangle(QWidget):
 
@@ -47,6 +49,9 @@ class Rectangle(QWidget):
         painter.drawRect(rect)
 
 
+"""
+Programmer UI - Default Page
+"""
 class ProgrammerUI(QtWidgets.QMainWindow):
 
     #def setupUi(self, MainWindow):
@@ -112,6 +117,8 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         self.tableView.setObjectName("tableView")
         self.tableView.setColumnCount(4)
         self.tableView.setRowCount(15)
+        self.tableView.setColumnWidth(1, 120)
+        self.tableView.setColumnWidth(3, 80)
 
         self.tableView.verticalHeader().setVisible(False)
         self.tableView.setItemDelegate(CenterDelegate(self.tableView))
@@ -170,6 +177,8 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         self.blockInfoTable.setObjectName("blockInfoTable")
         self.blockInfoTable.setColumnCount(7)
         self.blockInfoTable.setRowCount(len(self.track_controller.track_occupancies))
+        self.blockInfoTable.setColumnWidth(1, 120)
+        self.blockInfoTable.setColumnWidth(5, 84)
 
         self.blockInfoTable.verticalHeader().setVisible(False)
         self.blockInfoTable.setItemDelegate(CenterDelegate(self.tableView))
@@ -293,7 +302,7 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         
         for i, row in enumerate(data):
             for j, item in enumerate(row):
-                text = QTableWidgetItem(item)
+                text = QtWidgets.QTableWidgetItem(str(item))
                 text.setFlags(text.flags() & ~Qt.ItemFlag.ItemIsEditable)
                 self.tableView.setItem(i, j, text) 
         
@@ -305,28 +314,29 @@ class ProgrammerUI(QtWidgets.QMainWindow):
 
     def add_block_info_table_data(self):
         data = [
-            ['1', self.display_occupied_tracks(0), self.track_controller.train_authorities[0], self.track_controller.train_authorities[0] , '-', '-', '-'],
-            ['2', self.display_occupied_tracks(1), self.track_controller.train_authorities[1], self.track_controller.train_authorities[1],'-', '-', '-'],
-            ['3', self.display_occupied_tracks(2), self.track_controller.train_authorities[2], self.track_controller.train_authorities[2],'-', '-', '-'],
-            ['4', self.display_occupied_tracks(3), self.track_controller.train_authorities[3], self.track_controller.train_authorities[3],'-', '-' ,'-'],
-            ['5', self.display_occupied_tracks(4), self.track_controller.train_authorities[4], self.track_controller.train_authorities[4],self.display_switch_pos(5), ' ', '-'],
-            ['6', self.display_occupied_tracks(5), self.track_controller.train_authorities[5], self.track_controller.train_authorities[5],self.display_switch_pos(6), '-', '-'],
-            ['7', self.display_occupied_tracks(6), self.track_controller.train_authorities[6], self.track_controller.train_authorities[6],'-', '-', '-'],
-            ['8', self.display_occupied_tracks(7), self.track_controller.train_authorities[7], self.track_controller.train_authorities[7],'-', '-', self.display_crossing_signal()],
-            ['9', self.display_occupied_tracks(8), self.track_controller.train_authorities[8], self.track_controller.train_authorities[8],'-', '-', '-'],
-            ['10', self.display_occupied_tracks(9), self.track_controller.train_authorities[9], self.track_controller.train_authorities[9],'-', '-','-'],
-            ['11', self.display_occupied_tracks(10), self.track_controller.train_authorities[10], self.track_controller.train_authorities[10],self.display_switch_pos(11), '-','-'],
-            ['12', self.display_occupied_tracks(11), self.track_controller.train_authorities[11], self.track_controller.train_authorities[11],'-', '-', '-'],
-            ['13', self.display_occupied_tracks(12), self.track_controller.train_authorities[12], self.track_controller.train_authorities[12],'-', '-','-'],
-            ['14', self.display_occupied_tracks(13), self.track_controller.train_authorities[13], self.track_controller.train_authorities[13],'-', '-','-'],
-            ['15', self.display_occupied_tracks(14), self.track_controller.train_authorities[14], self.track_controller.train_authorities[14],'-', '-', '-']
+            ['1', self.display_occupied_tracks(0), self.track_controller.train_authorities[0], self.track_controller.train_speeds[0] , '-', '-', '-'],
+            ['2', self.display_occupied_tracks(1), self.track_controller.train_authorities[1], self.track_controller.train_speeds[1],'-', '-', '-'],
+            ['3', self.display_occupied_tracks(2), self.track_controller.train_authorities[2], self.track_controller.train_speeds[2],'-', '-', '-'],
+            ['4', self.display_occupied_tracks(3), self.track_controller.train_authorities[3], self.track_controller.train_speeds[3],'-', '-' ,'-'],
+            ['5', self.display_occupied_tracks(4), self.track_controller.train_authorities[4], self.track_controller.train_speeds[4],self.display_switch_pos(5), ' ', '-'],
+            ['6', self.display_occupied_tracks(5), self.track_controller.train_authorities[5], self.track_controller.train_speeds[5],self.display_switch_pos(6), '-', '-'],
+            ['7', self.display_occupied_tracks(6), self.track_controller.train_authorities[6], self.track_controller.train_speeds[6],'-', '-', '-'],
+            ['8', self.display_occupied_tracks(7), self.track_controller.train_authorities[7], self.track_controller.train_speeds[7],'-', '-', self.display_crossing_signal()],
+            ['9', self.display_occupied_tracks(8), self.track_controller.train_authorities[8], self.track_controller.train_speeds[8],'-', '-', '-'],
+            ['10', self.display_occupied_tracks(9), self.track_controller.train_authorities[9], self.track_controller.train_speeds[9],'-', '-','-'],
+            ['11', self.display_occupied_tracks(10), self.track_controller.train_authorities[10], self.track_controller.train_speeds[10],self.display_switch_pos(11), '-','-'],
+            ['12', self.display_occupied_tracks(11), self.track_controller.train_authorities[11], self.track_controller.train_speeds[11],'-', '-', '-'],
+            ['13', self.display_occupied_tracks(12), self.track_controller.train_authorities[12], self.track_controller.train_speeds[12],'-', '-','-'],
+            ['14', self.display_occupied_tracks(13), self.track_controller.train_authorities[13], self.track_controller.train_speeds[13],'-', '-','-'],
+            ['15', self.display_occupied_tracks(14), self.track_controller.train_authorities[14], self.track_controller.train_speeds[14],'-', '-', '-']
         ]
 
         for i, row in enumerate(data):
             for j, item in enumerate(row):
-                text = QTableWidgetItem(item)
-                text.setFlags(text.flags() & ~Qt.ItemFlag.ItemIsEditable)
+                text = QtWidgets.QTableWidgetItem(str(item))
+                print(text)
                 self.blockInfoTable.setItem(i, j, text)
+                text.setFlags(text.flags() & ~Qt.ItemFlag.ItemIsEditable)
 
         #If light signal is red or green
         if(self.track_controller.signal_states == False):
@@ -367,6 +377,8 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         self.maintenance = Maintenance(self.track_controller,self)
         self.maintenance.show()
         self.hide()
+
+
 
 """
 Test Bench UI - Can be brought here by selecting test bench from Programmer UI
@@ -430,6 +442,8 @@ class TestBench(QtWidgets.QMainWindow):
         self.tableView.setObjectName("tableView")
         self.tableView.setColumnCount(4)
         self.tableView.setRowCount(15)
+        self.tableView.setColumnWidth(1, 120)
+        self.tableView.setColumnWidth(3, 80)
 
         self.tableView.verticalHeader().setVisible(False)
         self.tableView.setItemDelegate(CenterDelegate(self.tableView))
@@ -491,6 +505,8 @@ class TestBench(QtWidgets.QMainWindow):
         self.blockInfoTable.setObjectName("blockInfoTable")
         self.blockInfoTable.setColumnCount(7)
         self.blockInfoTable.setRowCount(len(self.track_controller.track_occupancies))
+        self.blockInfoTable.setColumnWidth(1, 120)
+        self.blockInfoTable.setColumnWidth(5, 84)
 
         self.blockInfoTable.verticalHeader().setVisible(False)
         self.blockInfoTable.setItemDelegate(CenterDelegate(self.tableView))
@@ -804,6 +820,8 @@ class Maintenance(QtWidgets.QMainWindow):
         self.tableView.setObjectName("tableView")
         self.tableView.setColumnCount(4)
         self.tableView.setRowCount(15)
+        self.tableView.setColumnWidth(1, 120)
+        self.tableView.setColumnWidth(3, 80)
 
         self.tableView.verticalHeader().setVisible(False)
         self.tableView.setItemDelegate(CenterDelegate(self.tableView))
@@ -865,6 +883,8 @@ class Maintenance(QtWidgets.QMainWindow):
         self.blockInfoTable.setObjectName("blockInfoTable")
         self.blockInfoTable.setColumnCount(7)
         self.blockInfoTable.setRowCount(len(self.track_controller.track_occupancies))
+        self.blockInfoTable.setColumnWidth(1, 120)
+        self.blockInfoTable.setColumnWidth(5, 84)
 
         self.blockInfoTable.verticalHeader().setVisible(False)
         self.blockInfoTable.setItemDelegate(CenterDelegate(self.tableView))
