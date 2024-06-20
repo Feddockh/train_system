@@ -334,7 +334,6 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         for i, row in enumerate(data):
             for j, item in enumerate(row):
                 text = QtWidgets.QTableWidgetItem(str(item))
-                print(text)
                 self.blockInfoTable.setItem(i, j, text)
                 text.setFlags(text.flags() & ~Qt.ItemFlag.ItemIsEditable)
 
@@ -390,7 +389,16 @@ class TestBench(QtWidgets.QMainWindow):
         super().__init__()
 
         #Setting track controller
-        self.track_controller = track_controller
+        self.track_controllerTest = TrackController()
+        self.track_controllerTest.track_occupancies = track_controller.track_occupancies
+        self.track_controllerTest.train_speeds = track_controller.train_speeds
+        self.track_controllerTest.train_authorities = track_controller.train_authorities
+        self.track_controllerTest.switch_states = track_controller.switch_states
+        self.track_controllerTest.signal_states = track_controller.signal_states
+        self.track_controllerTest.crossing_states = track_controller.crossing_states
+        self.track_controllerTest.plc_program_uploaded = False
+        self.track_controllerTest.switch_positions = []
+        self.track_controllerTest.plc_program = ""
 
         #Programmer UI name & size
         self.setObjectName("Test Bench")
@@ -504,7 +512,7 @@ class TestBench(QtWidgets.QMainWindow):
         self.blockInfoTable.setGeometry(QtCore.QRect(470, 330, 715, 320))
         self.blockInfoTable.setObjectName("blockInfoTable")
         self.blockInfoTable.setColumnCount(7)
-        self.blockInfoTable.setRowCount(len(self.track_controller.track_occupancies))
+        self.blockInfoTable.setRowCount(len(self.track_controllerTest.track_occupancies))
         self.blockInfoTable.setColumnWidth(1, 120)
         self.blockInfoTable.setColumnWidth(5, 84)
 
@@ -568,8 +576,8 @@ class TestBench(QtWidgets.QMainWindow):
     def update_ui(self):
         self.blockInfoTable.itemChanged.disconnect(self.item_changed_blockInfo)
         self.tableView.itemChanged.disconnect(self.item_changed_waysideData)
-        if(self.track_controller.plc_program != ""):
-            self.track_controller.run_PLC_program()
+        if(self.track_controllerTest.plc_program != ""):
+            self.track_controllerTest.run_PLC_program()
         self.add_wayside_table_data()
         self.add_wayside_blk_table_data()
         self.add_block_info_table_data()
@@ -586,9 +594,9 @@ class TestBench(QtWidgets.QMainWindow):
             filter = file_filter,
             initialFilter = 'Data File (*.py)'
         )
-        self.track_controller.get_PLC_program(response[0])
+        self.track_controllerTest.get_PLC_program(response[0])
 
-        if(self.track_controller.plc_program_uploaded == True and self.track_controller.plc_program != ""):
+        if(self.track_controllerTest.plc_program_uploaded == True and self.track_controllerTest.plc_program != ""):
             self.plcUploadedLabel.setVisible(True)
         else:
             self.plcUploadedLabel.setVisible(False)
@@ -602,15 +610,15 @@ class TestBench(QtWidgets.QMainWindow):
             #Occupancy
             case 1:
                 if (new_item == "Occupied"):
-                    self.track_controller.track_occupancies[row] = True
+                    self.track_controllerTest.track_occupancies[row] = True
                 else:
-                    self.track_controller.track_occupancies[row] = False
+                    self.track_controllerTest.track_occupancies[row] = False
             #Authority
             case 2:
-                self.track_controller.train_authorities[row] = new_item
+                self.track_controllerTest.train_authorities[row] = new_item
             #Speed
             case 3:
-                self.track_controller.train_speeds[row] = new_item
+                self.track_controllerTest.train_speeds[row] = new_item
             #Switch
             case _:
                 #Update Switches
@@ -627,25 +635,25 @@ class TestBench(QtWidgets.QMainWindow):
             #Occupancy
             case 1:
                 if (new_item == "Occupied"):
-                    self.track_controller.track_occupancies[row] = True
+                    self.track_controllerTest.track_occupancies[row] = True
                 else:
-                    self.track_controller.track_occupancies[row] = False
+                    self.track_controllerTest.track_occupancies[row] = False
             #Switch
             case 2:
-                value = self.track_controller.switch_states
+                value = self.track_controllerTest.switch_states
                 #if making switch to 11
                 if(new_item == "5" and row == 10):
-                    self.track_controller.switch_states = True
-                    value = self.track_controller.switch_states
+                    self.track_controllerTest.switch_states = True
+                    value = self.track_controllerTest.switch_states
                 elif(new_item == "5" and row == 5):
-                    self.track_controller.switch_states = False
-                    value = self.track_controller.switch_states
+                    self.track_controllerTest.switch_states = False
+                    value = self.track_controllerTest.switch_states
                 elif(new_item == "6" and row == 4):
-                    self.track_controller.switch_states = False
-                    value = self.track_controller.switch_states
+                    self.track_controllerTest.switch_states = False
+                    value = self.track_controllerTest.switch_states
                 elif(new_item == "11" and row == 4):
-                    self.track_controller.switch_states = True
-                    value = self.track_controller.switch_states
+                    self.track_controllerTest.switch_states = True
+                    value = self.track_controllerTest.switch_states
                 else:
                     print("Not valid switch")
             #Signal
@@ -656,22 +664,22 @@ class TestBench(QtWidgets.QMainWindow):
 
     #Converts track_occupancies into "occupied/in operation"
     def display_occupied_tracks(self, i):
-        if (self.track_controller.track_occupancies[i] == False):
+        if (self.track_controllerTest.track_occupancies[i] == False):
             return "In Operation"
         else:
             return "Occupied"
     
     #Converts switch_states into values they're connected to 
     def display_switch_pos(self, i):
-        if(self.track_controller.switch_states == False and i == 5):
+        if(self.track_controllerTest.switch_states == False and i == 5):
             return "6"
-        elif(self.track_controller.switch_states == False and i == 6):
+        elif(self.track_controllerTest.switch_states == False and i == 6):
             return "5"
-        elif(self.track_controller.switch_states == False and i == 11):
+        elif(self.track_controllerTest.switch_states == False and i == 11):
             return "-"
-        elif(self.track_controller.switch_states == True and i == 5):
+        elif(self.track_controllerTest.switch_states == True and i == 5):
             return "11"
-        elif(self.track_controller.switch_states == True and i == 6):
+        elif(self.track_controllerTest.switch_states == True and i == 6):
             return "-"
         else:
             return "5"
@@ -701,28 +709,28 @@ class TestBench(QtWidgets.QMainWindow):
                 self.tableView.setItem(i, j, QtWidgets.QTableWidgetItem(str(item))) 
         
         #If light is red/green
-        if(self.track_controller.signal_states == False):
+        if(self.track_controllerTest.signal_states == False):
             self.tableView.setItem(4, 3, CrossingSignal('', GREEN))
         else:
             self.tableView.setItem(4, 3, CrossingSignal('', RED))
 
     def add_block_info_table_data(self):
         data = [
-            ['1', self.display_occupied_tracks(0), self.track_controller.train_authorities[0], self.track_controller.train_speeds[0] , '-', '-', '-'],
-            ['2', self.display_occupied_tracks(1), self.track_controller.train_authorities[1], self.track_controller.train_speeds[1],'-', '-', '-'],
-            ['3', self.display_occupied_tracks(2), self.track_controller.train_authorities[2], self.track_controller.train_speeds[2],'-', '-', '-'],
-            ['4', self.display_occupied_tracks(3), self.track_controller.train_authorities[3], self.track_controller.train_speeds[3],'-', '-' ,'-'],
-            ['5', self.display_occupied_tracks(4), self.track_controller.train_authorities[4], self.track_controller.train_speeds[4],self.display_switch_pos(5), ' ', '-'],
-            ['6', self.display_occupied_tracks(5), self.track_controller.train_authorities[5], self.track_controller.train_speeds[5],self.display_switch_pos(6), '-', '-'],
-            ['7', self.display_occupied_tracks(6), self.track_controller.train_authorities[6], self.track_controller.train_speeds[6],'-', '-', '-'],
-            ['8', self.display_occupied_tracks(7), self.track_controller.train_authorities[7], self.track_controller.train_speeds[7],'-', '-', self.display_crossing_signal()],
-            ['9', self.display_occupied_tracks(8), self.track_controller.train_authorities[8], self.track_controller.train_speeds[8],'-', '-', '-'],
-            ['10', self.display_occupied_tracks(9), self.track_controller.train_authorities[9], self.track_controller.train_speeds[9],'-', '-','-'],
-            ['11', self.display_occupied_tracks(10), self.track_controller.train_authorities[10], self.track_controller.train_speeds[10],self.display_switch_pos(11), '-','-'],
-            ['12', self.display_occupied_tracks(11), self.track_controller.train_authorities[11], self.track_controller.train_speeds[11],'-', '-', '-'],
-            ['13', self.display_occupied_tracks(12), self.track_controller.train_authorities[12], self.track_controller.train_speeds[12],'-', '-','-'],
-            ['14', self.display_occupied_tracks(13), self.track_controller.train_authorities[13], self.track_controller.train_speeds[13],'-', '-','-'],
-            ['15', self.display_occupied_tracks(14), self.track_controller.train_authorities[14], self.track_controller.train_speeds[14],'-', '-', '-']
+            ['1', self.display_occupied_tracks(0), self.track_controllerTest.train_authorities[0], self.track_controllerTest.train_speeds[0] , '-', '-', '-'],
+            ['2', self.display_occupied_tracks(1), self.track_controllerTest.train_authorities[1], self.track_controllerTest.train_speeds[1],'-', '-', '-'],
+            ['3', self.display_occupied_tracks(2), self.track_controllerTest.train_authorities[2], self.track_controllerTest.train_speeds[2],'-', '-', '-'],
+            ['4', self.display_occupied_tracks(3), self.track_controllerTest.train_authorities[3], self.track_controllerTest.train_speeds[3],'-', '-' ,'-'],
+            ['5', self.display_occupied_tracks(4), self.track_controllerTest.train_authorities[4], self.track_controllerTest.train_speeds[4],self.display_switch_pos(5), ' ', '-'],
+            ['6', self.display_occupied_tracks(5), self.track_controllerTest.train_authorities[5], self.track_controllerTest.train_speeds[5],self.display_switch_pos(6), '-', '-'],
+            ['7', self.display_occupied_tracks(6), self.track_controllerTest.train_authorities[6], self.track_controllerTest.train_speeds[6],'-', '-', '-'],
+            ['8', self.display_occupied_tracks(7), self.track_controllerTest.train_authorities[7], self.track_controllerTest.train_speeds[7],'-', '-', self.display_crossing_signal()],
+            ['9', self.display_occupied_tracks(8), self.track_controllerTest.train_authorities[8], self.track_controllerTest.train_speeds[8],'-', '-', '-'],
+            ['10', self.display_occupied_tracks(9), self.track_controllerTest.train_authorities[9], self.track_controllerTest.train_speeds[9],'-', '-','-'],
+            ['11', self.display_occupied_tracks(10), self.track_controllerTest.train_authorities[10], self.track_controllerTest.train_speeds[10],self.display_switch_pos(11), '-','-'],
+            ['12', self.display_occupied_tracks(11), self.track_controllerTest.train_authorities[11], self.track_controllerTest.train_speeds[11],'-', '-', '-'],
+            ['13', self.display_occupied_tracks(12), self.track_controllerTest.train_authorities[12], self.track_controllerTest.train_speeds[12],'-', '-','-'],
+            ['14', self.display_occupied_tracks(13), self.track_controllerTest.train_authorities[13], self.track_controllerTest.train_speeds[13],'-', '-','-'],
+            ['15', self.display_occupied_tracks(14), self.track_controllerTest.train_authorities[14], self.track_controllerTest.train_speeds[14],'-', '-', '-']
         ]
 
         for i, row in enumerate(data):
@@ -730,13 +738,13 @@ class TestBench(QtWidgets.QMainWindow):
                 self.blockInfoTable.setItem(i, j, QtWidgets.QTableWidgetItem(str(item)))
 
         #If light is red/green
-        if(self.track_controller.signal_states == False):
+        if(self.track_controllerTest.signal_states == False):
             self.blockInfoTable.setItem(4, 5, CrossingSignal('', GREEN))
         else:
             self.blockInfoTable.setItem(4, 5, CrossingSignal('', RED))
 
     def display_crossing_signal(self):
-        if (self.track_controller.crossing_states == False):
+        if (self.track_controllerTest.crossing_states == False):
             return "Up"
         else: 
             return "Down"
@@ -752,8 +760,8 @@ class TestBench(QtWidgets.QMainWindow):
                 self.waysideBlkTable.setItem(i, j, text)
 
     def open_programmer_ui(self):
-        self.track_controller.plc_program_uploaded = False
-        self.track_controller.plc_program = ""
+        self.track_controllerTest.plc_program_uploaded = False
+        self.track_controllerTest.plc_program = ""
         self.programmer_ui.show()
         self.close()
 
@@ -768,7 +776,16 @@ class Maintenance(QtWidgets.QMainWindow):
         super().__init__()
 
         #Setting track controller
-        self.track_controller = track_controller
+        self.track_controllerMain = TrackController()
+        self.track_controllerMain.track_occupancies = track_controller.track_occupancies
+        self.track_controllerMain.train_speeds = track_controller.train_speeds
+        self.track_controllerMain.train_authorities = track_controller.train_authorities
+        self.track_controllerMain.switch_states = track_controller.switch_states
+        self.track_controllerMain.signal_states = track_controller.signal_states
+        self.track_controllerMain.crossing_states = track_controller.crossing_states
+        self.track_controllerMain.plc_program_uploaded = False
+        self.track_controllerMain.switch_positions = []
+        self.track_controllerMain.plc_program = ""
 
         #Programmer UI name & size
         self.setObjectName("Maintenance")
@@ -882,7 +899,7 @@ class Maintenance(QtWidgets.QMainWindow):
         self.blockInfoTable.setGeometry(QtCore.QRect(470, 330, 715, 320))
         self.blockInfoTable.setObjectName("blockInfoTable")
         self.blockInfoTable.setColumnCount(7)
-        self.blockInfoTable.setRowCount(len(self.track_controller.track_occupancies))
+        self.blockInfoTable.setRowCount(len(self.track_controllerMain.track_occupancies))
         self.blockInfoTable.setColumnWidth(1, 120)
         self.blockInfoTable.setColumnWidth(5, 84)
 
@@ -946,7 +963,7 @@ class Maintenance(QtWidgets.QMainWindow):
     def update_ui(self):
         self.blockInfoTable.itemChanged.disconnect(self.item_changed_blockInfo)
         self.tableView.itemChanged.disconnect(self.item_changed_waysideData)
-        self.track_controller.run_PLC_program()
+        self.track_controllerMain.run_PLC_program()
         self.add_wayside_table_data()
         self.add_wayside_blk_table_data()
         self.add_block_info_table_data()
@@ -963,9 +980,10 @@ class Maintenance(QtWidgets.QMainWindow):
             filter = file_filter,
             initialFilter = 'Data File (*.py)'
         )
-        self.track_controller.get_PLC_program(response[0])
+        self.track_controllerMain.get_PLC_program(response[0])
 
-        if(self.track_controller.plc_program_uploaded == True and self.track_controller.plc_program != ""):
+        if(self.track_controllerMain.plc_program_uploaded == True and self.track_controllerMain.plc_program != ""):
+            self.track_controllerMain.run_PLC_program
             self.plcUploadedLabel.setVisible(True)
         else:
             self.plcUploadedLabel.setVisible(False)
@@ -979,15 +997,15 @@ class Maintenance(QtWidgets.QMainWindow):
             #Occupancy
             case 1:
                 if (new_item == "Occupied"):
-                    self.track_controller.track_occupancies[row] = True
+                    self.track_controllerMain.track_occupancies[row] = True
                 else:
-                    self.track_controller.track_occupancies[row] = False
+                    self.track_controllerMain.track_occupancies[row] = False
             #Authority
             case 2:
-                self.track_controller.train_authorities[row] = new_item
+                self.track_controllerMain.train_authorities[row] = new_item
             #Speed
             case 3:
-                self.track_controller.train_speeds[row] = new_item
+                self.track_controllerMain.train_speeds[row] = new_item
             #Switch
             case _:
                 #Update Switches
@@ -1004,25 +1022,25 @@ class Maintenance(QtWidgets.QMainWindow):
             #Occupancy
             case 1:
                 if (new_item == "Occupied"):
-                    self.track_controller.track_occupancies[row] = True
+                    self.track_controllerMain.track_occupancies[row] = True
                 else:
-                    self.track_controller.track_occupancies[row] = False
+                    self.track_controllerMain.track_occupancies[row] = False
             #Switch
             case 2:
-                value = self.track_controller.switch_states
+                value = self.track_controllerMain.switch_states
                 #if making switch to 11
                 if(new_item == "5" and row == 10):
-                    self.track_controller.switch_states = True
-                    value = self.track_controller.switch_states
+                    self.track_controllerMain.switch_states = True
+                    value = self.track_controllerMain.switch_states
                 elif(new_item == "5" and row == 5):
-                    self.track_controller.switch_states = False
-                    value = self.track_controller.switch_states
+                    self.track_controllerMain.switch_states = False
+                    value = self.track_controllerMain.switch_states
                 elif(new_item == "6" and row == 4):
-                    self.track_controller.switch_states = False
-                    value = self.track_controller.switch_states
+                    self.track_controllerMain.switch_states = False
+                    value = self.track_controllerMain.switch_states
                 elif(new_item == "11" and row == 4):
-                    self.track_controller.switch_states = True
-                    value = self.track_controller.switch_states
+                    self.track_controllerMain.switch_states = True
+                    value = self.track_controllerMain.switch_states
                 else:
                     print("Not valid switch")
             #Signal
@@ -1033,22 +1051,22 @@ class Maintenance(QtWidgets.QMainWindow):
 
     #Converts track_occupancies into "occupied/in operation"
     def display_occupied_tracks(self, i):
-        if (self.track_controller.track_occupancies[i] == False):
+        if (self.track_controllerMain.track_occupancies[i] == False):
             return "In Operation"
         else:
             return "Occupied"
     
     #Converts switch_states into values they're connected to 
     def display_switch_pos(self, i):
-        if(self.track_controller.switch_states == False and i == 5):
+        if(self.track_controllerMain.switch_states == False and i == 5):
             return "6"
-        elif(self.track_controller.switch_states == False and i == 6):
+        elif(self.track_controllerMain.switch_states == False and i == 6):
             return "5"
-        elif(self.track_controller.switch_states == False and i == 11):
+        elif(self.track_controllerMain.switch_states == False and i == 11):
             return "-"
-        elif(self.track_controller.switch_states == True and i == 5):
+        elif(self.track_controllerMain.switch_states == True and i == 5):
             return "11"
-        elif(self.track_controller.switch_states == True and i == 6):
+        elif(self.track_controllerMain.switch_states == True and i == 6):
             return "-"
         else:
             return "5"
@@ -1078,28 +1096,28 @@ class Maintenance(QtWidgets.QMainWindow):
                 self.tableView.setItem(i, j, QtWidgets.QTableWidgetItem(str(item))) 
         
         #If light is red/green
-        if(self.track_controller.signal_states == False):
+        if(self.track_controllerMain.signal_states == False):
             self.tableView.setItem(4, 3, CrossingSignal('', GREEN))
         else:
             self.tableView.setItem(4, 3, CrossingSignal('', RED))
 
     def add_block_info_table_data(self):
         data = [
-            ['1', self.display_occupied_tracks(0), self.track_controller.train_authorities[0], self.track_controller.train_speeds[0] , '-', '-', '-'],
-            ['2', self.display_occupied_tracks(1), self.track_controller.train_authorities[1], self.track_controller.train_speeds[1],'-', '-', '-'],
-            ['3', self.display_occupied_tracks(2), self.track_controller.train_authorities[2], self.track_controller.train_speeds[2],'-', '-', '-'],
-            ['4', self.display_occupied_tracks(3), self.track_controller.train_authorities[3], self.track_controller.train_speeds[3],'-', '-' ,'-'],
-            ['5', self.display_occupied_tracks(4), self.track_controller.train_authorities[4], self.track_controller.train_speeds[4],self.display_switch_pos(5), ' ', '-'],
-            ['6', self.display_occupied_tracks(5), self.track_controller.train_authorities[5], self.track_controller.train_speeds[5],self.display_switch_pos(6), '-', '-'],
-            ['7', self.display_occupied_tracks(6), self.track_controller.train_authorities[6], self.track_controller.train_speeds[6],'-', '-', '-'],
-            ['8', self.display_occupied_tracks(7), self.track_controller.train_authorities[7], self.track_controller.train_speeds[7],'-', '-', self.display_crossing_signal()],
-            ['9', self.display_occupied_tracks(8), self.track_controller.train_authorities[8], self.track_controller.train_speeds[8],'-', '-', '-'],
-            ['10', self.display_occupied_tracks(9), self.track_controller.train_authorities[9], self.track_controller.train_speeds[9],'-', '-','-'],
-            ['11', self.display_occupied_tracks(10), self.track_controller.train_authorities[10], self.track_controller.train_speeds[10],self.display_switch_pos(11), '-','-'],
-            ['12', self.display_occupied_tracks(11), self.track_controller.train_authorities[11], self.track_controller.train_speeds[11],'-', '-', '-'],
-            ['13', self.display_occupied_tracks(12), self.track_controller.train_authorities[12], self.track_controller.train_speeds[12],'-', '-','-'],
-            ['14', self.display_occupied_tracks(13), self.track_controller.train_authorities[13], self.track_controller.train_speeds[13],'-', '-','-'],
-            ['15', self.display_occupied_tracks(14), self.track_controller.train_authorities[14], self.track_controller.train_speeds[14],'-', '-', '-']
+            ['1', self.display_occupied_tracks(0), self.track_controllerMain.train_authorities[0], self.track_controllerMain.train_speeds[0] , '-', '-', '-'],
+            ['2', self.display_occupied_tracks(1), self.track_controllerMain.train_authorities[1], self.track_controllerMain.train_speeds[1],'-', '-', '-'],
+            ['3', self.display_occupied_tracks(2), self.track_controllerMain.train_authorities[2], self.track_controllerMain.train_speeds[2],'-', '-', '-'],
+            ['4', self.display_occupied_tracks(3), self.track_controllerMain.train_authorities[3], self.track_controllerMain.train_speeds[3],'-', '-' ,'-'],
+            ['5', self.display_occupied_tracks(4), self.track_controllerMain.train_authorities[4], self.track_controllerMain.train_speeds[4],self.display_switch_pos(5), ' ', '-'],
+            ['6', self.display_occupied_tracks(5), self.track_controllerMain.train_authorities[5], self.track_controllerMain.train_speeds[5],self.display_switch_pos(6), '-', '-'],
+            ['7', self.display_occupied_tracks(6), self.track_controllerMain.train_authorities[6], self.track_controllerMain.train_speeds[6],'-', '-', '-'],
+            ['8', self.display_occupied_tracks(7), self.track_controllerMain.train_authorities[7], self.track_controllerMain.train_speeds[7],'-', '-', self.display_crossing_signal()],
+            ['9', self.display_occupied_tracks(8), self.track_controllerMain.train_authorities[8], self.track_controllerMain.train_speeds[8],'-', '-', '-'],
+            ['10', self.display_occupied_tracks(9), self.track_controllerMain.train_authorities[9], self.track_controllerMain.train_speeds[9],'-', '-','-'],
+            ['11', self.display_occupied_tracks(10), self.track_controllerMain.train_authorities[10], self.track_controllerMain.train_speeds[10],self.display_switch_pos(11), '-','-'],
+            ['12', self.display_occupied_tracks(11), self.track_controllerMain.train_authorities[11], self.track_controllerMain.train_speeds[11],'-', '-', '-'],
+            ['13', self.display_occupied_tracks(12), self.track_controllerMain.train_authorities[12], self.track_controllerMain.train_speeds[12],'-', '-','-'],
+            ['14', self.display_occupied_tracks(13), self.track_controllerMain.train_authorities[13], self.track_controllerMain.train_speeds[13],'-', '-','-'],
+            ['15', self.display_occupied_tracks(14), self.track_controllerMain.train_authorities[14], self.track_controllerMain.train_speeds[14],'-', '-', '-']
         ]
 
         for i, row in enumerate(data):
@@ -1107,13 +1125,13 @@ class Maintenance(QtWidgets.QMainWindow):
                 self.blockInfoTable.setItem(i, j, QtWidgets.QTableWidgetItem(str(item)))
 
         #If light is red/green
-        if(self.track_controller.signal_states == False):
+        if(self.track_controllerMain.signal_states == False):
             self.blockInfoTable.setItem(4, 5, CrossingSignal('', GREEN))
         else:
             self.blockInfoTable.setItem(4, 5, CrossingSignal('', RED))
 
     def display_crossing_signal(self):
-        if (self.track_controller.crossing_states == False):
+        if (self.track_controllerMain.crossing_states == False):
             return "Up"
         else: 
             return "Down"
@@ -1129,7 +1147,7 @@ class Maintenance(QtWidgets.QMainWindow):
                 self.waysideBlkTable.setItem(i, j, text)
 
     def open_programmer_ui(self):
-        self.track_controller.plc_program_uploaded = False
-        self.track_controller.plc_program = ""
+        self.track_controllerMain.plc_program_uploaded = False
+        self.track_controllerMain.plc_program = ""
         self.programmer_ui.show()
         self.close()
