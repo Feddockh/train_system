@@ -1,24 +1,36 @@
+import csv
 from csv import writer
+import datetime
+from datetime import timedelta
 
 class MBOController:
     def __init__(self):
         """
         Initialize the MBO Controller
         """
+        self.dispatch_mode = 'Automatic'
+        self.overlay_mode = 'MBO'
         
-        self.dispatch_mode = {} #manual and mbo 
-        self.mbo_mode = {}  #fixed block or mbo 
-        self.enable_s_and_a = 0
+        self.enable_s_and_a = 1
         
-        self.lines = {'Blue'}
+        self.lines = ["Blue"]
         self.blue_speed_limit = 50.0 #km/hr, convert to m/s
         
-        self.test_trains_positions = {"Train1" : 0}
    
-        self.stations = ["Yard", "Station B", "Station C"]
-        self.drivers = ["Driver 1", "Driver 2", "Driver 3"]
-        self.crew = ["Crew 1", "Crew 2", "Crew 3", "Crew 4", "Crew 5", "Crew 6"]
+        self.stations = {"Yard" : 0, "Station B": 500, "Station C" :500}
+        self.drivers = ["Alejandro", "Bob", "Charlie", "David", "Eve", "Frank", "Grace", "Hannah", "Ivy", "Jack"]
+        self.crew = ["Alice", "Barbra", "Cole", "Dan", "Earl", "Fern", "George", "Hank", "Ian", "Jack",
+                "Karen", "Leo", "Morgan", "Niel", "Ophelia", "Paul", "Quinn", "Roger", "Stacy", "Terry"]
         
+        self.low_trains = ["Train1"]
+        self.med_trains = ["Train1", "Train2"]
+        self.high_trains = ["Train1", "Train2", "Train3"]
+        
+        self.train_ids = list(range(1,11))
+        
+        self.shift_length = timedelta(hours= 8, minutes= 30)
+        self.drive_length = timedelta(hours=4)
+        self.break_length = timedelta(minutes=30)
        
     def kmhr_to_ms(self, km_hr):
         """convert km/hr to m/s
@@ -35,6 +47,14 @@ class MBOController:
         """
         
         return(ms * 2.237)
+    
+    def m_to_ft(self, m):
+        """
+        convert meters to feet for UI display 
+        Args:
+            m (_type_): _description_
+        """
+        return(m * 3.28084)
     
     def emergency_breaking_distance(self):
      """
@@ -59,6 +79,14 @@ class MBOController:
         
         else:
             self.enable_s_and_a = 0
+    
+    def travel_time(self, distance):
+        """Time to travel a certain distance, for schedule 
+
+        Args:
+            distance (_type_): _description_
+        """
+        return(timedelta(seconds=distance/self.commanded_speed(1)))
         
     def commanded_speed(self, enable_s_and_a ):
         """
@@ -141,29 +169,73 @@ class MBOController:
         print('making schedule for: ', selected_day)
         print('starting schedule at ', selected_start_time)
         
+        start_time = datetime.datetime.strptime(selected_day + ' ' + selected_start_time, '%m-%d-%Y %H:%M:%S')
+        print(type(start_time))
+        print(start_time)
+        
         #creating all 3 schedule options 
-        low_throughput_filename = selected_day + '_low.csv'
-        med_throughput_filename = selected_day + '_med.csv'
-        high_throughput_filename = selected_day + '_high.csv'
+        pass # low_throughput_filename = selected_day + '_low.csv'
+        pass # med_throughput_filename = selected_day + '_med.csv'
+        pass # high_throughput_filename = selected_day + '_high.csv'
         
         #creating file names for all three schedule types  
-        low_file = open(low_throughput_filename, 'w')
-        med_file = open(med_throughput_filename, 'w')
-        high_file = open(high_throughput_filename, 'w')
-        
-        low_writer = writer(low_file)
-        med_writer = writer(med_file)
-        high_writer = writer(high_file)
         
         
         #headers for each file 
+        
+        current_time = start_time
+        end_time = start_time + timedelta(hours= 24)
+        #LOW THROUGHPUT SCHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        number_low_trains = len(self.low_trains)
+        crew_index = 0
+        driver_index = 0
+        schedule = []
+        current_time = start_time
+        travel_time = self.travel_time(500)
+        
+        for train_id in self.train_ids:
+            driver = self.drivers[driver_index]
+            crew1 = self.crew[crew_index]
+            crew2 = self.crew[crew_index + 1]
+            crew_index += 2
+            driver_index += 1
+            
+            shift_end_time = current_time + self.shift_length
+            shift_start = current_time
+            
+            while current_time < shift_end_time and current_time < end_time:
+                route = [("Yard","Station B"),("Station B","Yard"),("Yard","Station C"),("Station C","Yard")]
+
+                for start,end in route:
+                    arrival_time = current_time + travel_time
+                    if arrival_time > shift_end_time:
+                        break
+                    
+                    schedule.append([f"Train{train_id}", f"{end}", self.lines[0] ,arrival_time, driver, crew1, crew2])
+                    current_time = arrival_time + timedelta(minutes=1)
+                
+                if (current_time - shift_start) >= self.drive_length:
+                    current_time += self.break_length
+                    if current_time >= shift_end_time or current_time >= end_time:
+                        break
+                    
+            current_time = shift_end_time
+            if current_time >= end_time:
+                break
+    
+        low_throughput_file = selected_day + '_low.csv'
+        with open(low_throughput_file, 'w', newline='') as csvfile:
+            schedule_writer = csv.writer(csvfile)
+            schedule_writer.writerow(["Train", "Line", "Station", "Arrival Time", "Driver", "Crew 1", "Crew 2"])
+            
+            for t in schedule:
+                schedule_writer.writerow(t)
+                    
+        #train leaves at start time, takes x s to get to station B 
+        #need variable to track time, use it to check breaks, end of shift, and end of schedule 
+        
+        
         header = ['Train', 'Line', 'Station', 'Arrival Time', 'Driver', 'Crew 1', 'Crew 2']
-        low_writer.writerow(header)
-        med_writer.writerow(header)
-        high_writer.writerow(header)
-        
-        
-        
         #all crew need a break after 4 hours 
         #.5 hour break 
         #8.5 hour shifts total 
@@ -179,20 +251,22 @@ class MBOController:
         
         #initial speed and authority on schedule for CTC? I think not necessary since CTC has ability to calculate this on their own? 
         
-        for i in range(1,5):
-            low_file.write('Train ' + repr(i) + '   ' + repr(self.lines) + '   Station B   ' + repr(selected_start_time) + '    ' + repr(selected_start_time) +'\n')
+       
         
         
         #closing files when finished 
-        low_file.close()
-        med_file.close()
-        high_file.close()
+    
         
     
                  
 
 if __name__ == "__main__":
     MBO = MBOController()
+    
+    
+    MBO.create_schedules('06-19-2024', '00:00:00')
+    
+    
     MBO.enable_s_and_a = 1
     testing_positions_1 = {'Train1': 100, 'Train2': 300, 'Train3': 310}
     testing_positions_2 = {'Train1': 100, 'Train2': 335, 'Train3': 350, 'Train4': 420}
