@@ -1,6 +1,6 @@
 # train_system/ctc_manager/ctc_manager.py
 
-from ..common import DispatchMode
+from train_system.common.dispatch_mode import DispatchMode
 
 class CTCOffice:
     def __init__(self):

@@ -7,4 +7,4 @@ PACKAGE_VERSION = "1.0"
 
 # __all__ = ['Train', 'Track', 'ctc_manager']
 
-print("train_system package has been initialized")
+print("train_system has been initialized")
