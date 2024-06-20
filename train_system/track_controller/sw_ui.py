@@ -2,7 +2,7 @@ import os
 import sys
 from PyQt6.QtWidgets import *
 from PyQt6.QtGui import QPainter, QColor
-from PyQt6.QtCore import Qt, QRect
+from PyQt6.QtCore import Qt, QRect, QTimer
 from PyQt6 import QtCore, QtGui, QtWidgets, uic, QtWidgets
 from sw_widgets import RectangleWidget
 from sw_track_controller import TrackController
@@ -64,6 +64,13 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName("centralwidget")
         self.setCentralWidget(self.centralwidget)
+
+        #Creating a timer to update UI - updates every 3 seconds
+        if(~self.isHidden()):
+            self.timer = QTimer(self)
+            
+            #self.timer.timeout.connect(self.update_ui)
+            self.timer.start(3000)
 
         #Used in multiple widgets
         waysides = ['Wayside 1']
@@ -211,6 +218,13 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         self.fileUploadPushButton.setText(_translate("ProgrammerUI", "Upload File"))
         self.label.setText(_translate("ProgrammerUI", "Select PLC Program:"))
         self.plcUploadedLabel.setText(_translate("ProgrammerUI", "PLC program uploaded."))
+
+     #Updates UI values to reflect backend changes
+    def update_ui(self):
+        self.track_controller.run_PLC_program()
+        self.add_wayside_table_data()
+        self.add_wayside_blk_table_data()
+        self.add_block_info_table_data()
 
     #Allows User to select PLC Program from directory
     def getFileName(self):    
@@ -451,6 +465,9 @@ class TestBench(QtWidgets.QMainWindow):
         self.blockInfoTable.horizontalHeader().setFont(font)
         self.add_block_info_table_data()
 
+        #Handling updates to block info table
+        self.blockInfoTable.itemChanged.connect(self.item_changed_blockInfo)
+
         #Combobox for block info table
         self.comboBox = QtWidgets.QComboBox(parent=self.centralwidget)
         self.comboBox.setGeometry(QtCore.QRect(570, 230, 575, 35))
@@ -475,7 +492,6 @@ class TestBench(QtWidgets.QMainWindow):
         }
         """)
 
-
         #Setting central widget
         self.setCentralWidget(self.centralwidget)
 
@@ -497,6 +513,13 @@ class TestBench(QtWidgets.QMainWindow):
         self.fileUploadPushButton.setText(_translate("TestBench", "Upload File"))
         self.label.setText(_translate("TestBench", "Select PLC Program:"))
 
+    #Updates UI values to reflect backend changes
+    def update_ui(self):
+        self.track_controller.run_PLC_program()
+        self.add_wayside_table_data()
+        self.add_wayside_blk_table_data()
+        self.add_block_info_table_data()
+
     #Allows User to select PLC Program from directory
     def getFileName(self):    
         file_filter = 'Data File (*.py)'
@@ -508,6 +531,37 @@ class TestBench(QtWidgets.QMainWindow):
             initialFilter = 'Data File (*.py)'
         )
         self.track_controller.get_PLC_program(response[0])
+
+    def item_changed_blockInfo(self, item):
+        row = item.row()
+        column = item.column()
+        new_item = item.text()
+
+        match column:
+            #Occupancy
+            case 1:
+                if (new_item == "Occupied"):
+                    self.track_controller.track_occupancies[row] = True
+                else:
+                    self.track_controller.track_occupancies[row] = False
+            #Authority
+            case 2:
+                self.track_controller.train_authorities[row] = new_item
+            #Speed
+            case 3:
+                self.track_controller.train_speeds[row] = new_item
+            #Switch
+            case _:
+                #Update Switches
+                #Signal
+                print("")
+        self.blockInfoTable.itemChanged.disconnect(self.item_changed_blockInfo)
+        self.update_ui()
+        self.blockInfoTable.itemChanged.connect(self.item_changed_blockInfo)
+    
+      
+
+
 
     #Converts track_occupancies into "occupied/in operation"
     def display_occupied_tracks(self, i):
@@ -598,7 +652,6 @@ class TestBench(QtWidgets.QMainWindow):
         for i, row in enumerate(data):
             for j, item in enumerate(row):
                 text = QTableWidgetItem(item)
-                text.setFlags(text.flags() & ~Qt.ItemFlag.ItemIsEditable)
                 self.waysideBlkTable.setItem(i, j, text)
 
     def open_programmer_ui(self):
