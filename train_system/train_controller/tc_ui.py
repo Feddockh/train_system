@@ -24,13 +24,545 @@ class TestBenchWindow(QMainWindow):
         super().__init__()
 
         self.setWindowTitle("Test Bench")
-        #speed and authority inputs
-        #power output
-        #fault toggles
-        #current train temp input
-        #open/close door
-        #turn lights on/off
         #kp and ki instead of location???
+
+        self.train = train_controller
+
+        self.test_window = None
+        self.auto_window = None
+
+        self.faults_list = self.train.faults
+        self.curr_speed = self.convert_to_mph(self.train.current_speed)
+        self.comm_speed = self.convert_to_mph(self.train.commanded_speed)
+        self.authority = self.convert_to_ft(self.train.authority)
+        self.setpoint_speed = self.convert_to_mph(self.train.setpoint_speed)
+        self.power = self.train.get_power_command() 
+        self.light_status = self.train.lights.get_status()
+        self.left_door = self.train.doors.get_left()
+        self.right_door = self.train.doors.get_right()
+        self.temp = self.train.train_temp
+        self.comm_temp = self.train.ac.get_commanded_temp()
+        self.position = self.train.position #units prob meters???
+
+        #the left outputs will use a vertical layout
+        left_out_layout = QVBoxLayout()
+
+        #fault signals and labels will use a grid layout
+        fault_layout = QGridLayout()
+
+        #the faults and left outputs will use a vertical layout
+        left_layout = QVBoxLayout()
+
+        #the manual/automatic mode button and labels
+        mode_layout = QVBoxLayout()
+
+        #the setpoint speed box will use a grid layout
+        setpoint_layout = QGridLayout()
+
+        #the layout for the power box and labels will vertically aligned
+        power_layout = QVBoxLayout()
+
+        #the brake button and its label will be vertically aligned
+        brake_layout = QVBoxLayout()
+
+        #the power layout and brake layout will be horizontally aligned
+        power_and_brake_layout = QHBoxLayout()
+
+        #the layout for the status symbols will be a grid
+        status_layout = QGridLayout()
+
+        #the layout for the center of the page is vertically aligned
+        center_layout = QVBoxLayout()
+
+        #the layout for the commanded temp input and labels will be a grid
+        comm_temp_layout = QGridLayout()
+
+        #the layout for the location, destination, and brake will be vertically aligned
+        loc_and_brake_layout = QVBoxLayout()
+        
+        #the layout for the right of the page is vertically aligned
+        right_layout = QVBoxLayout()
+
+        #the whole page layout
+        main_layout = QHBoxLayout()
+
+        #create the engine fault signal
+        self.engine_toggle_button = QPushButton("Off")
+        self.engine_toggle_button.setFixedSize(75, 75)
+        self.engine_toggle_button.setStyleSheet("background-color: #29C84C; color: black;")
+        self.engine_toggle_button.setCheckable(True)
+        self.engine_toggle_button.toggled.connect(self.engine_fault_toggled)
+
+        engine_label = QLabel("Train Engine")
+        engine_label.setFixedSize(100, 50)
+
+
+        #create the brake fault signal
+        self.brake_toggle_button = QPushButton("Off")
+        self.brake_toggle_button.setFixedSize(75, 75)
+        self.brake_toggle_button.setStyleSheet("background-color: #29C84C; color: black;")
+        self.brake_toggle_button.setCheckable(True)
+        self.brake_toggle_button.toggled.connect(self.brake_fault_toggled)
+        
+        brake_label = QLabel("Brake Function")
+        brake_label.setFixedSize(100, 50)
+
+        #create the signal fault signal
+        self.signal_toggle_button = QPushButton("Off")
+        self.signal_toggle_button.setFixedSize(75, 75)
+        self.signal_toggle_button.setStyleSheet("background-color: #29C84C; color: black;")
+        self.signal_toggle_button.setCheckable(True)
+        self.signal_toggle_button.toggled.connect(self.signal_fault_toggled)
+        signal_label = QLabel("Signal Pickup")
+        signal_label.setFixedSize(100, 50)
+
+        #add fault circles and labels to their layout
+        fault_layout.addWidget(self.engine_toggle_button, 0, 0)
+        fault_layout.addWidget(engine_label, 1, 0)
+        fault_layout.addWidget(self.brake_toggle_button, 0, 1)
+        fault_layout.addWidget(brake_label, 1, 1)
+        fault_layout.addWidget(self.signal_toggle_button, 0, 2)
+        fault_layout.addWidget(signal_label, 1, 2)
+
+        #create label and stat line for current speed
+        curr_speed_label = QLabel("Current Speed")
+        curr_speed_label.setFixedSize(150, 25)
+
+        #create a font that will be used for all headers
+        header_font = curr_speed_label.font()
+        header_font.setBold(True)
+        header_font.setPointSize(12)
+        curr_speed_label.setFont(header_font)
+        
+        #enter current speed
+        self.curr_speed_stat = QLineEdit()
+        self.curr_speed_stat.setFixedSize(75, 25)
+        self.curr_speed_stat.setPlaceholderText("Enter Current Speed")
+        self.curr_speed_stat.textChanged.connect(self.curr_speed_changed)
+
+
+        #create label and stat line for commanded speed
+        comm_speed_label = QLabel("Commanded Speed")
+        comm_speed_label.setFixedSize(150, 25)
+        comm_speed_label.setFont(header_font)
+
+        #enter commanded speed
+        self.comm_speed_stat = QLineEdit()
+        self.comm_speed_stat.setFixedSize(75, 25)
+        self.comm_speed_stat.setPlaceholderText("Enter Commanded Speed")
+        self.comm_speed_stat.textChanged.connect(self.comm_speed_changed)
+
+        #create label and stat line for commanded speed
+        curr_authority_label = QLabel("Current Authority")
+        curr_authority_label.setFixedSize(150, 25)
+        curr_authority_label.setFont(header_font)
+
+        #enter authority
+        self.curr_authority_stat = QLineEdit()
+        self.curr_authority_stat.setFixedSize(75, 25)
+        self.curr_authority_stat.setPlaceholderText("Enter Authority")
+        self.curr_authority_stat.textChanged.connect(self.authority_changed)
+
+        #add stat lines and labels to left_out layout
+        left_out_layout.addWidget(curr_speed_label)
+        left_out_layout.addWidget(self.curr_speed_stat)
+        left_out_layout.addWidget(comm_speed_label)
+        left_out_layout.addWidget(self.comm_speed_stat)
+        left_out_layout.addWidget(curr_authority_label)
+        left_out_layout.addWidget(self.curr_authority_stat)
+
+        #add faults and left outputs to entire left layout
+        left_layout.addLayout(left_out_layout)
+        left_layout.addLayout(fault_layout)
+
+        """
+        ADD FUNCTION TO NAVIGATE TO DRIVER-AUTOMATIC PAGE
+        ---DONE---
+        """
+        #create control mode button and label
+        mode_label = QLabel("Change Control Mode")
+        mode_label.setFixedSize(175, 50)
+        mode_label.setFont(header_font)
+        mode_button = QPushButton("")
+        mode_button.setFixedSize(75, 75)
+        mode_button.clicked.connect(self.navigate_automatic_mode)
+
+        #add button and label to the mode layout
+        mode_layout.addWidget(mode_label)
+        mode_layout.addWidget(mode_button)
+
+
+        """
+        ###CONNECT THIS VALUE TO MEMBER VARIABLE AND LINE EDIT
+        CONVERT FROM INPUTTED M/S TO MPH
+        ---DONE---
+        """
+        #create the adjustable arrow box for setpoint speed and its label
+        speed_adjust = QSpinBox() #adjust by 5
+        speed_adjust.setMinimum(SPEED_MIN)
+        speed_adjust.setMaximum(SPEED_MAX) 
+        speed_adjust.setFixedSize(50, 50)
+        speed_adjust.valueChanged.connect(self.setpoint_spinbox_changed)
+
+        setpoint_label = QLabel("Setpoint Speed")
+        setpoint_label.setFixedSize(125, 50)
+        setpoint_label.setFont(header_font)
+
+        """
+        ###CONNECT THIS VALUE TO MEMBER VARIABLE AND SPINBOX
+        SAME AS ABOVE
+        ---DONE---
+        """
+        #create the type input box for setpoint speed
+        self.speed_input = QLineEdit()
+        self.speed_input.setPlaceholderText("Enter Speed")
+        self.speed_input.setFixedSize(75, 50)
+        self.speed_input.textChanged.connect(self.setpoint_edit_changed)
+
+        #create the service brake button and its label
+        """
+        ###CONNECT TO SPEED AND BRAKE STATUS
+        WRITE FUNCTION FOR WHEN CLICKED
+
+        """
+        self.service_brake_button = QPushButton("X")
+        self.service_brake_button.setFixedSize(75, 75)
+        self.service_brake_button.setStyleSheet("background-color: #FFB800; color: black;")
+        self.service_brake_button.setCheckable(True)
+        self.service_brake_button.toggled.connect(self.service_brake_toggled)
+
+        service_brake_label = QLabel("Service Brake")
+        service_brake_label.setFixedSize(125, 50)
+        service_brake_label.setFont(header_font)
+
+        #create the unit label for setpoint speed
+        setpoint_mph_label = QLabel("mph")
+        setpoint_mph_label.setFixedSize(25, 50)
+
+        #add widgets to the setpoint layout
+        setpoint_layout.addWidget(speed_adjust, 1, 0)
+        setpoint_layout.addWidget(setpoint_label, 0, 0)
+        setpoint_layout.addWidget(self.speed_input, 1, 1)
+        setpoint_layout.addWidget(setpoint_mph_label, 1, 2)
+
+        #create the label and output for power
+        power_label = QLabel("Power")
+        power_label.setFixedSize(50,50)
+        power_label.setFont(header_font)
+
+        """
+        ###CONNECT TO MEMBER VARIABLE (SIMILAR TO OTHER STATS)
+        ---DONE---
+        """
+        power_stat = QLabel(str(self.power) + " kW")
+        power_stat.setFixedSize(75, 50)
+
+        data_font = power_stat.font()
+        data_font.setPointSize(11)
+        power_stat.setFont(data_font)
+        power_stat.setStyleSheet("background-color: #C8C8C8; color: black;")
+
+        
+
+
+        #add labels to power layout
+        power_layout.addWidget(power_label)
+        power_layout.addWidget(power_stat)
+
+        #create brake layout
+        brake_layout.addWidget(service_brake_label)
+        brake_layout.addWidget(self.service_brake_button)
+
+        #combine brake and power layouts
+        power_and_brake_layout.addLayout(power_layout)
+        power_and_brake_layout.addLayout(brake_layout)
+
+        
+        #create status labels at bottom-center
+        """
+        ###CONNECT ALL STATUSES TO MEMBER VARIABLE
+        WILL DETERMINE BACKGROUND COLOR FOR BRAKE AND LIGHT
+        WILL DETERMINE TEXT AS SAID ABOVE FOR DOORS
+        """
+        brake_status_label = QLabel("Brake Status")
+        brake_status_label.setFixedSize(75, 50)
+        brake_status_label.setStyleSheet("background-color: #29C84C; color: white;")
+
+
+        self.light_status_button = QPushButton("Lights On")
+        self.light_status_button.setFixedSize(75, 75)
+        self.light_status_button.setStyleSheet("background-color: #29C84C; color: black;")
+        self.light_status_button.setCheckable(True)
+        self.light_status_button.toggled.connect(self.light_status_toggled)
+
+        self.right_door_button = QPushButton("Right Door Closed")
+        self.right_door_button.setFixedSize(75, 75)
+        self.right_door_button.setStyleSheet("background-color: #29C84C; color: black;")
+        self.right_door_button.setCheckable(True)
+        self.right_door_button.toggled.connect(self.right_door_toggled)
+
+        self.left_door_button = QPushButton("Left Door Closed")
+        self.left_door_button.setFixedSize(75, 75)
+        self.left_door_button.setStyleSheet("background-color: #29C84C; color: black;")
+        self.left_door_button.setCheckable(True)
+        self.left_door_button.toggled.connect(self.left_door_toggled)
+
+        #add statuses to layout
+        status_layout.addWidget(brake_status_label, 0, 0) 
+        status_layout.addWidget(self.light_status_button, 1, 0)
+        status_layout.addWidget(self.right_door_button, 0, 2)
+        status_layout.addWidget(self.left_door_button, 1, 2)
+
+        #add the control mode, setpoint speed, power, brake, and statuses to the center layout
+        center_layout.addLayout(mode_layout)
+        center_layout.addLayout(setpoint_layout)
+        center_layout.addLayout(power_and_brake_layout)
+        center_layout.addLayout(status_layout)
+
+        #create a button to navigate to test bench
+        """
+        CREATE A FUNCTION TO NAVIGATE TO TEST BENCH
+        ---DONE---
+        """
+        test_button = QPushButton("Test Bench")
+        test_button.setFixedSize(75, 75)
+        test_button.clicked.connect(self.navigate_test_page)
+
+        #display current temp
+        """
+        ###CONNECT CURRENT AND COMMANDED TRAIN TEMP VARIABLES
+        CURR TEMP WILL BE DISPLAYED AND EDITED LIKE PREVIOUS STATS
+        COMM TEMP WILL BE CHANGED LIKE OTHER INPUTS
+        ---DONE---
+        """
+        self.curr_temp = QLineEdit()
+        self.curr_temp.setFixedSize(150, 50)
+        self.curr_temp.setPlaceholderText("Enter Temp")
+        self.curr_temp.textChanged.connect(self.curr_temp_changed)
+
+        #display and changed commanded temp
+        comm_temp_label = QLabel("Commanded Train Temp")
+        comm_temp_label.setFixedSize(150, 50)
+
+        self.comm_temp_input = QLineEdit()
+        self.comm_temp_input.setPlaceholderText("Enter Temp")
+        self.comm_temp_input.setFixedSize(100, 50)
+        self.comm_temp_input.textChanged.connect(self.comm_temp_changed)
+
+        temp_unit_label = QLabel("F")
+        temp_unit_label.setFixedSize(50, 50)
+
+        comm_temp_layout.addWidget(comm_temp_label, 0, 0)
+        comm_temp_layout.addWidget(self.comm_temp_input, 1, 0)
+        comm_temp_layout.addWidget(temp_unit_label, 1, 1)
+
+        #create labels for location and destination
+        loc_and_des_label = QLabel("Train Location and Destination")
+        loc_and_des_label.setFixedSize(250, 50)
+        loc_and_des_label.setFont(header_font)
+
+        """###CONNECT TO MEMBER VARIABLES FOR LOCATION AND DESTINATION
+        WILL BE CHANGED LIKE OTHER LABEL STATS
+        """
+        """---DONE---"""
+        loc_label = QLabel("Block: " + str(self.position)) 
+        loc_label.setFixedSize(100, 50)
+
+        des_label = QLabel("South Hills Village") ###will update with tc function
+        des_label.setFixedSize(100, 50)
+
+        #create emergency brake
+        em_brake_label = QLabel("Emergency Brake")
+        em_brake_label.setFixedSize(150, 50)
+        em_brake_label.setFont(header_font)
+
+        """
+        ###CONNECT TO EMERGENCY BRAKE, BRAKE STATUS, AND SPEED
+        CREATE FUNCTION FOR WHEN CLICKED
+        """
+        em_brake_button = QPushButton("!")
+        em_brake_button.setFixedSize(100, 100)
+        em_brake_button.setStyleSheet("background-color: #FF4444; color: white;")
+
+        #add location, destination, and emergency brake to layout
+        loc_and_brake_layout.addWidget(loc_and_des_label)
+        loc_and_brake_layout.addWidget(loc_label)
+        loc_and_brake_layout.addWidget(des_label)
+        loc_and_brake_layout.addWidget(em_brake_label)
+        loc_and_brake_layout.addWidget(em_brake_button)
+
+        #add all right side components to the same layout
+        right_layout.addWidget(test_button)
+        right_layout.addWidget(self.curr_temp)
+        right_layout.addLayout(comm_temp_layout)
+        right_layout.addLayout(loc_and_brake_layout)
+
+        #add to the final main layout
+        main_layout.addLayout(left_layout)
+        main_layout.addLayout(center_layout)
+        main_layout.addLayout(right_layout)
+
+        #display the layout
+        widget = QWidget()
+        widget.setLayout(main_layout)
+        self.setCentralWidget(widget)
+
+    def navigate_automatic_mode(self, checked):
+        #check that window is not already opened before opening
+        if self.auto_window is None:
+            self.auto_window = AutoDriverWindow(self.train)
+            self.auto_window.show()
+        else:
+            self.auto_window.close()
+            self.auto_window = None
+
+    def navigate_test_page(self, checked):
+        #check that window is not already opened before opening
+        if self.test_window is None:
+            self.test_window = TestBenchWindow(self.train)
+            self.test_window.show()
+        else:
+            self.test_window.close()
+            self.test_window = None
+
+    def convert_to_mph(self, ms_speed):
+        mph = ms_speed * 2.23694
+        return mph
+    
+    def convert_to_ms(self, mph_speed):
+        ms = mph_speed / 2.23694
+        return ms
+    
+    def convert_to_ft(self, m):
+        ft = m * 3.28084
+        return ft
+    
+    def convert_to_m(self, ft):
+        m = ft / 3.28084
+        return m
+
+    def setpoint_spinbox_changed(self, x):
+        self.setpoint_speed = x
+        self.train.setpoint_speed = self.convert_to_ms(x)
+        #refresh
+    """
+    NEEDS ERROR CHECKING
+    """
+    def setpoint_edit_changed(self, x):
+        if(x != ""):
+            self.setpoint_speed = float(x)
+            self.train.setpoint_speed = self.convert_to_ms(float(x))
+        #refresh
+    """
+    DOESNT WORK
+    """
+    def service_brake_toggled(self, check):
+        if check:
+            self.service_brake_button.setText("On")
+        else:
+            self.service_brake_button.setText("Off")
+
+    """
+    NEEDS ERROR CHECKING
+    """
+    def comm_temp_changed(self, x):
+        if(x != ""):
+            self.comm_temp = int(x)
+            self.train.ac.set_commanded_temp(int(x))
+
+    def engine_fault_toggled(self, check):
+        if check:
+            self.engine_toggle_button.setText("On")
+            self.train.faults[0] = True
+            self.faults_list[0] = True
+            self.engine_toggle_button.setStyleSheet("background-color: #FF4444; color: black;")
+        else:
+            self.engine_toggle_button.setText("Off")
+            self.train.faults[0] = False
+            self.faults_list[0] = False
+            self.engine_toggle_button.setStyleSheet("background-color: #29C84C; color: black;")
+
+    def brake_fault_toggled(self, check):
+        if check:
+            self.brake_toggle_button.setText("On")
+            self.train.faults[1] = True
+            self.faults_list[1] = True
+            self.brake_toggle_button.setStyleSheet("background-color: #FF4444; color: black;")
+        else:
+            self.brake_toggle_button.setText("Off")
+            self.train.faults[1] = False
+            self.faults_list[1] = False
+            self.brake_toggle_button.setStyleSheet("background-color: #29C84C; color: black;")
+    
+    def signal_fault_toggled(self, check):
+        if check:
+            self.signal_toggle_button.setText("On")
+            self.train.faults[2] = True
+            self.faults_list[2] = True
+            self.signal_toggle_button.setStyleSheet("background-color: #FF4444; color: black;")
+        else:
+            self.signal_toggle_button.setText("Off")
+            self.train.faults[2] = False
+            self.faults_list[2] = False
+            self.signal_toggle_button.setStyleSheet("background-color: #29C84C; color: black;")
+
+    def curr_speed_changed(self, x):
+        if(x != ""):
+            self.curr_speed = int(x)
+            self.train.current_speed = self.convert_to_ms(int(x))
+
+    def comm_speed_changed(self, x):
+        if(x != ""):
+            self.comm_speed = int(x)
+            self.train.commanded_speed = self.convert_to_ms(int(x))
+    
+    def authority_changed(self, x):
+        if(x != ""):
+            self.authority = int(x)
+            self.train.authority = self.convert_to_m(int(x))
+    
+    def curr_temp_changed(self, x):
+        if(x != ""):
+            self.temp = int(x)
+            self.train.train_temp = int(x)
+
+    def light_status_toggled(self, check):
+        if check:
+            self.light_status_button.setText("Lights Off")
+            self.light_status = False
+            self.train.lights.set_lights(False)
+            self.light_status_button.setStyleSheet("background-color: #FF4444; color: black;") 
+        else:
+            self.light_status_button.setText("Lights On")
+            self.light_status = True
+            self.train.lights.set_lights(True)
+            self.light_status_button.setStyleSheet("background-color: #29C84C; color: black;")
+
+    def right_door_toggled(self, check):
+        if check:
+            self.right_door_button.setText("Right Door Open")
+            self.right_door = True
+            self.train.doors.set_right(True)
+            self.right_door_button.setStyleSheet("background-color: #FF4444; color: black;") 
+        else:
+            self.right_door_button.setText("Right Door Closed")
+            self.right_door = False
+            self.train.doors.set_right(False)
+            self.right_door_button.setStyleSheet("background-color: #29C84C; color: black;")
+
+    def left_door_toggled(self, check):
+        if check:
+            self.left_door_button.setText("Left Door Open")
+            self.left_door = True
+            self.train.doors.set_left(True)
+            self.left_door_button.setStyleSheet("background-color: #FF4444; color: black;") 
+        else:
+            self.left_door_button.setText("Left Door Closed")
+            self.left_door = False
+            self.train.doors.set_left(False)
+            self.left_door_button.setStyleSheet("background-color: #29C84C; color: black;")
+
+
 
 class AutoDriverWindow(QMainWindow):
     def __init__(self, train_controller):
