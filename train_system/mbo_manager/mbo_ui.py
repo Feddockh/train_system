@@ -138,20 +138,26 @@ class MBOModeView(QMainWindow):
         self.trains_header = QLabel('Train')
         self.trains_header.setFixedSize(200,75)
         self.trains_header.setFont(QFont('Times',12))
+        self.trains_header.setStyleSheet("border: 2px solid black;")
         self.line_header = QLabel('Line')
         self.line_header.setFixedSize(200,75)
         self.line_header.setFont(QFont('Times',12))
+        self.line_header.setStyleSheet("border: 2px solid black;")
         self.station_header = QLabel('Station')
         self.station_header.setFixedSize(200,75)
         self.station_header.setFont(QFont('Times',12))
+        self.station_header.setStyleSheet("border: 2px solid black;")
         self.position_header = QLabel('Position [m]')
         self.position_header.setFixedSize(200,75)
+        self.position_header.setStyleSheet("border: 2px solid black;")
         self.position_header.setFont(QFont('Times',12))
         self.authority_header = QLabel('Authority [ft]')
         self.authority_header.setFixedSize(200,75)
         self.authority_header.setFont(QFont('Times',12))
+        self.authority_header.setStyleSheet("border: 2px solid black;")
         self.speed_header = QLabel('Commanded Speed [mph]')
         self.speed_header.setFixedSize(200,75)
+        self.speed_header.setStyleSheet("border: 2px solid black;")
         self.speed_header.setFont(QFont('Times',12))
         
         
@@ -315,10 +321,10 @@ class TestBench(QMainWindow):
         self.position_header = QLabel('Position [m]')
         self.position_header.setFixedSize(200,75)
         self.position_header.setFont(QFont('Times',12))
-        self.authority_header = QLabel('Authority [ft]')
+        self.authority_header = QLabel('Authority [m]')
         self.authority_header.setFixedSize(200,75)
         self.authority_header.setFont(QFont('Times',12))
-        self.speed_header = QLabel('Commanded Speed [mph]')
+        self.speed_header = QLabel('Commanded Speed [m/s]')
         self.speed_header.setFixedSize(200,75)
         self.speed_header.setFont(QFont('Times',12))
         
@@ -497,19 +503,20 @@ class TestBench(QMainWindow):
         
         #send out positions 
         test_trains_positions = {"Train1": int(self.train1_position.toPlainText()), "Train2": int(self.train2_position.toPlainText()), "Train3": int(self.train3_position.toPlainText())}
+        destinations = {"Train1" : str(self.train1_station.currentText()), "Train2" : str(self.train2_station.currentText()), "Train3": str(self.train3_station.currentText())}
         
-        c =x.ms_to_mph( x.commanded_speed(x.enable_s_and_a) )
+        c =x.commanded_speed(x.enable_s_and_a)
         self.train1_commanded_speed.setText(str(c))
         self.train2_commanded_speed.setText(str(c))
         self.train3_commanded_speed.setText(str(c))
         
         x.emergency_breaking_distance()
         block = {}
-        authorities = x.authority(test_trains_positions, block)
+        authorities = x.authority(test_trains_positions, destinations, block)
         
-        self.train1_authority.setText(str(x.m_to_ft(authorities['Train1'])))
-        self.train2_authority.setText(str(x.m_to_ft(authorities['Train2'])))
-        self.train3_authority.setText(str(x.m_to_ft(authorities['Train3'])))
+        self.train1_authority.setText(str(authorities['Train1']))
+        self.train2_authority.setText(str(authorities['Train2']))
+        self.train3_authority.setText(str(authorities['Train3']))
         
         
        

@@ -105,7 +105,7 @@ class MBOController:
         return(self.speed)
     
     
-    def authority(self, trains_positions, block_maint):
+    def authority(self, trains_positions, destinations, block_maint):
         """
         Calculate trains authority such that more than one train can be in a block 
         """
@@ -120,8 +120,9 @@ class MBOController:
         for i in range(number_of_trains):
             train_1 = trains[i]
             position_1 = trains_positions[train_1]
+            destination_1 = self.stations[destinations[train_1]]
             
-            authorities[train_1] = abs(position_1-500)
+            authorities[train_1] = abs(position_1-destination_1)
             
             
             for j in range(i+1, number_of_trains):
