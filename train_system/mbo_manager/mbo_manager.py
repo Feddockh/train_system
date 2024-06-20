@@ -160,9 +160,9 @@ class MBOController:
        
         #for each train 
             #if train is within emerg braking distance of another train 
-                #then authority = emerg breaking distance + c
+                #then authority = emerg breaking distance 
             #elif train is a block away from block under maint
-                #then authority = emerg breaking distance + c 
+                #then authority = emerg breaking distance 
             #else
                 #distance to next stop (station or yard)
      
@@ -252,7 +252,7 @@ if __name__ == "__main__":
     destinations_2 = {'Train1': 'Station B', 'Train2': 'Station B', 'Train3': 'Station B', 'Train4': 'Station B'}
     
     block_maint_1 = {}
-    block_maint_2 = {'4': 150,'9': 400 }
+    block_maint_2 = '4'
     
     print('\n\nSpeed Limit: ', MBO.blue_speed_limit,'km/hr')
     print('Emergency Breaking Distance At Speed Limit: ', MBO.emergency_breaking_distance(), 'm/s \n')
