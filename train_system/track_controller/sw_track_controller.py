@@ -6,7 +6,7 @@ import sys
 class TrackController:
     def __init__(self):
         """
-        Initialize the Track Controller.
+        Initialize variables of the Track Controller.
         """
         
         self.track_occupancies = [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
@@ -66,7 +66,7 @@ class TrackController:
             new_speeds(float): List of float values for track speeds
         
         """
-        new_speeds = self.train_speeds
+        self.train_speeds = new_speeds
 
     def send_speed(self):
         """

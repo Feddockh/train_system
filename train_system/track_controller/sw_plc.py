@@ -12,17 +12,6 @@ Returns:
     light(bool): Bool representing light state - 0 = green & 1 = red
 """
 
-#Determining light status
-if (switch == False and track_occupancies[5]):
-    light = True
-    print("Light is red.")
-elif (switch == False and track_occupancies[10]):
-    light = True
-    print("Light is red.")
-else:
-    light = False
-    print("Light is green.")
-
 #Determining switch position
 if (track_occupancies[5] or track_occupancies[6] or track_occupancies[7]
     or track_occupancies[8] or track_occupancies[9]):
@@ -39,6 +28,17 @@ if (track_occupancies[6] or track_occupancies[7] or track_occupancies[8]):
 else:
     cross = False
     print("Crossing Signal is up.")
+
+#Determining light status
+if (switch == False and track_occupancies[5] and track_occupancies[4]):
+    light = True
+    print("Light is red.")
+elif (switch == True and track_occupancies[10] and track_occupancies[4]):
+    light = True
+    print("Light is red.")
+else:
+    light = False
+    print("Light is green.")
    
 
     
