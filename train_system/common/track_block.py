@@ -5,7 +5,10 @@ from train_system.common.crossing_signal import CrossingSignal
 from train_system.common.station import Station
 
 class TrackBlock(QObject):
+
+    # Create PYQT signals for occupancy and maintenance changes
     occupancyChanged = pyqtSignal()
+    maintenanceChanged = pyqtSignal()
 
     def __init__(self, line: str, section: chr, number: int, length: int,
                  grade: float, speed_limit: int, elevation: float, 
@@ -56,6 +59,7 @@ class TrackBlock(QObject):
         self._occupancy = False
         self.switch_position = None
         self.crossing_signal = CrossingSignal.NA
+        self._under_maintenance = False
 
     def __repr__(self) -> str:
 
@@ -142,16 +146,6 @@ class TrackBlock(QObject):
 
         self.authority = authority
 
-    @property
-    def occupancy(self):
-        return self._occupancy
-
-    @occupancy.setter
-    def occupancy(self, value):
-        if self._occupancy != value:
-            self._occupancy = value
-            self.occupancyChanged.emit()
-
     def set_switch_position(self, switch_position: object) -> None:
 
         """
@@ -188,3 +182,21 @@ class TrackBlock(QObject):
 
         self.crossing_signal = crossing_signal
 
+    @property
+    def occupancy(self):
+        return self._occupancy
+
+    @occupancy.setter
+    def occupancy(self, value):
+        if self._occupancy != value:
+            self._occupancy = value
+            self.occupancyChanged.emit()
+
+    @property
+    def under_maintenance(self):
+        return self._under_maintenance
+
+    @under_maintenance.setter
+    def under_maintenance(self, value):
+        self._under_maintenance = value
+        self.maintenanceChanged.emit()

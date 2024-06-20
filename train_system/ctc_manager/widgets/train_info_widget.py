@@ -6,18 +6,38 @@ from typing import Optional
 
 from train_system.common.line import Line
 from train_system.common.track_block import TrackBlock
+from train_system.common.station import Station
+from train_system.common.train import Train
 
 class TrainInfoWidget(QWidget):
-    def __init__(self, line: Line, parent: Optional[QWidget] = None) -> None:
+    def __init__(self, line: Line, trains: list[Train], 
+                 parent: Optional[QWidget] = None) -> None:
+        
+        """
+        Initializes the TrainInfoWidget.
+
+        Args:
+            line (Line): The line object containing track blocks.
+            trains (list[Train]): List of trains to display.
+            parent (Optional[QWidget]): The parent widget.
+        """
+
         super().__init__(parent)
         self.title = "Train Information"
         self.line = line
+        self.trains = trains
         self.rows = len(line.track_blocks)
         self.cols = 4
-        self.headers = ["Train ID", "Block (Station)", "Suggested Speed", "Authority"]
+        self.headers = ["Train ID", "Block (Station)", "Suggested Speed", 
+                        "Authority"]
         self.init_ui()
 
     def init_ui(self) -> None:
+
+        """
+        Initializes the user interface for the TrainInfoWidget.
+        """
+
         layout = QVBoxLayout()
 
         # Create table title
@@ -71,24 +91,55 @@ class TrainInfoWidget(QWidget):
         layout.addWidget(self.table)
         self.setLayout(layout)
 
-    def connect_signals(self) -> None:
-        for track_block in self.line.track_blocks.values():
-            track_block.occupancyChanged.connect(self.update_table_data)
-
     def update_table_data(self) -> None:
-        self.rows = len(self.line.track_blocks)
-        self.table.setRowCount(self.rows)
-        for i, track_block in enumerate(self.line.track_blocks.values()):
-            number_item = QTableWidgetItem(str(track_block.number))
-            number_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            number_item.setFlags(
-                number_item.flags() & ~Qt.ItemFlag.ItemIsEditable
-            )
-            self.table.setItem(i, 0, number_item)
 
-            status_item = QTableWidgetItem("Occupied" if track_block.occupancy else "Unoccupied")
-            status_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            status_item.setFlags(
-                status_item.flags() & ~Qt.ItemFlag.ItemIsEditable
+        """
+        Updates the table data based on the current state of trains.
+        """
+        
+        self.rows = len(self.trains)
+        self.table.setRowCount(self.rows)
+
+        for i, train in enumerate(self.trains):
+            # Create cell for train ID
+            train_id_cell = QTableWidgetItem(str(train.train_id))
+            train_id_cell.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            train_id_cell.setFlags(
+                train_id_cell.flags() & ~Qt.ItemFlag.ItemIsEditable
             )
-            self.table.setItem(i, 1, status_item)
+            self.table.setItem(i, 0, train_id_cell)
+
+            # Create cell for block or station if the train is active
+            if train.block is not None:
+                track_block = train.block
+                track_block_name = str(track_block.number)
+                if track_block.station is not None:
+                    track_block_name += f" ({track_block.station.name})"
+                track_block_cell = QTableWidgetItem(track_block_name)
+                track_block_cell.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                track_block_cell.setFlags(
+                    track_block_cell.flags() & ~Qt.ItemFlag.ItemIsEditable
+                )
+            else:
+                track_block_cell = QTableWidgetItem("N/A")
+                track_block_cell.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                track_block_cell.setFlags(
+                    track_block_cell.flags() & ~Qt.ItemFlag.ItemIsEditable
+                )
+            self.table.setItem(i, 1, track_block_cell)
+
+            # Create cell for suggested speed
+            speed_cell = QTableWidgetItem(f"{train.speed} mph")
+            speed_cell.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            speed_cell.setFlags(
+                speed_cell.flags() & ~Qt.ItemFlag.ItemIsEditable
+            )
+            self.table.setItem(i, 2, speed_cell)
+
+            # Create cell for authority
+            authority_cell = QTableWidgetItem(str(train.authority))
+            authority_cell.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            authority_cell.setFlags(
+                authority_cell.flags() & ~Qt.ItemFlag.ItemIsEditable
+            )
+            self.table.setItem(i, 3, authority_cell)

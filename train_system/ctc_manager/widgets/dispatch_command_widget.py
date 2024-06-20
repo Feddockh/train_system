@@ -5,12 +5,21 @@ from PyQt6.QtCore import Qt
 from typing import Optional
 
 from train_system.common.line import Line
-from train_system.common.track_block import TrackBlock
-from train_system.common.station import Station
 from train_system.common.train import Train
 
 class DispatchCommandWidget(QWidget):
-    def __init__(self, line: Line, trains: list[Train], parent: Optional[QWidget] = None) -> None:
+    def __init__(self, line: Line, trains: list[Train], 
+                 parent: Optional[QWidget] = None) -> None:
+        
+        """
+        Initializes the DispatchCommandWidget.
+
+        Args:
+            line (Line): The line object containing track blocks.
+            trains (list[Train]): The list of train objects.
+            parent (Optional[QWidget]): The parent widget.
+        """
+
         super().__init__(parent)
         self.title = "Dispatch Command"
         self.line = line
@@ -21,6 +30,11 @@ class DispatchCommandWidget(QWidget):
         self.init_ui()
 
     def init_ui(self) -> None:
+
+        """
+        Initializes the user interface for the DispatchCommandWidget.
+        """
+
         layout = QVBoxLayout()
 
         # Create table title
@@ -70,6 +84,7 @@ class DispatchCommandWidget(QWidget):
 
         # Add data to the table
         self.add_table_entry()
+        layout.addWidget(self.table)
 
         # Create a layout for the buttons
         button_layout = QHBoxLayout()
@@ -85,10 +100,13 @@ class DispatchCommandWidget(QWidget):
         self.dispatch_button.clicked.connect(self.dispatch_trains)
         button_layout.addWidget(self.dispatch_button)
 
-        layout.addWidget(self.table)
         self.setLayout(layout)
 
     def add_table_entry(self) -> None:
+
+        """
+        Adds a new row to the table for entering dispatch commands.
+        """
 
         # Increase the number of rows in the table
         row_num = self.rows
@@ -114,18 +132,42 @@ class DispatchCommandWidget(QWidget):
         self.table.setCellWidget(row_num, 2, time_cell)
 
     def generate_train_ids(self) -> list[str]:
+
+        """
+        Generates a list of train IDs.
+
+        Returns:
+            list[str]: A list of train IDs as strings.
+        """
+
         return [str(train.train_id) for train in self.trains]
     
     def generate_block_numbers(self) -> list[str]:
+
+        """
+        Generates a list of block numbers with station names if available.
+
+        Returns:
+            list[str]: A list of block numbers as strings.
+        """
+
         block_numbers = []
         for block in self.line.track_blocks.values():
-            if block.station:
+            if block.station is not None:
                 block_numbers.append(f"{block.number} ({block.station.name})")
             else:
                 block_numbers.append(str(block.number))
         return block_numbers
 
-    def generate_time_slots(self):
+    def generate_time_slots(self) -> list[str]:
+
+        """
+        Generates a list of time slots in 15-minute increments.
+
+        Returns:
+            list[str]: A list of time slots as strings.
+        """
+
         times = []
         for hour in range(24):
             for minute in [0, 15, 30, 45]:
@@ -133,6 +175,11 @@ class DispatchCommandWidget(QWidget):
         return times
 
     def dispatch_trains(self) -> None:
+
+        """
+        Dispatches the trains based on the table entries.
+        """
+        
         for row in range(self.rows):
             train_id = self.table.cellWidget(row, 0).currentText()
             block_number = self.table.cellWidget(row, 1).currentText()
@@ -141,4 +188,3 @@ class DispatchCommandWidget(QWidget):
 
         self.rows = 0
         self.table.setRowCount(self.rows)
-

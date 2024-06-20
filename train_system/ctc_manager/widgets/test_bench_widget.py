@@ -1,5 +1,6 @@
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QTableWidget,
-                             QTableWidgetItem, QHeaderView)
+                             QTableWidgetItem, QHeaderView, QComboBox, 
+                             QAbstractItemView)
 from PyQt6.QtGui import QColor, QPalette
 from PyQt6.QtCore import Qt
 from typing import Optional
@@ -7,11 +8,11 @@ from typing import Optional
 from train_system.common.line import Line
 from train_system.common.track_block import TrackBlock
 
-class TrainVisualWidget(QWidget):
+class TestBenchWidget(QWidget):
     def __init__(self, line: Line, parent: Optional[QWidget] = None) -> None:
 
         """
-        Initializes the TrainVisualWidget.
+        Initializes the TestBenchWidget.
 
         Args:
             line (Line): The line object containing track blocks.
@@ -19,7 +20,7 @@ class TrainVisualWidget(QWidget):
         """
 
         super().__init__(parent)
-        self.title = "Train Visual"
+        self.title = "Test Bench"
         self.line = line
         self.rows = len(line.track_blocks)
         self.cols = 2
@@ -30,7 +31,7 @@ class TrainVisualWidget(QWidget):
     def init_ui(self) -> None:
 
         """
-        Initializes the user interface for the TrainVisualWidget.
+        Initializes the user interface for the TestBenchWidget.
         """
 
         layout = QVBoxLayout()
@@ -60,7 +61,7 @@ class TrainVisualWidget(QWidget):
             }
             QTableWidget::item {
                 background-color: #FDFDFD;
-                border: 1px solid; 
+                border: 1px solid #333333; 
             }
             QTableWidget {
                 gridline-color: #333333; 
@@ -89,45 +90,66 @@ class TrainVisualWidget(QWidget):
     def connect_signals(self) -> None:
 
         """
-        Connects signals for occupancy and maintenance changes.
+        Connects signals for track block occupancy changes.
         """
 
         for track_block in self.line.track_blocks.values():
             track_block.occupancyChanged.connect(self.update_table_data)
-            track_block.maintenanceChanged.connect(self.update_table_data)
-            
+
     def update_table_data(self) -> None:
 
         """
-        Updates the table data based on the current state of track blocks.
+        Updates the table data with the current track block statuses.
         """
-        
+
         self.rows = len(self.line.track_blocks)
         self.table.setRowCount(self.rows)
         for i, track_block in enumerate(self.line.track_blocks.values()):
-            number_item = QTableWidgetItem(str(track_block.number))
-            number_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            number_item.setFlags(
-                number_item.flags() & ~Qt.ItemFlag.ItemIsEditable
+            track_block_cell = QTableWidgetItem(str(track_block.number))
+            track_block_cell.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            track_block_cell.setFlags(
+                track_block_cell.flags() & ~Qt.ItemFlag.ItemIsEditable
             )
-            self.table.setItem(i, 0, number_item)
+            self.table.setItem(i, 0, track_block_cell)
 
-            status_item = QTableWidgetItem()
-            status_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            status_item.setFlags(
-                status_item.flags() & ~Qt.ItemFlag.ItemIsEditable
+            # ComboBox for occupancy status
+            status_cell = QComboBox()
+            status_cell.addItems(["Available", "Occupied"])
+            status_cell.setCurrentText(
+                "Occupied" if track_block.occupancy else "Available"
             )
+            status_cell.currentTextChanged.connect(
+                lambda state, tb=track_block: self.update_occupancy_status(tb, state)
+            )
+            self.table.setCellWidget(i, 1, status_cell)
 
-            if track_block.under_maintenance:
-                status_item.setText("Under Maintenance")
-                color = QColor("#FFFF00")
-            elif track_block.occupancy:
-                status_item.setText("Occupied")
-                color = QColor("#FFCCCC")
-            else:
-                status_item.setText("Unoccupied")
-                color = QColor("#CCFFCC")
+            self.update_cell_color(i, 1, track_block.occupancy)
 
-            status_item.setBackground(color)
-            status_item.setForeground(QColor("#000000"))
-            self.table.setItem(i, 1, status_item)
+    def update_occupancy_status(self, track_block: TrackBlock, state: str) -> None:
+
+        """
+        Updates the occupancy status of a track block.
+
+        Args:
+            track_block (TrackBlock): The track block to update.
+            state (str): The new state ("Available" or "Occupied").
+        """
+
+        track_block.occupancy = state == "Occupied"
+        self.update_table_data()
+
+    def update_cell_color(self, row: int, col: int, occupancy: bool) -> None:
+
+        """
+        Updates the color of a cell based on its occupancy status.
+
+        Args:
+            row (int): The row of the cell.
+            col (int): The column of the cell.
+            occupancy (bool): Whether the track block is occupied.
+        """
+        
+        widget = self.table.cellWidget(row, col)
+        if widget:
+            color = QColor("#FFCCCC") if occupancy else QColor("#FFFFFF")
+            widget.setStyleSheet(f"background-color: {color.name()}; color: black;")
