@@ -2,4 +2,4 @@
 
 PACKAGE_VERSION = "1.0"
 
-print("common has been initialized")
+print("ctc_manager has been initialized")
