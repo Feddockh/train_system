@@ -27,7 +27,7 @@ Storing previous beacon data: How are we going to do that and what will it look 
 #### Train Controller (Raspberry Pi) will then send a received message and update all of its variables with the Train Model's outputs
 class TrainController:
     def __init__(self, train_model):
-        self.hardware = True
+        self.hardware = False
 
         ## Initialize objects
         ### This object is just used to store data that is received from the real Train Model. Same thing but with no computation
@@ -62,7 +62,7 @@ class TrainController:
     # Input) TrainModel object
     #### This function will no longer need the TrainModel object as an argument
     def update_train_model(self):
-        if(this.hardware):
+        if(self.hardware):
             #### PySerial write to Train Model "Update"
             #### PySerial read from Train Model "!All the inputs separated by spaces!"
             #### Parse through the message and assign each value to the corresponding variable
