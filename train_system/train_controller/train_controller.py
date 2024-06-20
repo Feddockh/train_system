@@ -21,24 +21,29 @@ Storing previous beacon data: How are we going to do that and what will it look 
 # Train Controller only talks with Train Model
 # Train Model needed for initialization
 #### = PySerial Integration for Hardware Train Controller
-#### Train Controller will start the conversation by reaching out to the Train Model asking if the Train Controller can send its outputs
-#### Train Model will respond with a message saying it is ready to receive the outputs and the Train Controller will send the outputs
-#### Train Controller will then wait until it reads a message from the Train Model with the Train Model's outputs
-#### Train Controller will then send a received message and update all of its variables with the Train Model's outputs
+#### Train Controller (Raspberry Pi) will start the conversation by reaching out to the Train Model (Windows Computer) asking if the Train Controller can send its outputs
+#### Train Model (Windows Computer) will respond with a message saying it is ready to receive the outputs and the Train Controller (Raspberry Pi) will send the outputs
+#### Train Model (Raspberry Pi) will then receive the message from the Train Model (Windows Computer) with the Train Model's  outputs (Windows Computer)
+#### Train Controller (Raspberry Pi) will then send a received message and update all of its variables with the Train Model's outputs
 class TrainController:
     def __init__(self, train_model):
+        self.hardware = True
+
         ## Initialize objects
+        ### This object is just used to store data that is received from the real Train Model. Same thing but with no computation
+        self.train_model = train_model
         self.engineer = self.Engineer()         # Engineer holds Kp and Ki and is the only one that can set them
         self.brake = self.Brake()               # Brake holds service and emergency brake status
         self.engine = self.Engine()             # Engine calculates power command and simulates train response
         self.doors = self.Doors()    # Doors holds left and right door status
         self.lights = self.Lights()  # Lights holds light status
-        self.ac = self.AC(train_model)          # AC holds temperature status
+        self.ac = self.AC()          # AC holds temperature status
 
         # Driver variables
         self.driver_mode = "manual" # Driver mode can be "automatic" or "manual"
         self.setpoint_speed = 0     # Setpoint speed for manual mode
         self.maintenance_mode = False     # Maintenance status of the train
+        self.distance_traveled = 0  # Distance traveled by the train. Calculated in the Train Controller
 
         # Train Model inputs
         self.current_speed = None    # Current speed of the train
@@ -51,36 +56,50 @@ class TrainController:
         self.faults = None           # Fault statuses from the Train Model (list of bools)
 
         # Update functions
-        self.update_train_model(train_model)    # This functoin will define all the "None" variables above
+        self.update_train_model()    # This functoin will define all the "None" variables above
         
     # Update all variables with the train model input
     # Input) TrainModel object
     #### This function will no longer need the TrainModel object as an argument
-    def update_train_model(self, train_model):
-        #### PySerial write to Train Model "Update"
-        #### PySerial read from Train Model "!All the inputs separated by spaces!"
-        #### Parse through the message and assign each value to the corresponding variable
+    def update_train_model(self):
+        if(this.hardware):
+            #### PySerial write to Train Model "Update"
+            #### PySerial read from Train Model "!All the inputs separated by spaces!"
+            #### Parse through the message and assign each value to the corresponding variable
+            self.transmit_to_train_model()
+            #### In implementation, make sure that receive from train model only reads the encoded message from the main computer train model is received
+            self.train_model.receive_from_train_model()
+        
         # Update variables with train model input
-        self.current_speed = train_model.get_current_speed()
-        self.commanded_speed = train_model.get_commanded_speed()
-        self.authority = train_model.get_authority()
-        self.position = train_model.get_position()
-        self.block = train_model.get_block()
-        self.train_temp = train_model.get_train_temp()
+        self.commanded_speed = self.train_model.get_commanded_speed()
+        self.authority = self.train_model.get_authority()
+        self.current_speed = self.train_model.get_current_speed()
+        self.position = self.train_model.get_position()
+        ## -- Exit Door -- ##
+        self.block = self.train_model.get_block()
+        self.station = self.train_model.get_station_name()
+        ## -- Distance from station -- ##
+        self.train_temp = self.train_model.get_train_temp()
 
         # Update all status variables
-        self.update_fault_status(train_model)
-        self.lights.update_lights(train_model, self.block)
-        self.ac.update_current_temp(train_model)
+        self.ac.update_current_temp(self.train_model)
+        self.update_fault_status(self.train_model)
+        self.lights.update_lights(self.train_model, self.block)
 
+        ## Train Controller Calculations
         # Run 1 more cycle of the simulation to update the current speed
         self.simulate_speed(self.get_desired_speed())
+        
 
-    # Transmit necessary variables to the Train Model
+    # Transmit necessary variables to Main Computer (Train Controller)
     def transmit_to_train_model(self):
         #### Pyserial write all of the necessary outputs of the Train Controller to the Train Model
-        #### "!Power, Commanded train temp (2 digit int), Doors and lights commands (3 bools), Emergency brake (bool), Service brake (bool), Fixed faults (bool)"
-        pass
+        #### Transmission starts with a ! and separation between variables is a space. Separation between elements in a list is a comma
+        #### "!Power, Commanded train temp (2 digit int), Doors and lights commands (3 bools), Emergency brake (bool), Service brake (bool), Maintenance mode (bool)!"
+        ##### This is how the function will work: The Train Controller will start the conversation by reaching out to the Train Model asking if the Train Controller can send its outputs
+        #### The Train Model will respond with a message saying it is ready to receive the outputs and the Train Controller will send the outputs
+        #### The Train Controller will then wait until it reads a message from the Train Model with the Train Model's outputs
+        return True
 
     ## Driver Mode Funtions
     # Input) string: "automatic" or "manual"
@@ -120,14 +139,18 @@ class TrainController:
     ## Purely for debugging purposes
     def simulate_speed(self, speed: float):
         power_command = self.engine.compute_power_command(speed, self.current_speed, self.engineer, self.maintenance_mode)
-        self.current_speed = self.engine.calculate_current_speed(power_command, self.current_speed, self.brake)
+        self.current_speed, distance_traveled = self.engine.calculate_current_speed(power_command, self.current_speed, self.brake)
+        self.distance_traveled += distance_traveled
         print(f"Power Command: {power_command}, Current Speed: {self.current_speed}")
     
+    # Update the fault status of the train
+    # Call maintenance if there is a fault
     def update_fault_status(self, train_model):
         self.faults = train_model.get_fault_statuses()
         if(self.faults != [0, 0, 0]):
             self.maintenance()
 
+    # Call this function when there is a fault
     def maintenance(self):
         # If the train hasn't made a full stop yet, set the maintenance mode to True and keep emergency brake on
         # Once the train has made a full stop, set the maintenance mode to False and turn off the emergency brake
@@ -254,19 +277,13 @@ class TrainController:
             # If power command magnitude is negative, we need to slow down so turn on the service brake
             elif power_command < 0:
                 brake.set_service_brake(True)
-
-            '''
-            # This will be used once integrated with Train Model
-            if power_command < 0:
-                power_command = 0
-            '''
                 
-            
             current_speed += power_command * self.T
+            distance_traveled = current_speed * self.T
             
             print(f"Power Command: {round(power_command, 2)}, Current Speed: {round(current_speed, 2)}")
 
-            return current_speed, brake
+            return current_speed, distance_traveled
         
     ## Door class to hold door status
     # Door status = bool
@@ -305,6 +322,7 @@ class TrainController:
     class Lights:
         def __init__(self):
             self.lights = False
+            self.underground_blocks = [] # List of blocks that are underground
 
         ## Mutator Function
         def set_lights(self, status: bool):
@@ -321,21 +339,23 @@ class TrainController:
         ## Accessor Function
         def get_status(self):
             return self.lights
-        def update_lights(self, train_model, block):
-            underground_blocks = train_model.get_underground_status()
-            self.lights = block in underground_blocks
+        def get_underground_blocks(self):
+            return self.underground_blocks
+        def update_underground_blocks(self, underground_blocks):
+            self.underground_blocks = underground_blocks
+        def update_lights(self, train_model, block: str):
+            self.update_underground_blocks(train_model.get_underground_blocks())
+            self.lights = block in self.underground_blocks
 
     ## AC class to hold temperature status
     # Commanded temperature from driver (initialized to 69)
     # Current temperature from Train Model
     class AC:
-        def __init__(self, train_model):
+        def __init__(self):
             # Commanded temperature from driver (initialized to 69)
             self.commanded_temp = 69
             # Current temperature inside the train
             self.current_temp = None
-            # Initialize current temperature from Train Model
-            self.update_current_temp(train_model)
 
         ## Mutator Function
         # Input) temp: int
@@ -363,7 +383,7 @@ class TrainModel:
         self.train_temp = 0
         self.station = 0
         self.block = 'A'
-        self.underground_status = ['A', 'B', 'C']
+        self.underground_blocks = ['A', 'B', 'C']
         self.exit_door = [0, 0]
         self.faults = [0, 0, 0]
         self.speed_limit = 100
@@ -407,45 +427,54 @@ class TrainModel:
     # Used for underground logic
     def get_block(self):
         # Logic to get the block number
-        return 'A'
+        return self.block
 
     # List of chars (list of blocks)
-    def get_underground_status(self):
+    def get_underground_blocks(self):
         # Logic to get the underground status of the train
-        return 0
+        return self.underground_blocks
 
     # String? Bool[2]? Int?
     # [left door, right door]
     def get_exit_door(self):
         # Logic to get the status of the exit door
-        return 0
+        return self.exit_door
 
     # List of bools? Individual bools?
     # [engine, brake, signal]
     # No fault = [0, 0, 0]
     def get_fault_statuses(self):
         # Logic to get the fault status of the train
-        return 0
+        return self.faults
 
     # Float
     def get_speed_limit(self):
         # Logic to get the speed limit of the train
-        return 100
-
-
-    ## Potentially needed functions ##
-
-    # Get distance traveled (Could be calculated based on current speed * time step)
-    def get_distance_traveled(self):
-        # Logic to get the distance traveled by the train
-        return 0
+        return self.speed_limit
 
     # Other methods to get various inputs from the train model
 
+    #### MAIN COMPUTER USES THIS FUNCTION ####
     def transmit_to_train_controller(self):
         #### Pyserial write all of the necessary outputs of the Train Model to the Train Controller
-        return 0
+        #### Transmission starts with a ! and separation between variables is a space. Separation between elements in a list is a comma
+        #### "!Current speed, Position, Authority, Commanded speed, Train temp, Station, Block, Underground blocks, Exit door, Faults, Speed limit!"
+        ##### This is how the function will work: The Train Model will start the conversation by reaching out to the Train Controller asking if the Train Model can send its outputs
+        #### The Train Controller will respond with a message saying it is ready to receive the outputs and the Train Model will send the outputs
+        #### The Train model will wait until the message is received
+        #### The Train Model will then update all of its variables with the Train Controller's outputs
+        #### The Train Model will then send the newly updated variables to the Train Controller
 
+        return True
+    
+    #### RASPBERRY PI USES THIS FUNCTION ####
+    def receive_from_train_model(self):
+        #### Pyserial read all of the variables for the Train Model from another Train Model
+        #### Update its own variables with the variables from the pyserial message
+        #### Will take the message from the Windows Computer and keep it in this object on the Raspberry Pi
+        #### Message to decode: "!Current speed, Position, Authority, Commanded speed, Train temp, Station, Block, Underground blocks, Exit door, Faults, Speed limit!"
+        
+        return True
 
 
 class TrainSystem:
