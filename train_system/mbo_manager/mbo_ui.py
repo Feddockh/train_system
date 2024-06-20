@@ -125,6 +125,9 @@ class MBOModeView(QMainWindow):
         self.dispatch_mode.setFixedSize(150,50)
         
         
+        self.title = QLabel('Current Commanded Speed and Authority')
+        self.title.setFont(QFont('Times',12))
+        
         self.test_bench_window = None
         #button to navigate to test bench view 
         self.test_bench_view = QPushButton('Test Bench')
@@ -211,6 +214,7 @@ class MBOModeView(QMainWindow):
         
         self.lay = QVBoxLayout()
         self.lay.addLayout(self.dispatch_lay)
+        self.lay.addWidget(self.title)
         self.lay.addWidget(self.table)
         self.lay.addWidget(self.test_bench_view)
         
@@ -254,6 +258,10 @@ class TestBench(QMainWindow):
         self.block_layout.addWidget(self.block_select)
         self.block_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
         
+        self.title = QLabel('Test Commanded Speed and Authority')
+        self.title.setFont(QFont('Times',12))
+        self.direction = QLabel('Please Selcect a Station destination and current Position for each train')
+        self.direction.setFont(QFont('Times',12))
         
         self.headers = ['Trains', 'Line', 'Station', 'Position [m from yard]', 'Authority [m]', 'Commanded Speed [m/s]']
         
@@ -304,8 +312,11 @@ class TestBench(QMainWindow):
         
         #line 
         self.line1 = QLabel("Blue")
+        self.line1.setFont(QFont('Times',10))
         self.line2 = QLabel("Blue")
+        self.line2.setFont(QFont('Times',10))
         self.line3 = QLabel("Blue")
+        self.line3.setFont(QFont('Times',10))
         self.table.setCellWidget(0, 1, self.line1)
         self.table.setCellWidget(1, 1, self.line2)
         self.table.setCellWidget(2, 1, self.line3)
@@ -376,6 +387,8 @@ class TestBench(QMainWindow):
         #aligning labels and text edit boxes 
         self.window_layout = QVBoxLayout()
         self.window_layout.addLayout(self.block_layout)
+        self.window_layout.addWidget(self.title)
+        self.window_layout.addWidget(self.direction)
         self.window_layout.addWidget(self.table)
         self.window_layout.addWidget(self.test)
         
