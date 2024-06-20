@@ -127,19 +127,171 @@ class MBOWindow(QMainWindow):
         
     
 
-class MBOModeView(QWidget):
+class MBOModeView(QMainWindow):
     def __init__(self):
         super(MBOModeView, self).__init__()
         
         self.setWindowTitle("MBO Mode View")
         self.setFixedSize(1222, 702)
         
-        self.MBO_mode_view = QPushButton('MBO Mode View', self)
-        self.MBO_mode_view.clicked.connect(self.close_MBO_mode_view)
+        #labels for table header
+        self.trains_header = QLabel('Train')
+        self.trains_header.setFixedSize(200,75)
+        self.trains_header.setFont(QFont('Times',12))
+        self.line_header = QLabel('Line')
+        self.line_header.setFixedSize(200,75)
+        self.line_header.setFont(QFont('Times',12))
+        self.station_header = QLabel('Station')
+        self.station_header.setFixedSize(200,75)
+        self.station_header.setFont(QFont('Times',12))
+        self.position_header = QLabel('Position [m]')
+        self.position_header.setFixedSize(200,75)
+        self.position_header.setFont(QFont('Times',12))
+        self.authority_header = QLabel('Authority [ft]')
+        self.authority_header.setFixedSize(200,75)
+        self.authority_header.setFont(QFont('Times',12))
+        self.speed_header = QLabel('Commanded Speed [mph]')
+        self.speed_header.setFixedSize(200,75)
+        self.speed_header.setFont(QFont('Times',12))
+        
+        
+        #labels for train positions 
+        self.train1_position_label = QLabel("Train 1")
+        self.train1_position_label.setFixedSize(200,75)
+        self.train1_position_label.setFont(QFont('Times',10))
+        self.train2_position_label = QLabel("Train 2")
+        self.train2_position_label.setFixedSize(200,75)
+        self.train2_position_label.setFont(QFont('Times',10))
+        self.train3_position_label = QLabel("Train 3")
+        self.train3_position_label.setFixedSize(200,75)
+        self.train3_position_label.setFont(QFont('Times',10))
+        
+        
+        #text boxes to edit train position
+        self.train1_position = QLabel('0')
+        self.train1_position.setFixedSize(200,75)
+        self.train1_position.setFont(QFont('Times',10))
+        self.train2_position = QLabel('0')
+        self.train2_position.setFixedSize(200,75)
+        self.train2_position.setFont(QFont('Times',10))
+        self.train3_position = QLabel('0')
+        self.train3_position.setFixedSize(200,75)
+        self.train3_position.setFont(QFont('Times',10))
+        
+        #line (all blue lol)
+        self.train1_line = QLabel("Blue")
+        self.train1_line.setFixedSize(200,75)
+        self.train1_line.setFont(QFont('Times',10))
+        self.train2_line = QLabel("Blue")
+        self.train2_line.setFixedSize(200,75)
+        self.train2_line.setFont(QFont('Times',10))
+        self.train3_line = QLabel("Blue")
+        self.train3_line.setFixedSize(200,75)
+        self.train3_line.setFont(QFont('Times',10))
+        
+        
+        #stations (for blue line)
+        self.train1_station = QLabel('---')
+        self.train1_station.setFixedSize(200,75)
+        self.train1_station.setFont(QFont('Times',10))
+        self.train2_station = QLabel('---')
+        self.train2_station.setFixedSize(200,75)
+        self.train2_station.setFont(QFont('Times',10))
+        self.train3_station = QLabel('---')
+        self.train3_station.setFixedSize(200,75)
+        self.train3_station.setFont(QFont('Times',10))
+        
     
-    def close_MBO_mode_view(self):
-        self.window = MBOModeView()
-        #way to close window, back button!
+        #place holders for commanded speed 
+        self.train1_commanded_speed = QLabel('---')
+        self.train1_commanded_speed.setFixedSize(200,75)
+        self.train1_commanded_speed.setFont(QFont('Times',10))
+        self.train2_commanded_speed = QLabel('---')
+        self.train2_commanded_speed.setFixedSize(200,75)
+        self.train2_commanded_speed.setFont(QFont('Times',10))
+        self.train3_commanded_speed = QLabel('---')
+        self.train3_commanded_speed.setFixedSize(200,75)
+        self.train3_commanded_speed.setFont(QFont('Times',10))
+        
+        #place holders for authority 
+        self.train1_authority = QLabel('---')
+        self.train1_authority.setFixedSize(200,75)
+        self.train1_authority.setFont(QFont('Times',10))
+        self.train2_authority = QLabel('---')
+        self.train2_authority.setFixedSize(200,75)
+        self.train2_authority.setFont(QFont('Times',10))
+        self.train3_authority = QLabel('---')
+        self.train3_authority.setFixedSize(200,75)
+        self.train3_authority.setFont(QFont('Times',10))
+        
+        
+        
+                
+        #aligning header
+        self.header_layout = QHBoxLayout()
+        self.header_layout.addWidget(self.trains_header)
+        self.header_layout.addWidget(self.line_header)
+        self.header_layout.addWidget(self.station_header)
+        self.header_layout.addWidget(self.position_header)
+        self.header_layout.addWidget(self.authority_header)
+        self.header_layout.addWidget(self.speed_header)
+        
+        #setting up layout to align position labels 
+        self.layout_position_labels = QVBoxLayout()
+        self.layout_position_labels.addWidget(self.train1_position_label)
+        self.layout_position_labels.addWidget(self.train2_position_label)
+        self.layout_position_labels.addWidget(self.train3_position_label)
+        
+        #setting up layout to align text edit boxes 
+        self.layout_position_text = QVBoxLayout()
+        self.layout_position_text.addWidget(self.train1_position)
+        self.layout_position_text.addWidget(self.train2_position)
+        self.layout_position_text.addWidget(self.train3_position)
+        
+        #vert aligning of line
+        self.layout_line = QVBoxLayout()
+        self.layout_line.addWidget(self.train1_line)
+        self.layout_line.addWidget(self.train2_line)
+        self.layout_line.addWidget(self.train3_line)
+        
+        #vert aligining of stations 
+        self.layout_station = QVBoxLayout()
+        self.layout_station.addWidget(self.train1_station)
+        self.layout_station.addWidget(self.train2_station)
+        self.layout_station.addWidget(self.train3_station)
+        
+        #vert aligning layout of commanded speeds 
+        self.layout_speed = QVBoxLayout()
+        self.layout_speed.addWidget(self.train1_commanded_speed)
+        self.layout_speed.addWidget(self.train2_commanded_speed)
+        self.layout_speed.addWidget(self.train3_commanded_speed)
+        
+        #vert aligning layout of author
+        self.layout_authority = QVBoxLayout()
+        self.layout_authority.addWidget(self.train1_authority)
+        self.layout_authority.addWidget(self.train2_authority)
+        self.layout_authority.addWidget(self.train3_authority)
+        
+        #horz aligning columns in table 
+        self.column_layout = QHBoxLayout()
+        self.column_layout.addLayout(self.layout_position_labels)
+        self.column_layout.addLayout(self.layout_line)
+        self.column_layout.addLayout(self.layout_station)
+        self.column_layout.addLayout(self.layout_position_text)
+        self.column_layout.addLayout(self.layout_authority)
+        self.column_layout.addLayout(self.layout_speed)
+        
+        self.table_layout = QVBoxLayout()
+        self.table_layout.addLayout(self.header_layout)
+        self.table_layout.addLayout(self.column_layout)
+        
+        widget = QWidget()
+        widget.setLayout(self.table_layout)
+        self.setCentralWidget(widget)
+        
+        
+        
+        
         
 
 class TestBench(QMainWindow):
@@ -169,6 +321,17 @@ class TestBench(QMainWindow):
         self.speed_header = QLabel('Commanded Speed [mph]')
         self.speed_header.setFixedSize(200,75)
         self.speed_header.setFont(QFont('Times',12))
+        
+        #labels for train positions 
+        self.train1_position_label = QLabel("Train 1")
+        self.train1_position_label.setFixedSize(200,75)
+        self.train1_position_label.setFont(QFont('Times',10))
+        self.train2_position_label = QLabel("Train 2")
+        self.train2_position_label.setFixedSize(200,75)
+        self.train2_position_label.setFont(QFont('Times',10))
+        self.train3_position_label = QLabel("Train 3")
+        self.train3_position_label.setFixedSize(200,75)
+        self.train3_position_label.setFont(QFont('Times',10))
         
         #aligning header
         self.header_layout = QHBoxLayout()
