@@ -1,18 +1,29 @@
 # train_system/ctc_manager/ctc_manager.py
 
 from train_system.common.dispatch_mode import DispatchMode
+from train_system.common.line import Line
+from train_system.common.train import Train
 
 class CTCOffice:
     def __init__(self):
+
         """
         Initialize the CTC Office.
         """
-        self.dispatch_mode = DispatchMode.MANUAL
+
+        self.trains = [Train(i) for i in range(1, 11)]
+        self.dispatch_mode = DispatchMode.MANUAL_FIXED_BLOCK
         self.ticket_sales = 0
         self.passenger_throughput = 0
-        self.track_occupancies = {}
         self.train_suggested_speeds = {}
         self.train_authorities = {}
+
+        file_path = (
+        'C:/Users/hayde/OneDrive/Pitt/2024_Summer_Term/ECE 1140/'
+        'Project/train_system/tests/blue_line.xlsx'
+        )
+        self.line = Line("Blue")
+        self.line.load_track_blocks(file_path)
     
     def compute_passenger_throughput(self):
         """

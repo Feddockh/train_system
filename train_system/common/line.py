@@ -4,6 +4,7 @@ import pandas as pd
 import os
 import re
 from train_system.common.track_block import TrackBlock
+from train_system.common.station import Station
 
 class Line:
     def __init__(self, name: str) -> None:
@@ -20,6 +21,7 @@ class Line:
 
         self.name = name
         self.track_blocks = {}
+        self.stations = []
 
     def __repr__(self) -> str:
 
@@ -101,7 +103,7 @@ class Line:
 
         for index, row in df.iterrows():
             block = TrackBlock(
-                line=row['Line'],
+                line=self.name,
                 section=row['Section'],
                 number=row['Block Number'],
                 length=row['Block Length (m)'],
@@ -119,6 +121,7 @@ class Line:
         open = [1]
         closed = []
         self.connection_search(open, closed)
+        self.station_search()
 
     def connection_search(self, open: list, closed: list) -> None:
 
@@ -174,6 +177,44 @@ class Line:
                 open.append(next_block.number)
 
         self.connection_search(open, closed)
+
+    def station_search(self) -> None:
+
+        """
+        Searches for station infrastructure and assigns to track blocks.
+        
+        Args:
+            None
+        
+        Returns:
+            None
+        """
+
+        # Check through all of the block values
+        for block in self.track_blocks.values():
+
+            # Check if the block has infrastructure
+            if block.infrastructure:
+
+                # Search for the station infrastructure
+                match = re.search(r'STATION\s+(\w+)', block.infrastructure)
+
+                # If the station infrastructure is found
+                if match:
+
+                    # create the station object
+                    station_name = match.group(1)
+                    station = Station(
+                        name=station_name,
+                        line=self.name,
+                        block_number=block.number
+                    )
+
+                    # Add the station object to the list of stations on the line
+                    self.stations.append(station)
+
+                    # Assign the station to the block
+                    block.station = station
 
 if __name__ == "__main__":
     file_path = (

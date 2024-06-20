@@ -1,8 +1,12 @@
 # train_system/common/track_block.py
 
+from PyQt6.QtCore import QObject, pyqtSignal
 from train_system.common.crossing_signal import CrossingSignal
+from train_system.common.station import Station
 
-class TrackBlock:
+class TrackBlock(QObject):
+    occupancyChanged = pyqtSignal()
+
     def __init__(self, line: str, section: chr, number: int, length: int,
                  grade: float, speed_limit: int, elevation: float, 
                  cumulative_elevation: float, infrastructure: str = None,
@@ -30,6 +34,8 @@ class TrackBlock:
             None
         """
 
+        super().__init__()
+
         # Parameters that are passed in by constructor
         self.line = line
         self.section = section
@@ -40,13 +46,14 @@ class TrackBlock:
         self.elevation = elevation
         self.cumulative_elevation = cumulative_elevation
         self.infrastructure = infrastructure
+        self.connecting_blocks = []
+        self.station: Station = None
         self.station_side = station_side
 
         # Parameters that we determine
-        self.connecting_blocks = []
         self.suggested_speed = 0
         self.authority = 0
-        self.occupancy = False
+        self._occupancy = False
         self.switch_position = None
         self.crossing_signal = CrossingSignal.NA
 
@@ -74,8 +81,9 @@ class TrackBlock:
             f"Block Elevation:              {self.elevation}\n"
             f"Block Cumulative Elevation:   {self.cumulative_elevation}\n"
             f"Block Infrastructure:         {self.infrastructure}\n"
-            f"Block Station Side:           {self.station_side}\n"
             f"Connecting Track Blocks:      {connecting_blocks}\n"
+            f"Block Station:                {self.station.name}\n"
+            f"Block Station Side:           {self.station_side}\n"
             f"Suggested Speed:              {self.authority}\n"
             f"Authority:                    {self.authority}\n"
             f"Occupancy:                    {self.occupancy}\n"
@@ -134,19 +142,15 @@ class TrackBlock:
 
         self.authority = authority
 
-    def set_occupancy(self, occupancy: bool) -> None:
+    @property
+    def occupancy(self):
+        return self._occupancy
 
-        """
-        Sets the occupancy status for the track block.
-        
-        Args:
-            occupancy (bool): The occupancy status to set.
-        
-        Returns:
-            None
-        """
-
-        self.occupancy = occupancy
+    @occupancy.setter
+    def occupancy(self, value):
+        if self._occupancy != value:
+            self._occupancy = value
+            self.occupancyChanged.emit()
 
     def set_switch_position(self, switch_position: object) -> None:
 
