@@ -183,6 +183,7 @@ class MBOModeView(QMainWindow):
         
         for col in range(0,6):
             table_item = QTableWidgetItem(self.row1[col])
+            table_item.setFont(QFont('Times',13))
             table_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             table_item.setFlags(
             table_item.flags() & ~Qt.ItemFlag.ItemIsEditable
@@ -192,6 +193,7 @@ class MBOModeView(QMainWindow):
         for col in range(0,6):
             table_item = QTableWidgetItem(self.row2[col])
             table_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            table_item.setFont(QFont('Times',13))
             table_item.setFlags(
             table_item.flags() & ~Qt.ItemFlag.ItemIsEditable
             )
@@ -199,6 +201,7 @@ class MBOModeView(QMainWindow):
         
         for col in range(0,6):
             table_item = QTableWidgetItem(self.row3[col])
+            table_item.setFont(QFont('Times',13))
             table_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             table_item.setFlags(
             table_item.flags() & ~Qt.ItemFlag.ItemIsEditable
@@ -299,11 +302,11 @@ class TestBench(QMainWindow):
        
        #train id
         self.train1_id = QLabel("Train1")
-        self.train1_id.setFont(QFont('Times',10))
+        self.train1_id.setFont(QFont('Times',15))
         self.train2_id = QLabel("Train2")
-        self.train2_id.setFont(QFont('Times',10))
+        self.train2_id.setFont(QFont('Times',15))
         self.train3_id = QLabel("Train3")
-        self.train3_id.setFont(QFont('Times',10))
+        self.train3_id.setFont(QFont('Times',15))
         
         self.table.setCellWidget(0, 0, self.train1_id)
         self.table.setCellWidget(1, 0, self.train2_id)
@@ -312,11 +315,11 @@ class TestBench(QMainWindow):
         
         #line 
         self.line1 = QLabel("Blue")
-        self.line1.setFont(QFont('Times',10))
+        self.line1.setFont(QFont('Times',15))
         self.line2 = QLabel("Blue")
-        self.line2.setFont(QFont('Times',10))
+        self.line2.setFont(QFont('Times',15))
         self.line3 = QLabel("Blue")
-        self.line3.setFont(QFont('Times',10))
+        self.line3.setFont(QFont('Times',15))
         self.table.setCellWidget(0, 1, self.line1)
         self.table.setCellWidget(1, 1, self.line2)
         self.table.setCellWidget(2, 1, self.line3)
@@ -325,12 +328,13 @@ class TestBench(QMainWindow):
         #stations(for blue line)
         self.train1_station = QComboBox()
         self.train1_station.addItems(['Station B', 'Station C', 'Yard'])
-        self.train1_station.setFont(QFont('Times',10))
+        self.train1_station.setFont(QFont('Times',15))
         self.train2_station = QComboBox()
         self.train2_station.addItems(['Station B', 'Station C', 'Yard'])
-        self.train2_station.setFont(QFont('Times',10))
+        self.train2_station.setFont(QFont('Times',15))
         self.train3_station = QComboBox()
         self.train3_station.addItems(['Station B', 'Station C', 'Yard'])
+        self.train3_station.setFont(QFont('Times',15))
         
         self.table.setCellWidget(0,2, self.train1_station)
         self.table.setCellWidget(1,2, self.train2_station)
@@ -339,11 +343,11 @@ class TestBench(QMainWindow):
         
         #text boxes to edit train position
         self.train1_position = QTextEdit('0')
-        self.train1_position.setFont(QFont('Times',10))
+        self.train1_position.setFont(QFont('Times',15))
         self.train2_position = QTextEdit('0')
-        self.train2_position.setFont(QFont('Times',10))
+        self.train2_position.setFont(QFont('Times',15))
         self.train3_position = QTextEdit('0')
-        self.train3_position.setFont(QFont('Times',10))
+        self.train3_position.setFont(QFont('Times',15))
         
         self.table.setCellWidget(0, 3, self.train1_position)
         self.table.setCellWidget(1, 3, self.train2_position)
@@ -353,11 +357,11 @@ class TestBench(QMainWindow):
        
         #place holders for authority 
         self.train1_authority = QLabel('---')
-        self.train1_authority.setFont(QFont('Times',10))
+        self.train1_authority.setFont(QFont('Times',15))
         self.train2_authority = QLabel('---')
-        self.train2_authority.setFont(QFont('Times',10))
+        self.train2_authority.setFont(QFont('Times',15))
         self.train3_authority = QLabel('---')
-        self.train3_authority.setFont(QFont('Times',10))
+        self.train3_authority.setFont(QFont('Times',15))
 
         self.table.setCellWidget(0, 4, self.train1_authority)
         self.table.setCellWidget(1, 4, self.train2_authority)
@@ -366,11 +370,11 @@ class TestBench(QMainWindow):
        
         #place holders for commanded speed 
         self.train1_commanded_speed = QLabel('---')
-        self.train1_commanded_speed.setFont(QFont('Times',10))
+        self.train1_commanded_speed.setFont(QFont('Times',15))
         self.train2_commanded_speed = QLabel('---')
-        self.train2_commanded_speed.setFont(QFont('Times',10))
+        self.train2_commanded_speed.setFont(QFont('Times',15))
         self.train3_commanded_speed = QLabel('---')
-        self.train3_commanded_speed.setFont(QFont('Times',10))
+        self.train3_commanded_speed.setFont(QFont('Times',15))
 
         self.table.setCellWidget(0, 5, self.train1_commanded_speed)
         self.table.setCellWidget(1, 5, self.train2_commanded_speed)
