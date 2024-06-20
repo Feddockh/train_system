@@ -86,10 +86,9 @@ class TrackController:
         
         """
         #Updates that PLC program has been uploaded & file path
-        if(self.plc_program_uploaded == False):
+        if(self.plc_program_uploaded == False or self.plc_program == ""):
             self.plc_program_uploaded = True
             self.plc_program = plc_program
-            print(self.plc_program_uploaded)
             print(self.plc_program)
 
     def run_PLC_program(self):

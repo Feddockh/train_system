@@ -82,33 +82,33 @@ class ProgrammerUI(QtWidgets.QMainWindow):
 
         #FileUpload button
         self.fileUploadPushButton = QtWidgets.QPushButton(parent=self.centralwidget)
-        self.fileUploadPushButton.setGeometry(QtCore.QRect(730, 60, 135, 40))
+        self.fileUploadPushButton.setGeometry(QtCore.QRect(710, 60, 135, 40))
         self.fileUploadPushButton.setObjectName("pushButton")
         self.fileUploadPushButton.clicked.connect(self.getFileName)
         self.fileUploadPushButton.setFont(font)
 
         #Select PLC Program label
         self.label = QtWidgets.QLabel(parent=self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(550, 60, 170, 40))
+        self.label.setGeometry(QtCore.QRect(520, 60, 170, 40))
         self.label.setObjectName("label")
         self.label.setFont(font)
 
         #PLC Program uploaded label
         self.plcUploadedLabel = QtWidgets.QLabel(parent=self.centralwidget)
-        self.plcUploadedLabel.setGeometry(QtCore.QRect(900, 60, 220, 40))
+        self.plcUploadedLabel.setGeometry(QtCore.QRect(870, 60, 220, 40))
         self.label.setObjectName("plcUploadedLabel")
         self.plcUploadedLabel.setFont(font)
         self.plcUploadedLabel.setVisible(False)
 
         #Create Rectangle for Wayside Table
-        self.waysideRec = Rectangle(60, 30, 415, 50, DARK_GREY, self.centralwidget)
+        self.waysideRec = Rectangle(40, 30, 415, 50, DARK_GREY, self.centralwidget)
         self.waysideRec.lower()
-        self.backWayRec = Rectangle(60, 250, 415, 400, WHITE, self.centralwidget)
+        self.backWayRec = Rectangle(40, 250, 415, 400, WHITE, self.centralwidget)
         self.backWayRec.lower()
 
         #Wayside Data Table
         self.tableView = QtWidgets.QTableWidget(parent=self.centralwidget)
-        self.tableView.setGeometry(QtCore.QRect(60, 250, 415, 400))
+        self.tableView.setGeometry(QtCore.QRect(40, 250, 415, 400))
         self.tableView.setObjectName("tableView")
         self.tableView.setColumnCount(4)
         self.tableView.setRowCount(15)
@@ -122,20 +122,20 @@ class ProgrammerUI(QtWidgets.QMainWindow):
 
         #Wayside data combo
         self.comboBox_3 = QtWidgets.QComboBox(parent=self.centralwidget)
-        self.comboBox_3.setGeometry(QtCore.QRect(60, 35, 415, 35))
+        self.comboBox_3.setGeometry(QtCore.QRect(40, 35, 415, 35))
         self.comboBox_3.setObjectName("comboBox_3")
         self.comboBox_3.addItems(lines)
         self.comboBox_3.setFont(font)
 
         #Waysides and Blocks rec
-        self.waysideBlkRec = Rectangle(60, 200, 415, 50, DARK_GREY, self.centralwidget)
+        self.waysideBlkRec = Rectangle(40, 200, 415, 50, DARK_GREY, self.centralwidget)
         self.waysideBlkRec.lower()
-        self.backWaysideBlkRec = Rectangle(60, 80, 415, 100, WHITE, self.centralwidget)
+        self.backWaysideBlkRec = Rectangle(40, 80, 415, 100, WHITE, self.centralwidget)
         self.backWaysideBlkRec.lower()
 
         #Waysides and Blocks their responsible for table
         self.waysideBlkTable = QtWidgets.QTableWidget(parent=self.centralwidget)
-        self.waysideBlkTable.setGeometry(QtCore.QRect(60, 80, 415, 100))
+        self.waysideBlkTable.setGeometry(QtCore.QRect(40, 80, 415, 100))
         self.waysideBlkTable.setObjectName("waysideBlkTable")
         self.waysideBlkTable.setColumnCount(2)
         self.waysideBlkTable.setRowCount(1)
@@ -153,48 +153,49 @@ class ProgrammerUI(QtWidgets.QMainWindow):
 
         #Wayside and blocks combo
         self.comboBox_2 = QtWidgets.QComboBox(parent=self.centralwidget)
-        self.comboBox_2.setGeometry(QtCore.QRect(60, 205, 415, 35))
+        self.comboBox_2.setGeometry(QtCore.QRect(40, 205, 415, 35))
         self.comboBox_2.setObjectName("comboBox_2")
         self.comboBox_2.addItems(waysides)
         self.comboBox_2.setFont(font)
 
         #Block info rec
-        self.blockInfoRec = Rectangle(550, 220, 615, 110, DARK_GREY, self.centralwidget)
+        self.blockInfoRec = Rectangle(470, 220, 715, 110, DARK_GREY, self.centralwidget)
         self.blockInfoRec.lower()
-        self.backBlockInfoRec = Rectangle(550, 330, 615, 320, WHITE, self.centralwidget)
+        self.backBlockInfoRec = Rectangle(470, 330, 715, 320, WHITE, self.centralwidget)
         self.backBlockInfoRec.lower()
 
         #Block info table
         self.blockInfoTable = QtWidgets.QTableWidget(parent=self.centralwidget)
-        self.blockInfoTable.setGeometry(QtCore.QRect(550, 330, 615, 320))
+        self.blockInfoTable.setGeometry(QtCore.QRect(470, 330, 715, 320))
         self.blockInfoTable.setObjectName("blockInfoTable")
-        self.blockInfoTable.setColumnCount(6)
-        self.blockInfoTable.setRowCount(len(self.track_controller.track_occupancies))
+        self.blockInfoTable.setColumnCount(7)
+        self.blockInfoTable.setRowCount(len(self.track_controller.
+                                            track_occupancies))
 
         self.blockInfoTable.verticalHeader().setVisible(False)
         self.blockInfoTable.setItemDelegate(CenterDelegate(self.tableView))
         self.blockInfoTable.setFont(font)
-        self.blockInfoTable.setHorizontalHeaderLabels(['Block #', 'Occupancy', 'Authority[ft]', 'Speed[mph]','Switch','Signal'])
+        self.blockInfoTable.setHorizontalHeaderLabels(['Block #', 'Occupancy', 'Authority[ft]', 'Speed[mph]','Switch','Signal','Crossing'])
         self.blockInfoTable.horizontalHeader().setFont(font)
         self.add_block_info_table_data()
 
         #Combobox for block info table
         self.comboBox = QtWidgets.QComboBox(parent=self.centralwidget)
-        self.comboBox.setGeometry(QtCore.QRect(570, 230, 575, 35))
+        self.comboBox.setGeometry(QtCore.QRect(540, 230, 575, 35))
         self.comboBox.setObjectName("comboBox")
         self.comboBox.addItems(lines)
         self.comboBox.setFont(font)
 
         #TextEdit box for block info table
         self.textEdit = QtWidgets.QTextEdit(parent=self.centralwidget)
-        self.textEdit.setGeometry(QtCore.QRect(750, 270, 200, 40))
+        self.textEdit.setGeometry(QtCore.QRect(735, 270, 200, 40))
         self.textEdit.setObjectName("textEdit")
         self.textEdit.setFont(font)
 
         #Go to Test Bench button
         self.testBenchBtn = QPushButton("Test Bench", self.centralwidget)
         self.testBenchBtn.clicked.connect(self.open_test_bench)
-        self.testBenchBtn.setGeometry(QtCore.QRect(550, 150, 135, 40))
+        self.testBenchBtn.setGeometry(QtCore.QRect(520, 150, 135, 40))
         self.testBenchBtn.setFont(font)
 
         #Setting central widget
@@ -238,7 +239,7 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         )
         self.track_controller.get_PLC_program(response[0])
 
-        if(self.track_controller.plc_program_uploaded == True):
+        if(self.track_controller.plc_program_uploaded == True and self.track_controller.plc_program != ""):
             self.plcUploadedLabel.setVisible(True)
         else:
             self.plcUploadedLabel.setVisible(False)
@@ -291,29 +292,29 @@ class ProgrammerUI(QtWidgets.QMainWindow):
                 text.setFlags(text.flags() & ~Qt.ItemFlag.ItemIsEditable)
                 self.tableView.setItem(i, j, text) 
         
-        #If crossing is up
-        if(self.track_controller.crossing_states == False):
-            self.tableView.setItem(3, 11, CrossingSignal('', GREEN))
+        #If signal is red/green
+        if(self.track_controller.signal_states == False):
+            self.tableView.setItem(4, 3, CrossingSignal('', GREEN))
         else:
-            self.tableView.setItem(3, 11, CrossingSignal('', RED))
+            self.tableView.setItem(4, 3, CrossingSignal('', RED))
 
     def add_block_info_table_data(self):
         data = [
-            ['1', self.display_occupied_tracks(0), self.track_controller.train_authorities[0], self.track_controller.train_authorities[0] , '-', '-'],
-            ['2', self.display_occupied_tracks(1), self.track_controller.train_authorities[1], self.track_controller.train_authorities[1],'-', '-'],
-            ['3', self.display_occupied_tracks(2), self.track_controller.train_authorities[2], self.track_controller.train_authorities[2],'-', '-'],
-            ['4', self.display_occupied_tracks(3), self.track_controller.train_authorities[3], self.track_controller.train_authorities[3],'-', '-'],
-            ['5', self.display_occupied_tracks(4), self.track_controller.train_authorities[4], self.track_controller.train_authorities[4],self.display_switch_pos(5), ' '],
-            ['6', self.display_occupied_tracks(5), self.track_controller.train_authorities[5], self.track_controller.train_authorities[5],self.display_switch_pos(6), '-'],
-            ['7', self.display_occupied_tracks(6), self.track_controller.train_authorities[6], self.track_controller.train_authorities[6],'-', '-'],
-            ['8', self.display_occupied_tracks(7), self.track_controller.train_authorities[7], self.track_controller.train_authorities[7],'-', '-'],
-            ['9', self.display_occupied_tracks(8), self.track_controller.train_authorities[8], self.track_controller.train_authorities[8],'-', '-'],
-            ['10', self.display_occupied_tracks(9), self.track_controller.train_authorities[9], self.track_controller.train_authorities[9],'-', '-'],
-            ['11', self.display_occupied_tracks(10), self.track_controller.train_authorities[10], self.track_controller.train_authorities[10],self.display_switch_pos(11), '-'],
-            ['12', self.display_occupied_tracks(11), self.track_controller.train_authorities[11], self.track_controller.train_authorities[11],'-', '-'],
-            ['13', self.display_occupied_tracks(12), self.track_controller.train_authorities[12], self.track_controller.train_authorities[12],'-', '-'],
-            ['14', self.display_occupied_tracks(13), self.track_controller.train_authorities[13], self.track_controller.train_authorities[13],'-', '-'],
-            ['15', self.display_occupied_tracks(14), self.track_controller.train_authorities[14], self.track_controller.train_authorities[14],'-', '-']
+            ['1', self.display_occupied_tracks(0), self.track_controller.train_authorities[0], self.track_controller.train_authorities[0] , '-', '-', '-'],
+            ['2', self.display_occupied_tracks(1), self.track_controller.train_authorities[1], self.track_controller.train_authorities[1],'-', '-', '-'],
+            ['3', self.display_occupied_tracks(2), self.track_controller.train_authorities[2], self.track_controller.train_authorities[2],'-', '-', '-'],
+            ['4', self.display_occupied_tracks(3), self.track_controller.train_authorities[3], self.track_controller.train_authorities[3],'-', '-' ,'-'],
+            ['5', self.display_occupied_tracks(4), self.track_controller.train_authorities[4], self.track_controller.train_authorities[4],self.display_switch_pos(5), ' ', '-'],
+            ['6', self.display_occupied_tracks(5), self.track_controller.train_authorities[5], self.track_controller.train_authorities[5],self.display_switch_pos(6), '-', '-'],
+            ['7', self.display_occupied_tracks(6), self.track_controller.train_authorities[6], self.track_controller.train_authorities[6],'-', '-', '-'],
+            ['8', self.display_occupied_tracks(7), self.track_controller.train_authorities[7], self.track_controller.train_authorities[7],'-', '-', self.display_crossing_signal()],
+            ['9', self.display_occupied_tracks(8), self.track_controller.train_authorities[8], self.track_controller.train_authorities[8],'-', '-', '-'],
+            ['10', self.display_occupied_tracks(9), self.track_controller.train_authorities[9], self.track_controller.train_authorities[9],'-', '-','-'],
+            ['11', self.display_occupied_tracks(10), self.track_controller.train_authorities[10], self.track_controller.train_authorities[10],self.display_switch_pos(11), '-','-'],
+            ['12', self.display_occupied_tracks(11), self.track_controller.train_authorities[11], self.track_controller.train_authorities[11],'-', '-', '-'],
+            ['13', self.display_occupied_tracks(12), self.track_controller.train_authorities[12], self.track_controller.train_authorities[12],'-', '-','-'],
+            ['14', self.display_occupied_tracks(13), self.track_controller.train_authorities[13], self.track_controller.train_authorities[13],'-', '-','-'],
+            ['15', self.display_occupied_tracks(14), self.track_controller.train_authorities[14], self.track_controller.train_authorities[14],'-', '-', '-']
         ]
 
         for i, row in enumerate(data):
@@ -322,11 +323,18 @@ class ProgrammerUI(QtWidgets.QMainWindow):
                 text.setFlags(text.flags() & ~Qt.ItemFlag.ItemIsEditable)
                 self.blockInfoTable.setItem(i, j, text)
 
-        #If crossing is up
-        if(self.track_controller.crossing_states == False):
-            self.blockInfoTable.setItem(3, 11, CrossingSignal('', GREEN))
+        #If light signal is red or green
+        if(self.track_controller.signal_states == False):
+            self.blockInfoTable.setItem(4, 5, CrossingSignal('', GREEN))
         else:
-            self.blockInfoTable.setItem(3, 11, CrossingSignal('', RED))
+            self.blockInfoTable.setItem(4, 5, CrossingSignal('', RED))
+
+
+    def display_crossing_signal(self):
+        if (self.track_controller.crossing_states == False):
+            return "Up"
+        else: 
+            return "Down"
 
     def add_wayside_blk_table_data(self):
         data = [
@@ -346,7 +354,9 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         self.test_bench.show()
         self.hide()
 
-
+"""
+Test Bench UI - Can be brought here by selecting test bench from Programmer UI
+"""
 class TestBench(QtWidgets.QMainWindow):
 
     #def setupUi(self, MainWindow):
@@ -376,26 +386,33 @@ class TestBench(QtWidgets.QMainWindow):
 
         #FileUpload button
         self.fileUploadPushButton = QtWidgets.QPushButton(parent=self.centralwidget)
-        self.fileUploadPushButton.setGeometry(QtCore.QRect(730, 60, 135, 40))
+        self.fileUploadPushButton.setGeometry(QtCore.QRect(710, 60, 135, 40))
         self.fileUploadPushButton.setObjectName("pushButton")
         self.fileUploadPushButton.clicked.connect(self.getFileName)
         self.fileUploadPushButton.setFont(font)
 
         #Select PLC Program label
         self.label = QtWidgets.QLabel(parent=self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(550, 60, 170, 40))
+        self.label.setGeometry(QtCore.QRect(520, 60, 170, 40))
         self.label.setObjectName("label")
         self.label.setFont(font)
 
+        #Label for PLC program uploaded
+        self.plcUploadedLabel = QtWidgets.QLabel(parent=self.centralwidget)
+        self.plcUploadedLabel.setGeometry(QtCore.QRect(870, 60, 220, 40))
+        self.label.setObjectName("plcUploadedLabel")
+        self.plcUploadedLabel.setFont(font)
+        self.plcUploadedLabel.setVisible(False)
+
         #Create Rectangle for Wayside Table
-        self.waysideRec = Rectangle(60, 30, 415, 50, DARK_GREY, self.centralwidget)
+        self.waysideRec = Rectangle(40, 30, 415, 50, DARK_GREY, self.centralwidget)
         self.waysideRec.lower()
-        self.backWayRec = Rectangle(60, 250, 415, 400, WHITE, self.centralwidget)
+        self.backWayRec = Rectangle(40, 250, 415, 400, WHITE, self.centralwidget)
         self.backWayRec.lower()
 
         #Wayside Data Table
         self.tableView = QtWidgets.QTableWidget(parent=self.centralwidget)
-        self.tableView.setGeometry(QtCore.QRect(60, 250, 415, 400))
+        self.tableView.setGeometry(QtCore.QRect(40, 250, 415, 400))
         self.tableView.setObjectName("tableView")
         self.tableView.setColumnCount(4)
         self.tableView.setRowCount(15)
@@ -407,22 +424,25 @@ class TestBench(QtWidgets.QMainWindow):
         self.add_wayside_table_data()
         self.tableView.setFont(font)
 
+        #Handling updates to wayside block table
+        self.tableView.itemChanged.connect(self.item_changed_waysideData)
+
         #Wayside data combo
         self.comboBox_3 = QtWidgets.QComboBox(parent=self.centralwidget)
-        self.comboBox_3.setGeometry(QtCore.QRect(60, 35, 415, 35))
+        self.comboBox_3.setGeometry(QtCore.QRect(40, 35, 415, 35))
         self.comboBox_3.setObjectName("comboBox_3")
         self.comboBox_3.addItems(lines)
         self.comboBox_3.setFont(font)
 
         #Waysides and Blocks rec
-        self.waysideBlkRec = Rectangle(60, 200, 415, 50, DARK_GREY, self.centralwidget)
+        self.waysideBlkRec = Rectangle(40, 200, 415, 50, DARK_GREY, self.centralwidget)
         self.waysideBlkRec.lower()
-        self.backWaysideBlkRec = Rectangle(60, 80, 415, 100, WHITE, self.centralwidget)
+        self.backWaysideBlkRec = Rectangle(40, 80, 415, 100, WHITE, self.centralwidget)
         self.backWaysideBlkRec.lower()
 
         #Waysides and Blocks their responsible for table
         self.waysideBlkTable = QtWidgets.QTableWidget(parent=self.centralwidget)
-        self.waysideBlkTable.setGeometry(QtCore.QRect(60, 80, 415, 100))
+        self.waysideBlkTable.setGeometry(QtCore.QRect(40, 80, 415, 100))
         self.waysideBlkTable.setObjectName("waysideBlkTable")
         self.waysideBlkTable.setColumnCount(2)
         self.waysideBlkTable.setRowCount(1)
@@ -440,28 +460,28 @@ class TestBench(QtWidgets.QMainWindow):
 
         #Wayside and blocks combo
         self.comboBox_2 = QtWidgets.QComboBox(parent=self.centralwidget)
-        self.comboBox_2.setGeometry(QtCore.QRect(60, 205, 415, 35))
+        self.comboBox_2.setGeometry(QtCore.QRect(40, 205, 415, 35))
         self.comboBox_2.setObjectName("comboBox_2")
         self.comboBox_2.addItems(waysides)
         self.comboBox_2.setFont(font)
 
         #Block info rec
-        self.blockInfoRec = Rectangle(550, 220, 615, 110, DARK_GREY, self.centralwidget)
+        self.blockInfoRec = Rectangle(470, 220, 715, 110, DARK_GREY, self.centralwidget)
         self.blockInfoRec.lower()
-        self.backBlockInfoRec = Rectangle(550, 330, 615, 320, WHITE, self.centralwidget)
+        self.backBlockInfoRec = Rectangle(470, 330, 715, 320, WHITE, self.centralwidget)
         self.backBlockInfoRec.lower()
 
         #Block info table
         self.blockInfoTable = QtWidgets.QTableWidget(parent=self.centralwidget)
-        self.blockInfoTable.setGeometry(QtCore.QRect(550, 330, 615, 320))
+        self.blockInfoTable.setGeometry(QtCore.QRect(470, 330, 715, 320))
         self.blockInfoTable.setObjectName("blockInfoTable")
-        self.blockInfoTable.setColumnCount(6)
+        self.blockInfoTable.setColumnCount(7)
         self.blockInfoTable.setRowCount(len(self.track_controller.track_occupancies))
 
         self.blockInfoTable.verticalHeader().setVisible(False)
         self.blockInfoTable.setItemDelegate(CenterDelegate(self.tableView))
         self.blockInfoTable.setFont(font)
-        self.blockInfoTable.setHorizontalHeaderLabels(['Block #', 'Occupancy', 'Authority[ft]', 'Speed[mph]','Switch','Signal'])
+        self.blockInfoTable.setHorizontalHeaderLabels(['Block #', 'Occupancy', 'Authority[ft]', 'Speed[mph]','Switch','Signal','Crossing'])
         self.blockInfoTable.horizontalHeader().setFont(font)
         self.add_block_info_table_data()
 
@@ -470,21 +490,21 @@ class TestBench(QtWidgets.QMainWindow):
 
         #Combobox for block info table
         self.comboBox = QtWidgets.QComboBox(parent=self.centralwidget)
-        self.comboBox.setGeometry(QtCore.QRect(570, 230, 575, 35))
+        self.comboBox.setGeometry(QtCore.QRect(540, 230, 575, 35))
         self.comboBox.setObjectName("comboBox")
         self.comboBox.addItems(lines)
         self.comboBox.setFont(font)
 
         #TextEdit box for block info table
         self.textEdit = QtWidgets.QTextEdit(parent=self.centralwidget)
-        self.textEdit.setGeometry(QtCore.QRect(750, 270, 200, 40))
+        self.textEdit.setGeometry(QtCore.QRect(735, 270, 200, 40))
         self.textEdit.setObjectName("textEdit")
         self.textEdit.setFont(font)
 
-        #Go to Test Bench button
+        #End Test Bench button
         self.testBenchBtn = QPushButton("Test Bench", self.centralwidget)
         self.testBenchBtn.clicked.connect(self.open_programmer_ui)
-        self.testBenchBtn.setGeometry(QtCore.QRect(550, 150, 135, 40))
+        self.testBenchBtn.setGeometry(QtCore.QRect(520, 150, 135, 40))
         self.testBenchBtn.setFont(font)
         self.testBenchBtn.setStyleSheet("""
         QPushButton {
@@ -512,13 +532,18 @@ class TestBench(QtWidgets.QMainWindow):
         self.setWindowTitle(_translate("TestBench", "Testbench"))
         self.fileUploadPushButton.setText(_translate("TestBench", "Upload File"))
         self.label.setText(_translate("TestBench", "Select PLC Program:"))
+        self.plcUploadedLabel.setText(_translate("ProgrammerUI", "PLC program uploaded."))
 
     #Updates UI values to reflect backend changes
     def update_ui(self):
+        self.blockInfoTable.itemChanged.disconnect(self.item_changed_blockInfo)
+        self.tableView.itemChanged.disconnect(self.item_changed_waysideData)
         self.track_controller.run_PLC_program()
         self.add_wayside_table_data()
         self.add_wayside_blk_table_data()
         self.add_block_info_table_data()
+        self.blockInfoTable.itemChanged.connect(self.item_changed_blockInfo)
+        self.tableView.itemChanged.connect(self.item_changed_waysideData)
 
     #Allows User to select PLC Program from directory
     def getFileName(self):    
@@ -531,6 +556,11 @@ class TestBench(QtWidgets.QMainWindow):
             initialFilter = 'Data File (*.py)'
         )
         self.track_controller.get_PLC_program(response[0])
+
+        if(self.track_controller.plc_program_uploaded == True and self.track_controller.plc_program != ""):
+            self.plcUploadedLabel.setVisible(True)
+        else:
+            self.plcUploadedLabel.setVisible(False)
 
     def item_changed_blockInfo(self, item):
         row = item.row()
@@ -555,12 +585,27 @@ class TestBench(QtWidgets.QMainWindow):
                 #Update Switches
                 #Signal
                 print("")
-        self.blockInfoTable.itemChanged.disconnect(self.item_changed_blockInfo)
         self.update_ui()
-        self.blockInfoTable.itemChanged.connect(self.item_changed_blockInfo)
-    
       
+    def item_changed_waysideData(self, item):
+        row = item.row()
+        column = item.column()
+        new_item = item.text()
 
+        match column:
+            #Occupancy
+            case 1:
+                if (new_item == "Occupied"):
+                    self.track_controller.track_occupancies[row] = True
+                else:
+                    self.track_controller.track_occupancies[row] = False
+            #Switch
+            case 2:
+                self.track_controller.train_authorities[row] = new_item
+            #Signal
+            case 3:
+                print("")
+        self.update_ui()
 
 
     #Converts track_occupancies into "occupied/in operation"
@@ -609,40 +654,46 @@ class TestBench(QtWidgets.QMainWindow):
             for j, item in enumerate(row):
                 self.tableView.setItem(i, j, QtWidgets.QTableWidgetItem(str(item))) 
         
-        #If crossing is up
-        if(self.track_controller.crossing_states == False):
-            self.tableView.setItem(3, 11, CrossingSignal('', GREEN))
+        #If light is red/green
+        if(self.track_controller.signal_states == False):
+            self.tableView.setItem(4, 3, CrossingSignal('', GREEN))
         else:
-            self.tableView.setItem(3, 11, CrossingSignal('', RED))
+            self.tableView.setItem(4, 3, CrossingSignal('', RED))
 
     def add_block_info_table_data(self):
         data = [
-            ['1', self.display_occupied_tracks(0), self.track_controller.train_authorities[0], self.track_controller.train_authorities[0] , '-', '-'],
-            ['2', self.display_occupied_tracks(1), self.track_controller.train_authorities[1], self.track_controller.train_authorities[1],'-', '-'],
-            ['3', self.display_occupied_tracks(2), self.track_controller.train_authorities[2], self.track_controller.train_authorities[2],'-', '-'],
-            ['4', self.display_occupied_tracks(3), self.track_controller.train_authorities[3], self.track_controller.train_authorities[3],'-', '-'],
-            ['5', self.display_occupied_tracks(4), self.track_controller.train_authorities[4], self.track_controller.train_authorities[4],self.display_switch_pos(5), ' '],
-            ['6', self.display_occupied_tracks(5), self.track_controller.train_authorities[5], self.track_controller.train_authorities[5],self.display_switch_pos(6), '-'],
-            ['7', self.display_occupied_tracks(6), self.track_controller.train_authorities[6], self.track_controller.train_authorities[6],'-', '-'],
-            ['8', self.display_occupied_tracks(7), self.track_controller.train_authorities[7], self.track_controller.train_authorities[7],'-', '-'],
-            ['9', self.display_occupied_tracks(8), self.track_controller.train_authorities[8], self.track_controller.train_authorities[8],'-', '-'],
-            ['10', self.display_occupied_tracks(9), self.track_controller.train_authorities[9], self.track_controller.train_authorities[9],'-', '-'],
-            ['11', self.display_occupied_tracks(10), self.track_controller.train_authorities[10], self.track_controller.train_authorities[10],self.display_switch_pos(11), '-'],
-            ['12', self.display_occupied_tracks(11), self.track_controller.train_authorities[11], self.track_controller.train_authorities[11],'-', '-'],
-            ['13', self.display_occupied_tracks(12), self.track_controller.train_authorities[12], self.track_controller.train_authorities[12],'-', '-'],
-            ['14', self.display_occupied_tracks(13), self.track_controller.train_authorities[13], self.track_controller.train_authorities[13],'-', '-'],
-            ['15', self.display_occupied_tracks(14), self.track_controller.train_authorities[14], self.track_controller.train_authorities[14],'-', '-']
+            ['1', self.display_occupied_tracks(0), self.track_controller.train_authorities[0], self.track_controller.train_authorities[0] , '-', '-', '-'],
+            ['2', self.display_occupied_tracks(1), self.track_controller.train_authorities[1], self.track_controller.train_authorities[1],'-', '-', '-'],
+            ['3', self.display_occupied_tracks(2), self.track_controller.train_authorities[2], self.track_controller.train_authorities[2],'-', '-', '-'],
+            ['4', self.display_occupied_tracks(3), self.track_controller.train_authorities[3], self.track_controller.train_authorities[3],'-', '-' ,'-'],
+            ['5', self.display_occupied_tracks(4), self.track_controller.train_authorities[4], self.track_controller.train_authorities[4],self.display_switch_pos(5), ' ', '-'],
+            ['6', self.display_occupied_tracks(5), self.track_controller.train_authorities[5], self.track_controller.train_authorities[5],self.display_switch_pos(6), '-', '-'],
+            ['7', self.display_occupied_tracks(6), self.track_controller.train_authorities[6], self.track_controller.train_authorities[6],'-', '-', '-'],
+            ['8', self.display_occupied_tracks(7), self.track_controller.train_authorities[7], self.track_controller.train_authorities[7],'-', '-', self.display_crossing_signal()],
+            ['9', self.display_occupied_tracks(8), self.track_controller.train_authorities[8], self.track_controller.train_authorities[8],'-', '-', '-'],
+            ['10', self.display_occupied_tracks(9), self.track_controller.train_authorities[9], self.track_controller.train_authorities[9],'-', '-','-'],
+            ['11', self.display_occupied_tracks(10), self.track_controller.train_authorities[10], self.track_controller.train_authorities[10],self.display_switch_pos(11), '-','-'],
+            ['12', self.display_occupied_tracks(11), self.track_controller.train_authorities[11], self.track_controller.train_authorities[11],'-', '-', '-'],
+            ['13', self.display_occupied_tracks(12), self.track_controller.train_authorities[12], self.track_controller.train_authorities[12],'-', '-','-'],
+            ['14', self.display_occupied_tracks(13), self.track_controller.train_authorities[13], self.track_controller.train_authorities[13],'-', '-','-'],
+            ['15', self.display_occupied_tracks(14), self.track_controller.train_authorities[14], self.track_controller.train_authorities[14],'-', '-', '-']
         ]
 
         for i, row in enumerate(data):
             for j, item in enumerate(row):
                 self.blockInfoTable.setItem(i, j, QtWidgets.QTableWidgetItem(str(item)))
 
-        #If crossing is up
-        if(self.track_controller.crossing_states == False):
-            self.blockInfoTable.setItem(3, 11, CrossingSignal('', GREEN))
+        #If light is red/green
+        if(self.track_controller.signal_states == False):
+            self.blockInfoTable.setItem(4, 5, CrossingSignal('', GREEN))
         else:
-            self.blockInfoTable.setItem(3, 11, CrossingSignal('', RED))
+            self.blockInfoTable.setItem(4, 5, CrossingSignal('', RED))
+
+    def display_crossing_signal(self):
+        if (self.track_controller.crossing_states == False):
+            return "Up"
+        else: 
+            return "Down"
 
     def add_wayside_blk_table_data(self):
         data = [
