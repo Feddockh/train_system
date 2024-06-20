@@ -86,7 +86,8 @@ class TrackBlock(QObject):
             f"Block Cumulative Elevation:   {self.cumulative_elevation}\n"
             f"Block Infrastructure:         {self.infrastructure}\n"
             f"Connecting Track Blocks:      {connecting_blocks}\n"
-            f"Block Station:                {self.station.name}\n"
+            # TODO: Make the station name available
+            # f"Block Station:                {self.station.name}\n"
             f"Block Station Side:           {self.station_side}\n"
             f"Suggested Speed:              {self.authority}\n"
             f"Authority:                    {self.authority}\n"

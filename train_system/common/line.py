@@ -224,4 +224,5 @@ if __name__ == "__main__":
 
     line = Line('Blue')
     line.load_track_blocks(file_path)
+    line.station_search()
     print(line)
