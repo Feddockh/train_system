@@ -37,11 +37,11 @@ class MBOWindow(QMainWindow):
         MBO = MBOController()
         #displaying current dispatch mode
         self.dispatch_label = QLabel('Dispatch Mode:') 
-        self.dispatch_label.setFont(QFont('Times',10))
-        self.dispatch_label.setFixedSize(100,50)
+        self.dispatch_label.setFont(QFont('Times',15))
+        self.dispatch_label.setFixedSize(200,50)
         self.dispatch_mode = QLabel(str(MBO.dispatch_mode))
-        self.dispatch_mode.setFont(QFont('Times',10))
-        self.dispatch_mode.setFixedSize(150,50)
+        self.dispatch_mode.setFont(QFont('Times',15))
+        self.dispatch_mode.setFixedSize(200,50)
         
         
         #lable to prompt/dircetion for user to enter information
@@ -176,8 +176,8 @@ class MBOModeView(QMainWindow):
         self.demo_data_speed = m.commanded_speed(1)
         
         self.row1 = ["Train1", "Blue", self.demo_data_destination['Train1'], str(m.m_to_ft(self.demo_data_positions['Train1'])), str(m.m_to_ft(self.demo_data_authority['Train1'])), str(m.ms_to_mph(self.demo_data_speed)) ]
-        self.row2 = ["Train2", "Blue", self.demo_data_destination['Train2'], str(self.demo_data_positions['Train2']), str(self.demo_data_authority['Train2']), str(self.demo_data_speed) ]
-        self.row3 = ["Train3", "Blue", self.demo_data_destination['Train3'], str(self.demo_data_positions['Train3']), str(self.demo_data_authority['Train3']), str(self.demo_data_speed) ]
+        self.row2 = ["Train2", "Blue", self.demo_data_destination['Train2'], str(m.m_to_ft(self.demo_data_positions['Train2'])), str(m.m_to_ft(self.demo_data_authority['Train2'])), str(m.ms_to_mph(self.demo_data_speed))]
+        self.row3 = ["Train3", "Blue", self.demo_data_destination['Train3'], str(m.m_to_ft(self.demo_data_positions['Train3'])), str(m.m_to_ft(self.demo_data_authority['Train3'])), str(m.ms_to_mph(self.demo_data_speed))]
 
         
         
