@@ -7,12 +7,12 @@ from PyQt6 import QtCore, QtGui, QtWidgets, uic
 class CircleWidget(QWidget):
 
 
-    def __init__(self, x, y, color):
+    def __init__(self, x, y):
         super().__init__()
 
         self.x = x
         self.y = y
-        self.color = color
+        self.color = QColor(Qt.GlobalColor.white)
         
         ##self.setWindowTitle('Solid Green Circle')
         ##self.setGeometry(100, 100, 300, 300)  # Set initial size and position
@@ -32,6 +32,10 @@ class CircleWidget(QWidget):
         painter.setBrush(brush)
         painter.drawEllipse(self.x, self.y, 50, 50)
 
+    def setColor(self,color):
+        self.color = QColor(color)
+        self.update()
+        
 class TinyCircleWidget(QWidget):
 
 

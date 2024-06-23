@@ -8,9 +8,7 @@ def main():
     tc = TrainController(tm)
 
     #test ui inputs
-    tc.current_speed = 5
-    tc.commanded_speed = 7
-    tc.faults[0] = True
+    #tc.engineer.set_ki(1)
 
     #open ui
     app = QApplication(sys.argv)
@@ -24,6 +22,12 @@ def main():
     print("kp: " + str(int(tc.engineer.get_kp())))
     print("setpoint speed: " + str(tc.setpoint_speed))
     print("comm temp: " + str(tc.ac.get_commanded_temp()))
+    print("engine fault: " + str(tc.faults[0]))
+    print("em brake: " + str(tc.brake.get_emergency_brake()))
+    print("service brake: " + str(tc.brake.get_service_brake()))
+    print("right door " + str(tc.doors.get_right()))
+    print("lights: " + str(tc.lights.get_status()))
+
 
 
 
