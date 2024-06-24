@@ -6,3 +6,4 @@ class DispatchMode(Enum):
     MANUAL_MBO_OVERLAY = auto()
     AUTOMATIC_MBO_OVERLAY = auto()
     MAINENANCE = auto()
+
