@@ -17,7 +17,7 @@ class DispatcherUI(QMainWindow):
 
         """
         Initializes the DispatcherUI object, setting up the main window 
-        and its components.
+        and its layout/widgets.
         """
 
         super().__init__()
@@ -30,7 +30,7 @@ class DispatcherUI(QMainWindow):
         self.setGeometry(100, 100, 800, 600)
 
         # Create a layout for the UI
-        central_widget = QWidget()
+        self.central_widget = QWidget()
         self.layout = QVBoxLayout()
 
         # Create layouts for the top layout and bottom layout
@@ -107,7 +107,8 @@ class DispatcherUI(QMainWindow):
         self.bottom_stacked_widget.addWidget(self.dispatch_command_widget)
 
         # Schedule Widget
-        self.schedule_selection_widget = ScheduleSelectionWidget()
+        self.schedule_selection_widget = ScheduleSelectionWidget(
+            self.ctc_manager.line)
         self.bottom_stacked_widget.addWidget(self.schedule_selection_widget)
 
         # Train Information Widget
@@ -115,8 +116,8 @@ class DispatcherUI(QMainWindow):
             self.ctc_manager.line, self.ctc_manager.trains)
         self.bottom_layout.addWidget(self.train_info_widget)
 
-        central_widget.setLayout(self.layout)
-        self.setCentralWidget(central_widget)
+        self.central_widget.setLayout(self.layout)
+        self.setCentralWidget(self.central_widget)
 
     def toggle_test_bench_mode(self, state):
 

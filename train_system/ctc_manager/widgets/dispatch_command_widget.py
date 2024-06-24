@@ -6,6 +6,7 @@ from typing import Optional
 
 from train_system.common.line import Line
 from train_system.common.train import Train
+from train_system.ctc_manager.ctc_manager import CTCOffice
 
 class DispatchCommandWidget(QWidget):
     def __init__(self, line: Line, trains: list[Train], 
@@ -182,9 +183,20 @@ class DispatchCommandWidget(QWidget):
         
         for row in range(self.rows):
             train_id = self.table.cellWidget(row, 0).currentText()
-            block_number = self.table.cellWidget(row, 1).currentText()
+            target_block = self.table.cellWidget(row, 1).currentText()
             arrival_time = self.table.cellWidget(row, 2).currentText()
-            print(f"Train {train_id} dispatched to block {block_number} at {arrival_time}")
+            print(f"Train {train_id} dispatched to block {target_block} at {arrival_time}")
+
+            # Compute the distance from the train to the first stop
+            distance = self.line.get_distance(1, int(target_block))
+            if distance == 0:
+                print("Suggest Initial Speed: 0")
+            else:
+                print("Suggest Initial Speed: 50")
+
+            # Compute the authority for the train
+            print("Initial Authority: ", distance)
 
         self.rows = 0
         self.table.setRowCount(self.rows)
+            

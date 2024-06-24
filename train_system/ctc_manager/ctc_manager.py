@@ -33,13 +33,22 @@ class CTCOffice:
             int: Passenger throughput over the past hour.
         """
     
-    def compute_suggested_speed(self):
+    def compute_suggested_speed(self, line: Line, train: Train, target_block: int):
         """
         Compute the suggested speed for each train based on track occupancy.
 
         Returns:
             float: Suggested speed for the train.
         """
+
+        # Get the current block
+        current_block = train.current_block
+
+        # Get the distance to the target block
+        distance = line.get_distance(current_block, target_block)
+        print(f"Distance to target block: {distance}")
+
+
     
     def compute_authority(self, train_id: int):
         """

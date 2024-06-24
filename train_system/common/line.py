@@ -216,6 +216,72 @@ class Line:
                     # Assign the station to the block
                     block.station = station
 
+    def get_distance(self, start: int, end: int) -> int:
+
+        """
+        Returns the distance between two track blocks.
+        
+        Args:
+            start (int): The starting block number.
+            end (int): The ending block number.
+        
+        Returns:
+            int: The distance between the two blocks.
+        """
+
+        # recursively search for the distance between the two blocks
+        return self.distance_search([], start, end, 0)
+    
+    def distance_search(self, closed: list[int], start: int, end: int, distance: int) -> int:
+            
+            """
+            Recursively searches for the distance between two track blocks.
+            
+            Args:
+                start (int): The starting block number.
+                end (int): The ending block number.
+                distance (int): The distance between the two blocks.
+            
+            Returns:
+                int: The distance between the two blocks.
+            """
+    
+            # If the start and end blocks are the same, return the distance
+            if start == end:
+                return distance
+            
+            # Add the current block to the closed list
+            closed.append(start)
+    
+            # Get the current block
+            current_block = self.get_track_block(start)
+            # print("Current Block: " + str(current_block.number))
+    
+            # If the current block is not found, return -1
+            if not current_block:
+                return -1
+    
+            # For each connecting block
+            for connecting_block in current_block.connecting_blocks:
+
+                # If the connecting block is in the closed list, skip it
+                if connecting_block.number in closed:
+                    continue
+    
+                # Recursively search for the distance
+                # print("Connecting Block: " + str(connecting_block.number))
+                track_block_length = current_block.length
+                result = self.distance_search(
+                    closed, connecting_block.number, end, distance + track_block_length
+                )
+    
+                # If the result is not -1, return the result
+                if result != -1:
+                    return result
+    
+            # If the end block is not found, return -1
+            return -1
+
 if __name__ == "__main__":
     file_path = (
         'C:/Users/hayde/OneDrive/Pitt/2024_Summer_Term/ECE 1140/'

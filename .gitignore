@@ -1,7 +1,7 @@
 train_system/__pycache__
 train_system/common/__pycache__
 train_system/ctc_manager/__pycache__
-train_system/ctc_manager/.*
+train_system/ctc_manager/test/
 train_system/mbo_manager/__pycache__
 train_system/track_controller/__pycache__
 train_system/track_model/__pycache__

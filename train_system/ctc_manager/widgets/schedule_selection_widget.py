@@ -9,6 +9,7 @@ import pandas as pd
 import os
 
 from train_system.common.schedule import Schedule
+from train_system.common.line import Line
 
 class ScheduleSelectionWidget(QWidget):
     
@@ -16,7 +17,7 @@ class ScheduleSelectionWidget(QWidget):
     A widget to select and display train schedules from Excel files.
     """
 
-    def __init__(self, parent: Optional[QWidget] = None) -> None:
+    def __init__(self, line: Line, parent: Optional[QWidget] = None) -> None:
 
         """
         Initializes the ScheduleSelectionWidget.
@@ -27,6 +28,7 @@ class ScheduleSelectionWidget(QWidget):
 
         super().__init__(parent)
         self.title = "Schedule Selection"
+        self.line = line
         self.schedules = []
         self.current_schedule_index = -1
         self.rows = 0
@@ -180,9 +182,19 @@ class ScheduleSelectionWidget(QWidget):
 
         for row in range(self.rows):
             train_id = self.table.item(row, 0).text()
-            block_number = self.table.item(row, 1).text()
+            target_block = self.table.item(row, 1).text()
             arrival_time = self.table.item(row, 2).text()
-            print(f"Train {train_id} dispatched to block {block_number} at {arrival_time}")
+            print(f"Train {train_id} dispatched to block {target_block} at {arrival_time}")
+
+            # # Compute the distance from the train to the first stop
+            # distance = self.line.get_distance(1, int(target_block))
+            # if distance == 0:
+            #     print("Suggest Initial Speed: 0")
+            # else:
+            #     print("Suggest Initial Speed: 50")
+
+            # # Compute the authority for the train
+            # print("Initial Authority: ", distance)
 
         self.rows = 0
         self.table.setRowCount(self.rows)
