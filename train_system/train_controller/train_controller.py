@@ -29,13 +29,13 @@ Storing previous beacon data: How are we going to do that and what will it look 
 '''
 
 class TrainController:
-    def __init__(self, train_model):
+    def __init__(self, train_model=None):
         self.hardware = False
         self.elapsed_time = 0
         self.time_step = 0.05  # 0.05 second time step
 
         ## Initialize objects
-        self.train_model = train_model  # Used to store data received from Train Model. No computations done in the object
+        self.train_model = train_model if train_model else TrainModel()  # Used to store data received from Train Model. No computations done in the object
         self.engineer = self.Engineer() # Engineer holds Kp and Ki and is the only one that can set them
         self.brake = self.Brake()       # Brake holds service and emergency brake status
         self.engine = self.Engine()     # Engine calculates power command and simulates train response
@@ -61,14 +61,17 @@ class TrainController:
         self.station = None          # Station of the beacon the train is connected to
         self.faults = None           # Fault statuses from the Train Model (list of bools)
 
-
-        ## Update functions (for Amber. Copy these 3 lines of code to use for every refresh)##
+    # Simulate a time step of the train controller
+    # Call this for ever press of the refresh button
+    def simulate_timestep(self, train_model=None):
         # Update Mock Train Model
-        hw_param = None if self.hardware else self.train_model
-        # Pull values from the Train Model (Jeremy)
+        hw_param = None if self.hardware else (train_model if train_model else self.train_model)
         self.train_model.update_mock_train_model(hw_param)
-        # Perform calculations then output them
+        ## Perform calculations then output them
         self.update_train_controller()    # This function will define all the "None" variables above
+        ## Transmit to Train Model
+        # Output (For now, also update current speed)
+        self.transmit_to_train_model()
         
     # Update all variables with the train model input, calculate, then output to train model
     # Take train model outputs, update all variables, and transmit to train model the Train Controller's new values
@@ -83,6 +86,7 @@ class TrainController:
         ## -- Distance from station -- ##
 
         # Update all status variables
+        self.engine.update_speed_limit(self.train_model.get_speed_limit())
         self.doors.set_exit_door(self.train_model)
         self.ac.update_current_temp(self.train_model, self.driver_mode)
         self.update_fault_status(self.train_model)
@@ -91,9 +95,6 @@ class TrainController:
         ## Train Controller Calculations
         # Run 1 more cycle of the simulation to update the current speed
         self.simulate_power_command(self.get_desired_speed())
-        
-        # Output (For now, also update current speed)
-        self.transmit_to_train_model()
         
 
     # Transmit necessary variables to Main Computer (Train Model), then mock Train Model will be updated
@@ -124,7 +125,7 @@ class TrainController:
             ## Test bench is changing train model directly so self.train_model will be automatically updated with new values
             # Take new train model (Jeremy) values and update the mock train model
             '''
-            self.train_model.update_mock_train_model(self.train_model)
+            pass
         
 
 
@@ -165,7 +166,7 @@ class TrainController:
     ## Purely for debugging purposes
     def simulate_power_command(self, speed: float):
         power_command = self.engine.compute_power_command(speed, self.current_speed, self.time_step, self.engineer, self.brake, self.maintenance_mode)
-        self.current_speed, distance_traveled = self.engine.calculate_current_speed(power_command, self.current_speed, self.time_step, self.brake)
+        self.current_speed, distance_traveled = self.engine.calculate_current_speed(power_command, self.train_model.current_speed, self.time_step, self.brake)
         self.distance_traveled += distance_traveled
         self.elapsed_time += self.time_step
         print(f"Power Command: {power_command}, Current Speed: {self.current_speed}")
@@ -187,8 +188,8 @@ class TrainController:
         # If the train hasn't made a full stop yet, set the maintenance mode to True and keep emergency brake on
         # Once the train has made a full stop, set the maintenance mode to False and turn off the emergency brake
         done = (self.current_speed != 0)
-        self.set_maintenance_mode(done)
         self.brake.set_emergency_brake(done)
+        self.set_maintenance_mode(done)
         
 
     ## Engineer class to hold Kp and Ki
@@ -245,10 +246,10 @@ class TrainController:
         def get_status(self):
             return self.service_brake or self.emergency_brake
        
-    
     ## Engine class calculates power command and can simulate train response
     class Engine:
         def __init__(self):
+            self.speed_limit = None  # Speed limit of the train
             self.P_MAX = 120  # Maximum power (kW)
             self.power_command = 0 # Power command
 
@@ -280,7 +281,8 @@ class TrainController:
             kp, ki = engineer.get_engineer()
 
             # Calculate the error
-            e_k = desired_speed - current_speed
+            best_speed = min(desired_speed, self.speed_limit)
+            e_k = best_speed - current_speed
             # Power command = Kp * error + Ki * integral of error
             p_cmd = kp * e_k + ki * self.u_k
 
@@ -319,6 +321,8 @@ class TrainController:
             distance_traveled = current_speed * time_step
             
             return current_speed, distance_traveled
+        def update_speed_limit(self, speed_limit: float):
+            self.speed_limit = speed_limit
         
     ## Door class to hold door status
     # Door status = bool
@@ -412,7 +416,7 @@ class TrainController:
             self.underground_blocks = underground_blocks
         def update_lights(self, train_model, elapsed_time: float, block: int):
             self.update_underground_blocks(train_model.get_underground_blocks())    # Update underground blocks
-            self.set_ext_lights(block in self.underground_blocks)   # Set external lights if current block is undreground
+            self.set_ext_lights(block in self.underground_blocks or (elapsed_time % 86400) > 43200)   # Set external lights if current block is undreground
             self.set_int_lights((elapsed_time % 86400) > 43200)   # Set internal lights if it's night time. Assumes train starts at dawn
 
     ## AC class to hold temperature status
@@ -451,7 +455,7 @@ class TrainController:
 class TrainModel:
     def __init__(self):
         self.current_speed = 0
-        self.speed_limit = 120  #m/s
+        self.speed_limit = 19.44  #m/s
         self.position = 0
         self.authority = 0
         self.commanded_speed = 0
@@ -629,18 +633,25 @@ class TrainModel:
 class TrainSystem:
     def __init__(self):
         self.train_model = TrainModel()
-        self.controller = TrainController(self.train_model)
+        self.controller = TrainController()
 
 
     def run(self):
+        self.controller.set_setpoint_speed(30)
         for _ in range(5):
-            self.controller.simulate_power_command(30)
+            self.controller.simulate_timestep()
+
+        self.controller.set_setpoint_speed(40)
         for _ in range(5):
-            self.controller.simulate_power_command(50)
+            self.controller.simulate_timestep()
+        
+        self.controller.set_setpoint_speed(500)
+        for _ in range(50):
+            self.controller.simulate_timestep()
+        
+        self.controller.set_setpoint_speed(10)
         for _ in range(5):
-            self.controller.simulate_power_command(70)
-        for _ in range(5):
-            self.controller.simulate_power_command(10)
+            self.controller.simulate_timestep()
             
 
 if __name__ == "__main__":
