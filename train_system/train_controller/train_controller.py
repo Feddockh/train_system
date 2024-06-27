@@ -28,12 +28,11 @@ Storing previous beacon data: How are we going to do that and what will it look 
 #### Train Controller (Raspberry Pi) will then send a received message and update all of its variables with the Train Model's outputs\
 '''
 
-time_step = 0.05  # Sample period
-
 class TrainController:
     def __init__(self, train_model):
         self.hardware = False
         self.elapsed_time = 0
+        self.time_step = 0.05  # 0.05 second time step
 
         ## Initialize objects
         self.train_model = train_model  # Used to store data received from Train Model. No computations done in the object
@@ -87,7 +86,7 @@ class TrainController:
         self.doors.set_exit_door(self.train_model)
         self.ac.update_current_temp(self.train_model, self.driver_mode)
         self.update_fault_status(self.train_model)
-        self.lights.update_lights(self.train_model, self.block)
+        self.lights.update_lights(self.train_model, self.elapsed_time, self.block)
 
         ## Train Controller Calculations
         # Run 1 more cycle of the simulation to update the current speed
@@ -165,10 +164,10 @@ class TrainController:
     # Simulate the train's response to desired speeds
     ## Purely for debugging purposes
     def simulate_power_command(self, speed: float):
-        power_command = self.engine.compute_power_command(speed, self.current_speed, self.engineer, self.brake, self.maintenance_mode)
-        self.current_speed, distance_traveled = self.engine.calculate_current_speed(power_command, self.current_speed, self.brake)
+        power_command = self.engine.compute_power_command(speed, self.current_speed, self.time_step, self.engineer, self.brake, self.maintenance_mode)
+        self.current_speed, distance_traveled = self.engine.calculate_current_speed(power_command, self.current_speed, self.time_step, self.brake)
         self.distance_traveled += distance_traveled
-        self.elapsed_time += time_step
+        self.elapsed_time += self.time_step
         print(f"Power Command: {power_command}, Current Speed: {self.current_speed}")
     
     # Update the fault status of the train
@@ -269,7 +268,7 @@ class TrainController:
         # Input) desired_speed: float, current_speed: float, engineer: Engineer object
         # Return) the power command to be applied to the train
         ### If fault exists, return 0
-        def compute_power_command(self, desired_speed: float, current_speed: float, engineer, brake, maintenance_mode: bool = False):
+        def compute_power_command(self, desired_speed: float, current_speed: float, time_step: float, engineer, brake, maintenance_mode: bool = False):
             if(maintenance_mode):
                 # Reset values
                 self.u_k = 0 # Power command
@@ -304,7 +303,7 @@ class TrainController:
             self.power_command = p_cmd
             return p_cmd
         
-        def calculate_current_speed(self, power_command, current_speed, brake):
+        def calculate_current_speed(self, power_command, current_speed, time_step: float, brake):
             # If power command is greater than the maximum power, it's exceeded the physical limit so set it to the maximum power
             if power_command > self.P_MAX:
                 power_command = self.P_MAX
@@ -411,10 +410,10 @@ class TrainController:
         ## Update Functions
         def update_underground_blocks(self, underground_blocks):
             self.underground_blocks = underground_blocks
-        def update_lights(self, train_model, block: int):
+        def update_lights(self, train_model, elapsed_time: float, block: int):
             self.update_underground_blocks(train_model.get_underground_blocks())    # Update underground blocks
             self.set_ext_lights(block in self.underground_blocks)   # Set external lights if current block is undreground
-            self.set_int_lights((time % 86400) > 43200)   # Set internal lights if it's night time. Assumes train starts at dawn
+            self.set_int_lights((elapsed_time % 86400) > 43200)   # Set internal lights if it's night time. Assumes train starts at dawn
 
     ## AC class to hold temperature status
     # Commanded temperature from driver (initialized to 69)
