@@ -18,6 +18,11 @@ Storing previous beacon data: How are we going to do that and what will it look 
 '''
 
 '''
+Authority: If authority == prev_authority, count down
+            If authority != prev_authority, reset count down and begin counting down
+'''
+
+'''
 # Functions with the word "update" in the name are updated from the Train Model and takes the Train Model as an argument
 # Train Controller only talks with Train Model
 # Train Model needed for initialization
@@ -69,9 +74,8 @@ class TrainController:
         self.train_model.update_mock_train_model(hw_param)
         ## Perform calculations then output them
         self.update_train_controller()    # This function will define all the "None" variables above
-        ## Transmit to Train Model
-        # Output (For now, also update current speed)
-        self.transmit_to_train_model()
+        ## Transmit to Train Model 
+        self.transmit_to_train_model()  # Transmit via Serial communication (For now, also update current speed)
         
     # Update all variables with the train model input, calculate, then output to train model
     # Take train model outputs, update all variables, and transmit to train model the Train Controller's new values
@@ -86,7 +90,7 @@ class TrainController:
         ## -- Distance from station -- ##
 
         # Update all status variables
-        self.engine.update_speed_limit(self.train_model.get_speed_limit())
+        self.engine.update_speed_limit(self.train_model)
         self.doors.set_exit_door(self.train_model)
         self.ac.update_current_temp(self.train_model, self.driver_mode)
         self.update_fault_status(self.train_model)
@@ -265,6 +269,15 @@ class TrainController:
         # - Brake Deceleration Rates: Service and Emergency
         '''
 
+        def computer_authority(self, authority: float, current_speed: float, brake):
+            # Use kinematics equation v^2 = v0^2 + 2a(x-x0) to calculate the distance needed to stop
+            # If the distance needed to stop is greater than the authority, set the service brake
+            distance = (current_speed ** 2) / (2 * 1.2)  # 1.2 m/s^2 is the deceleration rate
+
+            # True = need to brake, False = don't need to brake
+            ## MIGHT NEED TO ADD A BIT OF PADDING IDK
+            return distance < authority # Return True if the distance needed to stop is less than the authority
+
         # PID controller to compute the power command
         # Input) desired_speed: float, current_speed: float, engineer: Engineer object
         # Return) the power command to be applied to the train
@@ -277,10 +290,13 @@ class TrainController:
                 self.u_k_integral = 0 # Power integral
                 return 0
             
+            
+
             # Get kp and ki from engineer
             kp, ki = engineer.get_engineer()
 
             # Calculate the error
+            # Authority distance = 
             best_speed = min(desired_speed, self.speed_limit)
             e_k = best_speed - current_speed
             # Power command = Kp * error + Ki * integral of error
@@ -317,12 +333,16 @@ class TrainController:
             if power_command < 0:
                 brake.set_service_brake(True)
                 
+            ##### JUST FOR TESTING #####
+            if(brake.get_service_brake() or brake.get_emergency_brake()):
+                power_command = -self.P_MAX
+
             current_speed += power_command * time_step
             distance_traveled = current_speed * time_step
             
             return current_speed, distance_traveled
-        def update_speed_limit(self, speed_limit: float):
-            self.speed_limit = speed_limit
+        def update_speed_limit(self, train_model):
+            self.speed_limit = train_model.get_speed_limit()
         
     ## Door class to hold door status
     # Door status = bool
@@ -426,6 +446,7 @@ class TrainController:
         def __init__(self):
             # Automatic temperature when in Automatic mode (69 degrees Fahrenheit)
             self.auto_temp = 69
+            self.max_temp = 80
             # Commanded temperature from driver (initialized to auto_temp)
             self.commanded_temp = self.auto_temp
             # Current temperature inside the train
@@ -433,7 +454,7 @@ class TrainController:
 
         ## Mutator Function
         def set_commanded_temp(self, temp: int):
-            self.commanded_temp = temp
+            self.commanded_temp = min(round(temp), self.max_temp)
 
         ## Accessor Function
         def get_commanded_temp(self):
