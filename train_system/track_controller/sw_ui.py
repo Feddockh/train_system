@@ -137,10 +137,6 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         #Getting line index
         lineIndex = self.comboBox_3.currentIndex()
 
-        #Updating comboboxes
-        self.comboBox.currentIndexChanged.connect(lambda: self.update_ui())
-        self.comboBox_3.currentIndexChanged.connect(lambda: self.update_ui())
-
         #Create Rectangle for Waysides and responsible blocks rectangles
         self.waysideRec = Rectangle(60, 30, 415, 50, DARK_GREY, self.centralwidget)
         self.waysideRec.lower()
@@ -191,8 +187,9 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         self.blockInfoTable.horizontalHeader().setFont(font)
         self.add_block_info_table_data(waysideIndex)
 
-        #TextEdit box for block info table
-        self.textEdit = QtWidgets.QTextEdit(parent=self.centralwidget)
+        #Search box for block info table
+        self.textEdit = QtWidgets.QLineEdit(parent=self.centralwidget)
+        self.textEdit.setPlaceholderText("Search Block #")
         self.textEdit.setGeometry(QtCore.QRect(495, 280, 220, 40))
         self.textEdit.setObjectName("textEdit")
         self.textEdit.setFont(font)
@@ -208,6 +205,11 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         self.testBenchBtn.clicked.connect(self.open_maintenance)
         self.testBenchBtn.setGeometry(QtCore.QRect(710, 190, 145, 50))
         self.testBenchBtn.setFont(font)
+
+        #Updating comboboxes
+        self.comboBox.currentIndexChanged.connect(lambda: self.update_ui())
+        self.comboBox_3.currentIndexChanged.connect(lambda: self.update_ui())
+        self.textEdit.textChanged.connect(self.filter_table)
 
         #Setting central widget
         self.setCentralWidget(self.centralwidget)
@@ -257,6 +259,16 @@ class ProgrammerUI(QtWidgets.QMainWindow):
             self.plcUploadedLabel.setVisible(True)
         else:
             self.plcUploadedLabel.setVisible(False)
+    
+    #Using search box to filter table data
+    def filter_table(self):
+        filter_text = self.textEdit.text().strip().lower()
+        for row in range(self.blockInfoTable.rowCount()):
+            item = self.blockInfoTable.item(row, 0)
+            if item is not None and filter_text in item.text().strip().lower():
+                self.blockInfoTable.setRowHidden(row, False)
+            else:
+                self.blockInfoTable.setRowHidden(row, True)
 
     #Converts track_occupancies into "occupied/in operation"
     def display_occupied_tracks(self, i, waysideIndex):

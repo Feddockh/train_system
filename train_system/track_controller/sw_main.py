@@ -8,7 +8,7 @@ from sw_ui import ProgrammerUI
 from sw_widgets import *
 
 def main():
-    #Creating instance of Track Controller
+    #Creating instances of Track Controller
     Wayside_1 = TrackController()
     Wayside_1.get_track_occupancy([False, False, False, False, False, False, False, False, False, False, False, False, False, False, False])
     Wayside_1.get_speed([20, 25, 25, 25, 20, 25, 30, 25, 25, 25, 25, 30, 30, 25, 20])

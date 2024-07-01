@@ -9,9 +9,9 @@ class TrackController:
         Initialize variables of the Track Controller.
         """
         
-        self.track_occupancies = [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
-        self.train_speeds = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        self.train_authorities = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        self.track_occupancies = []
+        self.train_speeds = []
+        self.train_authorities = []
         self.switch_states = False
         self.signal_states = False
         self.crossing_states = False
