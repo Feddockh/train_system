@@ -18,6 +18,7 @@ class TrackController:
         self.plc_program_uploaded = False
         self.switch_positions = []
         self.plc_program = ""
+        self.wayside_name = ""
     
     def get_track_occupancy(self, new_track_occupancies):
         """
