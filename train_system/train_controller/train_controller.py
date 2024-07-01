@@ -170,7 +170,7 @@ class TrainController:
     ## Purely for debugging purposes
     def simulate_power_command(self, speed: float):
         power_command = self.engine.compute_power_command(speed, self.current_speed, self.time_step, self.engineer, self.brake, self.maintenance_mode)
-        self.current_speed, distance_traveled = self.engine.calculate_current_speed(power_command, self.train_model.current_speed, self.time_step, self.brake)
+        power_command, self.current_speed, distance_traveled = self.engine.calculate_current_speed(power_command, self.train_model.current_speed, self.time_step, self.brake)
         self.distance_traveled += distance_traveled
         self.elapsed_time += self.time_step
         print(f"Power Command: {power_command}, Current Speed: {self.current_speed}")
@@ -226,8 +226,13 @@ class TrainController:
     ## Brake class to hold brake status
     class Brake:
         def __init__(self):
+            # These are for outputting to the Train Model and for UI status
             self.service_brake = False
             self.emergency_brake = False
+            # This is for user inputs
+            self.user_service_brake = False
+            self.user_emergency_brake = False
+
         ## Mutator functions
         # Input) status: boolean
         def set_service_brake(self, status: bool):
@@ -235,20 +240,34 @@ class TrainController:
         # Input) status: boolean
         def set_emergency_brake(self, status: bool):
             self.emergency_brake = status
+        def set_user_service_brake(self, status: bool):
+            self.user_service_brake = status
+        def set_user_emergency_brake(self, status: bool):
+            self.user_emergency_brake
 
         ## Toggle Functions
         def toggle_service_brake(self):
             self.service_brake = not self.service_brake
         def toggle_emergency_brake(self):
             self.emergency_brake = not self.emergency_brake
+        def toggle_user_service_brake(self):
+            self.user_service_brake = not self.user_service_brake
+        def toggle_user_emergency_brake(self):
+            self.user_emergency_brake = not self.user_emergency_brake
 
         ## Accessor functions
         def get_service_brake(self):
             return self.service_brake
         def get_emergency_brake(self):
             return self.emergency_brake
+        def get_user_service_brake(self):
+            return self.user_service_brake
+        def get_user_emergency_brake(self):
+            return self.user_emergency_brake
         def get_status(self):
-            return self.service_brake or self.emergency_brake
+            return self.service_brake or self.emergency_brake or self.user_service_brake or self.user_emergency_brake
+        def get_user_status(self):
+            return self.user_service_brake or self.user_emergency_brake
        
     ## Engine class calculates power command and can simulate train response
     class Engine:
@@ -269,7 +288,8 @@ class TrainController:
         # - Brake Deceleration Rates: Service and Emergency
         '''
 
-        def computer_authority(self, authority: float, current_speed: float, brake):
+        # Check if the train needs to stop because of authority
+        def stop_for_authority(self, authority: float, current_speed: float):
             # Use kinematics equation v^2 = v0^2 + 2a(x-x0) to calculate the distance needed to stop
             # If the distance needed to stop is greater than the authority, set the service brake
             distance = (current_speed ** 2) / (2 * 1.2)  # 1.2 m/s^2 is the deceleration rate
@@ -282,6 +302,7 @@ class TrainController:
         # Input) desired_speed: float, current_speed: float, engineer: Engineer object
         # Return) the power command to be applied to the train
         ### If fault exists, return 0
+        ### HOW DO WE HANDLE INTEGRAL OR U_K WHEN BRAKE IS ON
         def compute_power_command(self, desired_speed: float, current_speed: float, time_step: float, engineer, brake, maintenance_mode: bool = False):
             if(maintenance_mode):
                 # Reset values
@@ -290,7 +311,7 @@ class TrainController:
                 self.u_k_integral = 0 # Power integral
                 return 0
             
-            
+            brake.set_service_brake(False)
 
             # Get kp and ki from engineer
             kp, ki = engineer.get_engineer()
@@ -313,10 +334,10 @@ class TrainController:
             self.e_k_integral = e_k
             self.u_k_integral = self.u_k
 
-            ##### This will be used after integration
-            # if p_cmd < 0:
-            #     brake.set_service_brake(True)
-            #     p_cmd = 0
+            #### This will be used after integration
+            if p_cmd < 0:
+                brake.set_service_brake(True)
+                # p_cmd = 0
 
             self.power_command = p_cmd
             return p_cmd
@@ -328,19 +349,18 @@ class TrainController:
             # If power command magnitude is negative, we need to slow down so turn on the service brake
             elif power_command < -self.P_MAX:
                 power_command = -self.P_MAX
-            
-            # If negative power command, set the power command to 0 and turn on brake
-            if power_command < 0:
-                brake.set_service_brake(True)
                 
             ##### JUST FOR TESTING #####
-            if(brake.get_service_brake() or brake.get_emergency_brake()):
+            if brake.get_status() :
                 power_command = -self.P_MAX
+            
+            self.power_command = power_command
 
             current_speed += power_command * time_step
             distance_traveled = current_speed * time_step
             
-            return current_speed, distance_traveled
+            return power_command, current_speed, distance_traveled
+        
         def update_speed_limit(self, train_model):
             self.speed_limit = train_model.get_speed_limit()
         
@@ -447,6 +467,7 @@ class TrainController:
             # Automatic temperature when in Automatic mode (69 degrees Fahrenheit)
             self.auto_temp = 69
             self.max_temp = 80
+            self.min_temp = 60
             # Commanded temperature from driver (initialized to auto_temp)
             self.commanded_temp = self.auto_temp
             # Current temperature inside the train
@@ -455,6 +476,7 @@ class TrainController:
         ## Mutator Function
         def set_commanded_temp(self, temp: int):
             self.commanded_temp = min(round(temp), self.max_temp)
+            self.commanded_temp = max(self.commanded_temp, self.min_temp)
 
         ## Accessor Function
         def get_commanded_temp(self):
