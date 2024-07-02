@@ -8,7 +8,12 @@ def main():
     tc = TrainController(tm)
 
     #test ui inputs
-    #tc.engineer.set_ki(1)
+    #tc.faults[1] = True
+
+    #tc.update_train_controller()
+
+    #print("controller speed " + str(tc.authority))
+    #print("train model authority " + str(tc.train_model.authority))
 
     #open ui
     app = QApplication(sys.argv)
@@ -18,15 +23,9 @@ def main():
     app.exec()
 
     #test ui outputs
-    print("ki: " + str(int(tc.engineer.get_ki())))
-    print("kp: " + str(int(tc.engineer.get_kp())))
-    print("setpoint speed: " + str(tc.setpoint_speed))
-    print("comm temp: " + str(tc.ac.get_commanded_temp()))
-    print("engine fault: " + str(tc.faults[0]))
-    print("em brake: " + str(tc.brake.get_emergency_brake()))
-    print("service brake: " + str(tc.brake.get_service_brake()))
-    print("right door " + str(tc.doors.get_right()))
-    print("lights: " + str(tc.lights.get_status()))
+    #print("train model authority " + str(tc.train_model.authority))
+    #print("controller authority " + str(tc.authority))
+    
 
 
 
