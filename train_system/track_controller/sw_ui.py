@@ -340,15 +340,15 @@ class ProgrammerUI(QtWidgets.QMainWindow):
 
         if (lineIndex == 0):
             data = [
-                ['Wayside 1', 'XX - XX'], 
-                ['Wayside 2', 'XX - XX'],
-                ['Wayside 3', 'XX - XX']
+                ['Wayside 1', '1 - 32, 150'],
+                ['Wayside 2', '29 - 85, 101 - 150'],
+                ['Wayside 3', '74 - 101']
             ]
         elif (lineIndex == 1):
             data = [
-                ['Wayside 4', 'XX - XX'],
-                ['Wayside 5', 'XX - XX'],
-                ['Wayside 6', 'XX - XX']
+                ['Wayside 4', '1 - 23, 73 - 76'], 
+                ['Wayside 5', '24 - 45, 68 - 75'],
+                ['Wayside 6', '24 - 68']
             ]
 
         self.waysideBlkTable.clearContents()
@@ -359,8 +359,6 @@ class ProgrammerUI(QtWidgets.QMainWindow):
                 text = QTableWidgetItem(item)
                 text.setFlags(text.flags() & ~Qt.ItemFlag.ItemIsEditable)
                 self.waysideBlkTable.setItem(i, j, text)
-
-
 
 
     def open_test_bench(self):
