@@ -233,7 +233,7 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         self.label.setText(_translate("ProgrammerUI", "Select PLC Program:"))
         self.plcUploadedLabel.setText(_translate("ProgrammerUI", "PLC program uploaded."))
 
-     #Updates UI values to reflect backend changes
+    #Updates UI values to reflect backend changes
     def update_ui(self):
         lineIndex = self.comboBox_3.currentIndex()
         waysideIndex = self.comboBox.currentIndex()
@@ -362,9 +362,7 @@ class ProgrammerUI(QtWidgets.QMainWindow):
 
 
     def open_test_bench(self):
-        self.track_controllers[0].plc_program_uploaded = False
-        self.track_controllers[0].plc_program = ""
-        self.test_bench = TestBench(self.track_controllers[0], self)
+        self.test_bench = TestBench(self.track_controllers, self)
         self.test_bench.show()
         self.hide()
 
@@ -383,20 +381,8 @@ Test Bench UI - Can be brought here by selecting test bench from Programmer UI
 class TestBench(QtWidgets.QMainWindow):
 
     #def setupUi(self, MainWindow):
-    def __init__(self, track_controller, programmer_ui):
+    def __init__(self, track_controllers, programmer_ui):
         super().__init__()
-
-        #Setting track controller
-        self.track_controllerTest = TrackController()
-        self.track_controllerTest.track_occupancies = track_controller.track_occupancies
-        self.track_controllerTest.train_speeds = track_controller.train_speeds
-        self.track_controllerTest.train_authorities = track_controller.train_authorities
-        self.track_controllerTest.switch_states = track_controller.switch_states
-        self.track_controllerTest.signal_states = track_controller.signal_states
-        self.track_controllerTest.crossing_states = track_controller.crossing_states
-        self.track_controllerTest.plc_program_uploaded = False
-        self.track_controllerTest.switch_positions = []
-        self.track_controllerTest.plc_program = ""
 
         #Programmer UI name & size
         self.setObjectName("Test Bench")
@@ -409,79 +395,75 @@ class TestBench(QtWidgets.QMainWindow):
         self.setCentralWidget(self.centralwidget)
 
         #Used in multiple widgets
-        waysides = ['Wayside 1']
-        lines = ['Blue Line']
+        waysides = [track_controllers[0].wayside_name, track_controllers[1].wayside_name, track_controllers[2].wayside_name,track_controllers[3].wayside_name, track_controllers[4].wayside_name]
+        lines = ['Green Line', 'Red Line']
 
         #Creating universal font
         font = QtGui.QFont()
-        font.setPointSize(13)
+        font.setPointSize(15)
 
         #FileUpload button
         self.fileUploadPushButton = QtWidgets.QPushButton(parent=self.centralwidget)
-        self.fileUploadPushButton.setGeometry(QtCore.QRect(710, 60, 135, 40))
+        self.fileUploadPushButton.setGeometry(QtCore.QRect(720, 100, 135, 40))
         self.fileUploadPushButton.setObjectName("pushButton")
         self.fileUploadPushButton.clicked.connect(self.getFileName)
         self.fileUploadPushButton.setFont(font)
 
         #Select PLC Program label
         self.label = QtWidgets.QLabel(parent=self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(520, 60, 170, 40))
+        self.label.setGeometry(QtCore.QRect(530, 100, 180, 40))
         self.label.setObjectName("label")
         self.label.setFont(font)
 
-        #Label for PLC program uploaded
-        self.plcUploadedLabel = QtWidgets.QLabel(parent=self.centralwidget)
-        self.plcUploadedLabel.setGeometry(QtCore.QRect(870, 60, 220, 40))
-        self.label.setObjectName("plcUploadedLabel")
-        self.plcUploadedLabel.setFont(font)
-        self.plcUploadedLabel.setVisible(False)
+        #End Test Bench button
+        self.testBenchBtn = QPushButton("Test Bench", self.centralwidget)
+        self.testBenchBtn.clicked.connect(self.open_programmer_ui)
+        self.testBenchBtn.setGeometry(QtCore.QRect(520, 190, 145, 50))
+        self.testBenchBtn.setFont(font)
+        self.testBenchBtn.setStyleSheet("""
+        QPushButton {
+            background-color: #FF0000;
+        }
+        """)
 
-        #Create Rectangle for Wayside Table
-        self.waysideRec = Rectangle(40, 30, 415, 50, DARK_GREY, self.centralwidget)
+        #Combobox for wayside selection
+        self.comboBox = QtWidgets.QComboBox(parent=self.centralwidget)
+        self.comboBox.setGeometry(QtCore.QRect(520, 35, 640, 35))
+        self.comboBox.setObjectName("comboBox")
+        self.comboBox.addItems(waysides)
+        self.comboBox.setFont(font)
+
+        #Getting current combo box index
+        waysideIndex = self.comboBox.currentIndex()
+
+        #Create Rectangle for wayside selection
+        self.waysideRec = Rectangle(520, 30, 640, 50, DARK_GREY, self.centralwidget)
         self.waysideRec.lower()
-        """
-        self.backWayRec = Rectangle(40, 250, 415, 400, WHITE, self.centralwidget)
-        self.backWayRec.lower()
+        self.backWaysideBlkRec = Rectangle(520, 80, 640, 80, WHITE, self.centralwidget)
+        self.backWaysideBlkRec.lower()
 
-        #Wayside Data Table
-        self.tableView = QtWidgets.QTableWidget(parent=self.centralwidget)
-        self.tableView.setGeometry(QtCore.QRect(40, 250, 415, 400))
-        self.tableView.setObjectName("tableView")
-        self.tableView.setColumnCount(4)
-        self.tableView.setRowCount(15)
-        self.tableView.setColumnWidth(1, 120)
-        self.tableView.setColumnWidth(3, 80)
-
-        self.tableView.verticalHeader().setVisible(False)
-        self.tableView.setItemDelegate(CenterDelegate(self.tableView))
-        self.tableView.setHorizontalHeaderLabels(['Block #', 'Occupied', 'Switch', 'Signal'])
-        self.tableView.horizontalHeader().setFont(font)
-        self.add_wayside_table_data()
-        self.tableView.setFont(font)
-
-        #Handling updates to wayside block table
-        self.tableView.itemChanged.connect(self.item_changed_waysideData)
-        """
-
-        #Wayside data combo
+        #Waysides and responsible blocks combo
         self.comboBox_3 = QtWidgets.QComboBox(parent=self.centralwidget)
-        self.comboBox_3.setGeometry(QtCore.QRect(40, 35, 415, 35))
+        self.comboBox_3.setGeometry(QtCore.QRect(60, 35, 415, 35))
         self.comboBox_3.setObjectName("comboBox_3")
         self.comboBox_3.addItems(lines)
         self.comboBox_3.setFont(font)
 
-        #Waysides and Blocks rec
-        self.waysideBlkRec = Rectangle(40, 200, 415, 50, DARK_GREY, self.centralwidget)
-        self.waysideBlkRec.lower()
-        self.backWaysideBlkRec = Rectangle(40, 80, 415, 100, WHITE, self.centralwidget)
+        #Getting line index
+        lineIndex = self.comboBox_3.currentIndex()
+
+        #Create Rectangle for Waysides and responsible blocks rectangles
+        self.waysideRec = Rectangle(60, 30, 415, 50, DARK_GREY, self.centralwidget)
+        self.waysideRec.lower()
+        self.backWaysideBlkRec = Rectangle(60, 80, 415, 130, WHITE, self.centralwidget)
         self.backWaysideBlkRec.lower()
 
         #Waysides and Blocks their responsible for table
         self.waysideBlkTable = QtWidgets.QTableWidget(parent=self.centralwidget)
-        self.waysideBlkTable.setGeometry(QtCore.QRect(40, 80, 415, 100))
+        self.waysideBlkTable.setGeometry(QtCore.QRect(60, 80, 415, 130))
         self.waysideBlkTable.setObjectName("waysideBlkTable")
         self.waysideBlkTable.setColumnCount(2)
-        self.waysideBlkTable.setRowCount(1)
+        self.waysideBlkTable.setRowCount(3)
 
         self.waysideBlkTable.verticalHeader().setVisible(False)
         self.waysideBlkTable.setItemDelegate(CenterDelegate(self.waysideBlkTable))
@@ -491,18 +473,14 @@ class TestBench(QtWidgets.QMainWindow):
         self.waysideBlkTable.setColumnWidth(0, 207)
         self.waysideBlkTable.setColumnWidth(1, 206)
         
-        self.add_wayside_blk_table_data()
+        self.add_wayside_blk_table_data(lineIndex)
         self.waysideBlkTable.setFont(font)
 
-        #Wayside and blocks combo
-        """
-        self.comboBox_2 = QtWidgets.QComboBox(parent=self.centralwidget)
-        self.comboBox_2.setGeometry(QtCore.QRect(40, 205, 415, 35))
-        self.comboBox_2.setObjectName("comboBox_2")
-        self.comboBox_2.addItems(waysides)
-        self.comboBox_2.setFont(font)
-        """
+        #Updating comboboxes
+        #self.comboBox.currentIndexChanged.connect(lambda: self.update_ui())
+        self.comboBox_3.currentIndexChanged.connect(lambda: self.update_ui())
 
+        """
         #Block info rec
         self.blockInfoRec = Rectangle(470, 220, 715, 110, DARK_GREY, self.centralwidget)
         self.blockInfoRec.lower()
@@ -540,17 +518,10 @@ class TestBench(QtWidgets.QMainWindow):
         self.textEdit.setGeometry(QtCore.QRect(735, 270, 200, 40))
         self.textEdit.setObjectName("textEdit")
         self.textEdit.setFont(font)
-
-        #End Test Bench button
-        self.testBenchBtn = QPushButton("Test Bench", self.centralwidget)
-        self.testBenchBtn.clicked.connect(self.open_programmer_ui)
-        self.testBenchBtn.setGeometry(QtCore.QRect(520, 150, 135, 40))
-        self.testBenchBtn.setFont(font)
-        self.testBenchBtn.setStyleSheet("""
-        QPushButton {
-            background-color: #FF0000;
-        }
-        """)
+        """
+        #Updating comboboxes
+        self.comboBox.currentIndexChanged.connect(lambda: self.update_ui())
+        self.comboBox_3.currentIndexChanged.connect(lambda: self.update_ui())
 
         #Setting central widget
         self.setCentralWidget(self.centralwidget)
@@ -572,8 +543,18 @@ class TestBench(QtWidgets.QMainWindow):
         self.setWindowTitle(_translate("TestBench", "Testbench"))
         self.fileUploadPushButton.setText(_translate("TestBench", "Upload File"))
         self.label.setText(_translate("TestBench", "Select PLC Program:"))
-        self.plcUploadedLabel.setText(_translate("ProgrammerUI", "PLC program uploaded."))
+        #self.plcUploadedLabel.setText(_translate("ProgrammerUI", "PLC program uploaded."))
 
+    #Updates UI values to reflect backend changes
+    def update_ui(self):
+        lineIndex = self.comboBox_3.currentIndex()
+        waysideIndex = self.comboBox.currentIndex()
+        #self.track_controller.run_PLC_program()
+        self.add_wayside_blk_table_data(lineIndex)
+        #self.add_block_info_table_data(waysideIndex)
+        #self.display_plc_uploaded(waysideIndex)
+
+    """
     #Updates UI values to reflect backend changes
     def update_ui(self):
         self.blockInfoTable.itemChanged.disconnect(self.item_changed_blockInfo)
@@ -585,6 +566,7 @@ class TestBench(QtWidgets.QMainWindow):
         self.add_block_info_table_data()
         self.blockInfoTable.itemChanged.connect(self.item_changed_blockInfo)
         self.tableView.itemChanged.connect(self.item_changed_waysideData)
+    """
 
     #Allows User to select PLC Program from directory
     def getFileName(self):    
@@ -603,6 +585,33 @@ class TestBench(QtWidgets.QMainWindow):
         else:
             self.plcUploadedLabel.setVisible(False)
 
+    
+    def add_wayside_blk_table_data(self, lineIndex):
+
+        if (lineIndex == 0):
+            data = [
+                ['Wayside 1', '1 - 32, 150'],
+                ['Wayside 2', '29 - 85, 101 - 150'],
+                ['Wayside 3', '74 - 101']
+            ]
+        elif (lineIndex == 1):
+            data = [
+                ['Wayside 4', '1 - 23, 73 - 76'], 
+                ['Wayside 5', '24 - 45, 68 - 75'],
+                ['Wayside 6', '24 - 68']
+            ]
+
+        self.waysideBlkTable.clearContents()
+        self.waysideBlkTable.setRowCount(len(data))
+
+        for i, row in enumerate(data):
+            for j, item in enumerate(row):
+                text = QTableWidgetItem(item)
+                text.setFlags(text.flags() & ~Qt.ItemFlag.ItemIsEditable)
+                self.waysideBlkTable.setItem(i, j, text)
+
+
+    """
     def item_changed_blockInfo(self, item):
         row = item.row()
         column = item.column()
@@ -751,19 +760,8 @@ class TestBench(QtWidgets.QMainWindow):
         else: 
             return "Down"
 
-    def add_wayside_blk_table_data(self):
-        data = [
-            ['Wayside 1', '1 - 15']
-        ]
-
-        for i, row in enumerate(data):
-            for j, item in enumerate(row):
-                text = QTableWidgetItem(item)
-                self.waysideBlkTable.setItem(i, j, text)
-
+    """
     def open_programmer_ui(self):
-        self.track_controllerTest.plc_program_uploaded = False
-        self.track_controllerTest.plc_program = ""
         self.programmer_ui.show()
         self.close()
 

@@ -32,7 +32,7 @@ def main():
 
     Wayside_5 = TrackController()
     Wayside_5.get_track_occupancy([False, False, False, False, False, False, False, False, False, False, False, False, False, False, False])
-    Wayside_5.get_speed([20, 25, 25, 25, 20, 25, 30, 25, 25, 25, 25, 30, 30, 25, 20])
+    Wayside_5.get_speed([5, 25, 25, 25, 20, 25, 30, 25, 25, 25, 25, 30, 30, 25, 20])
     Wayside_5.get_authority([20, 25, 25, 25, 20, 25, 30, 25, 25, 25, 25, 30, 30, 25, 20])
     Wayside_5.crossing_states = False
     Wayside_5.wayside_name = "Wayside 5"
