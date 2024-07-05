@@ -277,8 +277,8 @@ class TrainController:
             self.power_command = 0 # Power command
 
             self.u_k = 0 # Power command
-            self.e_k_integral = 0 # Error integral
-            self.u_k_integral = 0 # Power integral
+            self.u_k_integral = 0 # Error integral
+            self.e_k_integral = 0 # Power integral
             
         '''
         ## Factors/considerations
@@ -433,13 +433,19 @@ class TrainController:
         def set_int_lights(self, status: bool):
             self.lights = status
         def lights_on(self):
-            self.lights = True
-        def lights_on(self):
-            self.lights = False
+            self.ext_lights = True
+            self.int_lights = True
+        def lights_off(self):
+            self.ext_lights = False
+            self.int_lights = False
+        def set_lights(self, status: bool):
+            self.ext_lights = status
+            self.int_lights = status
 
         ## Toggle Function
         def toggle_lights(self):
-            self.lights = not self.lights
+            self.ext_lights = not self.ext_lights
+            self.int_lights = not self.int_lights
 
         ## Accessor Function
         def get_int_lights(self):
@@ -456,8 +462,7 @@ class TrainController:
             self.underground_blocks = underground_blocks
         def update_lights(self, train_model, elapsed_time: float, block: int):
             self.update_underground_blocks(train_model.get_underground_blocks())    # Update underground blocks
-            self.set_ext_lights(block in self.underground_blocks or (elapsed_time % 86400) > 43200)   # Set external lights if current block is undreground
-            self.set_int_lights((elapsed_time % 86400) > 43200)   # Set internal lights if it's night time. Assumes train starts at dawn
+            self.set_lights(block in self.underground_blocks or (elapsed_time % 86400) > 43200)   # Set external lights if current block is undreground
 
     ## AC class to hold temperature status
     # Commanded temperature from driver (initialized to 69)
@@ -497,18 +502,18 @@ class TrainController:
 # All information from MBO needs to be encrypted
 class TrainModel:
     def __init__(self):
-        self.current_speed = 0
-        self.speed_limit = 19.44  #m/s
-        self.position = 0
-        self.authority = 0
-        self.commanded_speed = 0
-        self.train_temp = 0
-        self.station = 0
-        self.distance_from_station = 0
-        self.exit_door = 0
-        self.block = 0
+        self.current_speed: float = 0
+        self.speed_limit: float = 19.44  #m/s
+        self.position: float = 0
+        self.authority: float = 0
+        self.commanded_speed: float = 0
+        self.train_temp: int = 0
+        self.station: str = ""
+        self.distance_from_station: float = 0
+        self.exit_door: bool = 0
+        self.block: int = 0
         self.underground_blocks = [0, 1, 2]
-        self.faults = [0, 0, 0]
+        self.faults: int[3] = [0, 0, 0]
 
     # Float
     def get_current_speed(self):
@@ -521,7 +526,7 @@ class TrainModel:
     def get_speed_limit(self):
         # Logic to get the speed limit of the train
         return self.speed_limit
-    def set_speed_limit(self, speed: int):
+    def set_speed_limit(self, speed: float):
         self.speed_limit = speed
 
     def get_distance_from_station(self):
@@ -558,8 +563,8 @@ class TrainModel:
     def get_train_temp(self):
         # Logic to get the temperature inside the train
         return self.train_temp
-    def set_train_temp(self, temp: float):
-        self.train_temp = round(temp)
+    def set_train_temp(self, temp: int):
+        self.train_temp = temp
 
     # String or station ID?
     # Need to decrypt the information and figure it out from that
