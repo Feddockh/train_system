@@ -3,7 +3,7 @@
 import pandas as pd
 import os
 import re
-from train_system.common.track_block import TrackBlock
+from track_block import TrackBlock
 
 class Line:
     def __init__(self, name: str) -> None:
@@ -177,8 +177,7 @@ class Line:
 
 if __name__ == "__main__":
     file_path = (
-        'C:/Users/hayde/OneDrive/Pitt/2024_Summer_Term/ECE 1140/'
-        'Project/train_system/tests/blue_line.xlsx'
+        'C:/Users/Arissa/Documents/blue_line.xlsx'
     )
 
     line = Line('Blue')

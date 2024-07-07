@@ -1,6 +1,6 @@
 # train_system/common/track_block.py
 
-from train_system.common.crossing_signal import CrossingSignal
+from crossing_signal import CrossingSignal
 
 class TrackBlock:
     def __init__(self, line: str, section: chr, number: int, length: int,
