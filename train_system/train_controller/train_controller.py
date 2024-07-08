@@ -172,7 +172,7 @@ class TrainController:
                 self.kp = kp
             else: raise ValueError("kp must be positive")
         def set_ki(self, ki: float):
-            if ki < 0:
+            if ki > 0:
                 self.ki = ki
             else: raise ValueError("ki must be positive")
         def set_engineer(self, kp: float, ki: float):

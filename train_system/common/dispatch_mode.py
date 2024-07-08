@@ -5,3 +5,5 @@ class DispatchMode(Enum):
     AUTOMATIC_FIXED_BLOCK = auto()
     MANUAL_MBO_OVERLAY = auto()
     AUTOMATIC_MBO_OVERLAY = auto()
+    MAINENANCE = auto()
+

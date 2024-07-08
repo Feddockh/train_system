@@ -50,7 +50,7 @@ class MBOController:
         self.testing_positions_1 = {'Train1': 100, 'Train2': 300, 'Train3': 310}
         self.testing_positions_2 = {'Train1': 100, 'Train2': 335, 'Train3': 350, 'Train4': 420}
         
-        self.destinations_1 = {'Train1': 'Yard', 'Train2': 'Station B', 'Train3': 'Station B'}
+        self.destinations_1 = {'Train1': 'Yard', 'Train2': 'Station B', 'Train3': 'Station C'}
         self.destinations_2 = {'Train1': 'Station B', 'Train2': 'Station B', 'Train3': 'Station B', 'Train4': 'Station B'}
         
         self.block_maint_1 = {}
