@@ -3,7 +3,8 @@
 import pandas as pd
 import os
 import re
-from track_block import TrackBlock
+from train_system.common.track_block import TrackBlock
+from train_system.common.station import Station
 
 class Line:
     def __init__(self, name: str) -> None:

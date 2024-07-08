@@ -2,6 +2,7 @@ import csv
 from csv import writer
 import datetime
 from datetime import timedelta
+from train_system.common.dispatch_mode import DispatchMode
 
 
 class MBOController:
@@ -9,11 +10,11 @@ class MBOController:
         """
         Initialize the MBO Controller
         """
-        self.dispatch_mode = "AUTOMATIC MBO"
+        self.dispatch_mode = DispatchMode.AUTOMATIC_MBO_OVERLAY
         
         self.enable_s_and_a = 1
         
-        self.lines = ["Green"]
+        self.lines = ["Green", "Red"]
         self.blue_speed_limit = 50.0 #km/hr, convert to m/s
         
         self.blocks = {'1' : 0 , "2" : 50, "3" : 100, "4" :150, "5" :200, "6" : 250, "7" : 300, "8" : 350, "9" : 400, "10": 450, "11": 250, "12" : 300, "13" : 350, "14" : 400, "15" : 450}
@@ -32,7 +33,7 @@ class MBOController:
         self.drive_length = timedelta(hours=4)
         self.break_length = timedelta(minutes=30)
         
-        self.route_schedule = {"Glenbury Down" : timedelta(seconds=20) , "Dormont Down" : timedelta(minutes=1, seconds=13), "Mt Lebanon Down" : timedelta(seconds=39), 
+        self.route_schedule_green = {"Glenbury Down" : timedelta(seconds=20) , "Dormont Down" : timedelta(minutes=1, seconds=13), "Mt Lebanon Down" : timedelta(seconds=39), 
                                "Poplar" : timedelta(minutes=2, seconds=45), "Castle Shannon" : timedelta(minutes=1, seconds=28), "Mt Lebanon Up" : timedelta(minutes=2, seconds=59), 
                                "Dormont Up" : timedelta(seconds= 17), "Glenbury Up" : timedelta(minutes=1, seconds=54), "Overbrook Up" : timedelta(minutes= 1, seconds=35), 
                                "Inglewood" : timedelta(minutes=1, seconds=21), "Central Up" : timedelta(minutes=1, seconds=21), "Edgebrook" : timedelta(minutes=4, seconds=50), 
@@ -40,7 +41,7 @@ class MBOController:
                                "South Bank" : timedelta(minutes=1, seconds=21),"Central Down" : timedelta(seconds=48), "Overbrook Down" : timedelta(minutes= 1, seconds=48), 
                                "Yard" : timedelta(seconds=15)}
         
-        self.route_authority = {"Glenbury Down" : 400 , "Dormont Down" : 950, "Mt Lebanon Down" : 500, "Poplar" : 2786.6, "Castle Shannon" : 612.5, 
+        self.route_authority_green = {"Glenbury Down" : 400 , "Dormont Down" : 950, "Mt Lebanon Down" : 500, "Poplar" : 2786.6, "Castle Shannon" : 612.5, 
                       "Mt Lebanon Up" : 2887.5 , "Dormont Up" : 515, "Glenbury Up" : 921, "Overbrook Up" : 546, "Inglewood" : 450, 
                       "Central Up" : 450, "Edgebrook" : 3684, "Pioneer" : 700, "Station" : 675, "Whited" : 1125, "South Bank" : 1275,
                       "Central Down" : 400, "Overbrook Down" : 900, "Yard" : -125}
@@ -212,6 +213,18 @@ class MBOController:
             for t in schedule:
                 schedule_writer.writerow(t)
                 
+    
+    def enable_speed_authority(self):
+        """
+        Enable or Disable sending Speed and Authority through satellite
+        Enable when in MBO Manual or MBO Automatice, Disable otherwise 
+        Enable = 1, Disable = 0
+        """
+        if (self.dispatch_mode == DispatchMode.AUTOMATIC_MBO_OVERLAY or self.dispatch_mode == DispatchMode.MANUAL_MBO_OVERLAY):
+            self.enable_s_and_a = 1
+        else:
+            self.enable_s_and_a = 0 
+    
     def satellite_send():
         """
         gathering info to send over satellite, authority and speed
