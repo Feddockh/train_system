@@ -5,11 +5,11 @@ from train_system.common.crossing_signal import CrossingSignal
 from train_system.common.station import Station
 
 class TrackBlock(QObject):
-
+    
     # Create PYQT signals for occupancy and maintenance changes
     occupancyChanged = pyqtSignal()
     maintenanceChanged = pyqtSignal()
-
+    
     def __init__(self, line: str, section: chr, number: int, length: int,
                  grade: float, speed_limit: int, elevation: float, 
                  cumulative_elevation: float, infrastructure: str = None,
