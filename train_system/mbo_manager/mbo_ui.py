@@ -27,12 +27,6 @@ class MBOWindow(QMainWindow):
         self.MBO_mode_view.setFont(QFont('Times', 12))
         self.MBO_mode_view.clicked.connect(self.open_MBO_mode_view)
         
-        pass # self.test_bench_window = None
-        #button to navigate to test bench view 
-        pass # self.test_bench_view = QPushButton('Test Bench')
-        pass #self.test_bench_view.setFont(QFont('Times', 12))
-        pass #self.test_bench_view.setFixedSize(100,50)
-
         
         MBO = MBOController()
         #displaying current dispatch mode
@@ -399,8 +393,6 @@ class TestBench(QMainWindow):
         main_widget = QWidget()
         main_widget.setLayout(self.window_layout)
         self.setCentralWidget(main_widget)
-        
-    
         
         #enter in dispatch mode? 
         #show authority and commanded speed being enabled and disabled?
