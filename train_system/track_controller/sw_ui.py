@@ -24,6 +24,7 @@ class CrossingSignalWidget(QTableWidgetItem):
         super().__init__(text)
         if background_color:
             self.setBackground(QtGui.QColor(background_color))
+            self.setFlags(self.flags() & ~Qt.ItemFlag.ItemIsEditable)
 
 class Rectangle(QWidget):
 
@@ -282,14 +283,18 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         if(self.track_controllers[waysideIndex].plc_program_uploaded == True and self.track_controllers[waysideIndex].plc_program != ""):
             self.plcUploadedLabel.setVisible(True)
 
+    #adds block info table data
     def add_block_info_table_data(self, waysideIndex):
+        self.blockInfoTable.clearContents()
+        self.blockInfoTable.setRowCount(len(self.track_controllers[waysideIndex].track_blocks))
+
         data = []
         for x in range(self.track_controllers[waysideIndex].numBlocks):
             tempData = [self.track_controllers[waysideIndex].track_blocks[x].number, 
                         self.display_occupied_tracks(x, waysideIndex), 
                         self.track_controllers[waysideIndex].track_blocks[x].authority, 
                         self.track_controllers[waysideIndex].track_blocks[x].suggested_speed, 
-                        self.display_switch_pos(x, waysideIndex), " "]
+                        " ", " "]
             tempData.append(self.display_crossing_signal(x, waysideIndex))
             data.append(tempData)
 
@@ -301,34 +306,52 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         
         #Method to print light signal statuses
         for x in range(self.track_controllers[waysideIndex].numBlocks):
+            self.display_switch_pos(x, waysideIndex)
             self.display_light_signal(x, waysideIndex)
 
     #Converts switch_states into values they're connected to 
-    def display_switch_pos(self, i, waysideIndex):
-        '''
-        if(self.track_controllers[waysideIndex].switch_states == False and i == 5):
-            return "6"
-        elif(self.track_controllers[waysideIndex].switch_states == False and i == 6):
-            return "5"
-        elif(self.track_controllers[waysideIndex].switch_states == False and i == 11):
-            return "-"
-        elif(self.track_controllers[waysideIndex].switch_states == True and i == 5):
-            return "11"
-        elif(self.track_controllers[waysideIndex].switch_states == True and i == 6):
-            return "-"
-        else:
-            return "5"
-        '''
-        return "-"
+    def display_switch_pos(self, x, waysideIndex):
+        
+        #if there is a switch that exists at this block
+        if(self.track_controllers[waysideIndex].track_blocks[x]._switch_position != None):
+            pos = self.track_controllers[waysideIndex].track_blocks[x]._switch_position
+            item = self.track_controllers[waysideIndex].track_blocks[x].switch_options[pos]
+
+            #for other block not connected to switch
+            if(pos == 0):
+                otherPos = 1
+            else:
+                otherPos = 0
+            otherItem = self.track_controllers[waysideIndex].track_blocks[x].switch_options[otherPos]
+
+            #updating block connected to switch
+            for i in range(self.track_controllers[waysideIndex].numBlocks):
+                if(self.track_controllers[waysideIndex].track_blocks[i].number == item):
+                    block = QTableWidgetItem(str(self.track_controllers[waysideIndex].track_blocks[x].number))
+                    block.setFlags(block.flags() & ~Qt.ItemFlag.ItemIsEditable)
+                    self.blockInfoTable.setItem(i, 4, block)
+                if(self.track_controllers[waysideIndex].track_blocks[i].number == otherItem):
+                    block = QTableWidgetItem("-")
+                    block.setFlags(block.flags() & ~Qt.ItemFlag.ItemIsEditable)
+                    self.blockInfoTable.setItem(i, 4, block)
+            block = QTableWidgetItem(str(item))
+            block.setFlags(block.flags() & ~Qt.ItemFlag.ItemIsEditable)
+            self.blockInfoTable.setItem(x, 4, block)
+        elif(self.track_controllers[waysideIndex].track_blocks[x].switch_options == None):
+            block = QTableWidgetItem("-")
+            block.setFlags(block.flags() & ~Qt.ItemFlag.ItemIsEditable)
+            self.blockInfoTable.setItem(x, 4, block)
+
+        self.blockInfoTable.viewport().update()
     
     def display_light_signal(self, x, waysideIndex):
         #If light signal is red or green
-        if(self.track_controllers[waysideIndex].track_blocks[x].crossing_signal == CrossingSignal.NA):
+        if(self.track_controllers[waysideIndex].track_blocks[x]._light_signal == True):
             self.blockInfoTable.setItem(x, 5, CrossingSignalWidget("", GREEN))
-        elif(self.track_controllers[waysideIndex].track_blocks[x].crossing_signal == CrossingSignal.OFF):
+        elif(self.track_controllers[waysideIndex].track_blocks[x]._light_signal == False):
             self.blockInfoTable.setItem(x, 5, CrossingSignalWidget("", RED))
-        elif(self.track_controllers[waysideIndex].track_blocks[x].crossing_signal == CrossingSignal.ON):
-            self.blockInfoTable.setItem(x, 5, CrossingSignalWidget("", RED))
+        else:
+            self.blockInfoTable.setItem(x, 5, CrossingSignalWidget("", WHITE))
 
         self.blockInfoTable.viewport().update()
 
@@ -379,7 +402,6 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         self.maintenance = Maintenance(self.track_controller[0],self)
         self.maintenance.show()
         self.hide()
-
 
 
 """
