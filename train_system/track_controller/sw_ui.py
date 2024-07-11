@@ -4,8 +4,8 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtGui import QPainter, QColor
 from PyQt6.QtCore import Qt, QRect, QTimer
 from PyQt6 import QtCore, QtGui, QtWidgets, uic, QtWidgets
-from sw_widgets import RectangleWidget
-from sw_track_controller import TrackController
+from train_system.track_controller.sw_track_controller import TrackController
+from train_system.common.crossing_signal import CrossingSignal
 
 #Colors
 DARK_GREY = "#C8C8C8"
@@ -19,12 +19,11 @@ class CenterDelegate(QtWidgets.QStyledItemDelegate):
         super().initStyleOption(option, index)
         option.displayAlignment = QtCore.Qt.AlignmentFlag.AlignCenter
 
-class CrossingSignal(QTableWidgetItem):
+class CrossingSignalWidget(QTableWidgetItem):
     def __init__(self, text='', background_color=None):
         super().__init__(text)
         if background_color:
             self.setBackground(QtGui.QColor(background_color))
-
 
 class Rectangle(QWidget):
 
@@ -172,7 +171,7 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         self.blockInfoTable.setGeometry(QtCore.QRect(60, 330, 1100, 320))
         self.blockInfoTable.setObjectName("blockInfoTable")
         self.blockInfoTable.setColumnCount(7)
-        self.blockInfoTable.setRowCount(len(self.track_controllers[0].track_occupancies))
+        self.blockInfoTable.setRowCount(len(self.track_controllers[0].track_blocks))
         self.blockInfoTable.setColumnWidth(0, 155)
         self.blockInfoTable.setColumnWidth(1, 155)
         self.blockInfoTable.setColumnWidth(2, 155)
@@ -272,13 +271,41 @@ class ProgrammerUI(QtWidgets.QMainWindow):
 
     #Converts track_occupancies into "occupied/in operation"
     def display_occupied_tracks(self, i, waysideIndex):
-        if (self.track_controllers[waysideIndex].track_occupancies[i] == False):
+        if (self.track_controllers[waysideIndex].track_blocks[i]._occupancy == False):
             return "Not Occupied"
         else:
             return "Occupied"
-    
+
+    #displays whether or not the plc has been uploaded
+    def display_plc_uploaded(self, waysideIndex):
+        self.plcUploadedLabel.setVisible(False)
+        if(self.track_controllers[waysideIndex].plc_program_uploaded == True and self.track_controllers[waysideIndex].plc_program != ""):
+            self.plcUploadedLabel.setVisible(True)
+
+    def add_block_info_table_data(self, waysideIndex):
+        data = []
+        for x in range(self.track_controllers[waysideIndex].numBlocks):
+            tempData = [self.track_controllers[waysideIndex].track_blocks[x].number, 
+                        self.display_occupied_tracks(x, waysideIndex), 
+                        self.track_controllers[waysideIndex].track_blocks[x].authority, 
+                        self.track_controllers[waysideIndex].track_blocks[x].suggested_speed, 
+                        self.display_switch_pos(x, waysideIndex), " "]
+            tempData.append(self.display_crossing_signal(x, waysideIndex))
+            data.append(tempData)
+
+        for i, row in enumerate(data):
+            for j, item in enumerate(row):
+                text = QtWidgets.QTableWidgetItem(str(item))
+                self.blockInfoTable.setItem(i, j, text)
+                text.setFlags(text.flags() & ~Qt.ItemFlag.ItemIsEditable)
+        
+        #Method to print light signal statuses
+        for x in range(self.track_controllers[waysideIndex].numBlocks):
+            self.display_light_signal(x, waysideIndex)
+
     #Converts switch_states into values they're connected to 
     def display_switch_pos(self, i, waysideIndex):
+        '''
         if(self.track_controllers[waysideIndex].switch_states == False and i == 5):
             return "6"
         elif(self.track_controllers[waysideIndex].switch_states == False and i == 6):
@@ -291,51 +318,30 @@ class ProgrammerUI(QtWidgets.QMainWindow):
             return "-"
         else:
             return "5"
-
-    #displays whether or not the plc has been uploaded
-    def display_plc_uploaded(self, waysideIndex):
-        self.plcUploadedLabel.setVisible(False)
-        if(self.track_controllers[waysideIndex].plc_program_uploaded == True and self.track_controllers[waysideIndex].plc_program != ""):
-            self.plcUploadedLabel.setVisible(True)
-
-    def add_block_info_table_data(self, waysideIndex):
-        data = [
-            ['1', self.display_occupied_tracks(0, waysideIndex), self.track_controllers[waysideIndex].train_authorities[0], self.track_controllers[waysideIndex].train_speeds[0] , '-', '-', '-'],
-            ['2', self.display_occupied_tracks(1, waysideIndex), self.track_controllers[waysideIndex].train_authorities[1], self.track_controllers[waysideIndex].train_speeds[1],'-', '-', '-'],
-            ['3', self.display_occupied_tracks(2, waysideIndex), self.track_controllers[waysideIndex].train_authorities[2], self.track_controllers[waysideIndex].train_speeds[2],'-', '-', '-'],
-            ['4', self.display_occupied_tracks(3, waysideIndex), self.track_controllers[waysideIndex].train_authorities[3], self.track_controllers[waysideIndex].train_speeds[3],'-', '-' ,'-'],
-            ['5', self.display_occupied_tracks(4, waysideIndex), self.track_controllers[waysideIndex].train_authorities[4], self.track_controllers[waysideIndex].train_speeds[4],self.display_switch_pos(5, waysideIndex), ' ', '-'],
-            ['6', self.display_occupied_tracks(5, waysideIndex), self.track_controllers[waysideIndex].train_authorities[5], self.track_controllers[waysideIndex].train_speeds[5],self.display_switch_pos(6, waysideIndex), '-', '-'],
-            ['7', self.display_occupied_tracks(6, waysideIndex), self.track_controllers[waysideIndex].train_authorities[6], self.track_controllers[waysideIndex].train_speeds[6],'-', '-', '-'],
-            ['8', self.display_occupied_tracks(7, waysideIndex), self.track_controllers[waysideIndex].train_authorities[7], self.track_controllers[waysideIndex].train_speeds[7],'-', '-', self.display_crossing_signal(waysideIndex)],
-            ['9', self.display_occupied_tracks(8, waysideIndex), self.track_controllers[waysideIndex].train_authorities[8], self.track_controllers[waysideIndex].train_speeds[8],'-', '-', '-'],
-            ['10', self.display_occupied_tracks(9, waysideIndex), self.track_controllers[waysideIndex].train_authorities[9], self.track_controllers[waysideIndex].train_speeds[9],'-', '-','-'],
-            ['11', self.display_occupied_tracks(10, waysideIndex), self.track_controllers[waysideIndex].train_authorities[10], self.track_controllers[waysideIndex].train_speeds[10],self.display_switch_pos(11, waysideIndex), '-','-'],
-            ['12', self.display_occupied_tracks(11, waysideIndex), self.track_controllers[waysideIndex].train_authorities[11], self.track_controllers[waysideIndex].train_speeds[11],'-', '-', '-'],
-            ['13', self.display_occupied_tracks(12, waysideIndex), self.track_controllers[waysideIndex].train_authorities[12], self.track_controllers[waysideIndex].train_speeds[12],'-', '-','-'],
-            ['14', self.display_occupied_tracks(13, waysideIndex), self.track_controllers[waysideIndex].train_authorities[13], self.track_controllers[waysideIndex].train_speeds[13],'-', '-','-'],
-            ['15', self.display_occupied_tracks(14, waysideIndex), self.track_controllers[waysideIndex].train_authorities[14], self.track_controllers[waysideIndex].train_speeds[14],'-', '-', '-']
-        ]
-
-        for i, row in enumerate(data):
-            for j, item in enumerate(row):
-                text = QtWidgets.QTableWidgetItem(str(item))
-                self.blockInfoTable.setItem(i, j, text)
-                text.setFlags(text.flags() & ~Qt.ItemFlag.ItemIsEditable)
-
+        '''
+        return "-"
+    
+    def display_light_signal(self, x, waysideIndex):
         #If light signal is red or green
-        if(self.track_controllers[waysideIndex].signal_states == False):
-            self.blockInfoTable.setItem(4, 5, CrossingSignal('', GREEN))
-        else:
-            self.blockInfoTable.setItem(4, 5, CrossingSignal('', RED))
+        if(self.track_controllers[waysideIndex].track_blocks[x].crossing_signal == CrossingSignal.NA):
+            self.blockInfoTable.setItem(x, 5, CrossingSignalWidget("", GREEN))
+        elif(self.track_controllers[waysideIndex].track_blocks[x].crossing_signal == CrossingSignal.OFF):
+            self.blockInfoTable.setItem(x, 5, CrossingSignalWidget("", RED))
+        elif(self.track_controllers[waysideIndex].track_blocks[x].crossing_signal == CrossingSignal.ON):
+            self.blockInfoTable.setItem(x, 5, CrossingSignalWidget("", RED))
 
+        self.blockInfoTable.viewport().update()
 
-    def display_crossing_signal(self, waysideIndex):
-        if (self.track_controllers[waysideIndex].crossing_states == False):
+    #Displays crossing signals
+    def display_crossing_signal(self, x, waysideIndex):
+        if (self.track_controllers[waysideIndex].track_blocks[x].crossing_signal == CrossingSignal.ON):
             return "Up"
-        else: 
+        elif(self.track_controllers[waysideIndex].track_blocks[x].crossing_signal == CrossingSignal.OFF):
             return "Down"
+        else:
+            return "-"
 
+    #Adds info about waysides and the blocks they're responsible for
     def add_wayside_blk_table_data(self, lineIndex):
 
         if (lineIndex == 0):
@@ -360,12 +366,13 @@ class ProgrammerUI(QtWidgets.QMainWindow):
                 text.setFlags(text.flags() & ~Qt.ItemFlag.ItemIsEditable)
                 self.waysideBlkTable.setItem(i, j, text)
 
-
+    #Opens test bench
     def open_test_bench(self):
         self.test_bench = TestBench(self.track_controllers, self)
         self.test_bench.show()
         self.hide()
 
+    #Opens maintenance 
     def open_maintenance(self):
         self.track_controllers[0].plc_program_uploaded = False
         self.track_controllers[0].plc_program = ""

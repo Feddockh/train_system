@@ -1,6 +1,6 @@
 # train_system/track_controller/track_controller.py
 
-import pandas as pd
+from train_system.common.track_block import TrackBlock
 import sys
 
 class TrackController:
@@ -8,17 +8,18 @@ class TrackController:
         """
         Initialize variables of the Track Controller.
         """
-        
-        self.track_occupancies = []
-        self.train_speeds = []
-        self.train_authorities = []
-        self.switch_states = False
-        self.signal_states = False
-        self.crossing_states = False
+        #self.track_occupancies = []
+        #self.train_speeds = []
+        #self.train_authorities = []
+        #self.switch_states = False
+        #self.signal_states = False
+        #self.crossing_states = False
+        # self.switch_positions = []
+        self.track_blocks = []
         self.plc_program_uploaded = False
-        self.switch_positions = []
         self.plc_program = ""
         self.wayside_name = ""
+        self.numBlocks = 0
     
     def get_track_occupancy(self, new_track_occupancies):
         """
