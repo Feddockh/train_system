@@ -16,7 +16,7 @@ class TrackBlock(QObject):
     def __init__(self, line: str, section: str, number: int, length: int,
                  grade: float, speed_limit: int, elevation: float,
                  cumulative_elevation: float, connecting_blocks: List[int],
-                 branch: int, station: str = None, station_side: str = None) -> None:
+                 branch: int, station: str = "", station_side: str = "") -> None:
 
         super().__init__()
 

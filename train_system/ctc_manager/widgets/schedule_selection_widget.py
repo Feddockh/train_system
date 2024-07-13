@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTableWi
                              QTableWidgetItem, QHeaderView, QComboBox, QPushButton,
                              QFileDialog, QApplication, QMainWindow)
 from PyQt6.QtGui import QColor, QPalette
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, pyqtSignal
 from typing import Optional, List
 import pandas as pd
 import os
@@ -12,10 +12,7 @@ from train_system.common.schedule import Schedule
 from train_system.common.line import Line
 
 class ScheduleSelectionWidget(QWidget):
-    
-    """
-    A widget to select and display train schedules from Excel files.
-    """
+    dispatched_train = pyqtSignal(int, int, str)
 
     def __init__(self, line: Line, parent: Optional[QWidget] = None) -> None:
 
@@ -175,26 +172,20 @@ class ScheduleSelectionWidget(QWidget):
             self.table.setItem(i, 2, arrival_item)
 
     def dispatch_trains(self) -> None:
-        
+
         """
-        Dispatches the trains according to the current schedule.
+        Dispatches the trains based on the table entries.
         """
 
-        for row in range(self.rows):
-            train_id = self.table.item(row, 0).text()
-            target_block = self.table.item(row, 1).text()
-            arrival_time = self.table.item(row, 2).text()
-            print(f"Train {train_id} dispatched to block {target_block} at {arrival_time}")
+        current_schedule = self.schedules[self.current_schedule_index]
+        for i in range(len(current_schedule.trains)):
+            train_id = current_schedule.trains[i]
+            arrival_time = current_schedule.arrival_times[i].strftime('%H:%M')
 
-            # # Compute the distance from the train to the first stop
-            # distance = self.line.get_distance(1, int(target_block))
-            # if distance == 0:
-            #     print("Suggest Initial Speed: 0")
-            # else:
-            #     print("Suggest Initial Speed: 50")
+            target_block_text = str(current_schedule.stops[i])
+            target_block = ''.join(filter(str.isdigit, target_block_text[:2]))
 
-            # # Compute the authority for the train
-            # print("Initial Authority: ", distance)
+            self.dispatched_train.emit(int(train_id), int(target_block), arrival_time)
 
         self.rows = 0
         self.table.setRowCount(self.rows)

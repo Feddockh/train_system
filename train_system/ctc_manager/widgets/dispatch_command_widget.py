@@ -1,30 +1,18 @@
+from typing import Optional
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTableWidget,
                              QTableWidgetItem, QHeaderView, QComboBox, QPushButton)
 from PyQt6.QtGui import QColor, QPalette
-from PyQt6.QtCore import Qt
-from typing import Optional
+from PyQt6.QtCore import Qt, pyqtSignal
 
 from train_system.common.line import Line
-from train_system.common.train import Train
-from train_system.ctc_manager.ctc_manager import CTCOffice
 
 class DispatchCommandWidget(QWidget):
-    def __init__(self, line: Line, trains: list[Train], 
-                 parent: Optional[QWidget] = None) -> None:
-        
-        """
-        Initializes the DispatchCommandWidget.
+    dispatched_train = pyqtSignal(int, int, str)
 
-        Args:
-            line (Line): The line object containing track blocks.
-            trains (list[Train]): The list of train objects.
-            parent (Optional[QWidget]): The parent widget.
-        """
-
+    def __init__(self, line: Line, parent: Optional[QWidget] = None):
         super().__init__(parent)
         self.title = "Dispatch Command"
         self.line = line
-        self.trains = trains
         self.rows = 0
         self.cols = 3
         self.headers = ["Train ID", "Set Block (Station)", "Arrival Time"]
@@ -122,7 +110,7 @@ class DispatchCommandWidget(QWidget):
 
         # Create combo box for track block inputs
         track_block_cell = QComboBox()
-        block_numbers = self.generate_block_numbers()
+        block_numbers = self.generate_stops()
         track_block_cell.addItems(block_numbers)
         self.table.setCellWidget(row_num, 1, track_block_cell)
 
@@ -141,24 +129,24 @@ class DispatchCommandWidget(QWidget):
             list[str]: A list of train IDs as strings.
         """
 
-        return [str(train.train_id) for train in self.trains]
+        return [str(i) for i in range(1, 101)]
     
-    def generate_block_numbers(self) -> list[str]:
+    def generate_stops(self) -> list[str]:
 
         """
-        Generates a list of block numbers with station names if available.
+        Generates a list of stops with station names if available.
 
         Returns:
             list[str]: A list of block numbers as strings.
         """
-
-        block_numbers = []
-        for block in self.line.track_blocks.values():
-            if block.station is not None:
-                block_numbers.append(f"{block.number} ({block.station.name})")
+        
+        stops = []
+        for block in self.line.track_blocks:
+            if len(block.station):
+                stops.append(f"{block.number} ({block.station})")
             else:
-                block_numbers.append(str(block.number))
-        return block_numbers
+                stops.append(f"{block.number}")
+        return stops
 
     def generate_time_slots(self) -> list[str]:
 
@@ -183,19 +171,12 @@ class DispatchCommandWidget(QWidget):
         
         for row in range(self.rows):
             train_id = self.table.cellWidget(row, 0).currentText()
-            target_block = self.table.cellWidget(row, 1).currentText()
             arrival_time = self.table.cellWidget(row, 2).currentText()
-            print(f"Train {train_id} dispatched to block {target_block} at {arrival_time}")
 
-            # Compute the distance from the train to the first stop
-            distance = self.line.get_distance(1, int(target_block))
-            if distance == 0:
-                print("Suggest Initial Speed: 0")
-            else:
-                print("Suggest Initial Speed: 50")
+            target_block_text = self.table.cellWidget(row, 1).currentText()
+            target_block = ''.join(filter(str.isdigit, target_block_text[:2]))
 
-            # Compute the authority for the train
-            print("Initial Authority: ", distance)
+            self.dispatched_train.emit(int(train_id), int(target_block), arrival_time)
 
         self.rows = 0
         self.table.setRowCount(self.rows)

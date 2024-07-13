@@ -1,5 +1,6 @@
 import os
 import sys
+import networkx as nx
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QTableWidget,
                              QTableWidgetItem, QHeaderView, QApplication,
                              QMainWindow)
@@ -136,6 +137,7 @@ class TrainVisualTableWidget(QWidget):
             status_item.setForeground(QColor("#000000"))
             self.table.setItem(i, 1, status_item)
 
+
 class TrainVisualWidget(QWidget):
 
     def __init__(self, line: Line):
@@ -164,6 +166,8 @@ class TrainVisualWidget(QWidget):
         for block in self.track_blocks:
             if block.occupancy:
                 pen = QPen(Qt.GlobalColor.red, 6)
+            elif block.under_maintenance:
+                pen = QPen(Qt.GlobalColor.yellow, 6)
             else:
                 pen = QPen(Qt.GlobalColor.white, 6)
             painter.setPen(pen)
@@ -260,7 +264,7 @@ class TrainVisualWidget(QWidget):
 
             # Recursively search for the connections
             self.recursive_position_search(next_block_id, block_id, visited_blocks, positions, blocks)
-
+            
 # Demonstrate line generation
 if __name__ == "__main__":
 

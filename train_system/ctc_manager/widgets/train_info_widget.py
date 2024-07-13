@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QTableWidget,
                              QTableWidgetItem, QHeaderView)
 from PyQt6.QtGui import QColor, QPalette
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, pyqtSlot
 from typing import Optional
 
 from train_system.common.line import Line
@@ -143,3 +143,7 @@ class TrainInfoWidget(QWidget):
                 authority_cell.flags() & ~Qt.ItemFlag.ItemIsEditable
             )
             self.table.setItem(i, 3, authority_cell)
+
+    @pyqtSlot()
+    def handle_train_update(self) -> None:
+        self.update_table_data()

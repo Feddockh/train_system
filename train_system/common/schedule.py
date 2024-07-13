@@ -13,20 +13,6 @@ class Schedule:
         self.stops = []
         self.arrival_times = []
 
-    def load_schedule(self, schedule_file: str) -> None:
-
-        """
-        Loads the schedule from the specified file.
-
-        Args:
-            schedule_file (str): The path to the schedule file.
-        """
-
-        df = pd.read_excel(schedule_file)
-        self.trains = df['Train ID'].tolist()
-        self.stops = df['Block (Station)'].tolist()
-        self.arrival_times = df['Arrival'].tolist()
-
     def __repr__(self) -> str:
 
         """
@@ -40,6 +26,20 @@ class Schedule:
         for train, stop, arrival in zip(self.trains, self.stops, self.arrival_times):
             schedule_str += f"{train}\t{stop}\t{arrival}\n"
         return schedule_str
+
+    def load_schedule(self, schedule_file: str) -> None:
+
+        """
+        Loads the schedule from the specified file.
+
+        Args:
+            schedule_file (str): The path to the schedule file.
+        """
+
+        df = pd.read_excel(schedule_file)
+        self.trains = df['Train ID'].tolist()
+        self.stops = df['Block (Station)'].tolist()
+        self.arrival_times = df['Arrival'].tolist()
 
 # Test the Schedule class with an example file
 if __name__ == "__main__":
