@@ -16,7 +16,8 @@ class TrackBlock(QObject):
     def __init__(self, line: str, section: str, number: int, length: int,
                  grade: float, speed_limit: int, elevation: float,
                  cumulative_elevation: float, connecting_blocks: List[int],
-                 branch: int, station: str = "", station_side: str = "") -> None:
+                 branch: int, station: str = None, station_side: str = None, 
+                 switch_options: List[int] = None) -> None:
 
         super().__init__()
 
@@ -33,6 +34,7 @@ class TrackBlock(QObject):
         self.branch = branch
         self.station = station
         self.station_side = station_side
+        self.switch_options = switch_options
 
         # Dynamic parameters
         self._suggested_speed = 0
@@ -41,6 +43,7 @@ class TrackBlock(QObject):
         self._switch_position = None
         self._crossing_signal = CrossingSignal.NA
         self._under_maintenance = False
+        self._light_signal = None
 
     def __repr__(self) -> str:
 
