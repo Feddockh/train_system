@@ -13,11 +13,10 @@ class Train:
         self.train_id = train_id
         self.line = None
         self.block = None
-        self.speed = 0
-        self.authority = 0
-        self.passenger_count = 0
-        self.passenger_capacity = 0
-        self.passenger_throughput = 0
+        self.speed = 0 # suggested speed
+        self.authority = 0 # authority
+        self.stops = []
+        self.arrival_times = []
 
     def __repr__(self) -> str:
 
@@ -35,4 +34,18 @@ class Train:
             f"Speed:        {self.line}\n"
             f"Authority:    {self.line}\n"
         )
-        
+    
+def time_to_seconds(time_str: str):
+
+    """
+    Converts a time string in the format 'HH:MM' to the number of seconds since midnight.
+
+    Args:
+        time_str (str): The time string to convert.
+
+    Returns:
+        int: The number of seconds since midnight.
+    """
+
+    hours, minutes = map(int, time_str.split(':'))
+    return hours * 3600 + minutes * 60
