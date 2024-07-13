@@ -580,46 +580,30 @@ class TestBenchWindow(QMainWindow):
 
 
 
-class AutoDriverWindow(QMainWindow):
+class AutoDriverWindow(QMainWindow): ###DriverWindow
     def __init__(self, train_controller):
         super().__init__()
 
-        self.setWindowTitle("Driver-Automatic")
+        self.setWindowTitle("Driver-Automatic") #Driver
 
         self.train = train_controller
 
-        #some train controlller variables will equal None if not updated
-        #self.train.update_train_controller()
-        #functions the same as below, variables from train model are set equal to value in train controller
+        #update classes
         self.train.simulate_timestep()
 
         self.test_window = None
         self.manual_window = None
 
-        #self.faults_list = self.train.train_model.faults
-        #self.curr_speed = self.convert_to_mph(self.train.current_speed)
-        #self.comm_speed = self.convert_to_mph(self.train.commanded_speed)
-        #self.authority = self.convert_to_ft(self.train.authority)
+
         self.setpoint_speed = self.convert_to_mph(self.train.setpoint_speed)
         self.power = self.train.get_power_command()
-        """
-        this returns ext_lights, int_lights
-        """
         self.light_status = self.train.lights.get_status()
         self.left_door = self.train.doors.get_left()
         self.right_door = self.train.doors.get_right()
-        #self.temp = self.train.ac.get_current_temp()
-        self.comm_temp = self.train.ac.get_commanded_temp() 
-        #self.position = self.train.position
-        #self.destination = self.train.station 
+        self.temp = self.train.ac.get_current_temp()
         self.serv_brake_status = self.train.brake.get_service_brake()
         self.emerg_brake_status = self.train.brake.get_emergency_brake()
         self.brake_on = self.train.brake.get_service_brake() or self.train.brake.get_emergency_brake()
-
-        """
-        UPDATE LIGHTS WITH NEW FUNCTION
-        """
-        self.train.lights.update_lights(self.train.train_model, self.train.elapsed_time, self.train.block)
 
         #the left outputs will use a vertical layout
         left_out_layout = QVBoxLayout()
@@ -712,9 +696,6 @@ class AutoDriverWindow(QMainWindow):
         header_font.setPointSize(12)
         curr_speed_label.setFont(header_font)
         
-        """
-        current speed is from train model
-        """
         self.curr_speed_stat = QLabel(str(self.convert_to_mph(self.train.train_model.get_current_speed())) + " mph") 
         self.curr_speed_stat.setFixedSize(50, 25)
         self.curr_speed_stat.setStyleSheet("background-color: #C8C8C8; color: black;")
@@ -763,13 +744,13 @@ class AutoDriverWindow(QMainWindow):
         left_layout.addWidget(refresh_button)
     
 
-        #create control mode button and label
+        #create control mode button and label 
         mode_label = QLabel("Change Control Mode")
         mode_label.setFixedSize(175, 50)
         mode_label.setFont(header_font)
         mode_button = QPushButton("")
         mode_button.setFixedSize(75, 75)
-        mode_button.clicked.connect(self.navigate_manual_mode)
+        mode_button.clicked.connect(self.navigate_manual_mode)###change to toggle instead of page naviagte
 
         #add button and label to the mode layout
         mode_layout.addWidget(mode_label)
@@ -785,7 +766,7 @@ class AutoDriverWindow(QMainWindow):
         self.speed_input = QLineEdit()
         self.speed_input.setPlaceholderText("Enter Speed")
         self.speed_input.setFixedSize(75, 50)
-        self.speed_input.setEnabled(False)
+        self.speed_input.setEnabled(False) ###move to mode toggle function
 
         #create the service brake button and its label
         self.service_brake_button = QPushButton("X")
@@ -881,7 +862,7 @@ class AutoDriverWindow(QMainWindow):
         test_button.clicked.connect(self.navigate_test_page)
 
         #display current temp
-        self.curr_temp = QLabel("Train Temperature: " + str(self.train.train_model.get_train_temp()) + " F")
+        self.curr_temp = QLabel("Train Temperature: " + str(self.temp) + " F")
         self.curr_temp.setFixedSize(150, 50)
         curr_temp_font = self.curr_temp.font()
         curr_temp_font.setBold(True)
@@ -891,10 +872,10 @@ class AutoDriverWindow(QMainWindow):
         comm_temp_label = QLabel("Commanded Train Temp")
         comm_temp_label.setFixedSize(150, 50)
 
-        self.comm_temp_input = QLineEdit()
+        self.comm_temp_input = QLineEdit() 
         self.comm_temp_input.setPlaceholderText("Enter Temp")
         self.comm_temp_input.setFixedSize(100, 50)
-        self.comm_temp_input.textChanged.connect(self.comm_temp_changed)
+        self.comm_temp_input.textChanged.connect(self.comm_temp_changed)###enabled/disabled depends on mode
 
         temp_unit_label = QLabel("F")
         temp_unit_label.setFixedSize(50, 50)
@@ -1019,7 +1000,7 @@ class AutoDriverWindow(QMainWindow):
     """
     def comm_temp_changed(self, x):
         if(x != ""):
-            self.comm_temp = int(x)
+            self.train.train_model.set_train_temp(int(x))
             self.train.ac.set_commanded_temp(int(x))
 
     def refresh(self):
@@ -1050,7 +1031,7 @@ class AutoDriverWindow(QMainWindow):
         self.comm_speed_stat.setText(str(self.convert_to_mph(self.train.train_model.get_commanded_speed())) + " mph")
         self.curr_authority_stat.setText(str(self.convert_to_ft(self.train.train_model.authority)) + " ft")
         self.power_stat.setText(str(self.power) + " kW")
-        self.curr_temp.setText("Train Temperature: " + str(self.train.train_model.get_train_temp()) + " F")
+        self.curr_temp.setText("Train Temperature: " + str(self.temp) + " F")
         self.loc_label.setText("Location: " + str(self.train.train_model.get_position()))
         self.des_label.setText(str(self.train.train_model.get_station_name()))
 

@@ -23,8 +23,8 @@ def main():
     app.exec()
 
     #test ui outputs
-    #print("train model authority " + str(tc.train_model.authority))
-    #print("controller authority " + str(tc.authority))
+    print("train model temp " + str(tc.train_model.get_train_temp()))
+    print("controller temp " + str(tc.ac.get_commanded_temp()))
     
 
 
