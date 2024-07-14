@@ -53,7 +53,7 @@ class Line(QObject):
         self.connect_signals(track_block)
 
     def set_track_block(self, track_block: TrackBlock) -> None:
-        self.track_blocks[track_block.number] = track_block
+        self.track_blocks[track_block.number - 1] = track_block
         self.connect_signals(track_block)
 
     def connect_signals(self, track_block: TrackBlock) -> None:
@@ -78,7 +78,7 @@ class Line(QObject):
 
         try:
             return self.track_blocks[number - 1]
-        except KeyError:
+        except IndexError:
             print(f"Track block {number} not found.")
             return None
 
@@ -128,7 +128,6 @@ class Line(QObject):
                 elevation=row['ELEVATION (M)'],
                 cumulative_elevation=row['CUMALTIVE ELEVATION (M)'],
                 connecting_blocks=connecting_blocks,
-                branch=row['Branch'],
                 station=station,
                 station_side=station_side
             )
