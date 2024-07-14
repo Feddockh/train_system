@@ -2,7 +2,8 @@
 
 import sys
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, 
-                             QVBoxLayout, QLabel, QHBoxLayout, QStackedWidget)
+                             QVBoxLayout, QLabel, QHBoxLayout,
+                             QStackedWidget, QSizePolicy)
 from PyQt6.QtCore import pyqtSignal, Qt, pyqtSlot
 
 from train_system.common.line import Line
@@ -49,6 +50,10 @@ class DispatcherUI(QMainWindow):
         # Create a horizontal layout for the top half
         self.top_layout = QHBoxLayout()
         self.central_layout.addLayout(self.top_layout)
+        # self.top_widget = QWidget()
+        # self.central_layout.addWidget(self.top_widget, stretch=2)
+        # self.top_layout = QHBoxLayout()
+        # self.top_widget.setLayout(self.top_layout)
 
         # Create a stacked widget with a horizontal layout for the bottom half
         self.bottom_stacked_widget = QStackedWidget()
@@ -131,11 +136,13 @@ class DispatcherUI(QMainWindow):
         # Train visual widget
         self.line = line
         self.train_visual_widget = TrainVisualWidget(self.line)
-        self.visual_layout.addWidget(self.train_visual_widget)
+        self.train_visual_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.visual_layout.addWidget(self.train_visual_widget, stretch=1)
 
         # Throughput widget
         self.throughput_widget = ThroughputWidget()
-        self.visual_layout.addWidget(self.throughput_widget)
+        self.throughput_widget.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+        self.visual_layout.addWidget(self.throughput_widget, stretch=1)
 
         ### CREATE THE DISPATCH COMMAND/SCHEDULE SELECTION STACKED WIDGET ###
         self.stacked_widget = QStackedWidget()
@@ -167,7 +174,6 @@ class DispatcherUI(QMainWindow):
         # Create and add the MaintenanceWidget to the bottom stacked widget
         self.maintenance_widget = MaintenanceWidget(self.line)
         self.bottom_stacked_widget.addWidget(self.maintenance_widget)
-
 
     @pyqtSlot(bool)
     def handle_test_bench_toggle(self, state: bool) -> None:
