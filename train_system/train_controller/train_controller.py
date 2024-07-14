@@ -1,11 +1,11 @@
-import serial
 import time
+import paramiko
+import json
 
-"""
-closeDoor
--have function for left, right and both
--set corresponding door status variables
-"""
+HOST= '192.168.0.114'
+PORT = 22
+USERNAME = 'danim'
+PASSWORD = 'danim'
 
 """
 setStation
@@ -18,32 +18,23 @@ Storing previous beacon data: How are we going to do that and what will it look 
 '''
 
 '''
-Authority: If authority == prev_authority, count down
-            If authority != prev_authority, reset count down and begin counting down
-'''
-
-'''
 # Functions with the word "update" in the name are updated from the Train Model and takes the Train Model as an argument
 # Train Controller only talks with Train Model
 # Train Model needed for initialization
-#### = PySerial Integration for Hardware Train Controller
-#### Train Controller (Raspberry Pi) will start the conversation by reaching out to the Train Model (Windows Computer) asking if the Train Controller can send its outputs
-#### Train Model (Windows Computer) will respond with a message saying it is ready to receive the outputs and the Train Controller (Raspberry Pi) will send the outputs
-#### Train Model (Raspberry Pi) will then receive the message from the Train Model (Windows Computer) with the Train Model's  outputs (Windows Computer)
-#### Train Controller (Raspberry Pi) will then send a received message and update all of its variables with the Train Model's outputs\
 '''
 
 class TrainController:
-    def __init__(self, train_model=None):
-        self.hardware = False
+    def __init__(self, kp: float=25, ki: float=0.1, train_model=None, ssh=None):
+        self.hardware = True if ssh else False
+        print(f"Hardware: {self.hardware}")
         self.elapsed_time = 0
         self.time_step = 0.05  # 0.05 second time step
 
         ## Initialize objects
         self.train_model = train_model if train_model else TrainModel()  # Used to store data received from Train Model. No computations done in the object
-        self.engineer = self.Engineer() # Engineer holds Kp and Ki and is the only one that can set them
+        self.engineer = self.Engineer(kp, ki) # Engineer holds Kp and Ki and is the only one that can set them
         self.brake = self.Brake()       # Brake holds service and emergency brake status
-        self.engine = self.Engine()     # Engine calculates power command and simulates train response
+        self.engine = self.Engine(ssh)     # Engine calculates power command and simulates train response
         self.doors = self.Doors()       # Doors holds left and right door status
         self.lights = self.Lights()     # Lights holds light status
         self.ac = self.AC()             # AC holds temperature status
@@ -51,6 +42,7 @@ class TrainController:
         # Driver variables
         self.driver_mode = "manual" # Driver mode can be "automatic" or "manual"
         self.setpoint_speed = 0     # Setpoint speed for manual mode
+        self.MAX_SPEED = 21.67
 
         # Train Controller Calculated Variables
         self.maintenance_mode = False     # Maintenance status of the train
@@ -70,8 +62,8 @@ class TrainController:
     # Call this for ever press of the refresh button
     def simulate_timestep(self, train_model=None):
         # Update Mock Train Model
-        hw_param = None if self.hardware else (train_model if train_model else self.train_model)
-        self.train_model.update_mock_train_model(hw_param)
+        param = train_model if train_model else self.train_model
+        self.train_model.update_mock_train_model(param)
         ## Perform calculations then output them
         self.update_train_controller()    # This function will define all the "None" variables above
         ## Transmit to Train Model 
@@ -105,33 +97,7 @@ class TrainController:
     def transmit_to_train_model(self):
         ##### THIS WILL BE TAKEN OUT #####
         self.train_model.set_current_speed(self.current_speed)
-
-        if(self.hardware):
-            '''
-            #### Pyserial write all of the necessary outputs of the Train Controller to the Train Model
-            #### Transmission starts with a ! and separation between variables is a space. Separation between elements in a list is a comma
-            #### "!Power, Commanded train temp (2 digit int), Doors and lights commands (3 bools), Emergency brake (bool), Service brake (bool), Maintenance mode (bool)!"
-            ##### This is how the function will work: The Train Controller will start the conversation by reaching out to the Train Model asking if the Train Controller can send its outputs
-            #### The Train Model will respond with a message saying it is ready to receive the outputs and the Train Controller will send the outputs
-            #### The Train Controller will then wait until it reads a message from the Train Model with the Train Model's outputs
-            '''
-            message = f"!{self.get_power_command()},{self.ac.get_commanded_temp()},{self.doors.get_left()},{self.doors.get_right()},{self.lights.get_status()},{self.brake.get_emergency_brake()},{self.brake.get_service_brake()},{self.maintenance_mode}!"
-            
-            with serial.Serial('/dev/ttyS0', 9600, timeout=1) as ser:
-                ser.write(message.encode())
-                time.sleep(1)  # Wait for the Train Model to be ready to receive
-
-        else:
-            '''
-            # Transmit outputs to train model (Jeremy)
-            # Train model (Jeremy) performs calculations and updates the train model
-            ## Because there are no updates on train model, we are skipping this part and going straight to the update
-            ## Test bench is changing train model directly so self.train_model will be automatically updated with new values
-            # Take new train model (Jeremy) values and update the mock train model
-            '''
-            pass
-        
-
+        pass
 
     ## Driver Mode Funtions
     # Output) string: "automatic" or "manual"
@@ -148,7 +114,8 @@ class TrainController:
 
     ## Setpoint and Commanded Speed Functions
     def set_setpoint_speed(self, speed: float):
-        self.setpoint_speed = speed
+        self.setpoint_speed = min(speed, self.MAX_SPEED)
+        self.setpoint_speed = max(self.setpoint_speed, 0)
     def get_setpoint_speed(self):
         return self.setpoint_speed
     
@@ -169,7 +136,10 @@ class TrainController:
     # Simulate the train's response to desired speeds
     ## Purely for debugging purposes
     def simulate_power_command(self, speed: float):
-        power_command = self.engine.compute_power_command(speed, self.current_speed, self.time_step, self.engineer, self.brake, self.maintenance_mode)
+        if(self.engine.ssh is None):
+            power_command = self.engine.compute_power_command_software(speed, self.current_speed, self.time_step, self.engineer, self.brake, self.maintenance_mode)
+        else:
+            power_command = self.engine.compute_power_command_hardware(speed, self.current_speed, self.time_step, self.engineer, self.brake, self.maintenance_mode)
         power_command, self.current_speed, distance_traveled = self.engine.calculate_current_speed(power_command, self.train_model.current_speed, self.time_step, self.brake)
         self.distance_traveled += distance_traveled
         self.elapsed_time += self.time_step
@@ -271,7 +241,7 @@ class TrainController:
        
     ## Engine class calculates power command and can simulate train response
     class Engine:
-        def __init__(self):
+        def __init__(self, ssh):
             self.speed_limit = None  # Speed limit of the train
             self.P_MAX = 120  # Maximum power (kW)
             self.power_command = 0 # Power command
@@ -280,14 +250,45 @@ class TrainController:
             self.u_k_integral = 0 # Error integral
             self.e_k_integral = 0 # Power integral
             
-        '''
-        ## Factors/considerations
-        # - Speed limit: Train Controller
-        # - Power limit: Train Controller
-        # - Brake status: Service and Emergency brake
-        # - Brake Deceleration Rates: Service and Emergency
-        '''
+            '''
+            ## Factors/considerations
+            # - Speed limit: Train Controller
+            # - Power limit: Train Controller
+            # - Brake status: Service and Emergency brake
+            # - Brake Deceleration Rates: Service and Emergency
+            '''
+            
+            self.ssh = None
+            if(ssh):
+                self.ssh = ssh  # SSH client for communication with Raspberry Pi
+                self.channel = self.create_channel()  # Persistent channel
 
+        def create_channel(self):
+            try:
+                transport = self.ssh.get_transport()
+                channel = transport.open_session()
+                channel.get_pty()
+                channel.invoke_shell()
+                return channel
+            except Exception as e:
+                print(f"An error occurred while creating the channel: {e}")
+                return None
+
+        def send_data_to_raspberry_pi(self, data):
+            try:
+                # Execute the calculate_power_command.py script and send data to it
+                stdin, stdout, stderr = self.ssh.exec_command('python3 calculate_power_command.py')
+                stdin.write(json.dumps(data) + '\n')
+                stdin.flush()
+
+                # Read the response
+                response = stdout.read().decode('utf-8').strip()
+                p_cmd, new_u_k = map(float, response.split(','))
+                return p_cmd, new_u_k
+            except Exception as e:
+                print(f"An error occurred during communication: {e}")
+                return 0, self.u_k
+        
         # Check if the train needs to stop because of authority
         def stop_for_authority(self, authority: float, current_speed: float):
             # Use kinematics equation v^2 = v0^2 + 2a(x-x0) to calculate the distance needed to stop
@@ -303,7 +304,9 @@ class TrainController:
         # Return) the power command to be applied to the train
         ### If fault exists, return 0
         ### HOW DO WE HANDLE INTEGRAL OR U_K WHEN BRAKE IS ON
-        def compute_power_command(self, desired_speed: float, current_speed: float, time_step: float, engineer, brake, maintenance_mode: bool = False):
+        def compute_power_command_software(self, desired_speed: float, current_speed: float, time_step: float, engineer, brake, maintenance_mode: bool = False):
+            print("Software")
+            
             if(maintenance_mode):
                 # Reset values
                 self.u_k = 0 # Power command
@@ -318,13 +321,13 @@ class TrainController:
 
             # Calculate the error
             # Authority distance = 
-            best_speed = min(desired_speed, self.speed_limit)
-            e_k = best_speed - current_speed
+            desired_speed = min(desired_speed, self.speed_limit)
+            e_k = desired_speed - current_speed
             # Power command = Kp * error + Ki * integral of error
-            p_cmd = kp * e_k + ki * self.u_k
+            self.power_command = kp * e_k + ki * self.u_k
 
             # Check if the power command exceeds the maximum power
-            if p_cmd < self.P_MAX:
+            if self.power_command < self.P_MAX:
                 self.u_k = self.u_k_integral + (time_step / 2) * (e_k + self.e_k_integral)
             else:
                 # If the power command exceeds the maximum power, use the previous power command
@@ -333,14 +336,61 @@ class TrainController:
             # Update the error and power integral for the next iteration
             self.e_k_integral = e_k
             self.u_k_integral = self.u_k
+            self.power_command = min(self.power_command, self.P_MAX)
 
             #### This will be used after integration
-            if p_cmd < 0:
+            if self.power_command < 0:
                 brake.set_service_brake(True)
-                # p_cmd = 0
+                #### THIS LINE IS FOR TESTING PURPOSES ONLY ####
+                self.power_command = max(self.power_command , -self.P_MAX)    # self.power_command = 0
 
-            self.power_command = p_cmd
-            return p_cmd
+            return self.power_command 
+        
+        def compute_power_command_hardware(self, desired_speed: float, current_speed: float, time_step: float, engineer, brake, maintenance_mode: bool = False):
+            print("Hardware")
+            
+            if(maintenance_mode):
+                # Reset values
+                self.u_k = 0 # Power command
+                self.e_k_integral = 0 # Error integral
+                self.u_k_integral = 0 # Power integral
+                return 0
+            
+            brake.set_service_brake(False)
+
+            # Get kp and ki from engineer
+            kp, ki = engineer.get_engineer()
+
+            # Calculate the error
+            # Authority distance = 
+            desired_speed = min(desired_speed, self.speed_limit)
+            e_k = desired_speed - current_speed
+            
+            # Send the data to the Raspberry Pi for power command calculation
+            data = {
+                'kp': kp,
+                'ki': ki,
+                'ek': e_k,
+                'uk': self.u_k,
+                'eki': self.e_k_integral,
+                'uki': self.u_k_integral,
+                'ts': time_step
+            }
+
+            self.power_command, self.u_k = self.send_data_to_raspberry_pi(data)
+
+            # Update the error and power integral for the next iteration
+            self.e_k_integral = e_k
+            self.u_k_integral = self.u_k
+            self.power_command = min(self.power_command, self.P_MAX)
+
+            #### This will be used after integration
+            if self.power_command < 0:
+                brake.set_service_brake(True)
+                #### THIS LINE IS FOR TESTING PURPOSES ONLY ####
+                self.power_command = max(self.power_command, -self.P_MAX)    # self.power_command = 0
+
+            return self.power_command
         
         def calculate_current_speed(self, power_command, current_speed, time_step: float, brake):
             # If power command is greater than the maximum power, it's exceeded the physical limit so set it to the maximum power
@@ -357,6 +407,7 @@ class TrainController:
             self.power_command = power_command
 
             current_speed += power_command * time_step
+            current_speed = min(current_speed, self.speed_limit)
             distance_traveled = current_speed * time_step
             
             return power_command, current_speed, distance_traveled
@@ -427,7 +478,7 @@ class TrainController:
             self.underground_blocks = [] # List of blocks that are underground
             self.night_time = 43200 # 12 hours in seconds
 
-        ## Mutator Function
+        ## Mutator Functions
         def set_ext_lights(self, status: bool):
             self.lights = status
         def set_int_lights(self, status: bool):
@@ -503,17 +554,18 @@ class TrainController:
 class TrainModel:
     def __init__(self):
         self.current_speed: float = 0
+        self.commanded_speed: float = 0
+        self.authority: float = 1000
+        self.train_temp: int = 69
+        self.faults: int[3] = [0, 0, 0]
+
+        self.block: int = 0
+        self.station: str = "station_name"
         self.speed_limit: float = 19.44  #m/s
         self.position: float = 0
-        self.authority: float = 0
-        self.commanded_speed: float = 0
-        self.train_temp: int = 0
-        self.station: str = ""
-        self.distance_from_station: float = 0
-        self.exit_door: bool = 0
-        self.block: int = 0
-        self.underground_blocks = [0, 1, 2]
-        self.faults: int[3] = [0, 0, 0]
+        self.exit_door: str = "L"
+        self.underground: bool = False
+        
 
     # Float
     def get_current_speed(self):
@@ -605,83 +657,54 @@ class TrainModel:
         return self.faults
     def set_fault_statuses(self, faults: list[bool]):
         self.faults = faults[0:3]   # Only take the first 3 elements
-
-
-
-
-    # #### MAIN COMPUTER USES THIS FUNCTION ####
-    # #### THIS IS JEREMY ####
-    def transmit_to_hw_train_model(self):
-        '''
-        #### Pyserial write all of the necessary outputs of the Train Model to the Train Controller
-        #### Transmission starts with a ! and separation between variables is a space. Separation between elements in a list is a comma
-        #### "!Current speed, Position, Authority, Commanded speed, Train temp, Station, Block, Underground blocks, Exit door, Faults, Speed limit!"
-        ##### This is how the function will work: The Train Model will start the conversation by reaching out to the Train Controller asking if the Train Model can send its outputs
-        #### The Train Controller will respond with a message saying it is ready to receive the outputs and the Train Model will send the outputs
-        #### The Train model will wait until the message is received
-        #### The Train Model will then update all of its variables with the Train Controller's outputs
-        #### The Train Model will then send the newly updated variables to the Train Controller
-        '''
-        message = f"!{self.get_current_speed()},{self.get_position()},{self.get_authority()},{self.get_commanded_speed()},{self.get_train_temp()},{self.get_station_name()},{self.get_block()},{','.join(self.get_underground_blocks())},{','.join(map(str, self.get_exit_door()))},{','.join(map(str, self.get_fault_statuses()))},{self.get_speed_limit()}!"
-
-        with serial.Serial('COM1', 9600, timeout=1) as ser:  # Adjust COM port as necessary
-            ser.write(message.encode())
-            time.sleep(1)  # Wait for the Train Controller to be ready to receive
-
-        return True
     
     
     # This is used to update all train model variables with the real Train Model
     # In hardware, this is done through parsing. In software, this is done through the object
-    def update_mock_train_model(self, train_model=None):
-        # Update through serial encoding
-        if(train_model is None):
-            '''
-            #### Pyserial read all of the variables for the Train Model from another Train Model
-            #### Update its own variables with the variables from the pyserial message
-            #### Will take the message from the Windows Computer and keep it in this object on the Raspberry Pi
-            #### Message to decode: "!Current speed, Position, Authority, Commanded speed, Train temp, Station, Block, Underground blocks, Exit door, Faults, Speed limit!"
-            '''
-            with serial.Serial('/dev/ttyS0', 9600, timeout=1) as ser:
-                message = ser.readline().decode().strip()
+    def update_mock_train_model(self, train_model):
+        self.current_speed = train_model.get_current_speed()
+        self.speed_limit = train_model.get_speed_limit()
+        self.position = train_model.get_position()
+        self.authority = train_model.get_authority()
+        self.commanded_speed = train_model.get_commanded_speed()
+        self.train_temp = train_model.get_train_temp()
 
-            if message.startswith("!"):
-                data = message[1:-1].split(',')
-                self.current_speed = float(data[0])
-                self.position = float(data[1])
-                self.authority = float(data[2])
-                self.commanded_speed = float(data[3])
-                self.train_temp = float(data[4])
-                self.station = data[5]
-                self.block = data[6]
-                self.underground_blocks = data[7].split(',')
-                self.exit_door = [bool(int(data[8])), bool(int(data[9]))]
-                self.faults = [bool(int(fault)) for fault in data[10].split(',')]
-                self.speed_limit = float(data[11])
-            return False
-        else:
-            self.current_speed = train_model.get_current_speed()
-            self.speed_limit = train_model.get_speed_limit()
-            self.position = train_model.get_position()
-            self.authority = train_model.get_authority()
-            self.commanded_speed = train_model.get_commanded_speed()
-            self.train_temp = train_model.get_train_temp()
-
-            self.exit_door = train_model.get_exit_door()
-            self.station = train_model.get_station_name()
-            self.distance_from_station = train_model.get_distance_from_station()
-            self.exit_door = train_model.get_exit_door()
-            self.block = train_model.get_block()
-            self.underground_blocks = train_model.get_underground_blocks()
-            self.faults = train_model.get_fault_statuses()
-            return True
+        self.exit_door = train_model.get_exit_door()
+        self.station = train_model.get_station_name()
+        self.distance_from_station = train_model.get_distance_from_station()
+        self.exit_door = train_model.get_exit_door()
+        self.block = train_model.get_block()
+        self.underground_blocks = train_model.get_underground_blocks()
+        self.faults = train_model.get_fault_statuses()
+        return True
         
 
 
 class TrainSystem:
-    def __init__(self):
+    def __init__(self, host=None, port=None, username=None, password=None):
         self.train_model = TrainModel()
-        self.controller = TrainController()
+        self.ssh_client = None
+        if(host and port and username and password):
+            self.ssh_client = self.create_ssh_connection(HOST, PORT, USERNAME, PASSWORD)
+        # Hardware
+        self.controller = TrainController(25, 0.1, self.train_model, self.ssh_client)
+        # Software
+        # self.controller = TrainController(25, 0.1, self.train_model)
+
+    # Example usage
+    def create_ssh_connection(self, host, port=22, username='danim', password='danim'):
+        """Establish an SSH connection to the Raspberry Pi and return the SSH client."""
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        
+        try:
+            # Connect to the Raspberry Pi
+            ssh.connect(host, port, username, password)
+            print("Connection established")
+            return ssh
+        except Exception as e:
+            print(f"An error occurred while connecting: {e}")
+            return None
 
 
     def run(self):
@@ -703,5 +726,5 @@ class TrainSystem:
             
 
 if __name__ == "__main__":
-    train_system = TrainSystem()
+    train_system = TrainSystem(HOST, PORT, USERNAME, PASSWORD)
     train_system.run()
