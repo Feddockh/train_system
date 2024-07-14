@@ -1,10 +1,11 @@
 import os
 import sys
+import json
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QTableWidget,
                              QTableWidgetItem, QHeaderView, QApplication,
                              QMainWindow)
-from PyQt6.QtGui import QColor, QPalette, QPainter, QPen
-from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QColor, QPaintEngine, QPaintEvent, QPalette, QPainter, QPen, QFontMetrics
+from PyQt6.QtCore import Qt, QPoint
 from typing import Optional
 
 from train_system.common.line import Line
@@ -142,145 +143,101 @@ class TrainVisualWidget(QWidget):
         super().__init__()
 
         # Line parameters
-        self.title = f"{line.name} Line Layout"
-        self.track_blocks = line.track_blocks
+        self.line = line
+        self.title = f"{line.name} Line Visual"
+        self.setGeometry(100, 100, 800, 600)
+        
+        # Load in the line visual data
+        filename = os.path.join(os.path.dirname(__file__), f"lines\\{line.name.lower()}.json")
+        with open(filename, "r") as file:
+            self.block_visuals = json.load(file)
 
-        # Scaling parameters
-        self.y_block_padding = 0.1
-        self.y_offset = 1
-        self.y_scale = self.height() / 4
-        self.main_branch_length = self.compute_main_branch_length()
-        self.x_block_padding = 10
-        self.x_total_padding = (len(self.track_blocks) + 2) * self.x_block_padding
-        self.x_scale = self.width() / (self.main_branch_length + self.x_total_padding)
-        self.relative_block_positions = self.find_relative_block_positions()
+        # Set the scaling values
+        self.max_x = self.find_max_x()
+        self.max_y = self.find_max_y()
+        self.x_scale = self.width() // (self.max_x + 2)
+        self.y_scale = self.height() // (self.max_y + 2)
+        self.padding = self.x_scale // 10
+
+    def find_max_y(self):
+        max_y = 0
+        for block in self.block_visuals:
+            if block['y2'] > max_y:
+                max_y = block['y2']
+        return max_y
+    
+    def find_max_x(self):
+        max_x = 0
+        for block in self.block_visuals:
+            if block['x2'] > max_x:
+                max_x = block['x2']
+        return max_x
+
+    def resizeEvent(self, event):
+
+        # Update the scaling values
+        self.x_scale = self.width() // (self.max_x + 2)
+        self.y_scale = self.height() // (self.max_y + 2)
+        self.padding = self.x_scale // 10
+
+        # Trigger repaint
+        self.update()
 
     def paintEvent(self, event):
-
-        # Initialize the painter
         painter = QPainter(self)
-
-        # Draw the track blocks
-        for block in self.track_blocks:
-            if block.occupancy:
-                pen = QPen(Qt.GlobalColor.red, 6)
-            else:
-                pen = QPen(Qt.GlobalColor.white, 6)
-            painter.setPen(pen)
-
-            # Scale the block positions to the window size
-            block_endpoints = self.relative_block_positions[block.number - 1]
-            x1 = int(block_endpoints[0][0] * self.x_scale)
-            x2 = int(block_endpoints[1][0] * self.x_scale)
-            y1 = int((block_endpoints[0][1] + self.y_offset) * self.y_scale)
-            y2 = int((block_endpoints[1][1] + self.y_offset) * self.y_scale)
-            painter.drawLine(x1, y1, x2, y2)
-            
-    def resizeEvent(self, event):
-        self.y_scale = self.height() / 4
-        self.x_scale = self.width() / (self.main_branch_length + self.x_total_padding)
-        self.update()  # Trigger repaint
-
-    def compute_main_branch_length(self) -> int:
-        main_branch_length = 0
-        for block in self.track_blocks:
-            if block.branch == 1:
-                main_branch_length += block.length
-
-        return main_branch_length
-
-    def find_relative_block_positions(self) -> list:
-
-        # Initialize the search parameters
-        visited_blocks = {1}
-        block_positions = [[[0, 1], [0, 1]] for _ in range(len(self.track_blocks))]
-        starting_block = self.track_blocks[0]
-        block_positions[0] = [[self.x_block_padding, 1], [starting_block.length, 1]]
-
-        # Recursively search for the connections and their relative positions
-        self.recursive_position_search(2, 1, visited_blocks, block_positions, self.track_blocks)
-
-        return block_positions
-
-    def recursive_position_search(self, block_id, prev_block_id, visited_blocks, positions, blocks):
-
-        # If block is already visited, return
-        if block_id in visited_blocks:
-            return
-
-        # Mark the block as visited
-        visited_blocks.add(block_id)
-
-        # Get the current and previous block objects
-        block = blocks[block_id - 1]
-        prev_block = blocks[prev_block_id - 1]
+        font_metrics = QFontMetrics(painter.font())
         
-        # Compute the x-coordinates of the current block
-        x1 = positions[prev_block_id - 1][1][0] + self.x_block_padding
-        x2 = x1 + block.length
+        # Place the blocks on the visual
+        for block in self.block_visuals:
 
-        # Case 1: The current block is on the same branch as the previous block
-        if block.branch == prev_block.branch:
-            y1 = y2 = prev_block.branch
+            # Set the pen color based on the status of the block
+            line_width = 2
+            if self.line.get_track_block(block['block_number']).occupancy:
+                pen = QPen(Qt.GlobalColor.red, line_width)
+            elif self.line.get_track_block(block['block_number']).under_maintenance:
+                pen = QPen(Qt.GlobalColor.yellow, line_width)
+            else:
+                pen = QPen(Qt.GlobalColor.white, line_width)
+                painter.setPen(pen)
 
-        # Case 2: The current block is branching upwards off the previous block
-        elif block.branch < 1 and prev_block.branch == 1:
-            y1 = 1 - self.y_block_padding
-            y2 = block.branch + self.y_block_padding
+            # Set the visual block coordinates
+            x1, y1 = block['x1'] * self.x_scale, block['y1'] * self.y_scale
+            x2, y2 = block['x2'] * self.x_scale, block['y2'] * self.y_scale
 
-        # Case 3: The current block is merging downwards onto the main branch
-        elif block.branch == 1 and prev_block.branch < 1:
-            y1 = 1 + self.y_block_padding
-            y2 = block.branch - self.y_block_padding
+            # Draw the line
+            painter.drawLine(QPoint(x1 + self.padding, y1), QPoint(x2 - self.padding, y2))
 
-            # Adjust the y-coordinates of the previous block
-            positions[prev_block_id - 1][1][1] = block.branch - self.y_block_padding
+            # Get the block number
+            block_number = str(block['block_number'])
 
-        # Case 4: The current block is branching downwards off the previous block
-        elif block.branch > 1 and prev_block.branch == 1:
-            y1 = 1 + self.y_block_padding
-            y2 = block.branch - self.y_block_padding
+            # Compute text width and height
+            text_width = font_metrics.horizontalAdvance(block_number)
+            text_height = font_metrics.height()
 
-        # Case 5: The current block is merging upwards onto the main branch
-        elif block.branch == 1 and prev_block.branch > 1:
-            y1 = 1 - self.y_block_padding
-            y2 = block.branch + self.y_block_padding
+            # Compute the x position of the text
+            if block["y1"] < block["y2"]:
+                text_x = x1 + (x2 - x1) // 2
+            elif block["y1"] > block["y2"]:
+                text_x = x1 + (x2 - x1) // 2 - text_width
+            else:
+                text_x = x1 + (x2 - x1) // 2 - text_width // 2
+                
+            # Compute the y position of the text
+            if block["branch"] > 0:
+                text_y = max(y1, y2) - abs(y1 - y2) // 2 - line_width - 1
+            else:
+                text_y = y1 + text_height
 
-            # Adjust the y-coordinates of the previous block
-            positions[prev_block_id - 1][1][1] = block.branch + self.y_block_padding
+            painter.drawText(text_x, text_y, block_number)
+        
 
-        # Store the new block's position
-        positions[block_id - 1] = [[x1, y1], [x2, y2]]
-
-        # Recursively search for the connections
-        for next_block_id in blocks[block_id - 1].connecting_blocks:
-            # Skip the next block if it was already visited
-            if next_block_id in visited_blocks:
-                continue
-
-            # Recursively search for the connections
-            self.recursive_position_search(next_block_id, block_id, visited_blocks, positions, blocks)
-
-# Demonstrate line generation
-if __name__ == "__main__":
-
+if __name__ == '__main__':
     app = QApplication(sys.argv)
-    window = QMainWindow()
-    central_widget = QWidget()
-    layout = QVBoxLayout(central_widget)
 
-    # Create a line
-    line = Line("Blue")
-
-    # Load in the track blocks
-    file_path = os.path.abspath(os.path.join("tests", "blue_line.xlsx"))
-
-    # Load the track blocks
+    line = Line("Green")
+    file_path = os.path.abspath(os.path.join("tests", "green_line.xlsx"))
     line.load_track_blocks(file_path)
 
-    display = TrainVisualWidget(line)
-    
-    layout.addWidget(display)
-    window.setCentralWidget(central_widget)
-    window.show()
+    widget = TrainVisualWidget(line)
+    widget.show()
     sys.exit(app.exec())

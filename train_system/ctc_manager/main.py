@@ -2,39 +2,65 @@
 
 import os
 import sys
+from typing import List
 from PyQt6.QtWidgets import QApplication
 
+from train_system.common.time_keeper import TimeKeeper
 from train_system.common.line import Line
 from train_system.common.track_block import TrackBlock
+from train_system.common.train import Train
 from train_system.ctc_manager.ctc_manager import CTCOffice
 from train_system.ctc_manager.dispatcher_ui import DispatcherUI
 
 # Create the application
 app = QApplication(sys.argv)
 
+# Create the time keeper object
+time_keeper = TimeKeeper()
+time_keeper.start_timer()
+
 # Create the line object
-line = Line("Blue")
-file_path = os.path.abspath(os.path.join("tests", "blue_line.xlsx"))
+line = Line("Green")
+file_path = os.path.abspath(os.path.join("tests", f"{line.name.lower()}_line.xlsx"))
 line.load_track_blocks(file_path)
 
-# Instatiating the CTCOffice object
-ctc_manager = CTCOffice()
+# Create a list of train objects
+trains: List[Train] = []
+
+# Instatiate the CTCOffice object
+ctc_manager = CTCOffice(time_keeper, line, trains)
 
 # Instantiate the DispatcherUI object
-dispatcher_ui = DispatcherUI(line)
+dispatcher_ui = DispatcherUI(time_keeper, line, trains)
 
-# Connect the signals and slots
+# Connect the time keeper signal to the CTC Manager slot
+time_keeper.tick.connect(ctc_manager.handle_time_update)
+
+# Connect the GUI switch signals to the CTC Manager slots
 dispatcher_ui.test_bench_toggle_switch.toggled.connect(ctc_manager.handle_test_bench_toggle)
 dispatcher_ui.maintenance_toggle_switch.toggled.connect(ctc_manager.handle_maintenance_toggle)
 dispatcher_ui.mbo_toggle_switch.toggled.connect(ctc_manager.handle_mbo_toggle)
 dispatcher_ui.automatic_toggle_switch.toggled.connect(ctc_manager.handle_automatic_toggle)
 
+# Connect the GUI dispatch signals to the CTC Manager slots
+dispatcher_ui.dispatch_command_widget.dispatched_train.connect(ctc_manager.handle_dispatched_trains)
+dispatcher_ui.schedule_selection_widget.dispatched_train.connect(ctc_manager.handle_dispatched_trains)
+
+# Connect the Line signals to the CTC Manager slots
+line.track_block_occupancy_updated.connect(ctc_manager.handle_occupancy_update)
+line.track_block_switch_position_updated.connect(ctc_manager.handle_switch_position_update)
+line.track_block_crossing_signal_updated.connect(ctc_manager.handle_crossing_signal_update)
+
+# Connect the Line signals to the DispatcherUI slots
+line.track_block_occupancy_updated.connect(dispatcher_ui.handle_occupancy_update)
+line.track_block_switch_position_updated.connect(dispatcher_ui.handle_switch_position_update)
+line.track_block_crossing_signal_updated.connect(dispatcher_ui.handle_crossing_signal_update)
+line.track_block_under_maintenance_updated.connect(dispatcher_ui.handle_maintenance_update)
+
+# Connnt the CTC Manager signals to the DispatcherUI slots
+ctc_manager.trains_updated.connect(dispatcher_ui.train_info_widget.handle_train_update)
+
+
 # Show the dispatcher UI
 dispatcher_ui.show()
 sys.exit(app.exec())
-
-# TODO:
-# - Implement functionality of signals and slots
-# - Implement throughput metric widget
-# - Implement improved train visual widget
-# - Implement time (including authority and speed computations)

@@ -26,7 +26,6 @@ class MaintenanceWidget(QWidget):
         self.cols = 2
         self.headers = ["Block ID", "Status"]
         self.init_ui()
-        self.connect_signals()
 
     def init_ui(self) -> None:
 
@@ -87,15 +86,6 @@ class MaintenanceWidget(QWidget):
         layout.addWidget(self.table)
         self.setLayout(layout)
 
-    def connect_signals(self) -> None:
-
-        """
-        Connects signals for track block maintenance changes.
-        """
-
-        for track_block in self.line.track_blocks.values():
-            track_block.maintenanceChanged.connect(self.update_table_data)
-
     def update_table_data(self) -> None:
 
         """
@@ -104,7 +94,7 @@ class MaintenanceWidget(QWidget):
 
         self.rows = len(self.line.track_blocks)
         self.table.setRowCount(self.rows)
-        for i, track_block in enumerate(self.line.track_blocks.values()):
+        for i, track_block in enumerate(self.line.track_blocks):
             track_block_cell = QTableWidgetItem(str(track_block.number))
             track_block_cell.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             track_block_cell.setFlags(
