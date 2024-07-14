@@ -20,8 +20,8 @@ time_keeper = TimeKeeper()
 time_keeper.start_timer()
 
 # Create the line object
-line = Line("Blue")
-file_path = os.path.abspath(os.path.join("tests", "blue_line.xlsx"))
+line = Line("Green")
+file_path = os.path.abspath(os.path.join("tests", f"{line.name.lower()}_line.xlsx"))
 line.load_track_blocks(file_path)
 
 # Create a list of train objects

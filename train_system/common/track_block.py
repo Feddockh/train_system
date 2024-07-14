@@ -16,7 +16,7 @@ class TrackBlock(QObject):
     def __init__(self, line: str, section: str, number: int, length: int,
                  grade: float, speed_limit: int, elevation: float,
                  cumulative_elevation: float, connecting_blocks: List[int],
-                 branch: int, station: str = "", station_side: str = "") -> None:
+                 station: str = "", station_side: str = "") -> None:
 
         super().__init__()
 
@@ -30,7 +30,6 @@ class TrackBlock(QObject):
         self.elevation = elevation
         self.cumulative_elevation = cumulative_elevation
         self.connecting_blocks = connecting_blocks
-        self.branch = branch
         self.station = station
         self.station_side = station_side
 
@@ -61,7 +60,6 @@ class TrackBlock(QObject):
             f"Elevation:               {self.elevation}\n"
             f"Cumulative Elevation:    {self.cumulative_elevation}\n"
             f"Connecting Track Blocks: {self.connecting_blocks}\n"
-            f"Branch:                  {self.branch}\n"
             f"Station:                 {self.station}\n"
             f"Station Side:            {self.station_side}\n"
             f"Suggested Speed:         {self._suggested_speed}\n"
