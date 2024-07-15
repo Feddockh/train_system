@@ -35,9 +35,9 @@ class TrainController:
         self.engineer = self.Engineer(kp, ki) # Engineer holds Kp and Ki and is the only one that can set them
         self.brake = self.Brake()       # Brake holds service and emergency brake status
         self.engine = self.Engine(ssh)     # Engine calculates power command and simulates train response
-        self.doors = self.Doors()       # Doors holds left and right door status
-        self.lights = self.Lights()     # Lights holds light status
-        self.ac = self.AC()             # AC holds temperature status
+        self.doors = self.Doors(self.train_model.get_exit_door)       # Doors holds left and right door status
+        self.lights = self.Lights(self.train_model.get_underground)     # Lights holds light status
+        self.ac = self.AC(self.train_model.get_train_temp())             # AC holds temperature status
 
         # Driver variables
         self.driver_mode = "manual" # Driver mode can be "automatic" or "manual"
@@ -46,16 +46,22 @@ class TrainController:
 
         # Train Controller Calculated Variables
         self.maintenance_mode = False     # Maintenance status of the train
-        self.distance_traveled = 0  # Distance traveled by the train. Calculated in the Train Controller
+        self.position = 0  # Distance traveled by the train. Calculated in the Train Controller
+        
+        self.track_block: int = 0
+        self.block: int = 0
+        self.station: str = "station_name"
+        self.speed_limit: float = 19.44  #m/s
+        self.length: float = self.train_model.get_length()
+        self.polarity = self.train_model.get_length() # Polarity changes polarity < 0
+        self.exit_door: str = "L"
+        self.underground: bool = False
 
         # Train Model inputs (purely made for convenience)
         # THESE VALUES WILL RECEIVE NO CALCULATIONS (except for current speed FOR NOW)
         self.current_speed = None    # Current speed of the train
         self.commanded_speed = None  # Commanded speed from the Train Model (CTC or MBO)
         self.authority = None        # Authority from the Train Model (CTC or MBO)
-        self.position = None         # Position of the train
-        self.block = None            # Block the train is currently in
-        self.station = None          # Station of the beacon the train is connected to
         self.faults = None           # Fault statuses from the Train Model (list of bools)
 
     # Simulate a time step of the train controller
@@ -76,17 +82,24 @@ class TrainController:
         self.current_speed = self.train_model.get_current_speed()
         self.commanded_speed = self.train_model.get_commanded_speed()
         self.authority = self.train_model.get_authority()
-        self.position = self.train_model.get_position()
-        self.block = self.train_model.get_block()
-        self.station = self.train_model.get_station_name()
-        ## -- Distance from station -- ##
-
         # Update all status variables
-        self.engine.update_speed_limit(self.train_model)
-        self.doors.set_exit_door(self.train_model)
         self.ac.update_current_temp(self.train_model, self.driver_mode)
         self.update_fault_status(self.train_model)
-        self.lights.update_lights(self.train_model, self.elapsed_time, self.block)
+        
+        # Update all track block variables
+        self.engine.update_speed_limit(self.train_model)
+        self.doors.set_exit_door(self.train_model)
+        self.lights.update_lights(self.train_model, self.elapsed_time)
+        self.station = self.train_model.get_station_name()
+
+        ### CHANGE THESE TO POLARITY AND DISTANCE USING LENGTH
+        self.position += self.train_model.get_current_speed()*self.time_step
+        self.polarity -= self.train_model.get_current_speed()*self.time_step
+        if self.polarity <= 0:
+            self.train_model.increment_track_block()
+            self.polarity += self.train_model.get_length()
+        self.block = self.train_model.get_block()
+        
 
         ## Train Controller Calculations
         # Run 1 more cycle of the simulation to update the current speed
@@ -140,8 +153,7 @@ class TrainController:
             power_command = self.engine.compute_power_command_software(speed, self.current_speed, self.time_step, self.engineer, self.brake, self.maintenance_mode)
         else:
             power_command = self.engine.compute_power_command_hardware(speed, self.current_speed, self.time_step, self.engineer, self.brake, self.maintenance_mode)
-        power_command, self.current_speed, distance_traveled = self.engine.calculate_current_speed(power_command, self.train_model.current_speed, self.time_step, self.brake)
-        self.distance_traveled += distance_traveled
+        power_command, self.current_speed = self.engine.calculate_current_speed(power_command, self.train_model.current_speed, self.time_step, self.brake)
         self.elapsed_time += self.time_step
         print(f"Power Command: {power_command}, Current Speed: {self.current_speed}")
     
@@ -401,16 +413,15 @@ class TrainController:
                 power_command = -self.P_MAX
                 
             ##### JUST FOR TESTING #####
-            if brake.get_status() :
+            if brake.get_status():
                 power_command = -self.P_MAX
             
             self.power_command = power_command
 
             current_speed += power_command * time_step
             current_speed = min(current_speed, self.speed_limit)
-            distance_traveled = current_speed * time_step
             
-            return power_command, current_speed, distance_traveled
+            return power_command, current_speed
         
         def update_speed_limit(self, train_model):
             self.speed_limit = train_model.get_speed_limit()
@@ -419,10 +430,10 @@ class TrainController:
     # Door status = bool
     # False = closed, True = open
     class Doors:
-        def __init__(self):
+        def __init__(self, exit_door="L"):
             self.left = False
             self.right = False
-            self.exit_door = None   # False = "left", True = "right"
+            self.exit_door = exit_door   # False = "left", True = "right"
 
         ## Mutator Functions
         # Input) status: boolean
@@ -472,67 +483,56 @@ class TrainController:
     # Light status = bool
     # False = off, True = on
     class Lights:
-        def __init__(self):
-            self.ext_lights = False
-            self.int_lights = False
-            self.underground_blocks = [] # List of blocks that are underground
+        def __init__(self, underground=False):
+            self.lights = False
+            self.underground = underground # List of blocks that are underground
             self.night_time = 43200 # 12 hours in seconds
 
         ## Mutator Functions
-        def set_ext_lights(self, status: bool):
-            self.lights = status
-        def set_int_lights(self, status: bool):
-            self.lights = status
         def lights_on(self):
-            self.ext_lights = True
-            self.int_lights = True
+            self.lights = True
         def lights_off(self):
-            self.ext_lights = False
-            self.int_lights = False
+            self.lights = False
         def set_lights(self, status: bool):
-            self.ext_lights = status
-            self.int_lights = status
+            self.lights = status
 
         ## Toggle Function
         def toggle_lights(self):
-            self.ext_lights = not self.ext_lights
-            self.int_lights = not self.int_lights
+            self.lights = not self.lights
 
         ## Accessor Function
-        def get_int_lights(self):
-            return self.int_lights
-        def get_ext_lights(self):
-            return self.ext_lights
+        def get_lights(self):
+            return self.lights
         def get_status(self):
-            return self.ext_lights, self.int_lights
-        def get_underground_blocks(self):
-            return self.underground_blocks
+            return self.lights
+        def get_underground(self):
+            return self.underground
         
         ## Update Functions
-        def update_underground_blocks(self, underground_blocks):
-            self.underground_blocks = underground_blocks
-        def update_lights(self, train_model, elapsed_time: float, block: int):
-            self.update_underground_blocks(train_model.get_underground_blocks())    # Update underground blocks
-            self.set_lights(block in self.underground_blocks or (elapsed_time % 86400) > 43200)   # Set external lights if current block is undreground
+        def update_underground(self, underground: bool):
+            self.underground = underground
+        def update_lights(self, train_model, elapsed_time: float):
+            self.update_underground(train_model.get_underground())    # Update underground blocks
+            self.set_lights(self.underground or (elapsed_time % 86400) > 43200)   # Set external lights if current block is undreground
 
     ## AC class to hold temperature status
     # Commanded temperature from driver (initialized to 69)
     # Current temperature from Train Model
     class AC:
-        def __init__(self):
+        def __init__(self, temp: int):
             # Automatic temperature when in Automatic mode (69 degrees Fahrenheit)
             self.auto_temp = 69
-            self.max_temp = 80
-            self.min_temp = 60
+            self.MAX_TEMP = 80
+            self.MIN_TEMP = 60
             # Commanded temperature from driver (initialized to auto_temp)
             self.commanded_temp = self.auto_temp
             # Current temperature inside the train
-            self.current_temp = None
+            self.current_temp = temp
 
         ## Mutator Function
         def set_commanded_temp(self, temp: int):
-            self.commanded_temp = min(round(temp), self.max_temp)
-            self.commanded_temp = max(self.commanded_temp, self.min_temp)
+            self.commanded_temp = min(round(temp), self.MAX_TEMP)
+            self.commanded_temp = max(self.commanded_temp, self.MIN_TEMP)
 
         ## Accessor Function
         def get_commanded_temp(self):
@@ -553,19 +553,21 @@ class TrainController:
 # All information from MBO needs to be encrypted
 class TrainModel:
     def __init__(self):
+        # Train Model variables
         self.current_speed: float = 0
         self.commanded_speed: float = 0
         self.authority: float = 1000
         self.train_temp: int = 69
         self.faults: int[3] = [0, 0, 0]
 
+        # Track block variables
+        self.track_block: int = 0
         self.block: int = 0
         self.station: str = "station_name"
         self.speed_limit: float = 19.44  #m/s
-        self.position: float = 0
+        self.length: float = 0
         self.exit_door: str = "L"
         self.underground: bool = False
-        
 
     # Float
     def get_current_speed(self):
@@ -581,21 +583,13 @@ class TrainModel:
     def set_speed_limit(self, speed: float):
         self.speed_limit = speed
 
-    def get_distance_from_station(self):
-        # Logic to get the distance from the station
-        return self.distance_from_station
-    def set_distance_from_station(self, distance: float):
-        self.distance_from_station = round(distance, 2)
-
     # 1 floats
-    # Distance from starting point (or relative point 0)
-    # Distance from previous beacon
-    # Still need to figure out how to do this
-    def get_position(self):
-        # Logic to get current position of the train
-        return self.position
-    def set_position(self, position: float):
-        self.position = round(position, 2)
+    # Length of the current block
+    def get_length(self):
+        # Logic to get current length of the train
+        return self.length
+    def set_length(self, length: float):
+        self.length = length
 
     # Iterative (float representing meters)? Absolute (position representing when to stop by)?
     def get_authority(self):
@@ -618,6 +612,11 @@ class TrainModel:
     def set_train_temp(self, temp: int):
         self.train_temp = temp
 
+    def get_track_block(self):
+        return self.track_block
+    def increment_track_block(self):
+        self.track_block += 1
+    
     # String or station ID?
     # Need to decrypt the information and figure it out from that
     # Is the full name even needed
@@ -633,20 +632,24 @@ class TrainModel:
         # Logic to get the block number
         return self.block
     def set_block(self, block: int):
+        if block < 0:
+            raise ValueError("Block number must be positive.")
         self.block = block
 
     # List of chars (list of blocks)
-    def get_underground_blocks(self):
+    def get_underground(self):
         # Logic to get the underground status of the train
-        return self.underground_blocks
-    def set_underground_blocks(self, blocks: list[int]):
-        self.underground_blocks = blocks
+        return self.underground
+    def set_underground(self, underground: bool):
+        self.underground = underground
 
     # Bool (left, right)
     def get_exit_door(self):
         # Logic to get the status of the exit door
         return self.exit_door
-    def set_exit_door(self, door: bool):
+    def set_exit_door(self, door: str):
+        if door not in ["L", "R"]:
+            raise ValueError("Invalid door. Door must be 'L' or 'R'.")
         self.exit_door = door
 
     # List of bools? Individual bools?
@@ -664,18 +667,18 @@ class TrainModel:
     def update_mock_train_model(self, train_model):
         self.current_speed = train_model.get_current_speed()
         self.speed_limit = train_model.get_speed_limit()
-        self.position = train_model.get_position()
+        self.length = train_model.get_length()
         self.authority = train_model.get_authority()
         self.commanded_speed = train_model.get_commanded_speed()
         self.train_temp = train_model.get_train_temp()
 
-        self.exit_door = train_model.get_exit_door()
-        self.station = train_model.get_station_name()
-        self.distance_from_station = train_model.get_distance_from_station()
-        self.exit_door = train_model.get_exit_door()
-        self.block = train_model.get_block()
-        self.underground_blocks = train_model.get_underground_blocks()
-        self.faults = train_model.get_fault_statuses()
+        # self.exit_door = train_model.get_exit_door()
+        # self.station = train_model.get_station_name()
+        # self.distance_from_station = train_model.get_distance_from_station()
+        # self.exit_door = train_model.get_exit_door()
+        # self.block = train_model.get_block()
+        # self.underground_blocks = train_model.get_underground_blocks()
+        # self.faults = train_model.get_fault_statuses()
         return True
         
 
@@ -687,9 +690,9 @@ class TrainSystem:
         if(host and port and username and password):
             self.ssh_client = self.create_ssh_connection(HOST, PORT, USERNAME, PASSWORD)
         # Hardware
-        self.controller = TrainController(25, 0.1, self.train_model, self.ssh_client)
+        #self.controller = TrainController(25, 0.1, self.train_model, self.ssh_client)
         # Software
-        # self.controller = TrainController(25, 0.1, self.train_model)
+        self.controller = TrainController(25, 0.1, self.train_model)
 
     # Example usage
     def create_ssh_connection(self, host, port=22, username='danim', password='danim'):
