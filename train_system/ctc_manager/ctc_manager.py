@@ -1,16 +1,18 @@
 # train_system/ctc_manager/ctc_manager.py
 
+from typing import List
 from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
 
+from train_system.common.conversions import time_to_seconds
 from train_system.common.time_keeper import TimeKeeper
 from train_system.common.dispatch_mode import DispatchMode
 from train_system.common.line import Line
-from train_system.common.train import Train, time_to_seconds
+from train_system.ctc_manager.train import Train
 
 class CTCOffice(QObject):
     trains_updated = pyqtSignal()
 
-    def __init__(self, time_keeper: TimeKeeper, line: Line, trains: list[Train]):
+    def __init__(self, time_keeper: TimeKeeper, line_name: str) -> None:
 
         """
         Initialize the CTC Office.
@@ -18,15 +20,27 @@ class CTCOffice(QObject):
 
         super().__init__()
         self.time_keeper = time_keeper
-        self.line = line
-        self.trains = trains
+        
+        # Create the line object
+        self.line = Line(line_name)
+        self.line.load_track_blocks()
+
+        # Connect the Line signals to the CTC Manager slots
+        self.line.track_block_occupancy_updated.connect(self.handle_occupancy_update)
+        self.line.track_block_switch_position_updated.connect(self.handle_switch_position_update)
+        self.line.track_block_crossing_signal_updated.connect(self.handle_crossing_signal_update)
+
+        # Create a list of train objects
+        self.trains: List[Train] = []
+
+        # Initialize the mode
         self.test_bench_mode = False
         self.maintenance_mode = False
         self.mbo_mode = False
         self.automatic_mode = False
 
     @pyqtSlot(int)
-    def handle_time_update(self) -> None:
+    def handle_time_update(self, tick: int) -> None:
         updateAuthority = True
         # TODO: This should check for the next train to be sent out
         
@@ -106,7 +120,7 @@ class CTCOffice(QObject):
             speed = 0
         else:
             speed = 50
-        dispatched_train.speed = speed
+        dispatched_train.suggested_speed = speed
         print(f"Initial Suggested Speed: {speed}")
 
         # Update the trains table

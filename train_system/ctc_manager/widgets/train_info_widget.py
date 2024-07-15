@@ -7,7 +7,7 @@ from typing import Optional
 from train_system.common.line import Line
 from train_system.common.track_block import TrackBlock
 from train_system.common.station import Station
-from train_system.common.train import Train
+from train_system.ctc_manager.train import Train
 
 class TrainInfoWidget(QWidget):
     def __init__(self, line: Line, trains: list[Train], 
