@@ -1,19 +1,27 @@
+# train_system/ctc_manager/dispatcher_ui.py
+
 import sys
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, 
-                             QVBoxLayout, QLabel, QHBoxLayout, QStackedWidget)
-from PyQt6.QtCore import Qt
+                             QVBoxLayout, QLabel, QHBoxLayout,
+                             QStackedWidget, QSizePolicy)
+from PyQt6.QtCore import pyqtSignal, Qt, pyqtSlot
 
-from train_system.ctc_manager.ctc_manager import CTCOffice
+from train_system.common.line import Line
+from train_system.common.track_block import TrackBlock
+from train_system.ctc_manager.train import Train
+from train_system.common.time_keeper import TimeKeeper, TimeKeeperWidget
 from train_system.ctc_manager.widgets.switch_widget import SwitchWidget
-from train_system.ctc_manager.widgets.train_visual_widget import TrainVisualWidget
+from train_system.ctc_manager.widgets.track_visual_widget import TrackVisualWidget
+from train_system.ctc_manager.widgets.throughput_widget import ThroughputWidget
 from train_system.ctc_manager.widgets.dispatch_command_widget import DispatchCommandWidget
 from train_system.ctc_manager.widgets.train_info_widget import TrainInfoWidget
 from train_system.ctc_manager.widgets.schedule_selection_widget import ScheduleSelectionWidget
+from train_system.ctc_manager.widgets.occupancy_widget import OccupancyWidget
 from train_system.ctc_manager.widgets.maintenance_widget import MaintenanceWidget
-from train_system.ctc_manager.widgets.test_bench_widget import TestBenchWidget
+
 
 class DispatcherUI(QMainWindow):
-    def __init__(self):
+    def __init__(self, time_keeper: TimeKeeper, line: Line, trains: list[Train]):
 
         """
         Initializes the DispatcherUI object, setting up the main window 
@@ -22,234 +30,205 @@ class DispatcherUI(QMainWindow):
 
         super().__init__()
 
-        # Create the CTC Manager
-        self.ctc_manager = CTCOffice()
+        ### LAYOUT THE UI ###
 
         # Create the UI
         self.setWindowTitle("Dispatcher UI")
         self.setGeometry(100, 100, 800, 600)
 
-        # Create a layout for the UI
+        # Create a central widget
         self.central_widget = QWidget()
-        self.layout = QVBoxLayout()
+        self.central_layout = QVBoxLayout()
+        self.central_widget.setLayout(self.central_layout)
+        self.setCentralWidget(self.central_widget)
 
-        # Create layouts for the top layout and bottom layout
+        # Add the time keeper widget to the top of the central layout
+        self.time_keeper = time_keeper
+        self.time_keeper_widget = TimeKeeperWidget(self.time_keeper)
+        self.central_layout.addWidget(self.time_keeper_widget)
+
+        # Create a horizontal layout for the top half
         self.top_layout = QHBoxLayout()
-        self.layout.addLayout(self.top_layout)
-        self.bottom_layout = QHBoxLayout()
-        self.layout.addLayout(self.bottom_layout)
+        self.central_layout.addLayout(self.top_layout)
+        # self.top_widget = QWidget()
+        # self.central_layout.addWidget(self.top_widget, stretch=2)
+        # self.top_layout = QHBoxLayout()
+        # self.top_widget.setLayout(self.top_layout)
 
-        # Switch Layout
+        # Create a stacked widget with a horizontal layout for the bottom half
+        self.bottom_stacked_widget = QStackedWidget()
+        self.central_layout.addWidget(self.bottom_stacked_widget)
+        self.bottom_widget = QWidget()
+        self.bottom_stacked_widget.addWidget(self.bottom_widget)
+        self.bottom_layout = QHBoxLayout()
+        self.bottom_widget.setLayout(self.bottom_layout)
+
+        ### ARRANGE AND CONNECT THE SWITCHES ###
+
+        # Switch layout for holding toggle switches
         switch_layout = QVBoxLayout()
         self.top_layout.addLayout(switch_layout)
 
-        # Test Bench Mode Toggle Switch
-        test_bench_toggle_layout = QVBoxLayout()
+        # Toggle switch layouts
+        self.test_bench_toggle_layout = QVBoxLayout()
+        switch_layout.addLayout(self.test_bench_toggle_layout)
+        self.maintenance_toggle_layout = QVBoxLayout()
+        switch_layout.addLayout(self.maintenance_toggle_layout)
+        self.mbo_toggle_layout = QVBoxLayout()
+        switch_layout.addLayout(self.mbo_toggle_layout)
+        self.automatic_toggle_layout = QVBoxLayout()
+        switch_layout.addLayout(self.automatic_toggle_layout)
+
+        # Test bench toggle label
         self.test_bench_toggle_label = QLabel("Test Bench Mode")
         self.test_bench_toggle_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.test_bench_toggle = SwitchWidget()
-        test_bench_toggle_hlayout = QHBoxLayout()
-        test_bench_toggle_hlayout.addWidget(self.test_bench_toggle)
-        test_bench_toggle_layout.addWidget(self.test_bench_toggle_label)
-        test_bench_toggle_layout.addLayout(test_bench_toggle_hlayout)
-        switch_layout.addLayout(test_bench_toggle_layout)
+        self.test_bench_toggle_layout.addWidget(self.test_bench_toggle_label)
 
-        # Maintenance Mode Toggle Switch
-        maintenance_toggle_layout = QVBoxLayout()
+        # Test bench toggle switch
+        self.test_bench_toggle_switch = SwitchWidget()
+        centered_test_bench_toggle = QHBoxLayout()
+        centered_test_bench_toggle.addWidget(self.test_bench_toggle_switch)
+        self.test_bench_toggle_layout.addLayout(centered_test_bench_toggle)
+        self.test_bench_toggle_switch.toggled.connect(self.handle_test_bench_toggle)
+
+        # Maintenance mode toggle label
         self.maintenance_toggle_label = QLabel("Maintenance Mode")
         self.maintenance_toggle_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.maintenance_toggle = SwitchWidget()
-        maintenance_toggle_hlayout = QHBoxLayout()
-        maintenance_toggle_hlayout.addWidget(self.maintenance_toggle)
-        maintenance_toggle_layout.addWidget(self.maintenance_toggle_label)
-        maintenance_toggle_layout.addLayout(maintenance_toggle_hlayout)
-        switch_layout.addLayout(maintenance_toggle_layout)
+        self.maintenance_toggle_layout.addWidget(self.maintenance_toggle_label)
 
-        # MBO Mode Toggle Switch
-        mbo_toggle_layout = QVBoxLayout()
+        # Maintenance mode toggle switch
+        self.maintenance_toggle_switch = SwitchWidget()
+        centered_maintenance_toggle = QHBoxLayout()
+        centered_maintenance_toggle.addWidget(self.maintenance_toggle_switch)
+        self.maintenance_toggle_layout.addLayout(centered_maintenance_toggle)
+        self.maintenance_toggle_switch.toggled.connect(self.handle_maintenance_toggle)
+
+        # MBO mode toggle label
         self.mbo_toggle_label = QLabel("MBO Mode")
         self.mbo_toggle_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.mbo_toggle = SwitchWidget()
-        mbo_toggle_hlayout = QHBoxLayout()
-        mbo_toggle_hlayout.addWidget(self.mbo_toggle)
-        mbo_toggle_layout.addWidget(self.mbo_toggle_label)
-        mbo_toggle_layout.addLayout(mbo_toggle_hlayout)
-        switch_layout.addLayout(mbo_toggle_layout)
+        self.mbo_toggle_layout.addWidget(self.mbo_toggle_label)
 
-        # Automatic Mode Toggle Switch
-        automatic_toggle_layout = QVBoxLayout()
+        # MBO mode toggle switch
+        self.mbo_toggle_switch = SwitchWidget()
+        centered_mbo_toggle = QHBoxLayout()
+        centered_mbo_toggle.addWidget(self.mbo_toggle_switch)
+        self.mbo_toggle_layout.addLayout(centered_mbo_toggle)
+        self.mbo_toggle_switch.toggled.connect(self.handle_mbo_toggle)
+
+        # Automatic mode toggle label
         self.automatic_toggle_label = QLabel("Automatic Mode")
         self.automatic_toggle_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.automatic_toggle = SwitchWidget()
-        automatic_toggle_hlayout = QHBoxLayout()
-        automatic_toggle_hlayout.addWidget(self.automatic_toggle)
-        automatic_toggle_layout.addWidget(self.automatic_toggle_label)
-        automatic_toggle_layout.addLayout(automatic_toggle_hlayout)
-        switch_layout.addLayout(automatic_toggle_layout)
+        self.automatic_toggle_layout.addWidget(self.automatic_toggle_label)
 
-        # Connect toggle signals to methods
-        self.test_bench_toggle.toggled.connect(self.toggle_test_bench_mode)
-        self.maintenance_toggle.toggled.connect(self.toggle_maintenance_mode)
-        self.mbo_toggle.toggled.connect(self.toggle_mbo_mode)
-        self.automatic_toggle.toggled.connect(self.toggle_automatic_mode)
+        # Automatic mode toggle switch
+        self.automatic_toggle_switch = SwitchWidget()
+        centered_automatic_toggle = QHBoxLayout()
+        centered_automatic_toggle.addWidget(self.automatic_toggle_switch)
+        self.automatic_toggle_layout.addLayout(centered_automatic_toggle)
+        self.automatic_toggle_switch.toggled.connect(self.handle_automatic_toggle)
 
-        # Train Visual Widget
-        self.train_visual_widget = TrainVisualWidget(self.ctc_manager.line)
-        self.top_layout.addWidget(self.train_visual_widget)
+        ### ARRANGE THE TRAIN VISUAL WIDGET ###
 
-        # Create Stacked Widget for bottom layout to switch between widgets
-        self.bottom_stacked_widget = QStackedWidget()
-        self.bottom_layout.addWidget(self.bottom_stacked_widget)
+        # Create a layout that combines the train visual widget and thorughput widget
+        self.visual_layout = QVBoxLayout()
+        self.top_layout.addLayout(self.visual_layout)
+
+        # Train visual widget
+        self.line = line
+        self.train_visual_widget = TrackVisualWidget(self.line)
+        self.train_visual_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.visual_layout.addWidget(self.train_visual_widget, stretch=1)
+
+        # Throughput widget
+        self.throughput_widget = ThroughputWidget()
+        self.throughput_widget.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+        self.visual_layout.addWidget(self.throughput_widget, stretch=1)
+
+        ### CREATE THE DISPATCH COMMAND/SCHEDULE SELECTION STACKED WIDGET ###
+        self.stacked_widget = QStackedWidget()
+        self.bottom_layout.addWidget(self.stacked_widget)
 
         # Dispatch Command Widget
-        self.dispatch_command_widget = DispatchCommandWidget(
-            self.ctc_manager.line, self.ctc_manager.trains)
-        self.bottom_stacked_widget.addWidget(self.dispatch_command_widget)
+        self.dispatch_command_widget = DispatchCommandWidget(self.line)
+        self.stacked_widget.addWidget(self.dispatch_command_widget)
 
-        # Schedule Widget
-        self.schedule_selection_widget = ScheduleSelectionWidget(
-            self.ctc_manager.line)
-        self.bottom_stacked_widget.addWidget(self.schedule_selection_widget)
+        # Schedule Selection Widget
+        self.schedule_selection_widget = ScheduleSelectionWidget(self.line)
+        self.stacked_widget.addWidget(self.schedule_selection_widget)
+
+        ### TRAIN INFORMATION WIDGET ###
 
         # Train Information Widget
-        self.train_info_widget = TrainInfoWidget(
-            self.ctc_manager.line, self.ctc_manager.trains)
+        self.trains = trains
+        self.train_info_widget = TrainInfoWidget(self.line, self.trains)
         self.bottom_layout.addWidget(self.train_info_widget)
 
-        self.central_widget.setLayout(self.layout)
-        self.setCentralWidget(self.central_widget)
+        ### TEST BENCH WIDGET ###
 
-    def toggle_test_bench_mode(self, state):
+        # Create and add the OccupancyWidget to the bottom stacked widget
+        self.set_occupancy_widget = OccupancyWidget(self.line)
+        self.bottom_stacked_widget.addWidget(self.set_occupancy_widget)
 
-        """
-        Toggles the Test Bench mode.
+        ### MAINTENANCE WIDGET ###
 
-        Args:
-            state (bool): The state of the toggle switch.
-        """
+        # Create and add the MaintenanceWidget to the bottom stacked widget
+        self.maintenance_widget = MaintenanceWidget(self.line)
+        self.bottom_stacked_widget.addWidget(self.maintenance_widget)
 
+    @pyqtSlot(bool)
+    def handle_test_bench_toggle(self, state: bool) -> None:
         if state:
-            self.show_test_bench_screen()
+            self.bottom_stacked_widget.setCurrentWidget(self.set_occupancy_widget)
+            self.dispatch_command_widget.setEnabled(False)
+            self.schedule_selection_widget.setEnabled(False)
         else:
-            self.show_main_screen()
+            self.bottom_stacked_widget.setCurrentWidget(self.bottom_widget)
+            if not self.maintenance_toggle_switch.isChecked():
+                self.dispatch_command_widget.setEnabled(True)
+                self.schedule_selection_widget.setEnabled(True)
 
-    def toggle_maintenance_mode(self, state):
-
-        """
-        Toggles the Maintenance mode.
-
-        Args:
-            state (bool): The state of the toggle switch.
-        """
-
+    @pyqtSlot(bool)
+    def handle_maintenance_toggle(self, state: bool) -> None:
         if state:
-            self.show_maintenance_screen()
+            self.bottom_stacked_widget.setCurrentWidget(self.maintenance_widget)
+            self.dispatch_command_widget.setEnabled(False)
+            self.schedule_selection_widget.setEnabled(False)
         else:
-            self.show_main_screen()
+            self.bottom_stacked_widget.setCurrentWidget(self.bottom_widget)
+            if not self.test_bench_toggle_switch.isChecked():
+                self.dispatch_command_widget.setEnabled(True)
+                self.schedule_selection_widget.setEnabled(True)
 
-    def toggle_mbo_mode(self, state):
+    @pyqtSlot(bool)
+    def handle_mbo_toggle(self, state: bool) -> None:
+        self.dispatch_command_widget.setEnabled(not state)
+        self.schedule_selection_widget.setEnabled(not state)
 
-        """
-        Toggles the MBO mode.
-
-        Args:
-            state (bool): The state of the toggle switch.
-        """
-
-        self.set_widgets_enabled(not state)
-
-    def toggle_automatic_mode(self, state):
-
-        """
-        Toggles the Automatic mode.
-
-        Args:
-            state (bool): The state of the toggle switch.
-        """
-
+    @pyqtSlot(bool)
+    def handle_automatic_toggle(self, state: bool) -> None:
         if state:
-            self.bottom_stacked_widget.setCurrentWidget(
+            self.stacked_widget.setCurrentWidget(
                 self.schedule_selection_widget)
         else:
-            self.bottom_stacked_widget.setCurrentWidget(
+            self.stacked_widget.setCurrentWidget(
                 self.dispatch_command_widget)
 
-    def show_test_bench_screen(self):
+    @pyqtSlot(int, bool)
+    def handle_occupancy_update(self, block_number: int, occupancy: bool) -> None:
 
-        """
-        Shows the Test Bench screen and hides other widgets.
-        """
+        # Update the train visual widget display
+        self.train_visual_widget.update()
 
-        self.train_visual_widget.hide()
-        self.train_info_widget.hide()
-        self.bottom_stacked_widget.hide()
-        self.maintenance_toggle.hide()
-        self.mbo_toggle.hide()
-        self.automatic_toggle.hide()
-        self.maintenance_toggle_label.hide()
-        self.mbo_toggle_label.hide()
-        self.automatic_toggle_label.hide()
-        self.test_bench_screen = TestBenchWidget(self.ctc_manager.line)
-        self.top_layout.addWidget(self.test_bench_screen)
+    @pyqtSlot(int, int)
+    def handle_switch_position_update(self, block_number: int, position: int) -> None:
+        print(f"Block {block_number} switch position updated: {position}")
 
-    def show_maintenance_screen(self):
+    @pyqtSlot(int, int)
+    def handle_crossing_signal_update(self, block_number: int, signal: int) -> None:
+        print(f"Block {block_number} crossing signal updated: {signal}")
 
-        """
-        Shows the Maintenance screen and hides other widgets.
-        """
-
-        self.train_visual_widget.hide()
-        self.train_info_widget.hide()
-        self.bottom_stacked_widget.hide()
-        self.test_bench_toggle.hide()
-        self.mbo_toggle.hide()
-        self.automatic_toggle.hide()
-        self.test_bench_toggle_label.hide()
-        self.mbo_toggle_label.hide()
-        self.automatic_toggle_label.hide()
-        self.maintenance_screen = MaintenanceWidget(self.ctc_manager.line)
-        self.top_layout.addWidget(self.maintenance_screen)
-
-    def show_main_screen(self):
-
-        """
-        Shows the main screen and displays all widgets.
-        """
-
-        self.train_visual_widget.show()
-        self.train_info_widget.show()
-        self.bottom_stacked_widget.show()
-        self.test_bench_toggle.show()
-        self.maintenance_toggle.show()
-        self.mbo_toggle.show()
-        self.automatic_toggle.show()
-        self.test_bench_toggle_label.show()
-        self.maintenance_toggle_label.show()
-        self.mbo_toggle_label.show()
-        self.automatic_toggle_label.show()
-        if hasattr(self, 'maintenance_screen'):
-            self.top_layout.removeWidget(self.maintenance_screen)
-            self.maintenance_screen.deleteLater()
-            del self.maintenance_screen
-        if hasattr(self, 'test_bench_screen'):
-            self.top_layout.removeWidget(self.test_bench_screen)
-            self.test_bench_screen.deleteLater()
-            del self.test_bench_screen
-
-    def set_widgets_enabled(self, enabled):
-
-        """
-        Enables or disables the dispatch command and schedule selection widgets.
-
-        Args:
-            enabled (bool): Whether to enable or disable the widgets.
-        """
-
-        self.dispatch_command_widget.setEnabled(enabled)
-        self.schedule_selection_widget.setEnabled(enabled)
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = DispatcherUI()
-    window.show()
-    sys.exit(app.exec())
+    @pyqtSlot(int, bool)
+    def handle_maintenance_update(self, block_number: int, maintenance: bool) -> None:
+        
+        # Update the train visual widget display
+        self.train_visual_widget.update()
