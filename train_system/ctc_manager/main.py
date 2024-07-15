@@ -7,7 +7,7 @@ from PyQt6.QtWidgets import QApplication
 from train_system.common.time_keeper import TimeKeeper
 from train_system.common.line import Line
 from train_system.common.track_block import TrackBlock
-from train_system.common.train import Train
+from train_system.ctc_manager.train import Train
 from train_system.ctc_manager.ctc_manager import CTCOffice
 from train_system.ctc_manager.dispatcher_ui import DispatcherUI
 

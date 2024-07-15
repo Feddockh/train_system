@@ -193,7 +193,7 @@ class Line(QObject):
 
 if __name__ == "__main__":
     line = Line('Blue')
-    file_path = os.path.abspath(os.path.join("tests", "blue_line.xlsx"))
+    file_path = os.path.abspath(os.path.join("system_data\\tracks", f"{line.name.lower()}_line.xlsx"))
     line.load_track_blocks(file_path)
     distance = line.get_distance(1, 12)
     print(distance)

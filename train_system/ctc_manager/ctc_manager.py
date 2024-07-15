@@ -7,7 +7,7 @@ from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
 from train_system.common.time_keeper import TimeKeeper
 from train_system.common.dispatch_mode import DispatchMode
 from train_system.common.line import Line
-from train_system.common.train import Train, time_to_seconds
+from train_system.ctc_manager.train import Train, time_to_seconds
 
 class CTCOffice(QObject):
     trains_updated = pyqtSignal()

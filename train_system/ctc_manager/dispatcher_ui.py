@@ -8,7 +8,7 @@ from PyQt6.QtCore import pyqtSignal, Qt, pyqtSlot
 
 from train_system.common.line import Line
 from train_system.common.track_block import TrackBlock
-from train_system.common.train import Train
+from train_system.ctc_manager.train import Train
 from train_system.common.time_keeper import TimeKeeper, TimeKeeperWidget
 from train_system.ctc_manager.widgets.switch_widget import SwitchWidget
 from train_system.ctc_manager.widgets.train_visual_widget import TrainVisualWidget
