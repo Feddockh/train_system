@@ -12,7 +12,7 @@ from train_system.common.line import Line
 from train_system.common.track_block import TrackBlock
 
 
-class TrainVisualTableWidget(QWidget):
+class TrackVisualTableWidget(QWidget):
     def __init__(self, line: Line, parent: Optional[QWidget] = None) -> None:
 
         """
@@ -137,7 +137,7 @@ class TrainVisualTableWidget(QWidget):
             status_item.setForeground(QColor("#000000"))
             self.table.setItem(i, 1, status_item)
 
-class TrainVisualWidget(QWidget):
+class TrackVisualWidget(QWidget):
     def __init__(self, line: Line):
         super().__init__()
 
@@ -237,6 +237,6 @@ if __name__ == '__main__':
     file_path = os.path.abspath(os.path.join("system_data\\tracks", f"{line.name.lower()}_line.xlsx"))
     line.load_track_blocks(file_path)
 
-    widget = TrainVisualWidget(line)
+    widget = TrackVisualWidget(line)
     widget.show()
     sys.exit(app.exec())

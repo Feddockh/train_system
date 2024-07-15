@@ -11,7 +11,7 @@ from train_system.common.track_block import TrackBlock
 from train_system.ctc_manager.train import Train
 from train_system.common.time_keeper import TimeKeeper, TimeKeeperWidget
 from train_system.ctc_manager.widgets.switch_widget import SwitchWidget
-from train_system.ctc_manager.widgets.train_visual_widget import TrainVisualWidget
+from train_system.ctc_manager.widgets.track_visual_widget import TrackVisualWidget
 from train_system.ctc_manager.widgets.throughput_widget import ThroughputWidget
 from train_system.ctc_manager.widgets.dispatch_command_widget import DispatchCommandWidget
 from train_system.ctc_manager.widgets.train_info_widget import TrainInfoWidget
@@ -135,7 +135,7 @@ class DispatcherUI(QMainWindow):
 
         # Train visual widget
         self.line = line
-        self.train_visual_widget = TrainVisualWidget(self.line)
+        self.train_visual_widget = TrackVisualWidget(self.line)
         self.train_visual_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.visual_layout.addWidget(self.train_visual_widget, stretch=1)
 
