@@ -1,6 +1,7 @@
 # train_system/common/line.py
 
 import os
+import json
 import pandas as pd
 from typing import List
 from PyQt6.QtCore import QObject, pyqtSignal
@@ -33,6 +34,10 @@ class Line(QObject):
 
         self.name = name
         self.track_blocks: List[TrackBlock] = []
+        self.to_yard: List[int] = []
+        self.from_yard: List[int] = []
+        self.past_yard: List[int] = []
+        self.default_route: List[int] = []
 
     def __repr__(self) -> str:
 
@@ -82,7 +87,7 @@ class Line(QObject):
             print(f"Track block {number} not found.")
             return None
 
-    def load_track_blocks(self, file_path: str) -> None:
+    def load_track_blocks(self, file_path: str = None) -> None:
 
         """
         Loads track blocks from an Excel file.
@@ -93,6 +98,9 @@ class Line(QObject):
         Returns:
             None
         """
+        
+        if not file_path:
+            file_path = os.path.abspath(os.path.join("system_data\\lines", f"{self.name.lower()}_line.xlsx"))
 
         if not os.path.isfile(file_path):
             print(f"Error: The file {file_path} does not exist.")
@@ -132,6 +140,19 @@ class Line(QObject):
                 station_side=station_side
             )
             self.add_track_block(block)
+
+    def load_routes(self, file_path: str = None) -> None:
+
+        if not file_path:
+            file_path = os.path.abspath(os.path.join("system_data\\routes", f"{self.name.lower()}_routes.json"))
+
+        with open(file_path, 'r') as file:
+            data = json.load(file)
+
+        self.to_yard = data['to_yard']
+        self.from_yard = data['from_yard']
+        self.past_yard = data['past_yard']
+        self.default_route = data['default_route']
 
     def get_distance(self, start: int, end: int):
 
@@ -192,9 +213,6 @@ class Line(QObject):
             return -1
 
 if __name__ == "__main__":
-    line = Line('Blue')
-    file_path = os.path.abspath(os.path.join("system_data\\tracks", f"{line.name.lower()}_line.xlsx"))
-    line.load_track_blocks(file_path)
-    distance = line.get_distance(1, 12)
-    print(distance)
-    # print(line)
+    line = Line('Green')
+    line.load_track_blocks()
+    line.load_routes()

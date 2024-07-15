@@ -1,20 +1,24 @@
 # train_system.common.train.py
 
+from train_system.common.line import Line
+
 class Train:
-    def __init__(self, train_id: int) -> None:
+    def __init__(self, train_id: int, line: Line) -> None:
 
         """
         The Train class represents a train in the train system.
 
         Args:
             train_id (int): The unique identifier for the train.
+            line (Line): The line the train is running on.
         """
 
         self.train_id = train_id
-        self.line = None
-        self.block = None
-        self.speed = 0 # suggested speed
-        self.authority = 0 # authority
+        self.line = line
+
+        self.curent_block = None
+        self.suggested_speed = 0
+        self.authority = 0
         self.stops = []
         self.arrival_times = []
 
@@ -34,18 +38,3 @@ class Train:
             f"Speed:        {self.line}\n"
             f"Authority:    {self.line}\n"
         )
-    
-def time_to_seconds(time_str: str):
-
-    """
-    Converts a time string in the format 'HH:MM' to the number of seconds since midnight.
-
-    Args:
-        time_str (str): The time string to convert.
-
-    Returns:
-        int: The number of seconds since midnight.
-    """
-
-    hours, minutes = map(int, time_str.split(':'))
-    return hours * 3600 + minutes * 60

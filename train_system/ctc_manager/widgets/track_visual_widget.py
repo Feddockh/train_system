@@ -189,45 +189,58 @@ class TrackVisualWidget(QWidget):
         # Place the blocks on the visual
         for block in self.block_visuals:
 
+            # Get the block number
+            block_text = str(block["block_number"])
+
+            # Set the visual block coordinates
+            x1, y1 = block["x1"] * self.x_scale, block["y1"] * self.y_scale
+            x2, y2 = block["x2"] * self.x_scale, block["y2"] * self.y_scale
+
             # Set the pen color based on the status of the block
             line_width = 2
-            if self.line.get_track_block(block['block_number']).occupancy:
+            if self.line.get_track_block(block["block_number"]).occupancy:
                 pen = QPen(Qt.GlobalColor.red, line_width)
-            elif self.line.get_track_block(block['block_number']).under_maintenance:
+            elif self.line.get_track_block(block["block_number"]).under_maintenance:
                 pen = QPen(Qt.GlobalColor.yellow, line_width)
             else:
                 pen = QPen(Qt.GlobalColor.white, line_width)
-                painter.setPen(pen)
 
-            # Set the visual block coordinates
-            x1, y1 = block['x1'] * self.x_scale, block['y1'] * self.y_scale
-            x2, y2 = block['x2'] * self.x_scale, block['y2'] * self.y_scale
-
-            # Draw the line
+            # Check if the block is part of the yard
+            if block["yard"]:
+                pen = QPen(Qt.GlobalColor.white, line_width, Qt.PenStyle.DotLine)
+                block_text = "Yard"
+            
+            # Set the pen and draw the line
+            painter.setPen(pen)
             painter.drawLine(QPoint(x1 + self.padding, y1), QPoint(x2 - self.padding, y2))
 
-            # Get the block number
-            block_number = str(block['block_number'])
-
             # Compute text width and height
-            text_width = font_metrics.horizontalAdvance(block_number)
+            text_width = font_metrics.horizontalAdvance(block_text)
             text_height = font_metrics.height()
 
             # Compute the x position of the text
             if block["y1"] < block["y2"]:
-                text_x = x1 + (x2 - x1) // 2
+                if block["branch"] < 0:
+                    text_x = x1 + (x2 - x1) // 2 - text_width
+                else:
+                    text_x = x1 + (x2 - x1) // 2
             elif block["y1"] > block["y2"]:
-                text_x = x1 + (x2 - x1) // 2 - text_width
+                if block["branch"] < 0:
+                    text_x = x1 + (x2 - x1) // 2
+                else:
+                    text_x = x1 + (x2 - x1) // 2 - text_width
             else:
                 text_x = x1 + (x2 - x1) // 2 - text_width // 2
                 
             # Compute the y position of the text
             if block["branch"] > 0:
-                text_y = max(y1, y2) - abs(y1 - y2) // 2 - line_width - 1
+                text_y = max(y1, y2) - (abs(y1 - y2) // 2) - line_width - 1
+            elif block["branch"] < 0:
+                text_y = min(y1, y2) + (abs(y1 - y2) // 2) + text_height
             else:
                 text_y = y1 + text_height
 
-            painter.drawText(text_x, text_y, block_number)
+            painter.drawText(text_x, text_y, block_text)
         
 
 if __name__ == '__main__':

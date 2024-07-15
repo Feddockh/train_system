@@ -1,13 +1,13 @@
 # train_system/ctc_manager/ctc_manager.py
 
-import os
 from typing import List
 from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
 
+from train_system.common.conversions import time_to_seconds
 from train_system.common.time_keeper import TimeKeeper
 from train_system.common.dispatch_mode import DispatchMode
 from train_system.common.line import Line
-from train_system.ctc_manager.train import Train, time_to_seconds
+from train_system.ctc_manager.train import Train
 
 class CTCOffice(QObject):
     trains_updated = pyqtSignal()
@@ -23,9 +23,7 @@ class CTCOffice(QObject):
         
         # Create the line object
         self.line = Line(line_name)
-        self.file_path = os.path.abspath(os.path.join("system_data\\tracks", f"{self.line.name.lower()}_line.xlsx"))
-        print(f"Loading track blocks from {self.file_path}")
-        self.line.load_track_blocks(self.file_path)
+        self.line.load_track_blocks()
 
         # Connect the Line signals to the CTC Manager slots
         self.line.track_block_occupancy_updated.connect(self.handle_occupancy_update)
@@ -122,7 +120,7 @@ class CTCOffice(QObject):
             speed = 0
         else:
             speed = 50
-        dispatched_train.speed = speed
+        dispatched_train.suggested_speed = speed
         print(f"Initial Suggested Speed: {speed}")
 
         # Update the trains table

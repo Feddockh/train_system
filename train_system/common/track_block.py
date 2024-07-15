@@ -1,3 +1,5 @@
+# train_system/common/track_block.py
+
 from PyQt6.QtCore import QObject, pyqtSignal
 from typing import List
 from train_system.common.crossing_signal import CrossingSignal
