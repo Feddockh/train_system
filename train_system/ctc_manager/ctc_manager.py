@@ -1,5 +1,7 @@
 # train_system/ctc_manager/ctc_manager.py
 
+import os
+from typing import List
 from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
 
 from train_system.common.time_keeper import TimeKeeper
@@ -10,7 +12,7 @@ from train_system.common.train import Train, time_to_seconds
 class CTCOffice(QObject):
     trains_updated = pyqtSignal()
 
-    def __init__(self, time_keeper: TimeKeeper, line: Line, trains: list[Train]):
+    def __init__(self, time_keeper: TimeKeeper, line_name: str) -> None:
 
         """
         Initialize the CTC Office.
@@ -18,15 +20,28 @@ class CTCOffice(QObject):
 
         super().__init__()
         self.time_keeper = time_keeper
-        self.line = line
-        self.trains = trains
+        
+        # Create the line object
+        self.line = Line(line_name)
+        self.file_path = os.path.abspath(os.path.join("tests", f"{self.line.name.lower()}_line.xlsx"))
+        self.line.load_track_blocks(self.file_path)
+
+        # Connect the Line signals to the CTC Manager slots
+        self.line.track_block_occupancy_updated.connect(self.handle_occupancy_update)
+        self.line.track_block_switch_position_updated.connect(self.handle_switch_position_update)
+        self.line.track_block_crossing_signal_updated.connect(self.handle_crossing_signal_update)
+
+        # Create a list of train objects
+        self.trains: List[Train] = []
+
+        # Initialize the mode
         self.test_bench_mode = False
         self.maintenance_mode = False
         self.mbo_mode = False
         self.automatic_mode = False
 
     @pyqtSlot(int)
-    def handle_time_update(self) -> None:
+    def handle_time_update(self, tick: int) -> None:
         updateAuthority = True
         # TODO: This should check for the next train to be sent out
         

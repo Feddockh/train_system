@@ -138,7 +138,6 @@ class TrainVisualTableWidget(QWidget):
             self.table.setItem(i, 1, status_item)
 
 class TrainVisualWidget(QWidget):
-
     def __init__(self, line: Line):
         super().__init__()
 
