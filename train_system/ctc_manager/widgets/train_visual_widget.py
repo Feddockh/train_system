@@ -234,7 +234,7 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
 
     line = Line("Green")
-    file_path = os.path.abspath(os.path.join("tests", "green_line.xlsx"))
+    file_path = os.path.abspath(os.path.join("system_data\\tracks", f"{line.name.lower()}_line.xlsx"))
     line.load_track_blocks(file_path)
 
     widget = TrainVisualWidget(line)

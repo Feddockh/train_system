@@ -23,7 +23,8 @@ class CTCOffice(QObject):
         
         # Create the line object
         self.line = Line(line_name)
-        self.file_path = os.path.abspath(os.path.join("tests", f"{self.line.name.lower()}_line.xlsx"))
+        self.file_path = os.path.abspath(os.path.join("system_data\\tracks", f"{self.line.name.lower()}_line.xlsx"))
+        print(f"Loading track blocks from {self.file_path}")
         self.line.load_track_blocks(self.file_path)
 
         # Connect the Line signals to the CTC Manager slots

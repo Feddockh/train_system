@@ -1,6 +1,5 @@
 # train_system/ctc_manager/main.py
 
-import os
 import sys
 from typing import List
 from PyQt6.QtWidgets import QApplication
