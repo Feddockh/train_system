@@ -113,6 +113,25 @@ class CustomTable(QWidget):
                 table_item = QTableWidgetItem(item)
                 table_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
                 table_item.setFlags(
-                    table_item.flags() & ~Qt.ItemFlag.ItemIsEditable
+                    table_item.flags() & ~Qt.ItemFlag.ItemIsEditable # Remove to make editable
                 )
                 self.table.setItem(row_idx, col_idx, table_item)
+
+# Demonstrate the usage of the CustomTable class
+if __name__ == "__main__":
+    import sys
+    from PyQt6.QtWidgets import QApplication
+
+    app = QApplication(sys.argv)
+
+    headers = ["Column 1", "Column 2", "Column 3"]
+    data = [
+        ["1", "A", "X"],
+        ["2", "B", "Y"],
+        ["3", "C", "Z"]
+    ]
+
+    table = CustomTable("Custom Table", 3, 3, headers, data)
+    table.show()
+
+    sys.exit(app.exec())

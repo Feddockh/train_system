@@ -2,22 +2,26 @@
 
 import sys
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, 
-                             QVBoxLayout, QLabel, QHBoxLayout, QStackedWidget)
-from PyQt6.QtCore import pyqtSignal, Qt
+                             QVBoxLayout, QLabel, QHBoxLayout,
+                             QStackedWidget, QSizePolicy)
+from PyQt6.QtCore import pyqtSignal, Qt, pyqtSlot
 
 from train_system.common.line import Line
 from train_system.common.track_block import TrackBlock
+from train_system.ctc_manager.train import Train
+from train_system.common.time_keeper import TimeKeeper, TimeKeeperWidget
 from train_system.ctc_manager.widgets.switch_widget import SwitchWidget
-from train_system.ctc_manager.widgets.train_visual_widget import TrainVisualWidget
+from train_system.ctc_manager.widgets.track_visual_widget import TrackVisualWidget
+from train_system.ctc_manager.widgets.throughput_widget import ThroughputWidget
 from train_system.ctc_manager.widgets.dispatch_command_widget import DispatchCommandWidget
 from train_system.ctc_manager.widgets.train_info_widget import TrainInfoWidget
 from train_system.ctc_manager.widgets.schedule_selection_widget import ScheduleSelectionWidget
+from train_system.ctc_manager.widgets.occupancy_widget import OccupancyWidget
 from train_system.ctc_manager.widgets.maintenance_widget import MaintenanceWidget
-from train_system.ctc_manager.widgets.test_bench_widget import TestBenchWidget
 
 
 class DispatcherUI(QMainWindow):
-    def __init__(self, line: Line):
+    def __init__(self, time_keeper: TimeKeeper, line: Line, trains: list[Train]):
 
         """
         Initializes the DispatcherUI object, setting up the main window 
@@ -32,15 +36,32 @@ class DispatcherUI(QMainWindow):
         self.setWindowTitle("Dispatcher UI")
         self.setGeometry(100, 100, 800, 600)
 
-        # Create a layout for the UI
+        # Create a central widget
         self.central_widget = QWidget()
-        self.layout = QVBoxLayout()
+        self.central_layout = QVBoxLayout()
+        self.central_widget.setLayout(self.central_layout)
+        self.setCentralWidget(self.central_widget)
 
-        # Create layouts for the top half and bottom half of the UI
+        # Add the time keeper widget to the top of the central layout
+        self.time_keeper = time_keeper
+        self.time_keeper_widget = TimeKeeperWidget(self.time_keeper)
+        self.central_layout.addWidget(self.time_keeper_widget)
+
+        # Create a horizontal layout for the top half
         self.top_layout = QHBoxLayout()
-        self.layout.addLayout(self.top_layout)
+        self.central_layout.addLayout(self.top_layout)
+        # self.top_widget = QWidget()
+        # self.central_layout.addWidget(self.top_widget, stretch=2)
+        # self.top_layout = QHBoxLayout()
+        # self.top_widget.setLayout(self.top_layout)
+
+        # Create a stacked widget with a horizontal layout for the bottom half
+        self.bottom_stacked_widget = QStackedWidget()
+        self.central_layout.addWidget(self.bottom_stacked_widget)
+        self.bottom_widget = QWidget()
+        self.bottom_stacked_widget.addWidget(self.bottom_widget)
         self.bottom_layout = QHBoxLayout()
-        self.layout.addLayout(self.bottom_layout)
+        self.bottom_widget.setLayout(self.bottom_layout)
 
         ### ARRANGE AND CONNECT THE SWITCHES ###
 
@@ -108,68 +129,106 @@ class DispatcherUI(QMainWindow):
 
         ### ARRANGE THE TRAIN VISUAL WIDGET ###
 
+        # Create a layout that combines the train visual widget and thorughput widget
+        self.visual_layout = QVBoxLayout()
+        self.top_layout.addLayout(self.visual_layout)
+
         # Train visual widget
         self.line = line
-        self.train_visual_widget = TrainVisualWidget(self.line)
-        self.top_layout.addWidget(self.train_visual_widget)
+        self.train_visual_widget = TrackVisualWidget(self.line)
+        self.train_visual_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.visual_layout.addWidget(self.train_visual_widget, stretch=1)
 
-        # Set the central widget and layout
-        self.central_widget.setLayout(self.layout)
-        self.setCentralWidget(self.central_widget)
+        # Throughput widget
+        self.throughput_widget = ThroughputWidget()
+        self.throughput_widget.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+        self.visual_layout.addWidget(self.throughput_widget, stretch=1)
 
-    def handle_test_bench_toggle(self, state):
+        ### CREATE THE DISPATCH COMMAND/SCHEDULE SELECTION STACKED WIDGET ###
+        self.stacked_widget = QStackedWidget()
+        self.bottom_layout.addWidget(self.stacked_widget)
 
-        """
-        Handle the test bench mode toggle.
+        # Dispatch Command Widget
+        self.dispatch_command_widget = DispatchCommandWidget(self.line)
+        self.stacked_widget.addWidget(self.dispatch_command_widget)
+
+        # Schedule Selection Widget
+        self.schedule_selection_widget = ScheduleSelectionWidget(self.line)
+        self.stacked_widget.addWidget(self.schedule_selection_widget)
+
+        ### TRAIN INFORMATION WIDGET ###
+
+        # Train Information Widget
+        self.trains = trains
+        self.train_info_widget = TrainInfoWidget(self.line, self.trains)
+        self.bottom_layout.addWidget(self.train_info_widget)
+
+        ### TEST BENCH WIDGET ###
+
+        # Create and add the OccupancyWidget to the bottom stacked widget
+        self.set_occupancy_widget = OccupancyWidget(self.line)
+        self.bottom_stacked_widget.addWidget(self.set_occupancy_widget)
+
+        ### MAINTENANCE WIDGET ###
+
+        # Create and add the MaintenanceWidget to the bottom stacked widget
+        self.maintenance_widget = MaintenanceWidget(self.line)
+        self.bottom_stacked_widget.addWidget(self.maintenance_widget)
+
+    @pyqtSlot(bool)
+    def handle_test_bench_toggle(self, state: bool) -> None:
+        if state:
+            self.bottom_stacked_widget.setCurrentWidget(self.set_occupancy_widget)
+            self.dispatch_command_widget.setEnabled(False)
+            self.schedule_selection_widget.setEnabled(False)
+        else:
+            self.bottom_stacked_widget.setCurrentWidget(self.bottom_widget)
+            if not self.maintenance_toggle_switch.isChecked():
+                self.dispatch_command_widget.setEnabled(True)
+                self.schedule_selection_widget.setEnabled(True)
+
+    @pyqtSlot(bool)
+    def handle_maintenance_toggle(self, state: bool) -> None:
+        if state:
+            self.bottom_stacked_widget.setCurrentWidget(self.maintenance_widget)
+            self.dispatch_command_widget.setEnabled(False)
+            self.schedule_selection_widget.setEnabled(False)
+        else:
+            self.bottom_stacked_widget.setCurrentWidget(self.bottom_widget)
+            if not self.test_bench_toggle_switch.isChecked():
+                self.dispatch_command_widget.setEnabled(True)
+                self.schedule_selection_widget.setEnabled(True)
+
+    @pyqtSlot(bool)
+    def handle_mbo_toggle(self, state: bool) -> None:
+        self.dispatch_command_widget.setEnabled(not state)
+        self.schedule_selection_widget.setEnabled(not state)
+
+    @pyqtSlot(bool)
+    def handle_automatic_toggle(self, state: bool) -> None:
+        if state:
+            self.stacked_widget.setCurrentWidget(
+                self.schedule_selection_widget)
+        else:
+            self.stacked_widget.setCurrentWidget(
+                self.dispatch_command_widget)
+
+    @pyqtSlot(int, bool)
+    def handle_occupancy_update(self, block_number: int, occupancy: bool) -> None:
+
+        # Update the train visual widget display
+        self.train_visual_widget.update()
+
+    @pyqtSlot(int, int)
+    def handle_switch_position_update(self, block_number: int, position: int) -> None:
+        print(f"Block {block_number} switch position updated: {position}")
+
+    @pyqtSlot(int, int)
+    def handle_crossing_signal_update(self, block_number: int, signal: int) -> None:
+        print(f"Block {block_number} crossing signal updated: {signal}")
+
+    @pyqtSlot(int, bool)
+    def handle_maintenance_update(self, block_number: int, maintenance: bool) -> None:
         
-        Args:
-            state (bool): The state of the toggle switch.
-        """
-
-        if state:
-            print("Test Bench Mode ON")
-        else:
-            print("Test Bench Mode OFF")
-
-    def handle_maintenance_toggle(self, state):
-
-        """
-        Handle the Maintenance mode toggle.
-
-        Args:
-            state (bool): The state of the toggle switch.
-        """
-
-        if state:
-            print("Maintenance Mode ON")
-        else:
-            print("Maintenance Mode OFF")
-
-    def handle_mbo_toggle(self, state):
-
-        """
-        Handle the MBO mode toggle.
-
-        Args:
-            state (bool): The state of the toggle switch.
-        """
-
-        if state:
-            print("MBO Mode ON")
-        else:
-            print("MBO Mode OFF")
-
-    def handle_automatic_toggle(self, state):
-
-        """
-        Handle the Automatic mode toggle.
-
-        Args:
-            state (bool): The state of the toggle switch.
-        """
-
-        if state:
-            print("Automatic Mode ON")
-        else:
-            print("Automatic Mode OFF")
-
+        # Update the train visual widget display
+        self.train_visual_widget.update()

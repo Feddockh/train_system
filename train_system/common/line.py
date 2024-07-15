@@ -1,6 +1,7 @@
 # train_system/common/line.py
 
 import os
+import json
 import pandas as pd
 from typing import List
 from PyQt6.QtCore import QObject, pyqtSignal
@@ -33,6 +34,10 @@ class Line(QObject):
 
         self.name = name
         self.track_blocks: List[TrackBlock] = []
+        self.to_yard: List[int] = []
+        self.from_yard: List[int] = []
+        self.past_yard: List[int] = []
+        self.default_route: List[int] = []
 
     def __repr__(self) -> str:
 
@@ -53,7 +58,7 @@ class Line(QObject):
         self.connect_signals(track_block)
 
     def set_track_block(self, track_block: TrackBlock) -> None:
-        self.track_blocks[track_block.number] = track_block
+        self.track_blocks[track_block.number - 1] = track_block
         self.connect_signals(track_block)
 
     def connect_signals(self, track_block: TrackBlock) -> None:
@@ -77,12 +82,12 @@ class Line(QObject):
         """
 
         try:
-            return self.track_blocks[number]
-        except KeyError:
+            return self.track_blocks[number - 1]
+        except IndexError:
             print(f"Track block {number} not found.")
             return None
 
-    def load_track_blocks(self, file_path: str) -> None:
+    def load_track_blocks(self, file_path: str = None) -> None:
 
         """
         Loads track blocks from an Excel file.
@@ -93,6 +98,9 @@ class Line(QObject):
         Returns:
             None
         """
+        
+        if not file_path:
+            file_path = os.path.abspath(os.path.join("system_data\\lines", f"{self.name.lower()}_line.xlsx"))
 
         if not os.path.isfile(file_path):
             print(f"Error: The file {file_path} does not exist.")
@@ -116,6 +124,8 @@ class Line(QObject):
 
         for _, row in df.iterrows():
             connecting_blocks = [int(block.strip()) for block in str(row['Connecting Blocks']).split(',') if block.strip().isdigit()]
+            station = row['Station'] if not pd.isna(row['Station']) and str(row['Station']).strip() else ""
+            station_side = row['Station Side'] if not pd.isna(row['Station Side']) and str(row['Station Side']).strip() else ""
             block = TrackBlock(
                 line=row['Line'],
                 section=row['Section'],
@@ -126,48 +136,54 @@ class Line(QObject):
                 elevation=row['ELEVATION (M)'],
                 cumulative_elevation=row['CUMALTIVE ELEVATION (M)'],
                 connecting_blocks=connecting_blocks,
-                branch=row['Branch'],
-                station=row['Station'],
-                station_side=row['Station Side']
+                station=station,
+                station_side=station_side
             )
             self.add_track_block(block)
 
-    def get_distance(self, start: int, end: int) -> int:
+    def load_routes(self, file_path: str = None) -> None:
 
-        """
-        Returns the distance between two track blocks.
-        
-        Args:
-            start (int): The starting block number.
-            end (int): The ending block number.
-        
-        Returns:
-            int: The distance between the two blocks.
-        """
+        if not file_path:
+            file_path = os.path.abspath(os.path.join("system_data\\routes", f"{self.name.lower()}_routes.json"))
 
-        # recursively search for the distance between the two blocks
-        return self.distance_search([], start, end, 0)
-    
-    def distance_search(self, closed: list[int], start: int, end: int, distance: int) -> int:
-            
-            """
-            Recursively searches for the distance between two track blocks.
-            
-            Args:
-                start (int): The starting block number.
-                end (int): The ending block number.
-                distance (int): The distance between the two blocks.
-            
-            Returns:
-                int: The distance between the two blocks.
-            """
+        with open(file_path, 'r') as file:
+            data = json.load(file)
+
+        self.to_yard = data['to_yard']
+        self.from_yard = data['from_yard']
+        self.past_yard = data['past_yard']
+        self.default_route = data['default_route']
+
+    def get_distance(self, start: int, end: int):
+
+        # recursively search for the path between the two blocks
+        path = []
+        self.path_search([], start, end, path)
+
+        # if the path is not found, return -1
+        if not path:
+            return -1
+        
+        # calculate the distance between the two blocks (or the first occupied/under_maintenance block along the path)
+        distance = 0
+        for i in range(len(path) - 1):
+            block = self.get_track_block(path[i])
+            if block.occupancy or block.under_maintenance:
+                break
+            else:
+                distance += block.length
+
+        return distance
+
+    def path_search(self, closed: list[int], start: int, end: int, path: list[int]) -> None:
     
             # If the start and end blocks are the same, return the distance
             if start == end:
-                return distance
+                return path
             
             # Add the current block to the closed list
             closed.append(start)
+            path.append(start)
     
             # Get the current block
             current_block = self.get_track_block(start)
@@ -175,6 +191,7 @@ class Line(QObject):
     
             # If the current block is not found, return -1
             if not current_block:
+                path.pop()
                 return -1
     
             # For each connecting block
@@ -183,23 +200,19 @@ class Line(QObject):
                 # If the connecting block is in the closed list, skip it
                 if connecting_block in closed:
                     continue
-    
-                # Recursively search for the distance
-                # print("Connecting Block: " + str(connecting_block.number))
-                track_block_length = current_block.length
-                result = self.distance_search(
-                    closed, connecting_block, end, distance + track_block_length
-                )
+
+                # Recursively search for the path
+                result = self.path_search(closed, connecting_block, end, path)
     
                 # If the result is not -1, return the result
                 if result != -1:
                     return result
     
             # If the end block is not found, return -1
+            path.pop()
             return -1
 
 if __name__ == "__main__":
-    line = Line('Blue')
-    file_path = os.path.abspath(os.path.join("tests", "blue_line.xlsx"))
-    line.load_track_blocks(file_path)
-    print(line)
+    line = Line('Green')
+    line.load_track_blocks()
+    line.load_routes()
