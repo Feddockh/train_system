@@ -9,6 +9,10 @@ from train_system.common.track_block import TrackBlock
 from train_system.mbo_manager.mbo_manager import MBOOffice
 from train_system.mbo_manager.mbo_ui import MBOWindow
 
+
+def handle_recieved_data(encrypted_data):
+    print(f"recieved data ", encrypted_data)
+
 #Create the application 
 app = QApplication(sys.argv)
 
@@ -19,6 +23,7 @@ time_keeper.start_timer()
 #instantiate MBOController
 mbo_office = MBOOffice()
 schedules = MBOOffice.Schedules()
+satellite = MBOOffice.Satellite()
 
 #instantiate the MBO UI
 mbo_main_ui = MBOWindow()
@@ -27,9 +32,15 @@ mbo_main_ui = MBOWindow()
     #what needs connected to time? Commanded Speed and Authority?? Not completely time dependent could just recalculate when new train positions are emitted? 
 
 
+#need signal from CTC office for satellite sending
+
+#need signal from train model for satellite recieving 
+
 #connect vital signals 
-commanded_speed = 0.0
-mbo_office.update_commanded_speed.connect(commanded_speed)
+satellite.update_satellite.connect(handle_recieved_data)
+
+#generate key for encryption on top top level? signal here to get it? and send to satellite 
+
 
 #Connect GUI signals
 #for planner create schedule
@@ -40,3 +51,5 @@ mbo_main_ui.schedule_created.connect(schedules.create_schedules)
 
 mbo_main_ui.show()
 sys.exit(app.exec())
+
+print(handle_recieved_data)

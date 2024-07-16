@@ -2,15 +2,18 @@ import csv
 from csv import writer
 import datetime
 from datetime import timedelta
+
+from cryptography.fernet import Fernet
+import json
+
 from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
 from train_system.common.line import Line
 from train_system.common.track_block import TrackBlock
 
+#assuming recieving train_positions as {'train_id' : train_id, 'position' : m, 'block' : #}
+#sending speed and authority as data = {'train_id' : train_id, 'authority' : m, 'commanded_speed' : m/s}
 
 class MBOOffice:
-    
-    update_commanded_speed = pyqtSignal()
-    update_authority = pyqtSignal()
     
     def __init__(self):
         """
@@ -68,7 +71,7 @@ class MBOOffice:
         
         return commanded_speed, equal to the speed limit 
         """ 
-        
+        #set up to read in dictionary of trains for now, similar to 
         # set equal to speed limit of block 
         block = self.green_line.get_track_block(trains_posistion)
         if block: 
@@ -117,45 +120,68 @@ class MBOOffice:
     #incorporate time keeper here, every tick call load in posotions, calculate speed and authority, check if can send, if so encypt and emit data   
     class Satellite:
         
+        update_satellite = pyqtSignal(dict)
+        
         def __init__(self):
-            self.mbo_mode = False 
+            self.mbo_mode = True
+            self.mbo_office = MBOOffice()
+            
+            self.train_positions = {}
         
         def satellite_send(self):
             """
             gathering info to send over satellite, authority and speed
             
             """
+            train_id = 'Train1'
+            authority = self.mbo_office.authority(self.train_positions)
+            commanded_speed = self.mbo_office.commanded_speed(self.train_positions)
+            
+            data = {'train_id' : train_id, 'authority' : authority, 'commanded_speed' : commanded_speed}
+             
             if (self.mbo_mode == True):
                 """
                 send speed and authority 
                 """ 
-            
+                encrypted_data = self.encrypty(data)
+                
+                self.update_satellite.emit(encrypted_data)
+                
+                 
             else: 
                 """
                 do not send information, information will be sent to train through CTC office
                 """ 
+                self.update_satellite({})
         
         def encrypty(self):
             """
             encryption to send vital information
             """
+            
+        
+        def decrypt(self):
+            """
+            decryption to recieve position(s)
+            """
                 
-
-
-    
+    #create schedules from planners selected date and time on UI
     class Schedules:
         def __init__(self):
             """
             Initialize the MBO Controller
             """
+            #create set of drivers and crew
             self.drivers = ["Alejandro", "Bob", "Charlie", "David", "Eve", "Frank", "Grace", "Hannah", "Ivy", "Jack"]
             self.crew = ["Alice", "Barbra", "Cole", "Dan", "Earl", "Fern", "George", "Hank", "Ian", "Jack",
                     "Karen", "Leo", "Morgan", "Niel", "Ophelia", "Paul", "Quinn", "Roger", "Stacy", "Terry"]
             
+            #info about shifts
             self.shift_length = timedelta(hours= 8, minutes= 30)
             self.drive_length = timedelta(hours=4)
             self.break_length = timedelta(minutes=30)
             
+            #time to travel from one station to another 
             self.route_schedule_green = {'Glenbury Down' : timedelta(seconds=20) , 'Dormont Down' : timedelta(minutes=1, seconds=13), 'Mt Lebanon Down' : timedelta(seconds=39), 
                                 'Poplar' : timedelta(minutes=2, seconds=45), 'Castle Shannon' : timedelta(minutes=1, seconds=28), 'Mt Lebanon Up' : timedelta(minutes=2, seconds=59), 
                                 'Dormont Up' : timedelta(seconds= 17), 'Glenbury Up' : timedelta(minutes=1, seconds=54), 'Overbrook Up' : timedelta(minutes= 1, seconds=35), 
@@ -178,7 +204,8 @@ class MBOOffice:
 
 if __name__ == "__main__":
     MBO = MBOOffice()
-      
+    
+    print(MBO.green_line)
     print("speed limit for train in block 15 is ", MBO.commanded_speed(15))
     
     
