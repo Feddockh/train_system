@@ -16,10 +16,11 @@ class TrackBlock(QObject):
     under_maintenance_updated = pyqtSignal(bool)
 
     def __init__(self, line: str, section: str, number: int, length: int,
-                 grade: float, speed_limit: int, elevation: float,
+                 grade: float, speed_limit: int, elevation: float, 
                  cumulative_elevation: float, connecting_blocks: List[int],
-                 next_blocks: List[int] = None, station: str = None, 
-                 station_side: str = None, switch_options: List[int] = None) -> None:
+                 next_blocks: List[int] = None, station: str = None,
+                 station_side: str = None, switch_options: List[int] = None
+                 ) -> None:
 
         super().__init__()
 
@@ -27,16 +28,19 @@ class TrackBlock(QObject):
         self.line = line
         self.section = section
         self.number = number
-        self.length = length
-        self.grade = grade
-        self.speed_limit = speed_limit
-        self.elevation = elevation
-        self.cumulative_elevation = cumulative_elevation
+        self.length = length # meters
+        self.grade = grade # %
+        self.speed_limit = speed_limit # km/h
+        self.elevation = elevation # meters
+        self.cumulative_elevation = cumulative_elevation # meters
         self.connecting_blocks = connecting_blocks
         self.next_blocks = next_blocks
         self.station = station
         self.station_side = station_side
         self.switch_options = switch_options
+
+        # Calculated parameters
+        self.traversal_time = self.length / (self.speed_limit / 3.6) # seconds
 
         # Dynamic parameters
         self._suggested_speed = 0
