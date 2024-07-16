@@ -18,8 +18,8 @@ class TrackBlock(QObject):
     def __init__(self, line: str, section: str, number: int, length: int,
                  grade: float, speed_limit: int, elevation: float,
                  cumulative_elevation: float, connecting_blocks: List[int],
-                 station: str = None, station_side: str = None, 
-                 switch_options: List[int] = None) -> None:
+                 next_blocks: List[int] = None, station: str = None, 
+                 station_side: str = None, switch_options: List[int] = None) -> None:
 
         super().__init__()
 
@@ -33,6 +33,7 @@ class TrackBlock(QObject):
         self.elevation = elevation
         self.cumulative_elevation = cumulative_elevation
         self.connecting_blocks = connecting_blocks
+        self.next_blocks = next_blocks
         self.station = station
         self.station_side = station_side
         self.switch_options = switch_options
@@ -65,14 +66,16 @@ class TrackBlock(QObject):
             f"Elevation:               {self.elevation}\n"
             f"Cumulative Elevation:    {self.cumulative_elevation}\n"
             f"Connecting Track Blocks: {self.connecting_blocks}\n"
+            f"Next Track Blocks:       {self.next_blocks}\n"
             f"Station:                 {self.station}\n"
             f"Station Side:            {self.station_side}\n"
+            f"Switch Options:          {self.switch_options}\n"
             f"Suggested Speed:         {self._suggested_speed}\n"
             f"Authority:               {self._authority}\n"
             f"Occupancy:               {self._occupancy}\n"
             f"Switch Position:         {self._switch_position}\n" 
             f"Crossing Signal:         {self._crossing_signal}\n"
-            f"Under Maintenance:       {self._under_maintenance}"
+            f"Under Maintenance:       {self._under_maintenance}\n"
         )
 
     def __eq__(self, other: object) -> bool:

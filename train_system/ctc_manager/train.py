@@ -1,6 +1,9 @@
 # train_system.common.train.py
 
+from typing import List
+
 from train_system.common.line import Line
+
 
 class Train:
     def __init__(self, train_id: int, line: Line) -> None:
@@ -16,7 +19,9 @@ class Train:
         self.train_id = train_id
         self.line = line
 
-        self.curent_block = None
+        self.current_block: int = None
+        self.route: List[int] = []
+
         self.suggested_speed = 0
         self.authority = 0
         self.stops = []
@@ -32,9 +37,12 @@ class Train:
         """
 
         return (
-            f"Train:        {self.train_id}\n"
-            f"Line:         {self.line}\n"
-            f"Block:        {self.line}\n"
-            f"Speed:        {self.line}\n"
-            f"Authority:    {self.line}\n"
+            f"Train:          {self.train_id}\n"
+            f"Line:           {self.line.name}\n"
+            f"Current Block:  {self.current_block}\n"
+            f"SuggestedSpeed: {self.suggested_speed}\n"
+            f"Authority:      {self.authority}\n"
         )
+    
+    def set_stops(self, stops: List[int]) -> None:
+        self.stops = stops

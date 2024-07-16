@@ -51,7 +51,17 @@ class Line(QObject):
         blocks_repr = "\n".join(
             repr(block) for block in self.track_blocks
         )
-        return f"Line(name={self.name}, track_blocks=[\n{blocks_repr}\n])"
+
+        res = (
+            f"Line:          {self.name}\n"
+            f"track_blocks:  [\n{blocks_repr}\n]\n"
+            f"to_yard:       {self.to_yard}\n"
+            f"from_yard:     {self.from_yard}\n"
+            f"past_yard:     {self.past_yard}\n"
+            f"default_route: {self.default_route}"
+        )
+
+        return res
 
     def add_track_block(self, track_block: TrackBlock) -> None:
         self.track_blocks.append(track_block)
@@ -124,8 +134,10 @@ class Line(QObject):
 
         for _, row in df.iterrows():
             connecting_blocks = [int(block.strip()) for block in str(row['Connecting Blocks']).split(',') if block.strip().isdigit()]
+            next_blocks = [int(block.strip()) for block in str(row['Initial Next Blocks']).split(',') if block.strip().isdigit()]
             station = row['Station'] if not pd.isna(row['Station']) and str(row['Station']).strip() else ""
             station_side = row['Station Side'] if not pd.isna(row['Station Side']) and str(row['Station Side']).strip() else ""
+            switch_options = [int(block.strip()) for block in str(row['Switch Options']).split(',') if block.strip().isdigit()]
             block = TrackBlock(
                 line=row['Line'],
                 section=row['Section'],
@@ -136,8 +148,10 @@ class Line(QObject):
                 elevation=row['ELEVATION (M)'],
                 cumulative_elevation=row['CUMALTIVE ELEVATION (M)'],
                 connecting_blocks=connecting_blocks,
+                next_blocks=next_blocks,
                 station=station,
-                station_side=station_side
+                station_side=station_side,
+                switch_options=switch_options
             )
             self.add_track_block(block)
 
@@ -216,3 +230,4 @@ if __name__ == "__main__":
     line = Line('Green')
     line.load_track_blocks()
     line.load_routes()
+    print(line)
