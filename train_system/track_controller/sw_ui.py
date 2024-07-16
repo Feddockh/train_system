@@ -172,7 +172,7 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         self.blockInfoTable.setGeometry(QtCore.QRect(60, 330, 1100, 320))
         self.blockInfoTable.setObjectName("blockInfoTable")
         self.blockInfoTable.setColumnCount(7)
-        self.blockInfoTable.setRowCount(len(self.track_controllers[0].track_blocks))
+        self.blockInfoTable.setRowCount(len(self.track_controllers[0].blocks))
         self.blockInfoTable.setColumnWidth(0, 155)
         self.blockInfoTable.setColumnWidth(1, 155)
         self.blockInfoTable.setColumnWidth(2, 155)
@@ -272,7 +272,7 @@ class ProgrammerUI(QtWidgets.QMainWindow):
 
     #Converts track_occupancies into "occupied/in operation"
     def display_occupied_tracks(self, i, waysideIndex):
-        if (self.track_controllers[waysideIndex].track_blocks[i]._occupancy == False):
+        if (self.track_controllers[waysideIndex].line.track_blocks[i]._occupancy == False):
             return "Not Occupied"
         else:
             return "Occupied"
@@ -286,14 +286,14 @@ class ProgrammerUI(QtWidgets.QMainWindow):
     #adds block info table data
     def add_block_info_table_data(self, waysideIndex):
         self.blockInfoTable.clearContents()
-        self.blockInfoTable.setRowCount(len(self.track_controllers[waysideIndex].track_blocks))
+        self.blockInfoTable.setRowCount(len(self.track_controllers[waysideIndex].blocks))
 
         data = []
-        for x in range(self.track_controllers[waysideIndex].numBlocks):
-            tempData = [self.track_controllers[waysideIndex].track_blocks[x].number, 
+        for x in self.track_controllers[waysideIndex].blocks:
+            tempData = [self.track_controllers[waysideIndex].line.track_blocks[x].number, 
                         self.display_occupied_tracks(x, waysideIndex), 
-                        self.track_controllers[waysideIndex].track_blocks[x].authority, 
-                        self.track_controllers[waysideIndex].track_blocks[x].suggested_speed, 
+                        self.track_controllers[waysideIndex].line.track_blocks[x].authority, 
+                        self.track_controllers[waysideIndex].line.track_blocks[x].suggested_speed, 
                         " ", " "]
             tempData.append(self.display_crossing_signal(x, waysideIndex))
             data.append(tempData)
@@ -313,31 +313,31 @@ class ProgrammerUI(QtWidgets.QMainWindow):
     def display_switch_pos(self, x, waysideIndex):
         
         #if there is a switch that exists at this block
-        if(self.track_controllers[waysideIndex].track_blocks[x]._switch_position != None):
-            pos = self.track_controllers[waysideIndex].track_blocks[x]._switch_position
-            item = self.track_controllers[waysideIndex].track_blocks[x].switch_options[pos]
+        if(self.track_controllers[waysideIndex].line.track_blocks[x]._switch_position != None):
+            pos = self.track_controllers[waysideIndex].line.track_blocks[x]._switch_position
+            item = self.track_controllers[waysideIndex].line.track_blocks[x].switch_options[pos]
 
             #for other block not connected to switch
             if(pos == 0):
                 otherPos = 1
             else:
                 otherPos = 0
-            otherItem = self.track_controllers[waysideIndex].track_blocks[x].switch_options[otherPos]
+            otherItem = self.track_controllers[waysideIndex].line.track_blocks[x].switch_options[otherPos]
 
             #updating block connected to switch
             for i in range(self.track_controllers[waysideIndex].numBlocks):
-                if(self.track_controllers[waysideIndex].track_blocks[i].number == item):
-                    block = QTableWidgetItem(str(self.track_controllers[waysideIndex].track_blocks[x].number))
+                if(self.track_controllers[waysideIndex].line.track_blocks[i].number == item):
+                    block = QTableWidgetItem(str(self.track_controllers[waysideIndex].line.track_blocks[x].number))
                     block.setFlags(block.flags() & ~Qt.ItemFlag.ItemIsEditable)
                     self.blockInfoTable.setItem(i, 4, block)
-                if(self.track_controllers[waysideIndex].track_blocks[i].number == otherItem):
+                if(self.track_controllers[waysideIndex].line.track_blocks[i].number == otherItem):
                     block = QTableWidgetItem("-")
                     block.setFlags(block.flags() & ~Qt.ItemFlag.ItemIsEditable)
                     self.blockInfoTable.setItem(i, 4, block)
             block = QTableWidgetItem(str(item))
             block.setFlags(block.flags() & ~Qt.ItemFlag.ItemIsEditable)
             self.blockInfoTable.setItem(x, 4, block)
-        elif(self.track_controllers[waysideIndex].track_blocks[x].switch_options == None):
+        elif(self.track_controllers[waysideIndex].line.track_blocks[x].switch_options == None):
             block = QTableWidgetItem("-")
             block.setFlags(block.flags() & ~Qt.ItemFlag.ItemIsEditable)
             self.blockInfoTable.setItem(x, 4, block)
@@ -346,9 +346,9 @@ class ProgrammerUI(QtWidgets.QMainWindow):
     
     def display_light_signal(self, x, waysideIndex):
         #If light signal is red or green
-        if(self.track_controllers[waysideIndex].track_blocks[x]._light_signal == True):
+        if(self.track_controllers[waysideIndex].line.track_blocks[x]._light_signal == True):
             self.blockInfoTable.setItem(x, 5, CrossingSignalWidget("", GREEN))
-        elif(self.track_controllers[waysideIndex].track_blocks[x]._light_signal == False):
+        elif(self.track_controllers[waysideIndex].line.track_blocks[x]._light_signal == False):
             self.blockInfoTable.setItem(x, 5, CrossingSignalWidget("", RED))
         else:
             self.blockInfoTable.setItem(x, 5, CrossingSignalWidget("", WHITE))
@@ -357,9 +357,9 @@ class ProgrammerUI(QtWidgets.QMainWindow):
 
     #Displays crossing signals
     def display_crossing_signal(self, x, waysideIndex):
-        if (self.track_controllers[waysideIndex].track_blocks[x].crossing_signal == CrossingSignal.ON):
+        if (self.track_controllers[waysideIndex].line.track_blocks[x].crossing_signal == CrossingSignal.ON):
             return "Up"
-        elif(self.track_controllers[waysideIndex].track_blocks[x].crossing_signal == CrossingSignal.OFF):
+        elif(self.track_controllers[waysideIndex].line.track_blocks[x].crossing_signal == CrossingSignal.OFF):
             return "Down"
         else:
             return "-"
@@ -520,7 +520,7 @@ class TestBench(QtWidgets.QMainWindow):
         self.blockInfoTable.setGeometry(QtCore.QRect(60, 330, 1100, 320))
         self.blockInfoTable.setObjectName("blockInfoTable")
         self.blockInfoTable.setColumnCount(4)
-        self.blockInfoTable.setRowCount(len(track_controllers[0].track_blocks))
+        self.blockInfoTable.setRowCount(len(track_controllers[0].blocks))
         self.blockInfoTable.setColumnWidth(0, 275)
         self.blockInfoTable.setColumnWidth(1, 275)
         self.blockInfoTable.setColumnWidth(2, 275)
@@ -533,7 +533,6 @@ class TestBench(QtWidgets.QMainWindow):
         self.blockInfoTable.setHorizontalHeaderLabels(['Block #', 'Occupancy', 'Authority[ft]', 'Speed[mph]'])
         self.blockInfoTable.horizontalHeader().setFont(font)
         self.add_block_info_table_data(track_controllers, waysideIndex)
-
 
         #Handling updates to block info table
         self.blockInfoTable.itemChanged.connect(lambda item: self.item_changed_blockInfo(track_controllers, waysideIndex, item))
@@ -566,11 +565,13 @@ class TestBench(QtWidgets.QMainWindow):
 
     #Updates UI values to reflect backend changes
     def update_ui(self, track_controllers):
+        self.blockInfoTable.blockSignals(True)
         lineIndex = self.comboBox_3.currentIndex()
         waysideIndex = self.comboBox.currentIndex()
         #self.track_controller.run_PLC_program()
         self.add_wayside_blk_table_data(lineIndex)
         self.add_block_info_table_data(track_controllers, waysideIndex)
+        self.blockInfoTable.blockSignals(False)
 
     """
     #Updates UI values to reflect backend changes
@@ -639,15 +640,15 @@ class TestBench(QtWidgets.QMainWindow):
             #Occupancy
             case 1:
                 if (new_item == "Occupied"):
-                    track_controllers[waysideIndex].track_blocks[row]._occupancy = True
+                    track_controllers[waysideIndex].line.track_blocks[row]._occupancy = True
                 else:
-                    track_controllers[waysideIndex].track_blocks[row]._occupancy = False
+                    track_controllers[waysideIndex].line.track_blocks[row]._occupancy = False
             #Authority
             case 2:
-                track_controllers[waysideIndex].track_blocks[row].authority = new_item
+                track_controllers[waysideIndex].line.track_blocks[row].authority = new_item
             #Speed
             case 3:
-                track_controllers[waysideIndex].track_blocks[row].suggested_speed = new_item
+                track_controllers[waysideIndex].line.track_blocks[row].suggested_speed = new_item
             case _:
                 print("")
         self.blockInfoTable.blockSignals(True)
@@ -658,7 +659,7 @@ class TestBench(QtWidgets.QMainWindow):
 
     #Converts track_occupancies into "occupied/in operation"
     def display_occupied_tracks(self, track_controllers, i, waysideIndex):
-        if (track_controllers[waysideIndex].track_blocks[i]._occupancy == False):
+        if (track_controllers[waysideIndex].line.track_blocks[i]._occupancy == False):
             return "Not Occupied"
         else:
             return "Occupied"
@@ -666,14 +667,14 @@ class TestBench(QtWidgets.QMainWindow):
     #adds block info table data
     def add_block_info_table_data(self, track_controllers, waysideIndex):
         self.blockInfoTable.clearContents()
-        self.blockInfoTable.setRowCount(len(track_controllers[waysideIndex].track_blocks))
+        self.blockInfoTable.setRowCount(len(track_controllers[waysideIndex].blocks))
 
         data = []
-        for x in range(track_controllers[waysideIndex].numBlocks):
-            tempData = [track_controllers[waysideIndex].track_blocks[x].number, 
+        for x in track_controllers[waysideIndex].blocks:
+            tempData = [track_controllers[waysideIndex].line.track_blocks[x].number, 
                         self.display_occupied_tracks(track_controllers, x, waysideIndex), 
-                        track_controllers[waysideIndex].track_blocks[x].authority, 
-                        track_controllers[waysideIndex].track_blocks[x].suggested_speed]
+                        track_controllers[waysideIndex].line.track_blocks[x].authority, 
+                        track_controllers[waysideIndex].line.track_blocks[x].suggested_speed]
             data.append(tempData)
 
         for i, row in enumerate(data):
