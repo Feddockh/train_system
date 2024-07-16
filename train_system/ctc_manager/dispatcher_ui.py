@@ -50,10 +50,6 @@ class DispatcherUI(QMainWindow):
         # Create a horizontal layout for the top half
         self.top_layout = QHBoxLayout()
         self.central_layout.addLayout(self.top_layout)
-        # self.top_widget = QWidget()
-        # self.central_layout.addWidget(self.top_widget, stretch=2)
-        # self.top_layout = QHBoxLayout()
-        # self.top_widget.setLayout(self.top_layout)
 
         # Create a stacked widget with a horizontal layout for the bottom half
         self.bottom_stacked_widget = QStackedWidget()
