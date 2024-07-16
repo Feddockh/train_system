@@ -30,7 +30,7 @@ class TrackController(QObject):
         for x in range(len(self.track_blocks)):
             if(block_number) == self.track_blocks[x].number:
                 print(f"Block {block_number} occupancy updated to {new_occupancy}")
-                self.track_blocks[block_number-1]._occupancy = new_occupancy
+                self.track_blocks[x]._occupancy = new_occupancy
 
     @pyqtSlot(int)
     def handle_speed_update(self, new_speed: int) -> None:
@@ -38,7 +38,7 @@ class TrackController(QObject):
         for x in range(len(self.track_blocks)):
             if(block_number) == self.track_blocks[x].number:
                 print(f"Block {block_number} speed updated to {new_speed}")
-                self.track_blocks[block_number-1].suggested_speed = new_speed
+                self.track_blocks[x].suggested_speed = new_speed
 
     @pyqtSlot(int)
     def handle_authority_update(self, new_authority: int) -> None:
@@ -46,7 +46,7 @@ class TrackController(QObject):
         for x in range(len(self.track_blocks)):
             if(block_number) == self.track_blocks[x].number:
                 print(f"Block {block_number} authority updated to {new_authority}")
-                self.track_blocks[block_number-1].authority = new_authority
+                self.track_blocks[x].authority = new_authority
 
     def get_PLC_program(self, plc_program):
         """

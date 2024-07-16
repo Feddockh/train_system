@@ -34,18 +34,20 @@ def main():
     line = Line("")
 
     line.add_track_block(test)
+    #line.add_track_block(test)
     line.add_track_block(test2)
     line.add_track_block(test3)
     line.add_track_block(test4)
     line.add_track_block(test5)
     line.add_track_block(test6)
     line.add_track_block(test7)
+    line.add_track_block(test7)
 
     track_blocks1 = line.track_blocks[0:3]
     track_blocks2 = line.track_blocks[3:4]
     track_blocks3 = line.track_blocks[4:5]
     track_blocks5 = line.track_blocks[5:6]
-    track_blocks6 = line.track_blocks[6:7]
+    track_blocks6 = line.track_blocks[6:8]
 
 
     """

@@ -537,7 +537,7 @@ class TestBench(QtWidgets.QMainWindow):
         self.add_block_info_table_data(waysideIndex)
 
         #Handling updates to block info table
-        self.blockInfoTable.itemChanged.connect(lambda item: self.item_changed_blockInfo(waysideIndex, item))
+        self.blockInfoTable.itemChanged.connect(lambda item: self.item_changed_blockInfo(item))
 
         #Updating comboboxes
         self.comboBox.currentIndexChanged.connect(lambda: self.update_ui())
@@ -632,11 +632,13 @@ class TestBench(QtWidgets.QMainWindow):
                 self.waysideBlkTable.setItem(i, j, text)
 
 
-    def item_changed_blockInfo(self, waysideIndex, item):
+    def item_changed_blockInfo(self, item):
+        waysideIndex = self.comboBox.currentIndex()
         row = item.row()
         column = item.column()
         new_item = item.text()
 
+        print("changed item")
         
         match column:
             #Occupancy
