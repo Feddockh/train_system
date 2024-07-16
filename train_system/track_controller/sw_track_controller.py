@@ -1,10 +1,11 @@
 # train_system/track_controller/track_controller.py
 
 from train_system.common.track_block import TrackBlock
+from train_system.common.line import Line
 import sys
 
 class TrackController:
-    def __init__(self):
+    def __init__(self, line : Line):
         """
         Initialize variables of the Track Controller.
         """
@@ -15,7 +16,9 @@ class TrackController:
         #self.signal_states = False
         #self.crossing_states = False
         # self.switch_positions = []
-        self.track_blocks = []
+
+        self.line = line
+        self.blocks = []
         self.plc_program_uploaded = False
         self.plc_program = ""
         self.wayside_name = ""
