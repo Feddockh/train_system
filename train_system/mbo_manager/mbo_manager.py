@@ -93,7 +93,7 @@ class MBOOffice:
         
         #pass number_of_block_maint = len(block_maint)
         position = train_position.get("position")
-        print("calculating authority for train at position ", train_position)
+        print("calculating authority for train at position ", position)
         authorities = 100
         
         """for i in range(number_of_trains):
@@ -123,13 +123,14 @@ class MBOOffice:
         return (authorities)
                
     #incorporate time keeper here, every tick call load in posotions, calculate speed and authority, check if can send, if so encypt and emit data   
-    class Satellite:
+    class Satellite(QObject):
         
-        update_satellite = pyqtSignal(dict)
+        send_data_signal = pyqtSignal(dict)
         
         #want way to connect train positions to send
         
         def __init__(self):
+            super().__init__()
             self.mbo_mode = True
             self.mbo_office = MBOOffice()
             
@@ -149,9 +150,11 @@ class MBOOffice:
                 """
                 send speed and authority 
                 """ 
-                encrypted_data = self.encrypty(data)
+                print('mbo mode is true')
+                #pass encrypted_data = self.encrypty(data)
                 
-                self.update_satellite.emit(encrypted_data)
+                #will emit encrypt
+                self.send_data_signal.emit(data)
                 
                  
             else: 
@@ -174,6 +177,7 @@ class MBOOffice:
     #create schedules from planners selected date and time on UI
     class Schedules:
         def __init__(self):
+            super().__init__()
             """
             Initialize the MBO Controller
             """
@@ -208,10 +212,8 @@ class MBOOffice:
                                   
 
 
-if __name__ == "__main__":
-    MBO = MBOOffice()
+#pass if __name__ == "__main__":
     
-    MBO.Satellite.satellite_send()
     
     
     

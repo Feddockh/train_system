@@ -1,6 +1,7 @@
 import sys
 from typing import List
 from PyQt6.QtWidgets import QApplication
+from PyQt6.QtCore import Qt, QObject, pyqtSlot, pyqtSignal
 
 from train_system.common.time_keeper import TimeKeeper
 from train_system.common.line import Line
@@ -9,9 +10,9 @@ from train_system.common.track_block import TrackBlock
 from train_system.mbo_manager.mbo_manager import MBOOffice
 from train_system.mbo_manager.mbo_ui import MBOWindow
 
-
-def handle_recieved_data(encrypted_data):
-    print(f"recieved data ", encrypted_data)
+@pyqtSlot()
+def handle_recieved_data(data)-> None:
+    print("recieved data ", data)
 
 #Create the application 
 app = QApplication(sys.argv)
@@ -24,6 +25,7 @@ time_keeper.start_timer()
 mbo_office = MBOOffice()
 schedules = MBOOffice.Schedules()
 satellite = MBOOffice.Satellite()
+satellite.mbo_mode = True
 
 #instantiate the MBO UI
 mbo_main_ui = MBOWindow()
@@ -37,7 +39,7 @@ mbo_main_ui = MBOWindow()
 #need signal from train model for satellite recieving 
 
 #connect vital signals 
-satellite.update_satellite.connect(handle_recieved_data)
+satellite.send_data_signal.connect(handle_recieved_data)
 
 #generate key for encryption on top top level? signal here to get it? and send to satellite 
 
@@ -49,7 +51,13 @@ satellite.update_satellite.connect(handle_recieved_data)
 mbo_main_ui.schedule_created.connect(schedules.create_schedules)
 
 
-mbo_main_ui.show()
-sys.exit(app.exec())
+if __name__ == "__main__":
+    
+    satellite.satellite_send()
+    
+    #pass mbo_main_ui.show()
+    #pass sys.exit(app.exec())
 
-print(handle_recieved_data)
+
+
+
