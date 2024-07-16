@@ -1,86 +1,52 @@
 # train_system/track_controller/track_controller.py
 
+from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
 from train_system.common.track_block import TrackBlock
 from train_system.common.line import Line
 import sys
 
-class TrackController:
-    def __init__(self, line : Line):
+class TrackController(QObject):
+    def __init__(self, track_blocks: list):
         """
         Initialize variables of the Track Controller.
         """
-        #self.track_occupancies = []
-        #self.train_speeds = []
-        #self.train_authorities = []
-        #self.switch_states = False
-        #self.signal_states = False
-        #self.crossing_states = False
-        # self.switch_positions = []
+        super().__init__()
 
-        self.line = line
-        self.blocks = []
+        self.track_blocks = track_blocks
         self.plc_program_uploaded = False
         self.plc_program = ""
         self.wayside_name = ""
         self.numBlocks = 0
+       
+        for block in self.track_blocks:
+                block.authority_updated.connect(self.handle_authority_update)
+                block.occupancy_updated.connect(self.handle_occupancy_update)
+                block.suggested_speed_updated.connect(self.handle_speed_update)
+
     
-    def get_track_occupancy(self, new_track_occupancies):
-        """
-        Receives track occupancy from Track Model & updates current occupancy list
+    @pyqtSlot(bool)
+    def handle_occupancy_update(self, new_occupancy: bool) -> None:
+        block_number = self.sender().number
+        for x in range(len(self.track_blocks)):
+            if(block_number) == self.track_blocks[x].number:
+                print(f"Block {block_number} occupancy updated to {new_occupancy}")
+                self.track_blocks[block_number-1]._occupancy = new_occupancy
 
-         Args:
-            new_track_occupancies(bool): List of bool values for track occupancies
-        
-        """
-        self.track_occupancies = new_track_occupancies;
+    @pyqtSlot(int)
+    def handle_speed_update(self, new_speed: int) -> None:
+        block_number = self.sender().number
+        for x in range(len(self.track_blocks)):
+            if(block_number) == self.track_blocks[x].number:
+                print(f"Block {block_number} speed updated to {new_speed}")
+                self.track_blocks[block_number-1].suggested_speed = new_speed
 
-    def send_track_occupancy(self):
-        """
-        Sends track occupancies to CTC Office
-        
-        Returns:
-            array(bool): List of bools representing track occupancies
-        """
-        return self.track_occupancies;
-
-    def get_authority(self, new_authorities):
-        """
-        Recieves authority from CTC office & updates current authority list
-
-        Args:
-            new_authorities(float): List of float values for track authorities
-        
-        """
-        self.train_authorities = new_authorities;
-
-    def send_authority(self):
-         """
-        Sends track authorities to Track Model
-        
-        Returns:
-            array(float): List of floats representing authorities
-        """
-         return self.train_authorities;
-
-
-    def get_speed(self, new_speeds):
-        """
-        Recieves speed from CTC office & updates current speed list
-
-        Args:
-            new_speeds(float): List of float values for track speeds
-        
-        """
-        self.train_speeds = new_speeds
-
-    def send_speed(self):
-        """
-        Sends track speeds to Track Model
-        
-        Returns:
-            array(float): List of floats representing authorities
-        """
-        return self.train_speeds
+    @pyqtSlot(int)
+    def handle_authority_update(self, new_authority: int) -> None:
+        block_number = self.sender().number
+        for x in range(len(self.track_blocks)):
+            if(block_number) == self.track_blocks[x].number:
+                print(f"Block {block_number} authority updated to {new_authority}")
+                self.track_blocks[block_number-1].authority = new_authority
 
     def get_PLC_program(self, plc_program):
         """
@@ -124,19 +90,3 @@ class TrackController:
         Performs an emergency stop of a train if notices two trains are going to crash into eachother
         
         """
-
-"""
-#Testing program
-test = TrackController();
-test.plc_program_uploaded = True
-test.plc_program = "C:/Users/Isabella/Trains/train_system/train_system/track_controller/sw_plc.py"
-test.run_PLC_program()
-test.get_track_occupancy([True, False, False, False, False, False, False, False, False, False, False, False, False, False, False])
-test.run_PLC_program()
-test.get_track_occupancy(([False, False, False, False, True, False, False, False, False, False, False, False, False, False, False]))
-test.run_PLC_program()
-test.get_track_occupancy(([False, False, False, False, False, True, False, False, False, False, False, False, False, False, False]))
-test.run_PLC_program()
-test.get_track_occupancy(([False, False, False, False, False, False, True, False, False, False, False, False, False, False, False]))
-test.run_PLC_program()
-"""
