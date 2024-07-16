@@ -1,6 +1,6 @@
 import sys
-from train_controller import TrainController, TrainModel
-from tc_ui import *
+from train_system.train_controller.train_controller import TrainController, TrainModel
+from train_system.train_controller.tc_ui import *
 
 def main():
     tm = TrainModel()
