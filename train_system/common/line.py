@@ -19,6 +19,7 @@ class Line(QObject):
     track_block_switch_position_updated = pyqtSignal(int, int)
     track_block_crossing_signal_updated = pyqtSignal(int, int)
     track_block_under_maintenance_updated = pyqtSignal(int, bool)
+    track_block_track_failure_updated = pyqtSignal(int, int)
 
     def __init__(self, name: str) -> None:
         super().__init__()

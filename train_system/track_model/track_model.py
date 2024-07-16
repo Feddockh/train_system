@@ -48,87 +48,24 @@
 
 
 import os
-from pandas import pd
 from train_system.common.track_block import TrackBlock
-from train_system.common.station import Station
-from train_system.common.crossing_signal import CrossingSignal
 from train_system.common.line import Line
 from train_system.common.track_failures import TrackFailure
 
 class TrackModel:
 
-    def __init__(self) -> None:
+    def __init__(self, lines: list[Line]) -> None:
 
-        self.lines = [Line("Red"), Line("Green")]
+        self.temperature: int = 85
+        self.heaters: bool = False
+        self.stations_by_line: dict[str, dict[str, int]] = {}
 
-        self.ticket_sales = []
-
-
-    def import_track(self, file_path: str) -> None:
-
-        """
-        Loads lines from an Excel file.
-        
-        Args:
-            file_path (str): The path to the Excel file.
-        """
-
-        if not os.path.isfile(file_path):
-            print(f"Error: The file {file_path} does not exist.")
-            return
-        
-        try:
-            df = pd.read_excel(file_path)
-        except PermissionError:
-            print(
-                f"Error: Permission denied while trying to read the file "
-                f"{file_path}."
-            )
-            return
-        except Exception as e:
-            print(
-                f"Error: An error occurred while trying to read the file "
-                f"{file_path}."
-            )
-            print(e)
-            return
-
-        for index, row in df.iterrows():
-            block = TrackBlock(
-                line=row['Line'],
-                section=row['Section'],
-                number=row['Block Number'],
-                length=row['Block Length (m)'],
-                grade=row['Block Grade (%)'],
-                speed_limit=row['Speed Limit (Km/Hr)'],
-                elevation=row['ELEVATION (M)'],
-                cumulative_elevation=row['CUMALTIVE ELEVATION (M)'],
-                infrastructure=row['Infrastructure']
-                if not pd.isna(row['Infrastructure']) else None,
-                station_side=row['Station Side']
-                if not pd.isna(row['Station Side']) else None
-            )
-            for line in self.lines:
-                if(block.line == line.name):
-                    line.add_track_block(block)
-                    break
-
-
-        open = [1]
-        closed = []
-        for line in self.lines:
-            line.connection_search(open, closed)
-            line.station_search()
-        
-
-    def check_occupancy(self) -> None:
-
-        """
-        Updates block occupancies based on each train's distance travelled.
-
-        Args:
-            TODO: List of TrainModels
-        """
+        for line in lines:
+            stations: dict[str, int] = {}
+            for block in line.track_blocks:
+                if type(block.station) == str:
+                    stations[block.station] = 0
+            self.stations_by_line[line.name] = stations
 
 
     def create_failure(self, block: TrackBlock, failure: TrackFailure) -> None:
@@ -141,7 +78,7 @@ class TrackModel:
             failure (TrackFailure): The type of failure to create on the track block.
         """
 
-        block.failure(failure)
+        block.track_failure(failure)
 
 
     def fix_failure(self, block: TrackBlock) -> None:
@@ -153,15 +90,69 @@ class TrackModel:
             block (TrackBlock): The block to remove a failure from.
         """
 
-        block.failure(TrackFailure.NONE)
+        block.track_failure(TrackFailure.NONE)
 
 
-    def sell_tickets(self, station: str, num: int) -> None:
+    def sell_tickets(self, line: str, station: str, num: int) -> None:
 
         """
         Sell tickets at a station.
 
         Args:
+            line (str): The name of the line that contains the station.
             station (str): The name of the station to sell tickets from.
             num (int): The number of tickets to sell.
         """
+
+        if station in self.stations_by_line[line]:
+            self.stations_by_line[line][station] += num
+
+    def get_tickets(self, line: str) -> dict[str, int]:
+
+        """
+        Get tickets sold at stations and reset sales to 0.
+        
+        Args:
+            line (str): The name of the line.
+        Returns:
+            dict[str, int]: Number of tickets sold by stations on line.
+        """
+
+        temp = self.stations_by_line[line].copy()
+        for st in self.stations_by_line[line]:
+            self.stations_by_line[line][st] = 0
+
+        return temp
+    
+    def update_heaters(self) -> None:
+
+        """
+        Update heater state based on temperature
+        """
+
+        if self.temperature <= 36:
+            self.heaters = True
+        else:
+            self.heaters = False
+    
+
+    @property
+    def temperature(self) -> int:
+        return self.temperature
+    
+    @temperature.setter
+    def temperature(self, value: int):
+        self.temperature = value
+        self.update_heaters()
+    
+
+if __name__ == "__main__":
+    line = Line('Blue')
+    file_path = os.path.abspath(os.path.join("tests", "blue_line.xlsx"))
+    line.load_track_blocks(file_path)
+
+    model = TrackModel([line])
+    model.sell_tickets('Blue', 'B', 4)
+    model.sell_tickets('Blue', 'C', 11)
+    print(model.get_tickets('Blue'))
+    print(model.stations_by_line)

@@ -3,6 +3,8 @@
 from PyQt6.QtCore import QObject, pyqtSignal, pyqtSlot
 from typing import List
 from train_system.common.crossing_signal import CrossingSignal
+from train_system.common.track_failures import TrackFailure
+from train_system.track_model.beacon import Beacon
 
 crossing_signal_map = {
     CrossingSignal.ON: True,
@@ -19,13 +21,14 @@ class TrackBlock(QObject):
     switch_position_updated = pyqtSignal(int)
     crossing_signal_updated = pyqtSignal(CrossingSignal)
     under_maintenance_updated = pyqtSignal(bool)
+    track_failure_updated = pyqtSignal(TrackFailure)
 
     def __init__(self, line: str, section: str, number: int, length: int,
                  grade: float, speed_limit: int, elevation: float, 
                  cumulative_elevation: float, connecting_blocks: List[int],
                  next_blocks: List[int] = None, station: str = None,
-                 station_side: str = None, switch_options: List[int] = None
-                 ) -> None:
+                 station_side: str = None, switch_options: List[int] = None,
+                 beacon: Beacon = None) -> None:
 
         super().__init__()
 
@@ -46,6 +49,7 @@ class TrackBlock(QObject):
 
         # Calculated parameters
         self.traversal_time = self.length / (self.speed_limit / 3.6) # seconds
+        self.beacon = beacon
 
         # Dynamic parameters
         self._suggested_speed = 0
@@ -56,6 +60,7 @@ class TrackBlock(QObject):
         self._crossing_signal_bool = None
         self._under_maintenance = False
         self._light_signal = None
+        self._track_failure = TrackFailure.NONE
 
         self.crossing_signal_updated.connect(self.update_crossing_signal_bool)
 
@@ -82,12 +87,14 @@ class TrackBlock(QObject):
             f"Station:                 {self.station}\n"
             f"Station Side:            {self.station_side}\n"
             f"Switch Options:          {self.switch_options}\n"
+            f"Beacon:                  {self.beacon}\n"
             f"Suggested Speed:         {self._suggested_speed}\n"
             f"Authority:               {self._authority}\n"
             f"Occupancy:               {self._occupancy}\n"
             f"Switch Position:         {self._switch_position}\n" 
             f"Crossing Signal:         {self._crossing_signal}\n"
             f"Under Maintenance:       {self._under_maintenance}\n"
+            f"Failure:                 {self._track_failure}"
         )
 
     def __eq__(self, other: object) -> bool:
@@ -185,3 +192,12 @@ class TrackBlock(QObject):
     def under_maintenance(self, value: bool) -> None:
         self._under_maintenance = value
         self.under_maintenance_updated.emit(value)
+
+    @property
+    def track_failure(self) -> TrackFailure:
+        return self._track_failure
+    
+    @track_failure.setter
+    def track_failure(self, value: TrackFailure) -> None:
+        self._track_failure = value
+        self.track_failure_updated.emit(value)
