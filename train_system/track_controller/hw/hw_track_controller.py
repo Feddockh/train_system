@@ -32,7 +32,10 @@ class TrackController:
             new_track_occupancies(bool): List of bool values for track occupancies
         
         """
-        self.track_occupancies = new_track_occupancies;
+        new_track_occupancies = 3*[False]
+        new_track_occupancies[2] = True
+
+        self.track_occupancies = new_track_occupancies
 
     def send_track_occupancy(self):
         """
@@ -41,7 +44,7 @@ class TrackController:
         Returns:
             array(bool): List of bools representing track occupancies
         """
-        return self.track_occupancies;
+        return self.track_occupancies
 
     def get_authority(self, new_authorities):
         """
@@ -51,7 +54,7 @@ class TrackController:
             new_authorities(float): List of float values for track authorities
         
         """
-        self.train_authorities = new_authorities;
+        self.train_authorities = new_authorities
 
     def send_authority(self):
          """
@@ -60,7 +63,7 @@ class TrackController:
         Returns:
             array(float): List of floats representing authorities
         """
-         return self.train_authorities;
+         return self.train_authorities
 
 
     def get_speed(self, new_speeds):

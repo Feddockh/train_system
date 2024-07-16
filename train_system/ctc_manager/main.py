@@ -52,9 +52,7 @@ dispatcher_ui.show()
 sys.exit(app.exec())
 
 # TODO:
-# - Implement route into the track block class
 # - Implement switch position into the track block class
-# - Move line loading into the CTC Manager class
 # - Implement the dispatching logic
 # - Compute dispatch times
 # - Create top level system main

@@ -34,6 +34,7 @@ class Line(QObject):
 
         self.name = name
         self.track_blocks: List[TrackBlock] = []
+        self.yard: int = None
         self.to_yard: List[int] = []
         self.from_yard: List[int] = []
         self.past_yard: List[int] = []
@@ -51,7 +52,18 @@ class Line(QObject):
         blocks_repr = "\n".join(
             repr(block) for block in self.track_blocks
         )
-        return f"Line(name={self.name}, track_blocks=[\n{blocks_repr}\n])"
+
+        res = (
+            f"Line:          {self.name}\n"
+            f"track_blocks:  [\n{blocks_repr}\n]\n"
+            f"yard:          {self.yard}\n"
+            f"to_yard:       {self.to_yard}\n"
+            f"from_yard:     {self.from_yard}\n"
+            f"past_yard:     {self.past_yard}\n"
+            f"default_route: {self.default_route}"
+        )
+
+        return res
 
     def add_track_block(self, track_block: TrackBlock) -> None:
         self.track_blocks.append(track_block)
@@ -124,8 +136,10 @@ class Line(QObject):
 
         for _, row in df.iterrows():
             connecting_blocks = [int(block.strip()) for block in str(row['Connecting Blocks']).split(',') if block.strip().isdigit()]
+            next_blocks = [int(block.strip()) for block in str(row['Initial Next Blocks']).split(',') if block.strip().isdigit()]
             station = row['Station'] if not pd.isna(row['Station']) and str(row['Station']).strip() else ""
             station_side = row['Station Side'] if not pd.isna(row['Station Side']) and str(row['Station Side']).strip() else ""
+            switch_options = [int(block.strip()) for block in str(row['Switch Options']).split(',') if block.strip().isdigit()]
             block = TrackBlock(
                 line=row['Line'],
                 section=row['Section'],
@@ -136,8 +150,10 @@ class Line(QObject):
                 elevation=row['ELEVATION (M)'],
                 cumulative_elevation=row['CUMALTIVE ELEVATION (M)'],
                 connecting_blocks=connecting_blocks,
+                next_blocks=next_blocks,
                 station=station,
-                station_side=station_side
+                station_side=station_side,
+                switch_options=switch_options
             )
             self.add_track_block(block)
 
@@ -149,70 +165,200 @@ class Line(QObject):
         with open(file_path, 'r') as file:
             data = json.load(file)
 
+        self.yard = data['yard']
         self.to_yard = data['to_yard']
         self.from_yard = data['from_yard']
         self.past_yard = data['past_yard']
         self.default_route = data['default_route']
 
-    def get_distance(self, start: int, end: int):
+    def get_path(self, start: int, end: int) -> List[int]:
 
-        # recursively search for the path between the two blocks
         path = []
-        self.path_search([], start, end, path)
 
-        # if the path is not found, return -1
-        if not path:
-            return -1
-        
-        # calculate the distance between the two blocks (or the first occupied/under_maintenance block along the path)
-        distance = 0
-        for i in range(len(path) - 1):
-            block = self.get_track_block(path[i])
-            if block.occupancy or block.under_maintenance:
-                break
-            else:
-                distance += block.length
+        # Determine the path if we start from the yard
+        if start == self.yard:
 
-        return distance
+            # If the end block is the yard, return the yard
+            if end == self.yard:
+                path = [start]
 
-    def path_search(self, closed: list[int], start: int, end: int, path: list[int]) -> None:
-    
-            # If the start and end blocks are the same, return the distance
-            if start == end:
-                return path
+            # If the end block is in the "from yard" segment, return the path from the yard to the block in the "from yard" segment
+            elif end in self.from_yard:
+                end_index = self.search_route(end, self.from_yard)
+                path = [start] + self.from_yard[:end_index + 1]
             
-            # Add the current block to the closed list
-            closed.append(start)
-            path.append(start)
-    
-            # Get the current block
-            current_block = self.get_track_block(start)
-            # print("Current Block: " + str(current_block.number))
-    
-            # If the current block is not found, return -1
-            if not current_block:
-                path.pop()
-                return -1
-    
-            # For each connecting block
-            for connecting_block in current_block.connecting_blocks:
+            # If the end block is in the "default route" segment, return the path from the yard to the block in the "default route" segment
+            elif end in self.default_route:
+                end_index = self.search_route(end, self.default_route)
+                path = [start] + self.from_yard + self.default_route[:end_index + 1]
 
-                # If the connecting block is in the closed list, skip it
-                if connecting_block in closed:
-                    continue
+            # If the end block is in the "to yard" segment, return the path from the yard to the block in the "to yard" segment
+            elif end in self.to_yard:
+                end_index = self.search_route(end, self.to_yard)
+                path = [start] + self.from_yard + self.default_route + self.to_yard[:end_index + 1]
 
-                # Recursively search for the path
-                result = self.path_search(closed, connecting_block, end, path)
+            # If the end block is in the "past yard" segment, return the path from the yard to the block in the "past yard" segment
+            elif end in self.past_yard:
+                end_index = self.search_route(end, self.past_yard)
+                path = [start] + self.from_yard + self.default_route + self.past_yard[:end_index + 1]
+
+            # If the end block is not found, return an error message
+            else:
+                print(f"Error: No path found between blocks {start} and {end}.")
+        
+        # Determine the path if we start in the "from yard" segment
+        elif start in self.from_yard:
+           
+            # Get the index of the start block in the "from yard" route segment
+            start_index = self.search_route(start, self.from_yard)
+
+            # If the end block is the yard, return the path from the start block to the yard
+            if end == self.yard:
+                path = self.from_yard[start_index:] + self.default_route + self.to_yard + [self.yard]
+
+            # If the end block is also in the "from yard" segment, return the path between the two blocks
+            elif end == self.from_yard:
+                end_index = self.search_route(end, self.from_yard)
+                if start_index < end_index:
+                    path = self.from_yard[start_index:end_index + 1]
+
+                # If the end block is before the start block in the "from yard" segment, the path wraps around the entire line
+                else:
+                    path = self.from_yard[start_index:] + self.default_route + self.to_yard + [self.yard] + self.from_yard[:end_index + 1]
+
+            # If the end block is in the "default route" segment, return the path from the start block to the block in the "default route" segment
+            elif end in self.default_route:
+                end_index = self.search_route(end, self.default_route)
+                path = self.from_yard[start_index:] + self.default_route[:end_index + 1]
+
+            # If the end block is in the "to yard" segment, return the path from the start block to the block in the "to yard" segment
+            elif end in self.to_yard:
+                end_index = self.search_route(end, self.to_yard)
+                path = self.from_yard[start_index:] + self.default_route + self.to_yard[:end_index + 1]
+
+            # If the end block is in the "past yard" segment, return the path from the start block to the block in the "past yard" segment
+            elif end in self.past_yard:
+                end_index = self.search_route(end, self.past_yard)
+                path = self.from_yard[start_index:] + self.default_route + self.past_yard[:end_index + 1]
+
+            # If the end block is not found, return an error message
+            else:
+                print(f"Error: No path found between blocks {start} and {end}.")
+
+        # Determine the path if we start in the "default route" segment
+        elif start in self.default_route:
+
+            # Get the index of the start block in the "default route" route segment
+            start_index = self.search_route(start, self.default_route)
+
+            # If the end block is the yard, return the path from the start block to the yard
+            if end == self.yard:
+                path = self.default_route[start_index:] + self.to_yard + [self.yard]
+
+            # If the end block is in the "from yard" segment, return the path from the start block to the block in the "from yard" segment
+            elif end in self.from_yard:
+                end_index = self.search_route(end, self.from_yard)
+                path = self.default_route[start_index:] + self.to_yard + [self.yard] + self.from_yard[:end_index + 1]
+
+            # If the end block is also in the "default route" segment, return the path between the two blocks
+            elif end in self.default_route:
+                end_index = self.search_route(end, self.default_route)
+                if start_index < end_index:
+                    path = self.default_route[start_index:end_index + 1]
+
+                # If the end block is before the start block in the "default route" segment, the path wraps around the entire line
+                else:
+                    path = self.default_route[start_index:] + self.past_yard + self.default_route[:end_index + 1]
+
+            # If the end block is in the "to yard" segment, return the path from the start block to the block in the "to yard" segment
+            elif end in self.to_yard:
+                end_index = self.search_route(end, self.to_yard)
+                path = self.default_route[start_index:] + self.to_yard[:end_index + 1]
+
+            # If the end block is in the "past yard" segment, return the path from the start block to the block in the "past yard" segment
+            elif end in self.past_yard:
+                end_index = self.search_route(end, self.past_yard)
+                path = self.default_route[start_index:] + self.past_yard[:end_index + 1]
+
+            # If the end block is not found, return an error message
+            else:
+                print(f"Error: No path found between blocks {start} and {end}.")
+
+                
+
+
+
+
+
+        return path
     
-                # If the result is not -1, return the result
-                if result != -1:
-                    return result
+    # Return the index of the first occurence of the block in the route segment
+    def search_route(self, block: int, route_segment: List[int]) -> int:
+        for i in range(len(route_segment)):
+            if route_segment[i] == block:
+                return i
+
+
+    # def get_distance(self, start: int, end: int):
+
+    #     # recursively search for the path between the two blocks
+    #     path = []
+    #     self.path_search([], start, end, path)
+
+    #     # if the path is not found, return -1
+    #     if not path:
+    #         return -1
+        
+    #     # calculate the distance between the two blocks (or the first occupied/under_maintenance block along the path)
+    #     distance = 0
+    #     for i in range(len(path) - 1):
+    #         block = self.get_track_block(path[i])
+    #         if block.occupancy or block.under_maintenance:
+    #             break
+    #         else:
+    #             distance += block.length
+
+    #     return distance
+
+    # def path_search(self, closed: list[int], start: int, end: int, path: list[int]) -> None:
     
-            # If the end block is not found, return -1
-            path.pop()
-            return -1
+    #         # If the start and end blocks are the same, return the distance
+    #         if start == end:
+    #             return path
+            
+    #         # Add the current block to the closed list
+    #         closed.append(start)
+    #         path.append(start)
+    
+    #         # Get the current block
+    #         current_block = self.get_track_block(start)
+    #         # print("Current Block: " + str(current_block.number))
+    
+    #         # If the current block is not found, return -1
+    #         if not current_block:
+    #             path.pop()
+    #             return -1
+    
+    #         # For each connecting block
+    #         for connecting_block in current_block.connecting_blocks:
+
+    #             # If the connecting block is in the closed list, skip it
+    #             if connecting_block in closed:
+    #                 continue
+
+    #             # Recursively search for the path
+    #             result = self.path_search(closed, connecting_block, end, path)
+    
+    #             # If the result is not -1, return the result
+    #             if result != -1:
+    #                 return result
+    
+    #         # If the end block is not found, return -1
+    #         path.pop()
+    #         return -1
 
 if __name__ == "__main__":
     line = Line('Green')
     line.load_track_blocks()
     line.load_routes()
+    print(line)
