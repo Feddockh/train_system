@@ -1,3 +1,5 @@
+# train_system/common/time_keeper.py
+
 import sys
 import time
 from PyQt6.QtCore import QThread, pyqtSignal, QMutex, QWaitCondition, pyqtSlot, Qt
