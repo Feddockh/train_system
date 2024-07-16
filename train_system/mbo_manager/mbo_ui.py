@@ -23,23 +23,30 @@ class MBOWindow(QMainWindow):
         self.setWindowTitle("MBO Planner")
         self.setFixedSize(1222, 702)
         
-        #lable to prompt/dircetion for user to enter information
-        self.enter_label = QLabel('Please enter the date and time for the new schedules.')
+        #lable to prompt/dircetion for user to enter date and time
+        self.enter_label = QLabel('Please enter the date and time for the new schedules, then select the button.')
         self.enter_label.setFont(QFont('Times', 18))
         self.enter_label.setFixedHeight(50)
         
-        #creating calendar pop up and time
+        #Creating calendar pop up to enter date and time
         self.schedule_date_time = QDateTimeEdit(datetime.now(),self)
         self.schedule_date_time.setFixedSize(400,50)
         self.schedule_date_time.setFont(QFont('Times', 12))
         self.schedule_date_time.setCalendarPopup(True)
         
-        #Creat New Schedules Button, when clicked calls create sched function 
+        #Creat New Schedules Button, when clicked calls handle slot 
         self.create_schedules = QPushButton('Create New Schedules', self)
         self.create_schedules.setFixedSize(300,100)
         self.create_schedules.setFont(QFont('Times', 18))
         self.create_schedules.setStyleSheet("background-color : lime") 
         self.create_schedules.clicked.connect(self.handle_schedule)
+        
+        #page layout 
+        vertical_layout = QVBoxLayout()
+        vertical_layout.addWidget(self.enter_label)
+        vertical_layout.addWidget(self.schedule_date_time)
+        vertical_layout.addWidget(self.create_schedules)
+        
         
     @pyqtSlot()
     def handle_schedule(self) -> None:

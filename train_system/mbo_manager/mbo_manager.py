@@ -2,64 +2,32 @@ import csv
 from csv import writer
 import datetime
 from datetime import timedelta
+from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
+from train_system.common.line import Line
+from train_system.common.track_block import TrackBlock
 
 
-
-class MBOController:
+class MBOOffice:
+    
+    update_commanded_speed = pyqtSignal()
+    update_authority = pyqtSignal()
+    
     def __init__(self):
         """
-        Initialize the MBO Controller
+        Initialize the MBO Office
         """
         
-        self.enable_s_and_a = 1
+        self.enable_speed_authority = 0
         
-        #create file for drivers and crew? 
-        self.drivers = ["Alejandro", "Bob", "Charlie", "David", "Eve", "Frank", "Grace", "Hannah", "Ivy", "Jack"]
-        self.crew = ["Alice", "Barbra", "Cole", "Dan", "Earl", "Fern", "George", "Hank", "Ian", "Jack",
-                "Karen", "Leo", "Morgan", "Niel", "Ophelia", "Paul", "Quinn", "Roger", "Stacy", "Terry"]
-        
-        self.route_schedule_green = {'Glenbury Down' : timedelta(seconds=20) , 'Dormont Down' : timedelta(minutes=1, seconds=13), 'Mt Lebanon Down' : timedelta(seconds=39), 
-                               'Poplar' : timedelta(minutes=2, seconds=45), 'Castle Shannon' : timedelta(minutes=1, seconds=28), 'Mt Lebanon Up' : timedelta(minutes=2, seconds=59), 
-                               'Dormont Up' : timedelta(seconds= 17), 'Glenbury Up' : timedelta(minutes=1, seconds=54), 'Overbrook Up' : timedelta(minutes= 1, seconds=35), 
-                               'Inglewood' : timedelta(minutes=1, seconds=21), 'Central Up' : timedelta(minutes=1, seconds=21), 'Edgebrook' : timedelta(minutes=4, seconds=50), 
-                               'Pioneer' : timedelta(minutes=1, seconds=4), 'Station' : timedelta(seconds=39), 'Whited' : timedelta(minutes=1, seconds=1), 
-                               'South Bank' : timedelta(minutes=1, seconds=21),'Central Down' : timedelta(seconds=48), 'Overbrook Down' : timedelta(minutes= 1, seconds=48), 
-                               'Yard' : timedelta(seconds=15)}
-        
+        self.green_line = Line('Green')
+        self.green_line.load_track_blocks()
+                
         self.route_authority_green = {'Glenbury Down' : 400 , 'Dormont Down' : 950, 'Mt Lebanon Down' : 500, 'Poplar' : 2786.6, 'Castle Shannon' : 612.5, 
                       'Mt Lebanon Up' : 2887.5 , 'Dormont Up' : 515, 'Glenbury Up' : 921, 'Overbrook Up' : 546, 'Inglewood' : 450, 
                       'Central Up' : 450, 'Edgebrook' : 3684, 'Pioneer' : 700, 'Station' : 675, 'Whited' : 1125, 'South Bank' : 1275,
                       'Central Down' : 400, 'Overbrook Down' : 900, 'Yard' : -125}
         
-        self.route_schedule_red = {}
-        self.route_authority_red = {}
-        
-        self.shift_length = timedelta(hours= 8, minutes= 30)
-        self.drive_length = timedelta(hours=4)
-        self.break_length = timedelta(minutes=30)
-       
-        #for testing for it 2 and MBO Mode View 
-        self.train_ids = list(range(1,11))
-        
-        self.testing_positions_1 = {'Train1': 0, 'Train2': 150, 'Train3': 300}
-        self.testing_positions_2 = {'Train1': 100, 'Train2': 335, 'Train3': 350, 'Train4': 420}
-        
-        self.destinations_1 = {'Train1': 'Yard', 'Train2': 'Station B', 'Train3': 'Station C'}
-        self.destinations_2 = {'Train1': 'Station B', 'Train2': 'Station B', 'Train3': 'Station B', 'Train4': 'Station B'}
-        
-        self.block_maint_1 = {}
-        self.block_maint_2 = {'4': 150,'9': 400 }
-        
-        self.low_trains = ["Train1"]
-        self.med_trains = ["Train1", "Train2"]
-        self.high_trains = ["Train1", "Train2", "Train3"]
-        
-        self.lines = ["Green", "Red"]
-        self.blue_speed_limit = 50.0 #km/hr, convert to m/s
-        self.blocks = {'1' : 0 , "2" : 50, "3" : 100, "4" :150, "5" :200, "6" : 250, "7" : 300, "8" : 350, "9" : 400, "10": 450, "11": 250, "12" : 300, "13" : 350, "14" : 400, "15" : 450}
-        
-        
-       
+           
     def kmhr_to_ms(self, km_hr):
         """convert km/hr to m/s
 
@@ -94,21 +62,19 @@ class MBOController:
     
      return (breaking_distance)
             
-    def commanded_speed(self):
+    def commanded_speed(self, trains_posistion):
         """
-        Calculate trains commanded speed
+        Calculate trains commanded speed based on current block 
         
         return commanded_speed, equal to the speed limit 
         """ 
         
-        #change to use track_block.py 
-            #to do this is there a way to figure out and set the positions for each block? Since I do not know which block trains are in just there positions 
-            #set range of distance of block length from the yard? 
-        
         # set equal to speed limit of block 
-        self.speed = self.kmhr_to_ms(self.blue_speed_limit)
+        block = self.green_line.get_track_block(trains_posistion)
+        if block: 
+            self.block_speed = self.kmhr_to_ms(block.speed_limit)
             
-        return(self.speed)
+        return(self.block_speed)
     
     def authority(self, trains_positions, destinations, block_maint):
         """
@@ -147,43 +113,73 @@ class MBOController:
                               
         
         return (authorities)
-       
-    def create_schedules(self, date_time):
-        """
-        Create schedule options 
-        """
+               
+    #incorporate time keeper here, every tick call load in posotions, calculate speed and authority, check if can send, if so encypt and emit data   
+    class Satellite:
         
-        print(f"making schedule for: {date_time}")
+        def __init__(self):
+            self.mbo_mode = False 
         
-       
-                 
-    def enable_speed_authority(self):
-        """
-        Enable or Disable sending Speed and Authority through satellite
-        Enable when in MBO Manual or MBO Automatice, Disable otherwise 
-        Enable = 1, Disable = 0
-        """
+        def satellite_send(self):
+            """
+            gathering info to send over satellite, authority and speed
+            
+            """
+            if (self.mbo_mode == True):
+                """
+                send speed and authority 
+                """ 
+            
+            else: 
+                """
+                do not send information, information will be sent to train through CTC office
+                """ 
         
+        def encrypty(self):
+            """
+            encryption to send vital information
+            """
+                
+
+
     
-    def satellite_send():
-        """
-        gathering info to send over satellite, authority and speed
+    class Schedules:
+        def __init__(self):
+            """
+            Initialize the MBO Controller
+            """
+            self.drivers = ["Alejandro", "Bob", "Charlie", "David", "Eve", "Frank", "Grace", "Hannah", "Ivy", "Jack"]
+            self.crew = ["Alice", "Barbra", "Cole", "Dan", "Earl", "Fern", "George", "Hank", "Ian", "Jack",
+                    "Karen", "Leo", "Morgan", "Niel", "Ophelia", "Paul", "Quinn", "Roger", "Stacy", "Terry"]
+            
+            self.shift_length = timedelta(hours= 8, minutes= 30)
+            self.drive_length = timedelta(hours=4)
+            self.break_length = timedelta(minutes=30)
+            
+            self.route_schedule_green = {'Glenbury Down' : timedelta(seconds=20) , 'Dormont Down' : timedelta(minutes=1, seconds=13), 'Mt Lebanon Down' : timedelta(seconds=39), 
+                                'Poplar' : timedelta(minutes=2, seconds=45), 'Castle Shannon' : timedelta(minutes=1, seconds=28), 'Mt Lebanon Up' : timedelta(minutes=2, seconds=59), 
+                                'Dormont Up' : timedelta(seconds= 17), 'Glenbury Up' : timedelta(minutes=1, seconds=54), 'Overbrook Up' : timedelta(minutes= 1, seconds=35), 
+                                'Inglewood' : timedelta(minutes=1, seconds=21), 'Central Up' : timedelta(minutes=1, seconds=21), 'Edgebrook' : timedelta(minutes=4, seconds=50), 
+                                'Pioneer' : timedelta(minutes=1, seconds=4), 'Station' : timedelta(seconds=39), 'Whited' : timedelta(minutes=1, seconds=1), 
+                                'South Bank' : timedelta(minutes=1, seconds=21),'Central Down' : timedelta(seconds=48), 'Overbrook Down' : timedelta(minutes= 1, seconds=48), 
+                                'Yard' : timedelta(seconds=15)}
         
-        """
-        #call authories and sat for each train, send info for each train 
-        #set as signals? 
+        
+        def create_schedules(self, date_time):
+            """_summary_
+
+            Args:
+                date_time (_type_): _description_
+            """
+            print(f"making schedule for: {date_time}")
+            print("in shcedules class") 
                                   
 
+
 if __name__ == "__main__":
-    MBO = MBOController()
+    MBO = MBOOffice()
       
-    time1 = timedelta(minutes = 1, seconds= 48)
-    time2 = timedelta(minutes = 2, seconds= 12)
-    print(time1 + time2)
-    
-    for x in MBO.route:
-        print(x)
-        print(MBO.route[x])
+    print("speed limit for train in block 15 is ", MBO.commanded_speed(15))
     
     
     
