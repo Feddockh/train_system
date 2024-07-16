@@ -65,7 +65,7 @@ class MBOOffice:
     
      return (breaking_distance)
             
-    def commanded_speed(self, trains_posistion):
+    def commanded_speed(self, train_position):
         """
         Calculate trains commanded speed based on current block 
         
@@ -73,25 +73,30 @@ class MBOOffice:
         """ 
         #set up to read in dictionary of trains for now, similar to 
         # set equal to speed limit of block 
-        block = self.green_line.get_track_block(trains_posistion)
+        block_num = train_position.get("block")
+        block = self.green_line.get_track_block(block_num)
+        
+        print("calculating commanded speed for train in block ", block_num)
+
         if block: 
             self.block_speed = self.kmhr_to_ms(block.speed_limit)
             
         return(self.block_speed)
     
-    def authority(self, trains_positions, destinations, block_maint):
+    def authority(self, train_position):
         """
         Calculate trains authority such that more than one train can be in a block 
         each train stops at it's desitnation and opens the doors, and stops before any block maintenance 
         """
-        trains = list(trains_positions.keys())
-        number_of_trains = len(trains)
+        #pass trains = list(trains_positions.keys())
+        #pass number_of_trains = len(trains)
         
-        number_of_block_maint = len(block_maint)
+        #pass number_of_block_maint = len(block_maint)
+        position = train_position.get("position")
+        print("calculating authority for train at position ", train_position)
+        authorities = 100
         
-        authorities = {}
-        
-        for i in range(number_of_trains):
+        """for i in range(number_of_trains):
             train_1 = trains[i]
             position_1 = trains_positions[train_1]
             destination_1 = self.route_authority_green[destinations[0]]
@@ -112,7 +117,7 @@ class MBOOffice:
                             block_position = self.blocks[block_maint]
                             to_block = abs(position_1 - block_position)
                             if (to_block <= 50):
-                                authorities[train_1] = round(self.service_breaking_distance())
+                                authorities[train_1] = round(self.service_breaking_distance())"""
                               
         
         return (authorities)
@@ -122,22 +127,23 @@ class MBOOffice:
         
         update_satellite = pyqtSignal(dict)
         
+        #want way to connect train positions to send
+        
         def __init__(self):
             self.mbo_mode = True
             self.mbo_office = MBOOffice()
             
-            self.train_positions = {}
+            self.train_positions = {'train_id' : 'Train1', 'position' : 100, 'block' : 15}
         
         def satellite_send(self):
             """
             gathering info to send over satellite, authority and speed
             
             """
-            train_id = 'Train1'
             authority = self.mbo_office.authority(self.train_positions)
             commanded_speed = self.mbo_office.commanded_speed(self.train_positions)
             
-            data = {'train_id' : train_id, 'authority' : authority, 'commanded_speed' : commanded_speed}
+            data = {'train_id' : self.train_positions['train_id'], 'authority' : authority, 'commanded_speed' : commanded_speed}
              
             if (self.mbo_mode == True):
                 """
@@ -205,8 +211,7 @@ class MBOOffice:
 if __name__ == "__main__":
     MBO = MBOOffice()
     
-    print(MBO.green_line)
-    print("speed limit for train in block 15 is ", MBO.commanded_speed(15))
+    MBO.Satellite.satellite_send()
     
     
     
