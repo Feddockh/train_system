@@ -12,6 +12,7 @@ DARK_GREY = "#C8C8C8"
 WHITE = "#FFFFFF"
 RED = "#FF0000"
 GREEN = "#00FF00"
+LIGHT_GREY = "#D5DBE3"
 
 crossing_signal_map = {
     CrossingSignal.ON: True,
@@ -342,6 +343,7 @@ class ProgrammerUI(QtWidgets.QMainWindow):
                     block.setFlags(block.flags() & ~Qt.ItemFlag.ItemIsEditable)
                     self.blockInfoTable.setItem(i, 4, block)
             block = QTableWidgetItem(str(item))
+            block.setBackground(QtGui.QColor(LIGHT_GREY))
             block.setFlags(block.flags() & ~Qt.ItemFlag.ItemIsEditable)
             self.blockInfoTable.setItem(x, 4, block)
         elif(self.track_controllers[waysideIndex].track_blocks[x].switch_options == None):
@@ -922,9 +924,7 @@ class Maintenance(QtWidgets.QMainWindow):
                 text.setFlags(text.flags() & ~Qt.ItemFlag.ItemIsEditable)
                 self.waysideBlkTable.setItem(i, j, text)
 
-
-    #TODO: PLEASE UPDATE THIS TO USE SWITCHES AND CROSSINGS AND SIGNALS
-
+    """
     def item_changed_blockInfo(self, item):
         waysideIndex = self.comboBox.currentIndex()
         row = item.row()
@@ -946,11 +946,16 @@ class Maintenance(QtWidgets.QMainWindow):
         self.blockInfoTable.blockSignals(True)
         self.update_ui()
         self.blockInfoTable.blockSignals(False)
+    """
 
     def item_changed_blockInfo_Signal(self, item):
         waysideIndex = self.comboBox.currentIndex()
+        #if switch
+        if(item.column() == 1):
+            row = item.row()
+            self.check_switch(row, waysideIndex)
         #If light signal column
-        if(item.column() == 2):
+        elif(item.column() == 2):
             #getting block #
             row = item.row()
             self.check_signal(row, waysideIndex)
@@ -1001,7 +1006,7 @@ class Maintenance(QtWidgets.QMainWindow):
             
 
 
-    def check_switch(self, x, waysideIndex, new_switch):
+    def check_switch(self, x, waysideIndex):
 
         #if this block has a switch
         if(self.track_controllers[waysideIndex].track_blocks[x]._switch_position != None):
@@ -1009,22 +1014,21 @@ class Maintenance(QtWidgets.QMainWindow):
             pos = self.track_controllers[waysideIndex].track_blocks[x]._switch_position
             item = self.track_controllers[waysideIndex].track_blocks[x].switch_options[pos]
 
-            #Checking to see if new_switch not is equal to current item
-            if(new_switch != item):
-                #Checking if new_switch is in list of switch_options
-                for i in self.track_controllers[waysideIndex].track_blocks[x].switch_options:
-                    #if new_switch is an option in switch_options
-                    if(new_switch == i):
-                        if(pos == 0):
-                            otherPos = 1
-                        else:
-                            otherPos = 0
-                        self.track_controllers[waysideIndex].check_PLC_program_switch(x, pos, otherPos)
+            if(pos == 0):
+                otherPos = 1
+            else:
+                otherPos = 0
+
+            self.track_controllers[waysideIndex].check_PLC_program_switch(x, pos, otherPos)
         #this block has nothing to do with switches
         elif(self.track_controllers[waysideIndex].track_blocks[x].switch_options == None):
             block = QTableWidgetItem("-")
             block.setFlags(block.flags() & Qt.ItemFlag.ItemIsEditable)
             self.blockInfoTable.setItem(x, 1, block)
+
+        self.blockInfoTable.blockSignals(True)
+        self.update_ui()
+        self.blockInfoTable.blockSignals(False)
 
 
     #Converts switch_states into values they're connected to 
@@ -1053,6 +1057,7 @@ class Maintenance(QtWidgets.QMainWindow):
                     block.setFlags(block.flags() | Qt.ItemFlag.ItemIsEditable)
                     self.blockInfoTable.setItem(i, 1, block)
             block = QTableWidgetItem(str(item))
+            block.setBackground(QtGui.QColor(LIGHT_GREY))
             block.setFlags(block.flags() | Qt.ItemFlag.ItemIsEditable)
             self.blockInfoTable.setItem(x, 1, block)
         elif(self.track_controllers[waysideIndex].track_blocks[x].switch_options == None):
