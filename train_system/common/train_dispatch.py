@@ -20,6 +20,7 @@ class TrainDispatchUpdate:
 class TrainDispatch(QObject):
     def __init__(self, train_id: int, line: Line, 
                  time_keeper: TimeKeeper) -> None:
+        super().__init__()
 
         self.train_id = train_id
         self.line = line
@@ -58,7 +59,7 @@ class TrainDispatch(QObject):
             f"Dispatch Time:       {self.dispatch_time}\n"
             f"ETA:                 {self.eta}\n"
             f"Lag:                 {self.lag}\n"
-            f"Current Block:       {self.get_current_block()}\n"
+            f"Current Block:       {self.get_current_block_id()}\n"
             f"Next Stop:           {self.get_next_stop()}\n"
             f"Route:               {self.route}\n"
             f"Stop Priority Queue: {self.stop_priority_queue}\n"
@@ -97,7 +98,7 @@ class TrainDispatch(QObject):
     def get_route_to_next_stop(self) -> List[int]:
         _, next_stop = self.get_next_stop()
         if next_stop:
-            return self.line.get_path(self.get_current_block(), next_stop)
+            return self.line.get_path(self.get_current_block_id(), next_stop)
         return None
 
     def get_last_stop(self) -> Tuple[int, int]:
@@ -132,17 +133,17 @@ class TrainDispatch(QObject):
             self.route.extend(path_to_yard[1:])
 
         # If the now current block is the stop, pop the stop
-        current_block_id = self.get_current_block()
+        current_block_id = self.get_current_block_id()
         _, next_stop_id = self.get_next_stop()
         if current_block_id == next_stop_id:
             self.pop_stop()
 
-    def get_current_block(self) -> int:
+    def get_current_block_id(self) -> int:
         if self.route:
             return self.route[0]
         return None
     
-    def get_next_block(self) -> int:
+    def get_next_block_id(self) -> int:
         if len(self.route) > 1:
             return self.route[1]
         return None

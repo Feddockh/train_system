@@ -12,7 +12,7 @@ from train_system.ctc_manager.ctc_train_dispatch import CTCTrainDispatch
 
 class CTCOffice(QObject):
     train_dispatch_updated = pyqtSignal(TrainDispatchUpdate)
-    train_info_updated = pyqtSignal(str)
+    train_info_updated = pyqtSignal(int)
 
     def __init__(self, time_keeper: TimeKeeper, line_name: str) -> None:
 
@@ -79,7 +79,7 @@ class CTCOffice(QObject):
         
         # Get the train object, current block, and next stop
         train = self.get_train(train_id)
-        current_block_id = train.get_current_block()
+        current_block_id = train.get_current_block_id()
         next_stop_id = train.get_next_stop()
         
         # Get the path to the next stop
@@ -125,7 +125,7 @@ class CTCOffice(QObject):
         
         # Get the train object, current block, and next stop
         train = self.get_train(train_id)
-        current_block_id = train.get_current_block()
+        current_block_id = train.get_current_block_id()
         next_stop_id = train.get_next_stop()
         
         # Get the path to the next stop
@@ -221,10 +221,10 @@ class CTCOffice(QObject):
                 for train_id, train in self.trains.items():
 
                     # Check that the train was dispatched and train's next block was the now occupied block
-                    if train.dispatched and train.get_next_block() == block.number:
+                    if train.dispatched and train.get_next_block_id() == block.number:
 
                         # Get the train's previous block and check if the train can move to the now occupied block
-                        prev_block = self.line.get_track_block(train.get_current_block())
+                        prev_block = self.line.get_track_block(train.get_current_block_id())
                         if not block.under_maintenance and (block.number in prev_block.next_blocks):
                             train.pop_route_block()
                             break
@@ -245,7 +245,7 @@ class CTCOffice(QObject):
     def handle_crossing_signal_update(self, block_number: int, new_signal: int) -> None:
         print(f"Block {block_number} crossing signal updated to {new_signal}")
     
-    @pyqtSlot(int, int, str)
+    @pyqtSlot(int, int, int)
     def handle_dispatched_trains(self, train_id: int, target_block: int, arrival_time: int) -> None:
 
         # Check if the train id is already in the list of trains

@@ -1,6 +1,7 @@
 # train_system/ctc_manager/dispatcher_ui.py
 
 import sys
+from typing import Dict
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, 
                              QVBoxLayout, QLabel, QHBoxLayout,
                              QStackedWidget, QSizePolicy)
@@ -21,7 +22,7 @@ from train_system.ctc_manager.widgets.maintenance_widget import MaintenanceWidge
 
 
 class DispatcherUI(QMainWindow):
-    def __init__(self, time_keeper: TimeKeeper, line: Line, trains: list[CTCTrainDispatch]):
+    def __init__(self, time_keeper: TimeKeeper, line: Line, trains: Dict[int, CTCTrainDispatch]):
 
         """
         Initializes the DispatcherUI object, setting up the main window 

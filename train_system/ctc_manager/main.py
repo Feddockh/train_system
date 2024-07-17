@@ -44,7 +44,7 @@ ctc_manager.line.track_block_crossing_signal_updated.connect(dispatcher_ui.handl
 ctc_manager.line.track_block_under_maintenance_updated.connect(dispatcher_ui.handle_maintenance_update)
 
 # Connect the CTC Manager signals to the DispatcherUI slots
-ctc_manager.train_updated.connect(dispatcher_ui.train_info_widget.handle_train_update)
+ctc_manager.train_info_updated.connect(dispatcher_ui.train_info_widget.handle_train_update)
 
 
 # Show the dispatcher UI
