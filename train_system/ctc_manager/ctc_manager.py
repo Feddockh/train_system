@@ -1,9 +1,8 @@
 # train_system/ctc_manager/ctc_manager.py
 
-from typing import List
+from typing import List, Dict
 from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
 
-from train_system.common.conversions import time_to_seconds
 from train_system.common.time_keeper import TimeKeeper
 from train_system.common.dispatch_mode import DispatchMode
 from train_system.common.line import Line
@@ -31,7 +30,7 @@ class CTCOffice(QObject):
         self.line.track_block_crossing_signal_updated.connect(self.handle_crossing_signal_update)
 
         # Create a list of train objects
-        self.trains: List[Train] = []
+        self.trains: Dict[Train] = {}
 
         # Initialize the mode
         self.test_bench_mode = False
@@ -87,55 +86,41 @@ class CTCOffice(QObject):
         print(f"Block {block_number} crossing signal updated to {new_signal}")
     
     @pyqtSlot(int, int, str)
-    def handle_dispatched_trains(self, train_id: int, target_block: int, arrival_time: str) -> None:
-
-        # TODO: Sort the trains by arrival time
+    def handle_dispatched_trains(self, train_id: int, target_block: int, arrival_time: int) -> None:
 
         # Check if the train id is already in the list of trains
-        train_exists = False
-        dispatched_train: Train = None
-        for train in self.trains:
-            if train_id == train.train_id:
-                train_exists = True
-                dispatched_train = train
-                break
-                
-        if train_exists:
-            self.insert_sorted(dispatched_train, target_block, arrival_time)
-        else:
-            dispatched_train = Train(train_id)
-            dispatched_train.stops.append(target_block)
-            dispatched_train.arrival_times.append(arrival_time)
-            self.trains.append(dispatched_train)
+        if not self.train_exists(train_id):
+            self.add_train(train_id, self.line)
+        dispatched_train = self.get_train(train_id)
+        dispatched_train.add_stop(target_block, arrival_time)
+        
 
-        print(f"Dispatched trains: {train_id} to block {target_block} at {arrival_time}")
+        # print(f"Dispatched trains: {train_id} to block {target_block} at {arrival_time}")
 
-        # Compute the initial authority for the train
-        distance = self.line.get_distance(1, target_block)
-        dispatched_train.authority = distance
-        print(f"Initial Authority: {distance}")
+        # # Compute the initial authority for the train
+        # distance = self.line.get_distance(1, target_block)
+        # dispatched_train.authority = distance
+        # print(f"Initial Authority: {distance}")
 
-        # Compute the initial suggested speed for the train
-        if distance == 0:
-            speed = 0
-        else:
-            speed = 50
-        dispatched_train.suggested_speed = speed
-        print(f"Initial Suggested Speed: {speed}")
+        # # Compute the initial suggested speed for the train
+        # if distance == 0:
+        #     speed = 0
+        # else:
+        #     speed = 50
+        # dispatched_train.suggested_speed = speed
+        # print(f"Initial Suggested Speed: {speed}")
 
-        # Update the trains table
-        self.trains_updated.emit()
+        # # Update the trains table
+        # self.trains_updated.emit()\
 
-    def insert_sorted(self, train: Train, target_block: int, arrival_time: str) -> None:
-        inserted = False
-        for i in range(len(train.arrival_times)):
-            if time_to_seconds(arrival_time) < time_to_seconds(train.arrival_times[i]):
-                train.arrival_times.insert(i, arrival_time)
-                train.stops.insert(i, target_block)
-                inserted = True
-                break
-        if not inserted:
-            train.arrival_times.append(arrival_time)
-            train.stops.append(target_block)
+    def train_exists(self, train_id: int) -> bool:
+        return train_id in self.trains
 
+    def add_train(self, train_id: int, line: Line) -> None:
+        self.trains[train_id] = Train(train_id, line)
 
+    def get_train(self, train_id: int) -> Train:
+        if self.train_exists(train_id):
+            return self.trains[train_id]
+        return None
+    
