@@ -9,8 +9,8 @@ def create_track_blocks(num_blocks):
     blocks = []
     for i in range(1, num_blocks + 1):
         block = TrackBlock("", "", i, 1, 1, 1, 1, 1, 1, "")
+        block.authority = 45
         if i == 1:  # Example of setting some specific properties for the first block
-            block.authority = 3
             block.crossing_signal = CrossingSignal.OFF
             block._light_signal = False
             block.switch_options = [2, 3]
@@ -24,8 +24,13 @@ def create_track_blocks(num_blocks):
             block.switch_options = [63]
         elif i == 76:  # Setting properties for block 76
             block.switch_options = [77, 101]
-        elif i == 78: #simulate block 78 being occupied to make the switch go to 101
+        
+        #simulating an emergency stop
+        elif i == 57: #simulate block 78 being occupied to make the switch go to 101
             block._occupancy = True
+        elif i == 60:#simulate block 125 being occupied.
+            block._occupancy = True
+        
         blocks.append(block)
     return blocks
 

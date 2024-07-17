@@ -218,20 +218,53 @@ class TrackController(QObject):
                 print("Safe Decision")
 
     def convert_to_strings(self):
+    
+    #Check block 58 Switch Position
         if(self.track_blocks[57].switch_position == 1):
             self.message_switch58 = "Switch from 58 to yard is connected, all trains going into yard"
+            
+            #Emergency Stop
+            if(self.track_blocks[57].authority == 0):
+                self.message_switch58 = "EMERGENCY STOP at switch 58"
         else:
             self.message_switch58 = "Switch from 58 to yard is not connected, all trains are continuing along section J"
 
+            #Emergency Stop
+            if(self.track_blocks[57].authority == 0):
+                self.message_switch58 = "EMERGENCY STOP at Switch 58"
+
+    #Check block 63 switch position
         if(self.track_blocks[62].switch_position == 1):
             self.message_switch63 = "Switch from yard to Block 63 is open, Trains can leave the yard"
+            
+            #Emergency Stop
+            if(self.track_blocks[62].authority == 0):
+                self.message_switch63 = "EMERGENCY STOP at Switch 63"
         else:
             self.message_switch63 = "Switch from yard is open, Trains cannot leave yard, Trains must wait for section J to be unoccupied"
-        
+            
+            #Emergency Stop
+            if(self.track_blocks[62].authority == 0):
+                self.message_switch63 = "EMERGENCY STOP at Switch 63"
+
+    #Check block 76 switch position
         if(self.track_blocks[75].switch_position == 1):
             self.message_switch76 = "Switch from 76 to 77 is connected"
+            
+            #EMERGENCY STOP
+            if(self.track_blocks[75].authority == 0):
+                self.message_switch76 =  "EMERGENCY STOP at Switch 76"
         else:
             self.message_switch76 = "Switch from 76 to 101 is connected"
+            
+            #EMERGENCY STOP
+            if(self.track_blocks[75].authority == 0):
+                self.message_switch76 = "EMERGENCY STOP at Switch 76"
+
+
+
+
+#original send to pi
 
     def send_to_pi(self):
         # Initialize the SSH client
