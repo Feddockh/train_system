@@ -230,7 +230,7 @@ class TestBenchWindow(QMainWindow):
         self.speed_input = QLineEdit()
         self.speed_input.setPlaceholderText("Enter Speed")
         self.speed_input.setFixedSize(75, 50)
-        self.speed_input.textChanged.connect(self.setpoint_edit_changed)
+        self.speed_input.textChanged.connect(self.handle_setpoint_edit_changed)
 
         #create the service brake button and its label
         self.service_brake_button = QPushButton("X")
@@ -593,17 +593,16 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.test_window = None
         self.manual_window = None
 
+        self.driver_mode = "manual"
+        self.serv_brake_status = False
+        self.emerg_brake_status = False
+        self.power = 0
+        self.brake_on = False
+        self.light_status = False
+        self.right_door = False
+        self.left_door = False
+        self.temp = 0
 
-        self.setpoint_speed = self.convert_to_mph(self.train.setpoint_speed)
-        self.power = self.train.get_power_command()
-        self.light_status = self.train.lights.get_status()
-        self.left_door = self.train.doors.get_left()
-        self.right_door = self.train.doors.get_right()
-        self.temp = self.train.ac.get_current_temp()
-        self.serv_brake_status = self.train.brake.get_service_brake()
-        self.emerg_brake_status = self.train.brake.get_emergency_brake()
-        self.brake_on = self.train.brake.get_service_brake() or self.train.brake.get_emergency_brake()
-        self.driver_mode = self.train.get_driver_mode()
 
         #the left outputs will use a vertical layout
         left_out_layout = QVBoxLayout()
@@ -725,7 +724,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         #button to refresh data from train controller/test bench
         refresh_button = QPushButton("Refresh")
         refresh_button.setFixedSize(50, 50)
-        refresh_button.clicked.connect(self.refresh)
+        #refresh_button.clicked.connect(self.refresh)
 
         #add stat lines and labels to left_out layout
         left_out_layout.addWidget(curr_speed_label)
@@ -761,7 +760,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
             self.mode_button.setChecked(False)
             self.mode_button.setText("Manual")
             self.speed_input.setEnabled(True)
-        self.mode_button.toggled.connect(self.toggle_driver_mode)###change to toggle instead of page naviagte
+        self.mode_button.toggled.connect(self.handle_toggle_driver_mode)###change to toggle instead of page naviagte
 
 
         #add button and label to the mode layout
@@ -783,7 +782,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.service_brake_button.setCheckable(True)
         if self.serv_brake_status == True:
             self.service_brake_button.setChecked(True)
-        self.service_brake_button.toggled.connect(self.service_brake_toggled)
+        self.service_brake_button.toggled.connect(self.handle_service_brake_toggled)
 
         service_brake_label = QLabel("Service Brake")
         service_brake_label.setFixedSize(125, 50)
@@ -883,7 +882,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.comm_temp_input = QLineEdit() 
         self.comm_temp_input.setPlaceholderText("Enter Temp")
         self.comm_temp_input.setFixedSize(100, 50)
-        self.comm_temp_input.textChanged.connect(self.comm_temp_changed)###enabled/disabled depends on mode
+        #self.comm_temp_input.textChanged.connect(self.handle_comm_temp_changed)###enabled/disabled depends on mode
 
         temp_unit_label = QLabel("F")
         temp_unit_label.setFixedSize(50, 50)
@@ -897,7 +896,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         loc_and_des_label.setFixedSize(250, 50)
         loc_and_des_label.setFont(header_font)
 
-        self.loc_label = QLabel("Location: " + str(self.tm.get_position())) 
+        self.loc_label = QLabel("Location: " + str(self.tm.get_track_block())) 
         self.loc_label.setFixedSize(100, 50)
 
         self.des_label = QLabel(str(self.tm.get_station_name()))
@@ -914,7 +913,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.em_brake_button.setCheckable(True)
         if self.emerg_brake_status == True:
             self.em_brake_button.setChecked(True)
-        self.em_brake_button.toggled.connect(self.emergency_brake_toggled)
+        self.em_brake_button.toggled.connect(self.handle_emergency_brake_toggled)
 
         #add location, destination, and emergency brake to layout
         loc_and_brake_layout.addWidget(loc_and_des_label)
@@ -943,12 +942,12 @@ class DriverWindow(QMainWindow): ###DriverWindow
     def handle_toggle_driver_mode(self, check: bool) -> None:
         if check:
             self.driver_mode = "automatic"
-            self.train.set_driver_mode("automatic")
+            #self.train.set_driver_mode("automatic")
             self.mode_button.setText("Automatic")
             self.speed_input.setEnabled(False)
         else:
             self.driver_mode = "manual"
-            self.train.set_driver_mode("manual")
+            #self.train.set_driver_mode("manual")
             self.mode_button.setText("Manual")
             self.speed_input.setEnabled(True)
 
@@ -985,13 +984,13 @@ class DriverWindow(QMainWindow): ###DriverWindow
     """
     NEEDS ERROR CHECKING
     """
-    @pyqtSlot (str)
+    @pyqtSlot(str)
     def handle_setpoint_edit_changed(self, x: str) -> None:
         if(x != ""):
             self.setpoint_speed = float(x)
             #self.train.setpoint_speed = self.convert_to_ms(float(x))
 
-    @pyqtSlot (bool)
+    @pyqtSlot(bool)
     def handle_service_brake_toggled(self, check: bool) -> None:
         if check:
             self.serv_brake_status = True
@@ -1000,7 +999,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
             self.serv_brake_status = False
             #self.train.brake.set_service_brake(False)
 
-    @pyqtSlot (bool)
+    @pyqtSlot(bool)
     def handle_emergency_brake_toggled(self, check: bool) -> None:
         if check:
             self.emerg_brake_status = True
@@ -1013,10 +1012,10 @@ class DriverWindow(QMainWindow): ###DriverWindow
     """
     NEEDS ERROR CHECKING
     """
-    @pyqtSlot (str)
+    @pyqtSlot(str)
     def handle_comm_temp_changed(self, x: str) -> None:
         if(x != ""):
-            self.train.train_model.set_train_temp(int(x))
+            self.tm.set_train_temp(int(x))
             #self.train.ac.set_commanded_temp(int(x))
 
     @pyqtSlot(TrainModel)
@@ -1125,7 +1124,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
             self.brake_status_label.setText("Brake Status: Off")
             self.brake_status_label.setFixedSize(75, 50)
             self.brake_status_label.setStyleSheet("background-color: #29C84C; color: white;")
-
+    """
     @pyqtSlot(str)
     def handle_driver_mode_update(self, mode: str) -> None:
         self.driver_mode = mode
@@ -1137,7 +1136,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         else:
             self.mode_button.setChecked(False)
             self.mode_button.setText("Manual")
-            self.speed_input.setEnabled(True)
+            self.speed_input.setEnabled(True)"""
     
 
 

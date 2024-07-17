@@ -194,32 +194,33 @@ class TrainController(QObject):
     """
     AMBER ADD CONVERT TO MS FUNCTION SOOON!!!!!!!!
     """
-    @pyqtSlot (str)
+    @pyqtSlot(str)
     def handle_setpoint_edit_changed(self, x: str) -> None:
-        self.set_setpoint_speed(float(x))
+        if(x != ""):
+            self.set_setpoint_speed(float(x))
 
-    @pyqtSlot (bool)
+    @pyqtSlot(bool)
     def handle_service_brake_toggled(self, check: bool) -> None:
         if check:
             self.brake.set_service_brake(True)
         else:
             self.brake.set_service_brake(False)
 
-    @pyqtSlot (bool)
+    @pyqtSlot(bool)
     def handle_emergency_brake_toggled(self, check: bool) -> None:
         if check:
             self.brake.set_emergency_brake(True)
         else:
             self.brake.set_emergency_brake(False)
 
-    @pyqtSlot (str)
+    @pyqtSlot(str)
     def handle_comm_temp_changed(self, x: str) -> None:
         if(x != ""):
             self.ac.set_commanded_temp(int(x))
         
 
     ## Engineer class to hold Kp and Ki
-    class Engineer:
+    class Engineer(QObject):
         def __init__(self, kp=25, ki=0.5):
             self.kp = kp
             self.ki = ki
@@ -246,7 +247,7 @@ class TrainController(QObject):
             return self.get_kp(), self.get_ki()
 
     ## Brake class to hold brake status
-    class Brake:
+    class Brake(QObject):
         def __init__(self):
             # These are for outputting to the Train Model and for UI status
             self.service_brake = False
@@ -292,7 +293,7 @@ class TrainController(QObject):
             return self.user_service_brake or self.user_emergency_brake
        
     ## Engine class calculates power command and can simulate train response
-    class Engine:
+    class Engine(QObject):
         def __init__(self, ssh):
             self.speed_limit = None  # Speed limit of the train
             self.P_MAX = 120  # Maximum power (kW)
@@ -469,7 +470,7 @@ class TrainController(QObject):
     ## Door class to hold door status
     # Door status = bool
     # False = closed, True = open
-    class Doors:
+    class Doors(QObject):
         def __init__(self, exit_door="L"):
             self.left = False
             self.right = False
@@ -522,7 +523,7 @@ class TrainController(QObject):
     ## Light class to hold light status
     # Light status = bool
     # False = off, True = on
-    class Lights:
+    class Lights(QObject):
         def __init__(self, underground=False):
             self.lights = False
             self.underground = underground # List of blocks that are underground
@@ -558,7 +559,7 @@ class TrainController(QObject):
     ## AC class to hold temperature status
     # Commanded temperature from driver (initialized to 69)
     # Current temperature from Train Model
-    class AC:
+    class AC(QObject):
         def __init__(self, temp: int):
             # Automatic temperature when in Automatic mode (69 degrees Fahrenheit)
             self.auto_temp = 69
@@ -591,7 +592,7 @@ class TrainController(QObject):
 
 # Does beacon need to be encrypted
 # All information from MBO needs to be encrypted
-class TrainModel:
+class TrainModel(QObject):
     def __init__(self):
         # Train Model variables
         self.current_speed: float = 0
