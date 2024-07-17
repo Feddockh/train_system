@@ -65,6 +65,7 @@ if __name__ == "__main__":
     #pass satellite.satellite_send()
     
     #will want to add train_id? 
+    print("why is nothing printing")
     train.update_position(150.0, 20)
     train.update_position(150.0, 45)
     train.update_position(150.0, 72)
