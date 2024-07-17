@@ -1,16 +1,16 @@
+from typing import Dict, Optional
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QTableWidget,
                              QTableWidgetItem, QHeaderView)
 from PyQt6.QtGui import QColor, QPalette
 from PyQt6.QtCore import Qt, pyqtSlot
-from typing import Optional
 
 from train_system.common.line import Line
 from train_system.common.track_block import TrackBlock
-from train_system.common.station import Station
 from train_system.ctc_manager.ctc_train_dispatch import CTCTrainDispatch
+from train_system.common.conversions import meters_to_miles, kph_to_mph
 
 class TrainInfoWidget(QWidget):
-    def __init__(self, line: Line, trains: list[CTCTrainDispatch], 
+    def __init__(self, line: Line, trains: Dict[int, CTCTrainDispatch], 
                  parent: Optional[QWidget] = None) -> None:
         
         """
@@ -100,9 +100,10 @@ class TrainInfoWidget(QWidget):
         self.rows = len(self.trains)
         self.table.setRowCount(self.rows)
 
-        for i, train in enumerate(self.trains):
+        for i, (train_id, train) in enumerate(self.trains.items()):
+
             # Create cell for train ID
-            train_id_cell = QTableWidgetItem(str(train.train_id))
+            train_id_cell = QTableWidgetItem(str(train_id))
             train_id_cell.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             train_id_cell.setFlags(
                 train_id_cell.flags() & ~Qt.ItemFlag.ItemIsEditable
@@ -110,26 +111,24 @@ class TrainInfoWidget(QWidget):
             self.table.setItem(i, 0, train_id_cell)
 
             # Create cell for block or station if the train is active
-            if train.block is not None:
-                track_block = train.block
-                track_block_name = str(track_block.number)
-                if track_block.station is not None:
-                    track_block_name += f" ({track_block.station.name})"
+            if train.dispatched:
+                block_id = train.get_current_block_id()
+                track_block_name = str(block_id)
+                station_name = self.line.get_track_block(block_id).station
+                if station_name is not None:
+                    track_block_name += f" ({station_name})"
                 track_block_cell = QTableWidgetItem(track_block_name)
-                track_block_cell.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-                track_block_cell.setFlags(
-                    track_block_cell.flags() & ~Qt.ItemFlag.ItemIsEditable
-                )
             else:
-                track_block_cell = QTableWidgetItem("N/A")
-                track_block_cell.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-                track_block_cell.setFlags(
-                    track_block_cell.flags() & ~Qt.ItemFlag.ItemIsEditable
-                )
+                track_block_cell = QTableWidgetItem("Yard")
+            track_block_cell.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            track_block_cell.setFlags(
+                track_block_cell.flags() & ~Qt.ItemFlag.ItemIsEditable
+            )
             self.table.setItem(i, 1, track_block_cell)
 
             # Create cell for suggested speed
-            speed_cell = QTableWidgetItem(f"{train.speed} mph")
+            speed_mph = kph_to_mph(train.suggested_speed)
+            speed_cell = QTableWidgetItem(f"{speed_mph} mph")
             speed_cell.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             speed_cell.setFlags(
                 speed_cell.flags() & ~Qt.ItemFlag.ItemIsEditable
@@ -137,7 +136,8 @@ class TrainInfoWidget(QWidget):
             self.table.setItem(i, 2, speed_cell)
 
             # Create cell for authority
-            authority_cell = QTableWidgetItem(str(train.authority))
+            authority_miles = meters_to_miles(train.authority)
+            authority_cell = QTableWidgetItem(f"{authority_miles} miles")
             authority_cell.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             authority_cell.setFlags(
                 authority_cell.flags() & ~Qt.ItemFlag.ItemIsEditable
