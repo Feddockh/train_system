@@ -8,7 +8,7 @@ from PyQt6.QtCore import pyqtSignal, Qt, pyqtSlot
 
 from train_system.common.line import Line
 from train_system.common.track_block import TrackBlock
-from train_system.ctc_manager.train import Train
+from train_system.ctc_manager.ctc_train_dispatch import CTCTrainDispatch
 from train_system.common.time_keeper import TimeKeeper, TimeKeeperWidget
 from train_system.ctc_manager.widgets.switch_widget import SwitchWidget
 from train_system.ctc_manager.widgets.track_visual_widget import TrackVisualWidget
@@ -21,7 +21,7 @@ from train_system.ctc_manager.widgets.maintenance_widget import MaintenanceWidge
 
 
 class DispatcherUI(QMainWindow):
-    def __init__(self, time_keeper: TimeKeeper, line: Line, trains: list[Train]):
+    def __init__(self, time_keeper: TimeKeeper, line: Line, trains: list[CTCTrainDispatch]):
 
         """
         Initializes the DispatcherUI object, setting up the main window 

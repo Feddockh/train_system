@@ -1,5 +1,6 @@
-# train_system.common.train.py
+# train_system.common.train_dispatch.py
 
+from dataclasses import dataclass
 import heapq
 from typing import List, Tuple
 from collections import deque
@@ -8,9 +9,16 @@ from train_system.common.line import Line
 from train_system.common.time_keeper import TimeKeeper
 
 
-class Train:
+@dataclass
+class TrainDispatchUpdate:
+    train_id: int
+    line_name: str
+    route: deque[int]
+    stop_priority_queue: List[Tuple[int, int]]
+
+class TrainDispatch:
     def __init__(self, train_id: int, line: Line, 
-                 time_keeper: TimeKeeper) -> None:
+                 time_keeper: TimeKeeper = None) -> None:
 
         self.train_id = train_id
         self.line = line
@@ -19,7 +27,6 @@ class Train:
         self.route: deque[int] = deque([self.line.yard])
         self.stop_priority_queue: List[Tuple[int, int]] = []
 
-        self.suggested_speed: float = 0
         self.authority: float = 0
 
     def __repr__(self) -> str:
@@ -73,7 +80,10 @@ class Train:
         if not self.route and (last_block != self.line.yard):
             path_to_yard = self.line.get_path(last_block, self.line.yard)
             travel_time = self.line.get_travel_time(path_to_yard)
-            current_time = self.time_keeper.current_second
+            if self.time_keeper:
+                current_time = self.time_keeper.current_second
+            else:
+                current_time = 0
             self.add_stop(self.line.yard, current_time + travel_time)
             self.add_route_blocks(path_to_yard[1:])
 
@@ -101,3 +111,6 @@ class Train:
             path = self.line.get_path(last_stop, next_stop)
             self.add_route_blocks(path[1:])
 
+    def update(self, update: TrainDispatchUpdate) -> None:
+        self.route = update.route
+        self.stop_priority_queue = update.stop_priority_queue
