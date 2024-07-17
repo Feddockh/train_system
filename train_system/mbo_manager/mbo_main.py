@@ -10,9 +10,12 @@ from train_system.common.track_block import TrackBlock
 from train_system.mbo_manager.mbo_manager import MBOOffice
 from train_system.mbo_manager.mbo_ui import MBOWindow
 
+#for testing
+from train_system.mbo_manager.train_model import Train
+
 @pyqtSlot()
-def handle_recieved_data(data)-> None:
-    print("recieved data ", data)
+def handle_sent_data(train_id, authority, commanded_speed)-> None:
+    print(f"sent data {train_id}, {authority}, {commanded_speed}")
 
 #Create the application 
 app = QApplication(sys.argv)
@@ -27,6 +30,9 @@ schedules = MBOOffice.Schedules()
 satellite = MBOOffice.Satellite()
 satellite.mbo_mode = True
 
+#train example for testing? 
+train = Train()
+
 #instantiate the MBO UI
 mbo_main_ui = MBOWindow()
 
@@ -39,7 +45,10 @@ mbo_main_ui = MBOWindow()
 #need signal from train model for satellite recieving 
 
 #connect vital signals 
-satellite.send_data_signal.connect(handle_recieved_data)
+#recieving updated train positions
+train.position_signal.connect(satellite.satellite_recieve)
+#sending update speed and authority
+satellite.send_data_signal.connect(handle_sent_data)
 
 #generate key for encryption on top top level? signal here to get it? and send to satellite 
 
@@ -53,10 +62,16 @@ mbo_main_ui.schedule_created.connect(schedules.create_schedules)
 
 if __name__ == "__main__":
     
-    satellite.satellite_send()
+    #pass satellite.satellite_send()
     
-    #pass mbo_main_ui.show()
-    #pass sys.exit(app.exec())
+    #will want to add train_id? 
+    train.update_position(150.0, 20)
+    train.update_position(150.0, 45)
+    train.update_position(150.0, 72)
+    train.update_position(150.0, 120)
+    
+    mbo_main_ui.show()
+    sys.exit(app.exec())
 
 
 

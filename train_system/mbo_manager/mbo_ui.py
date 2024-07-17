@@ -42,10 +42,15 @@ class MBOWindow(QMainWindow):
         self.create_schedules.clicked.connect(self.handle_schedule)
         
         #page layout 
-        vertical_layout = QVBoxLayout()
-        vertical_layout.addWidget(self.enter_label)
-        vertical_layout.addWidget(self.schedule_date_time)
-        vertical_layout.addWidget(self.create_schedules)
+        self.vertical_layout = QVBoxLayout()
+        self.vertical_layout.addWidget(self.enter_label)
+        self.vertical_layout.addWidget(self.schedule_date_time)
+        self.vertical_layout.addWidget(self.create_schedules)
+        
+        main_widget = QWidget()
+        main_widget.setLayout(self.vertical_layout)
+        self.setCentralWidget(main_widget)
+
         
         
     @pyqtSlot()

@@ -13,15 +13,13 @@ from train_system.common.track_block import TrackBlock
 #assuming recieving train_positions as {'train_id' : train_id, 'position' : m, 'block' : #}
 #sending speed and authority as data = {'train_id' : train_id, 'authority' : m, 'commanded_speed' : m/s}
 
-class MBOOffice:
+class MBOOffice(QObject):
     
     def __init__(self):
+        super().__init__()
         """
         Initialize the MBO Office
         """
-        
-        self.enable_speed_authority = 0
-        
         self.green_line = Line('Green')
         self.green_line.load_track_blocks()
                 
@@ -88,44 +86,37 @@ class MBOOffice:
         Calculate trains authority such that more than one train can be in a block 
         each train stops at it's desitnation and opens the doors, and stops before any block maintenance 
         """
-        #pass trains = list(trains_positions.keys())
-        #pass number_of_trains = len(trains)
         
-        #pass number_of_block_maint = len(block_maint)
-        position = train_position.get("position")
-        print("calculating authority for train at position ", position)
-        authorities = 100
+        #want to take in signal that has trains_id, position, and block number
         
-        """for i in range(number_of_trains):
-            train_1 = trains[i]
-            position_1 = trains_positions[train_1]
-            destination_1 = self.route_authority_green[destinations[0]]
+        print("calculating authority for train at position ")
+        authorities = 222
+        
+        #LOOK AT LINE AND TRACK BLOCK TO FIND WAY TO USE TRAINS CURRENT POSITION AND DESITINATION OF TRAIN TO FIND AUTHORITY
+        #WHAT STATION ARE WE DOING FOR ITERATION? 
+        #JUST USE IT HOW I HAVE IT?? WITH HARDCODED AUTHORITY VALUES
+        
+        #set authorirty to next destination 
+        
+         #if next block on route = under maint
+            #set to service breaking distance 
             
-            authorities[train_1] = destination_1
+         # if next block does not follow trains route (switch is not in correct position)
+            #set to service breaking distance
             
-            for j in range(i+1, number_of_trains):
-                train_2 = trains[j]
-                position_2 = trains_positions[train_2]
-                distance_from_train = abs(position_1 - position_2)
-                
-                if(distance_from_train <= float(self.service_breaking_distance())):
-                    authorities[train_1] = round(self.service_breaking_distance())
-                
-                else: 
-                    if(number_of_block_maint > 0 ):
-                        for x in range(number_of_block_maint):
-                            block_position = self.blocks[block_maint]
-                            to_block = abs(position_1 - block_position)
-                            if (to_block <= 50):
-                                authorities[train_1] = round(self.service_breaking_distance())"""
-                              
+         #if another train is within service breaking distance 
+            #set to service breaking distance
+             
+         #if train is at destination ?
+            #set authority to 0 
+            # after 1 minute has passed, set authority to next stop 
         
         return (authorities)
                
     #incorporate time keeper here, every tick call load in posotions, calculate speed and authority, check if can send, if so encypt and emit data   
     class Satellite(QObject):
         
-        send_data_signal = pyqtSignal(dict)
+        send_data_signal = pyqtSignal(str, float, float)
         
         #want way to connect train positions to send
         
@@ -134,17 +125,30 @@ class MBOOffice:
             self.mbo_mode = True
             self.mbo_office = MBOOffice()
             
-            self.train_positions = {'train_id' : 'Train1', 'position' : 100, 'block' : 15}
+            self.train_positions = {}
+            self.train_id = 'Train1'
         
-        def satellite_send(self):
+        @pyqtSlot(str, float, int)
+        def satellite_recieve(self, train_id: str, position: float, block: int) -> None:
+            """
+            Recieve train position
+            
+            Args:
+                train_id (str): _description_
+                position (float): _description_
+                blcok (int): _description_
+            """
+            self.train_positions[train_id] = {'position' : position, 'block' : block}
+            self.satellite_send(train_id)
+        
+        def satellite_send(self, train_id: str):
             """
             gathering info to send over satellite, authority and speed
             
             """
-            authority = self.mbo_office.authority(self.train_positions)
-            commanded_speed = self.mbo_office.commanded_speed(self.train_positions)
-            
-            data = {'train_id' : self.train_positions['train_id'], 'authority' : authority, 'commanded_speed' : commanded_speed}
+            self.train_info = self.train_positions[train_id]
+            self.authority = self.mbo_office.authority(self.train_info)
+            self.commanded_speed = self.mbo_office.commanded_speed(self.train_info)
              
             if (self.mbo_mode == True):
                 """
@@ -154,9 +158,8 @@ class MBOOffice:
                 #pass encrypted_data = self.encrypty(data)
                 
                 #will emit encrypt
-                self.send_data_signal.emit(data)
-                
-                 
+                self.send_data_signal.emit(self.train_id, self.authority, self.commanded_speed)
+                  
             else: 
                 """
                 do not send information, information will be sent to train through CTC office
@@ -208,7 +211,6 @@ class MBOOffice:
                 date_time (_type_): _description_
             """
             print(f"making schedule for: {date_time}")
-            print("in shcedules class") 
                                   
 
 
