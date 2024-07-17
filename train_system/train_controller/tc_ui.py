@@ -745,7 +745,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.speed_input.setFixedSize(75, 50)
         ###move to mode toggle function
 
-        #create control mode button and label 
+        #create control mode button and label
         mode_label = QLabel("Change Control Mode")
         mode_label.setFixedSize(175, 50)
         mode_label.setFont(header_font)
@@ -941,11 +941,13 @@ class DriverWindow(QMainWindow): ###DriverWindow
     @pyqtSlot (bool)
     def handle_toggle_driver_mode(self, check: bool) -> None:
         if check:
+            print("Automatic Mode")
             self.driver_mode = "automatic"
             #self.train.set_driver_mode("automatic")
             self.mode_button.setText("Automatic")
             self.speed_input.setEnabled(False)
         else:
+            print("Manual Mode")
             self.driver_mode = "manual"
             #self.train.set_driver_mode("manual")
             self.mode_button.setText("Manual")

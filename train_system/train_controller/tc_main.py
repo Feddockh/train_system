@@ -12,18 +12,18 @@ time_keeper.start_timer()
 
 tm = TrainModel()
     
-tc = TrainController(tm)
+tc = TrainController(time_keeper, train_model=tm)
 
 driver = DriverWindow()
 
-driver.mode_button.toggled.connect(tc.handle_toggle_driver_mode)
-driver.em_brake_button.toggled.connect(tc.handle_emergency_brake_toggled)
-driver.service_brake_button.toggled.connect(tc.handle_service_brake_toggled)
-driver.speed_input.textChanged.connect(tc.handle_setpoint_edit_changed)
+driver.mode_button.toggled.connect(tc.handle_toggle_driver_mode2)
+# driver.em_brake_button.toggled.connect(tc.handle_emergency_brake_toggled)
+# driver.service_brake_button.toggled.connect(tc.handle_service_brake_toggled)
+# driver.speed_input.textChanged.connect(tc.handle_setpoint_edit_changed)
 
 
 
-window = DriverWindow()
+window = driver
 window.show()
 
 app.exec()

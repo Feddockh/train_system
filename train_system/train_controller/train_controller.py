@@ -31,6 +31,7 @@ class TrainController(QObject):
     
     def __init__(self, time_keeper: TimeKeeper, kp: float=25, ki: float=0.1, train_model=None, ssh=None) -> None:
         self.time_keeper = time_keeper
+        super().__init__() ###### THIS LINE IS IMPORTANT #####
 
         self.hardware = True if ssh else False
         print(f"Hardware: {self.hardware}")
@@ -184,11 +185,13 @@ class TrainController(QObject):
         self.brake.set_emergency_brake(done)
         self.set_maintenance_mode(done)
 
-    @pyqtSlot (bool)
-    def handle_toggle_driver_mode(self, check: bool) -> None:
+    @pyqtSlot(bool)
+    def handle_toggle_driver_mode2(self, check):
         if check:
+            print("Automatic Mode")
             self.set_driver_mode("automatic")
         else:
+            print("Manual Mode")
             self.set_driver_mode("manual")
 
     """
