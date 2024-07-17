@@ -1,9 +1,17 @@
 # train_system/track_controller/track_controller.py
 
+import copy
 from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
 from train_system.common.track_block import TrackBlock
 from train_system.common.line import Line
+from train_system.common.crossing_signal import CrossingSignal
 import sys
+
+crossing_signal_map = {
+    CrossingSignal.ON: True,
+    CrossingSignal.OFF: False,
+    CrossingSignal.NA: False
+}
 
 class TrackController(QObject):
     def __init__(self, track_blocks: list):
@@ -91,6 +99,8 @@ class TrackController(QObject):
             test_track_blocks = self.track_blocks
             self.track_blocks[x].switch_position = new_pos
 
+            old_Auth = self.track_blocks[x]._authority
+
             #Opening & running PLC code
             with open (self.plc_program, mode = "r", encoding="utf-8") as plc_code:
                 code = plc_code.read()
@@ -104,6 +114,8 @@ class TrackController(QObject):
             for block in self.track_blocks:
                 block.signal_updates_enabled = True
 
+            self.track_blocks[x]._authority = old_Auth
+
             #Emergency brake enabled - not safe
             if(test_track_blocks[x].authority == 0):
                 self.track_blocks[x].switch_position = old_pos
@@ -114,5 +126,77 @@ class TrackController(QObject):
                 self.track_blocks[x].switch_position = new_pos
                 print("Safe Decision")
     
+    def check_PLC_program_signal(self, x, curr_signal, new_signal):
+        #Will only run if PLC program has been uploaded
+        if (self.plc_program_uploaded == True):
+            #Disabling signals
+            for block in self.track_blocks:
+                block.signal_updates_enabled = False
 
+            test_track_blocks = self.track_blocks
+            self.track_blocks[x]._light_signal = new_signal
+
+            old_Auth = self.track_blocks[x]._authority
+
+            #Opening & running PLC code
+            with open (self.plc_program, mode = "r", encoding="utf-8") as plc_code:
+                code = plc_code.read()
+            local_vars = {
+                    "track_blocks": test_track_blocks,
+                }
+            exec(code, {}, local_vars)
+
+            test_track_blocks = local_vars["track_blocks"]
+
+            for block in self.track_blocks:
+                block.signal_updates_enabled = True
+
+            self.track_blocks[x]._authority = old_Auth
+
+            #Emergency brake enabled - not safe
+            if(test_track_blocks[x].authority == 0):
+                self.track_blocks[x]._light_signal = curr_signal
+                print("Unsafe Decision")
+            #Emergency brake not enabled - safe
+            else:
+                print(new_signal)
+                self.track_blocks[x]._light_signal = new_signal
+                print("Safe Decision")
+
+    def check_PLC_program_crossing(self, x, curr_crossing, new_crossing):
+        #Will only run if PLC program has been uploaded
+        if (self.plc_program_uploaded == True):
+            #Disabling signals
+            for block in self.track_blocks:
+                block.signal_updates_enabled = False
+
+            test_track_blocks = self.track_blocks
+            test_track_blocks[x]._crossing_signal_bool = new_crossing
+
+            old_Auth = self.track_blocks[x]._authority
+
+            #Opening & running PLC code
+            with open (self.plc_program, mode = "r", encoding="utf-8") as plc_code:
+                code = plc_code.read()
+            local_vars = {
+                    "track_blocks": test_track_blocks,
+                }
+            exec(code, {}, local_vars)
+
+            test_track_blocks = local_vars["track_blocks"]
+
+            for block in self.track_blocks:
+                block.signal_updates_enabled = True
+            
+            self.track_blocks[x]._authority = old_Auth
+            
+            #Emergency brake enabled - not safe
+            if(test_track_blocks[x].authority == 0):
+                self.track_blocks[x]._crossing_signal_bool = curr_crossing
+                print("Unsafe Decision")
+            #Emergency brake not enabled - safe
+            else:
+                print(new_crossing)
+                self.track_blocks[x]._crossing_signal_bool = new_crossing
+                print("Safe Decision")
     

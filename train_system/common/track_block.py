@@ -1,9 +1,14 @@
 # train_system/common/track_block.py
 
-from PyQt6.QtCore import QObject, pyqtSignal
+from PyQt6.QtCore import QObject, pyqtSignal, pyqtSlot
 from typing import List
 from train_system.common.crossing_signal import CrossingSignal
 
+crossing_signal_map = {
+    CrossingSignal.ON: True,
+    CrossingSignal.OFF: False,
+    CrossingSignal.NA: False
+}
 
 class TrackBlock(QObject):
 
@@ -43,8 +48,11 @@ class TrackBlock(QObject):
         self._occupancy = False
         self._switch_position = None
         self._crossing_signal = CrossingSignal.NA
+        self._crossing_signal_bool = None
         self._under_maintenance = False
         self._light_signal = None
+
+        self.crossing_signal_updated.connect(self.update_crossing_signal_bool)
 
     def __repr__(self) -> str:
 
@@ -147,6 +155,21 @@ class TrackBlock(QObject):
             self._crossing_signal = value
             self.crossing_signal_updated.emit(value)
 
+    @property
+    def crossing_signal_bool(self) -> bool:
+        return crossing_signal_map[self._crossing_signal]
+
+    @crossing_signal_bool.setter
+    def crossing_signal_bool(self, value: bool) -> None:
+        for signal, bool_value in crossing_signal_map.items():
+            if bool_value == value:
+                self.crossing_signal = signal
+                break
+
+    @pyqtSlot(CrossingSignal)
+    def update_crossing_signal_bool(self, signal: CrossingSignal) -> None:
+        self._crossing_signal_bool = crossing_signal_map[signal]
+            
     @property
     def under_maintenance(self) -> bool:
         return self._under_maintenance

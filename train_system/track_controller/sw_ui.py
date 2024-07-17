@@ -13,6 +13,11 @@ WHITE = "#FFFFFF"
 RED = "#FF0000"
 GREEN = "#00FF00"
 
+crossing_signal_map = {
+    CrossingSignal.ON: True,
+    CrossingSignal.OFF: False,
+    CrossingSignal.NA: False
+}
 
 class CenterDelegate(QtWidgets.QStyledItemDelegate):
     def initStyleOption(self, option, index):
@@ -359,9 +364,9 @@ class ProgrammerUI(QtWidgets.QMainWindow):
 
     #Displays crossing signals
     def display_crossing_signal(self, x, waysideIndex):
-        if (self.track_controllers[waysideIndex].track_blocks[x].crossing_signal == CrossingSignal.ON):
+        if (self.track_controllers[waysideIndex].track_blocks[x]._crossing_signal_bool == False):
             return "Up"
-        elif(self.track_controllers[waysideIndex].track_blocks[x].crossing_signal == CrossingSignal.OFF):
+        elif(self.track_controllers[waysideIndex].track_blocks[x]._crossing_signal_bool == True):
             return "Down"
         else:
             return "-"
@@ -814,6 +819,7 @@ class Maintenance(QtWidgets.QMainWindow):
 
         #Handling updates to block info table
         self.blockInfoTable.itemChanged.connect(lambda item: self.item_changed_blockInfo(item))
+        self.blockInfoTable.itemClicked.connect(lambda item: self.item_changed_blockInfo_Signal(item))
 
         #Updating comboboxes
         self.comboBox.currentIndexChanged.connect(lambda: self.update_ui())
@@ -930,19 +936,70 @@ class Maintenance(QtWidgets.QMainWindow):
             case 1:
                 new_switch = int(new_item)
                 self.check_switch(row, waysideIndex, new_switch)
-            #Signal
-            case 2:
-                new_authority = int(new_item)
-                self.track_controllers[waysideIndex].track_blocks[row].authority = new_authority
             #Crossing
+            case 2: 
+                print("")
             case 3:
-                new_speed = int(new_item)
-                self.track_controllers[waysideIndex].track_blocks[row].suggested_speed = new_speed
+                print("")
             case _:
                 print("")
         self.blockInfoTable.blockSignals(True)
         self.update_ui()
         self.blockInfoTable.blockSignals(False)
+
+    def item_changed_blockInfo_Signal(self, item):
+        waysideIndex = self.comboBox.currentIndex()
+        #If light signal column
+        if(item.column() == 2):
+            #getting block #
+            row = item.row()
+            self.check_signal(row, waysideIndex)
+        #If crossing signal column
+        elif(item.column() == 3):
+            row = item.row()
+            self.check_crossing(row, waysideIndex)
+
+    def check_crossing(self, x, waysideIndex):
+        #checking to see if there is a crossing at this block
+        if(self.track_controllers[waysideIndex].track_blocks[x]._crossing_signal != CrossingSignal.NA):
+            #Getting current signal
+            curr_crossing = self.track_controllers[waysideIndex].track_blocks[x]._crossing_signal_bool
+            print("Curr")
+            print(curr_crossing)
+
+            #Getting possible new signal
+            if (curr_crossing == True):
+                new_crossing_bool = False
+            else:
+                new_crossing_bool = True
+
+            #Checking PLC Program
+            self.track_controllers[waysideIndex].check_PLC_program_crossing(x, curr_crossing, new_crossing_bool)
+
+            self.blockInfoTable.blockSignals(True)
+            self.update_ui()
+            self.blockInfoTable.blockSignals(False)
+
+    def check_signal(self, x, waysideIndex):
+        #checking to see if there is a light signal at this block
+        if(self.track_controllers[waysideIndex].track_blocks[x]._light_signal != None):
+            #Getting current signal
+            curr_signal = self.track_controllers[waysideIndex].track_blocks[x]._light_signal
+
+            #Getting possible new signal
+            if (curr_signal == True):
+                new_signal = False
+            else: 
+                new_signal = True
+
+            #Checking PLC Program
+            self.track_controllers[waysideIndex].check_PLC_program_signal(x, curr_signal, new_signal)
+
+            self.blockInfoTable.blockSignals(True)
+            self.update_ui()
+            self.blockInfoTable.blockSignals(False)
+            
+
 
     def check_switch(self, x, waysideIndex, new_switch):
 
@@ -963,11 +1020,6 @@ class Maintenance(QtWidgets.QMainWindow):
                         else:
                             otherPos = 0
                         self.track_controllers[waysideIndex].check_PLC_program_switch(x, pos, otherPos)
-
-
-        #this is a block that is connected to a switch
-        elif(self.track_controllers[waysideIndex].track_blocks[x].switch_options != None):
-            print("")
         #this block has nothing to do with switches
         elif(self.track_controllers[waysideIndex].track_blocks[x].switch_options == None):
             block = QTableWidgetItem("-")
@@ -1023,9 +1075,9 @@ class Maintenance(QtWidgets.QMainWindow):
 
     #Displays crossing signals
     def display_crossing_signal(self, x, waysideIndex):
-        if (self.track_controllers[waysideIndex].track_blocks[x].crossing_signal == CrossingSignal.ON):
+        if (self.track_controllers[waysideIndex].track_blocks[x]._crossing_signal_bool == False):
             return "Up"
-        elif(self.track_controllers[waysideIndex].track_blocks[x].crossing_signal == CrossingSignal.OFF):
+        elif(self.track_controllers[waysideIndex].track_blocks[x]._crossing_signal_bool == True):
             return "Down"
         else:
             return "-"
