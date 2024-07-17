@@ -1,18 +1,18 @@
 # train_system/track_controller/track_controller.py
 #from hw_plc import HWPLC
-from train_system.track_controller.hw_wayside import HWWayside
+from hw_wayside import HWWayside
 
 
 class HWTrackController:
-    def __init__(self):
+    def __init__(self, track_occupancies):
         authority = 45
-        track_occupancies = []
+        
         #pi communication
         hostname = 'raspberrypi'
         port = 22
         username = 'garrett'
         password = 'Cornell@26'
-
+    
         #self.plc = HWPLC(track_occupancies, authority)
         self.plc = HWWayside(track_occupancies, authority,hostname, port, username, password  )
         

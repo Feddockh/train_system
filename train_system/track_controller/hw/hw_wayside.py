@@ -123,7 +123,7 @@ class HWWayside:
 
         return self.color_block9, self.color_block16, self.color_block27, self.crossingsig
 
-    def send_to_pi(self, reset_log = False):
+    def send_to_pi(self):
         # Initialize the SSH client
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())

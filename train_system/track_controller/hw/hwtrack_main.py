@@ -1,6 +1,6 @@
 # train_system/track_controller/hwtrack_main.py
 import sys
-from train_system.track_controller.hw_trackcontroller import HWTrackController
+from hw_trackcontroller import HWTrackController
 #import sys
 #from PyQt6.QtWidgets import *
 #from PyQt6.QtGui import QPainter, QColor

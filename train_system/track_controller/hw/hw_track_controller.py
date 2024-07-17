@@ -1,89 +1,71 @@
-# train_system/track_controller/track_controller.py
 
+import copy
+from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
 from train_system.common.track_block import TrackBlock
 from train_system.common.line import Line
+from train_system.common.crossing_signal import CrossingSignal
 import sys
+import paramiko
 
-class TrackController:
-    def __init__(self, line : Line):
+crossing_signal_map = {
+    CrossingSignal.ON: True,
+    CrossingSignal.OFF: False,
+    CrossingSignal.NA: False
+}
+
+class TrackController(QObject):
+    def __init__(self, track_blocks: list):
         """
         Initialize variables of the Track Controller.
         """
-        #self.track_occupancies = []
-        #self.train_speeds = []
-        #self.train_authorities = []
-        #self.switch_states = False
-        #self.signal_states = False
-        #self.crossing_states = False
-        # self.switch_positions = []
+        super().__init__()
 
-        self.line = line
-        self.blocks = []
+        self.track_blocks = track_blocks
         self.plc_program_uploaded = False
         self.plc_program = ""
         self.wayside_name = ""
         self.numBlocks = 0
+
+        self.message_switch58 = ""
+        self.message_switch63 = ""
+        self.message_switch76 = ""
+
+        self.hostname = 'raspberrypi'
+        self.port = 22
+        self.username = 'garrett'
+        self.password = 'Cornell@26'
+
+        for block in self.track_blocks:
+                block.authority_updated.connect(self.handle_authority_update)
+                block.occupancy_updated.connect(self.handle_occupancy_update)
+                block.suggested_speed_updated.connect(self.handle_speed_update)
+
     
-    def get_track_occupancy(self, new_track_occupancies):
-        """
-        Receives track occupancy from Track Model & updates current occupancy list
+    @pyqtSlot(bool)
+    def handle_occupancy_update(self, new_occupancy: bool) -> None:
+        block_number = self.sender().number
+        for x in range(len(self.track_blocks)):
+            if(block_number) == self.track_blocks[x].number:
+                print(f"Block {block_number} occupancy updated to {new_occupancy}")
+                self.track_blocks[x]._occupancy = new_occupancy
+                if(self.plc_program_uploaded == True):
+                    self.run_PLC_program()
 
-         Args:
-            new_track_occupancies(bool): List of bool values for track occupancies
-        
-        """
-        new_track_occupancies = 3*[False]
-        new_track_occupancies[2] = True
+    @pyqtSlot(int)
+    def handle_speed_update(self, new_speed: int) -> None:
+        block_number = self.sender().number
+        for x in range(len(self.track_blocks)):
+            if(block_number) == self.track_blocks[x].number:
+                print(f"Block {block_number} speed updated to {new_speed}")
+                self.track_blocks[x].suggested_speed = new_speed
 
-        self.track_occupancies = new_track_occupancies
-
-    def send_track_occupancy(self):
-        """
-        Sends track occupancies to CTC Office
-        
-        Returns:
-            array(bool): List of bools representing track occupancies
-        """
-        return self.track_occupancies
-
-    def get_authority(self, new_authorities):
-        """
-        Recieves authority from CTC office & updates current authority list
-
-        Args:
-            new_authorities(float): List of float values for track authorities
-        
-        """
-        self.train_authorities = new_authorities
-
-    def send_authority(self):
-         """
-        Sends track authorities to Track Model
-        
-        Returns:
-            array(float): List of floats representing authorities
-        """
-         return self.train_authorities
-
-
-    def get_speed(self, new_speeds):
-        """
-        Recieves speed from CTC office & updates current speed list
-
-        Args:
-            new_speeds(float): List of float values for track speeds
-        
-        """
-        self.train_speeds = new_speeds
-
-    def send_speed(self):
-        """
-        Sends track speeds to Track Model
-        
-        Returns:
-            array(float): List of floats representing authorities
-        """
-        return self.train_speeds
+    @pyqtSlot(int)
+    def handle_authority_update(self, new_authority: int) -> None:
+        block_number = self.sender().number
+        for x in range(len(self.track_blocks)):
+            if(block_number) == self.track_blocks[x].number:
+                print(f"Block {block_number} authority updated to {new_authority}")
+                self.track_blocks[x].authority = new_authority
 
     def get_PLC_program(self, plc_program):
         """
@@ -98,6 +80,8 @@ class TrackController:
             self.plc_program_uploaded = True
             self.plc_program = plc_program
             print(self.plc_program)
+            self.send_to_pi()
+            
 
     def run_PLC_program(self):
         """
@@ -110,36 +94,192 @@ class TrackController:
             with open (self.plc_program, mode = "r", encoding="utf-8") as plc_code:
                 code = plc_code.read()
             local_vars = {
-                    "switch": self.switch_states,
-                    "light": self.signal_states,
-                    "cross": self.crossing_states,
-                    "track_occupancies": self.track_occupancies
+                    "track_blocks": self.track_blocks
                 }
             exec(code, {}, local_vars)
 
-            self.switch_states = local_vars["switch"]
-            self.signal_states = local_vars["light"]
-            self.crossing_states = local_vars["cross"]
-            self.track_occupancies = local_vars["track_occupancies"]
+            self.track_blocks = local_vars["track_blocks"]
 
-    def emergency_stop(self):
-        """
-        Performs an emergency stop of a train if notices two trains are going to crash into eachother
+
+            #what i added to be able to utilize my pi
+
+            self.convert_to_strings()
+            self.send_to_pi()
+
+    def check_PLC_program_switch(self, x, old_pos, new_pos):
+        #Will only run if PLC program has been uploaded
+        if (self.plc_program_uploaded == True):
+            #Disabling signals
+            for block in self.track_blocks:
+                block.signal_updates_enabled = False
+
+            test_track_blocks = self.track_blocks
+            self.track_blocks[x].switch_position = new_pos
+
+            old_Auth = self.track_blocks[x]._authority
+
+            #Opening & running PLC code
+            with open (self.plc_program, mode = "r", encoding="utf-8") as plc_code:
+                code = plc_code.read()
+            local_vars = {
+                    "track_blocks": test_track_blocks
+                }
+            exec(code, {}, local_vars)
+
+            test_track_blocks = local_vars["track_blocks"]
+
+            for block in self.track_blocks:
+                block.signal_updates_enabled = True
+
+            self.track_blocks[x]._authority = old_Auth
+
+            #Emergency brake enabled - not safe
+            if(test_track_blocks[x].authority == 0):
+                self.track_blocks[x].switch_position = old_pos
+                print("Unsafe Decision")
+            #Emergency brake not enabled - safe
+            else:
+                print(new_pos)
+                self.track_blocks[x].switch_position = new_pos
+                print("Safe Decision")
+    
+    def check_PLC_program_signal(self, x, curr_signal, new_signal):
+        #Will only run if PLC program has been uploaded
+        if (self.plc_program_uploaded == True):
+            #Disabling signals
+            for block in self.track_blocks:
+                block.signal_updates_enabled = False
+
+            test_track_blocks = self.track_blocks
+            self.track_blocks[x]._light_signal = new_signal
+
+            old_Auth = self.track_blocks[x]._authority
+
+            #Opening & running PLC code
+            with open (self.plc_program, mode = "r", encoding="utf-8") as plc_code:
+                code = plc_code.read()
+            local_vars = {
+                    "track_blocks": test_track_blocks,
+                }
+            exec(code, {}, local_vars)
+
+            test_track_blocks = local_vars["track_blocks"]
+
+            for block in self.track_blocks:
+                block.signal_updates_enabled = True
+
+            self.track_blocks[x]._authority = old_Auth
+
+            #Emergency brake enabled - not safe
+            if(test_track_blocks[x].authority == 0):
+                self.track_blocks[x]._light_signal = curr_signal
+                print("Unsafe Decision")
+            #Emergency brake not enabled - safe
+            else:
+                print(new_signal)
+                self.track_blocks[x]._light_signal = new_signal
+                print("Safe Decision")
+
+    def check_PLC_program_crossing(self, x, curr_crossing, new_crossing):
+        #Will only run if PLC program has been uploaded
+        if (self.plc_program_uploaded == True):
+            #Disabling signals
+            for block in self.track_blocks:
+                block.signal_updates_enabled = False
+
+            test_track_blocks = self.track_blocks
+            test_track_blocks[x]._crossing_signal_bool = new_crossing
+
+            old_Auth = self.track_blocks[x]._authority
+
+            #Opening & running PLC code
+            with open (self.plc_program, mode = "r", encoding="utf-8") as plc_code:
+                code = plc_code.read()
+            local_vars = {
+                    "track_blocks": test_track_blocks,
+                }
+            exec(code, {}, local_vars)
+
+            test_track_blocks = local_vars["track_blocks"]
+
+            for block in self.track_blocks:
+                block.signal_updates_enabled = True
+            
+            self.track_blocks[x]._authority = old_Auth
+            
+            #Emergency brake enabled - not safe
+            if(test_track_blocks[x].authority == 0):
+                self.track_blocks[x]._crossing_signal_bool = curr_crossing
+                print("Unsafe Decision")
+            #Emergency brake not enabled - safe
+            else:
+                print(new_crossing)
+                self.track_blocks[x]._crossing_signal_bool = new_crossing
+                print("Safe Decision")
+
+    def convert_to_strings(self):
+        if(self.track_blocks[57].switch_position == 1):
+            self.message_switch58 = "Switch from 58 to yard is connected, all trains going into yard"
+        else:
+            self.message_switch58 = "Switch from 58 to yard is not connected, all trains are continuing along section J"
+
+        if(self.track_blocks[62].switch_position == 1):
+            self.message_switch63 = "Switch from yard to Block 63 is open, Trains can leave the yard"
+        else:
+            self.message_switch63 = "Switch from yard is open, Trains cannot leave yard, Trains must wait for section J to be unoccupied"
         
-        """
+        if(self.track_blocks[75].switch_position == 1):
+            self.message_switch76 = "Switch from 76 to 77 is connected"
+        else:
+            self.message_switch76 = "Switch from 76 to 101 is connected"
 
-"""
-#Testing program
-test = TrackController();
-test.plc_program_uploaded = True
-test.plc_program = "C:/Users/Isabella/Trains/train_system/train_system/track_controller/sw_plc.py"
-test.run_PLC_program()
-test.get_track_occupancy([True, False, False, False, False, False, False, False, False, False, False, False, False, False, False])
-test.run_PLC_program()
-test.get_track_occupancy(([False, False, False, False, True, False, False, False, False, False, False, False, False, False, False]))
-test.run_PLC_program()
-test.get_track_occupancy(([False, False, False, False, False, True, False, False, False, False, False, False, False, False, False]))
-test.run_PLC_program()
-test.get_track_occupancy(([False, False, False, False, False, False, True, False, False, False, False, False, False, False, False]))
-test.run_PLC_program()
-"""
+    def send_to_pi(self):
+        # Initialize the SSH client
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+	
+	#convert to strings
+        try:
+            # Connect to the Raspberry Pi
+            ssh.connect(self.hostname, port=self.port, username=self.username, password=self.password)
+
+            
+            # Prepare the command to be sent to Raspberry Pi
+            command = ""
+            
+            #reset log
+            command = "echo 'Log Reset' > /home/garrett/pi_monitor.log\n "
+            command += "echo 'Running PLC Code' >>/home/garrett/pi_monitor.log\n"
+            #testing only
+            command += f"echo 'TESTING' >>/home/garrett/pi_monitor.log\n"
+            command += "echo '{self.wayside}' >>/home/garrett/pi_monitor.log\n"
+		
+            #actual outputs on pi  
+            command += f"echo '{self.message_switch58}' >>/home/garrett/pi_monitor.log\n"
+            command += f"echo '{self.message_switch63}' >>/home/garrett/pi_monitor.log\n"
+            command += f"echo '{self.message_switch76}' >> /home/garrett/pi_monitor.log\n"
+         
+            
+            # Execute the command
+            stdin, stdout, stderr = ssh.exec_command(command)
+
+            # Read the response
+            response = stdout.read().decode('utf-8').strip()
+            error = stderr.read().decode('utf-8').strip()
+
+            #Print for debugging purposes
+            print("Response: ", response)
+            print("Error: ", error)
+
+            # Check for errors
+            if error:
+                response += f"\nError: {error}"
+
+        except Exception as e:
+            response = str(e)
+
+        finally:
+            # Close the connection
+            ssh.close()
+
+        return response
