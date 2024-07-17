@@ -7,7 +7,7 @@ from PyQt6.QtWidgets import QApplication
 from train_system.common.time_keeper import TimeKeeper
 from train_system.common.line import Line
 from train_system.common.track_block import TrackBlock
-from train_system.ctc_manager.train import Train
+from train_system.common.train_dispatch import TrainDispatch
 from train_system.ctc_manager.ctc_manager import CTCOffice
 from train_system.ctc_manager.dispatcher_ui import DispatcherUI
 
@@ -43,8 +43,8 @@ ctc_manager.line.track_block_switch_position_updated.connect(dispatcher_ui.handl
 ctc_manager.line.track_block_crossing_signal_updated.connect(dispatcher_ui.handle_crossing_signal_update)
 ctc_manager.line.track_block_under_maintenance_updated.connect(dispatcher_ui.handle_maintenance_update)
 
-# Connnt the CTC Manager signals to the DispatcherUI slots
-ctc_manager.trains_updated.connect(dispatcher_ui.train_info_widget.handle_train_update)
+# Connect the CTC Manager signals to the DispatcherUI slots
+ctc_manager.train_updated.connect(dispatcher_ui.train_info_widget.handle_train_update)
 
 
 # Show the dispatcher UI
@@ -52,9 +52,7 @@ dispatcher_ui.show()
 sys.exit(app.exec())
 
 # TODO:
-# - Implement route into the track block class
 # - Implement switch position into the track block class
-# - Move line loading into the CTC Manager class
 # - Implement the dispatching logic
 # - Compute dispatch times
 # - Create top level system main
