@@ -85,6 +85,9 @@ class TrackController(QObject):
             self.crossing_states = local_vars["cross"]
             self.track_occupancies = local_vars["track_occupancies"]
 
+    def check_PLC_program(self):
+        print("")
+
     def emergency_stop(self):
         """
         Performs an emergency stop of a train if notices two trains are going to crash into eachother

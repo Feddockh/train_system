@@ -21,11 +21,12 @@ def main():
     test.crossing_signal = CrossingSignal.OFF
     test._light_signal = False
     test.switch_options = [2, 3]
-    test.switch_position = 1
+    test.switch_position = 0
     test._occupancy = True
-    test3.switch_options = [1]
-    test4.switch_options = [1]
     test2 = TrackBlock("", "", 2, 2, 2, 2, 2, 2, 2, "")
+    test3.switch_options = [1]
+    test2.switch_options = [1]
+
 
 
     #Creating a line
