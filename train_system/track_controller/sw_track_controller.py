@@ -31,6 +31,8 @@ class TrackController(QObject):
             if(block_number) == self.track_blocks[x].number:
                 print(f"Block {block_number} occupancy updated to {new_occupancy}")
                 self.track_blocks[x]._occupancy = new_occupancy
+                if(self.plc_program_uploaded == True):
+                    self.run_PLC_program()
 
     @pyqtSlot(int)
     def handle_speed_update(self, new_speed: int) -> None:
@@ -73,23 +75,44 @@ class TrackController(QObject):
             with open (self.plc_program, mode = "r", encoding="utf-8") as plc_code:
                 code = plc_code.read()
             local_vars = {
-                    "switch": self.switch_states,
-                    "light": self.signal_states,
-                    "cross": self.crossing_states,
-                    "track_occupancies": self.track_occupancies
+                    "track_blocks": self.track_blocks
                 }
             exec(code, {}, local_vars)
 
-            self.switch_states = local_vars["switch"]
-            self.signal_states = local_vars["light"]
-            self.crossing_states = local_vars["cross"]
-            self.track_occupancies = local_vars["track_occupancies"]
+            self.track_blocks = local_vars["track_blocks"]
 
-    def check_PLC_program(self):
-        print("")
+    def check_PLC_program_switch(self, x, old_pos, new_pos):
+        #Will only run if PLC program has been uploaded
+        if (self.plc_program_uploaded == True):
+            #Disabling signals
+            for block in self.track_blocks:
+                block.signal_updates_enabled = False
 
-    def emergency_stop(self):
-        """
-        Performs an emergency stop of a train if notices two trains are going to crash into eachother
-        
-        """
+            test_track_blocks = self.track_blocks
+            self.track_blocks[x].switch_position = new_pos
+
+            #Opening & running PLC code
+            with open (self.plc_program, mode = "r", encoding="utf-8") as plc_code:
+                code = plc_code.read()
+            local_vars = {
+                    "track_blocks": test_track_blocks
+                }
+            exec(code, {}, local_vars)
+
+            test_track_blocks = local_vars["track_blocks"]
+
+            for block in self.track_blocks:
+                block.signal_updates_enabled = True
+
+            #Emergency brake enabled - not safe
+            if(test_track_blocks[x].authority == 0):
+                self.track_blocks[x].switch_position = old_pos
+                print("Unsafe Decision")
+            #Emergency brake not enabled - safe
+            else:
+                print(new_pos)
+                self.track_blocks[x].switch_position = new_pos
+                print("Safe Decision")
+    
+
+    

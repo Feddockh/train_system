@@ -237,7 +237,7 @@ class ProgrammerUI(QtWidgets.QMainWindow):
     def update_ui(self):
         lineIndex = self.comboBox_3.currentIndex()
         waysideIndex = self.comboBox.currentIndex()
-        #self.track_controller.run_PLC_program()
+        #self.track_controllers[waysideIndex].run_PLC_program()
         self.add_wayside_blk_table_data(lineIndex)
         self.add_block_info_table_data(waysideIndex)
         self.display_plc_uploaded(waysideIndex)
@@ -257,6 +257,8 @@ class ProgrammerUI(QtWidgets.QMainWindow):
 
         if(self.track_controllers[waysideIndex].plc_program_uploaded == True and self.track_controllers[waysideIndex].plc_program != ""):
             self.plcUploadedLabel.setVisible(True)
+            self.track_controllers[waysideIndex].run_PLC_program()
+            self.update_ui()
         else:
             self.plcUploadedLabel.setVisible(False)
     
@@ -397,8 +399,6 @@ class ProgrammerUI(QtWidgets.QMainWindow):
 
     #Opens maintenance 
     def open_maintenance(self):
-        self.track_controllers[0].plc_program_uploaded = False
-        self.track_controllers[0].plc_program = ""
         self.maintenance = Maintenance(self.track_controllers,self)
         self.maintenance.show()
         self.hide()
@@ -581,20 +581,6 @@ class TestBench(QtWidgets.QMainWindow):
         self.add_wayside_blk_table_data(lineIndex)
         self.add_block_info_table_data(waysideIndex)
         self.blockInfoTable.blockSignals(False)
-
-    """
-    #Updates UI values to reflect backend changes
-    def update_ui(self):
-        self.blockInfoTable.itemChanged.disconnect(self.item_changed_blockInfo)
-        self.tableView.itemChanged.disconnect(self.item_changed_waysideData)
-        if(self.track_controllerTest.plc_program != ""):
-            self.track_controllerTest.run_PLC_program()
-        self.add_wayside_table_data()
-        self.add_wayside_blk_table_data()
-        self.add_block_info_table_data()
-        self.blockInfoTable.itemChanged.connect(self.item_changed_blockInfo)
-        self.tableView.itemChanged.connect(self.item_changed_waysideData)
-    """
 
     #Allows User to select PLC Program from directory
     def getFileName(self):    
@@ -877,7 +863,7 @@ class Maintenance(QtWidgets.QMainWindow):
         self.blockInfoTable.blockSignals(True)
         lineIndex = self.comboBox_3.currentIndex()
         waysideIndex = self.comboBox.currentIndex()
-        #self.track_controller.run_PLC_program()
+        #self.track_controllers[waysideIndex].run_PLC_program()
         self.add_wayside_blk_table_data(lineIndex)
         self.add_block_info_table_data(waysideIndex)
         self.blockInfoTable.blockSignals(False)
@@ -895,10 +881,6 @@ class Maintenance(QtWidgets.QMainWindow):
         )
         self.track_controllers[waysideIndex].get_PLC_program(response[0])
 
-        if(self.track_controllers[waysideIndex].plc_program_uploaded == True and self.track_controllers[waysideIndex].plc_program != ""):
-            self.plcUploadedLabel.setVisible(True)
-        else:
-            self.plcUploadedLabel.setVisible(False)
 
     #Using search box to filter table data
     def filter_table(self):
@@ -946,10 +928,8 @@ class Maintenance(QtWidgets.QMainWindow):
         match column:
             #Switch
             case 1:
-                if (new_item == "Occupied"):
-                    self.track_controllers[waysideIndex].track_blocks[row].occupancy = True
-                else:
-                    self.track_controllers[waysideIndex].track_blocks[row].occupancy = False
+                new_switch = int(new_item)
+                self.check_switch(row, waysideIndex, new_switch)
             #Signal
             case 2:
                 new_authority = int(new_item)
@@ -964,12 +944,31 @@ class Maintenance(QtWidgets.QMainWindow):
         self.update_ui()
         self.blockInfoTable.blockSignals(False)
 
-    def check_switch(self, x, waysideIndex, new_pos):
+    def check_switch(self, x, waysideIndex, new_switch):
 
         #if this block has a switch
         if(self.track_controllers[waysideIndex].track_blocks[x]._switch_position != None):
-            print('')
-        #this block 
+            #Getting current position & block switch is connected to
+            pos = self.track_controllers[waysideIndex].track_blocks[x]._switch_position
+            item = self.track_controllers[waysideIndex].track_blocks[x].switch_options[pos]
+
+            #Checking to see if new_switch not is equal to current item
+            if(new_switch != item):
+                #Checking if new_switch is in list of switch_options
+                for i in self.track_controllers[waysideIndex].track_blocks[x].switch_options:
+                    #if new_switch is an option in switch_options
+                    if(new_switch == i):
+                        if(pos == 0):
+                            otherPos = 1
+                        else:
+                            otherPos = 0
+                        self.track_controllers[waysideIndex].check_PLC_program_switch(x, pos, otherPos)
+
+
+        #this is a block that is connected to a switch
+        elif(self.track_controllers[waysideIndex].track_blocks[x].switch_options != None):
+            print("")
+        #this block has nothing to do with switches
         elif(self.track_controllers[waysideIndex].track_blocks[x].switch_options == None):
             block = QTableWidgetItem("-")
             block.setFlags(block.flags() & Qt.ItemFlag.ItemIsEditable)
@@ -1059,4 +1058,5 @@ class Maintenance(QtWidgets.QMainWindow):
     
     def open_programmer_ui(self):
         self.programmer_ui.show()
+        self.programmer_ui.update_ui()
         self.close()
