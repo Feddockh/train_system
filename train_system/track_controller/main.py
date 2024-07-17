@@ -11,6 +11,7 @@ from train_system.track_controller.sw_ui import ProgrammerUI
 
 def main():
 
+    """
     test = TrackBlock("", "", 1, 1, 1, 1, 1, 1, 1, "")
     test3 = TrackBlock("", "", 3, 1, 1, 1, 1, 1, 1, "")
     test4 = TrackBlock("", "", 4, 1, 1, 1, 1, 1, 1, "")
@@ -27,11 +28,6 @@ def main():
     test3.switch_options = [1]
     test2.switch_options = [1]
 
-
-
-    #Creating a line
-    #line = Line("Green")
-    #line.load_track_blocks()
     line = Line("")
 
     line.add_track_block(test)
@@ -49,14 +45,26 @@ def main():
     track_blocks3 = line.track_blocks[4:5]
     track_blocks5 = line.track_blocks[5:6]
     track_blocks6 = line.track_blocks[6:8]
-
-
     """
-    #Connect the Line signals to the Track Controller slots
-    line.track_block_occupancy_updated.connect(TrackController.handle_occupancy_update)
-    line.track_block_suggested_speed_updated.connect(TrackController.handle_speed_update)
-    line.track_block_authority_updated.connect(TrackController.handle_authority_update)
-    """
+
+    #Creating Green Line
+    line = Line("Green")
+    line.load_track_blocks()
+
+    track_blocks1 = line.track_blocks[:32] + line.track_blocks[149:150]
+                         
+    track_blocks2 = line.track_blocks[28:85] + line.track_blocks[100:150]
+
+    track_blocks3 = line.track_blocks[74:101]
+
+    #Creating Red Line
+    line2 = Line("Red")
+    line2.load_track_blocks()
+
+    track_blocks5 = line2.track_blocks[23:45] + line2.track_blocks[67:75]
+
+    track_blocks6 = line2.track_blocks[23:68]
+
 
     #Creating Waysides
     Wayside_1 = TrackController(track_blocks1)
