@@ -1,7 +1,5 @@
 from PyQt6.QtCore import QObject, pyqtSignal
 
-#test test test
-
 class Train(QObject):
     
     position_signal = pyqtSignal(str, float, int)  # train_id, position, block

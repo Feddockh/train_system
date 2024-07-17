@@ -2,18 +2,21 @@ import csv
 from csv import writer
 import datetime
 from datetime import timedelta
-
+from typing import List, Dict, Optional
 from cryptography.fernet import Fernet
 import json
 
 from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
 from train_system.common.line import Line
 from train_system.common.track_block import TrackBlock
+from train_system.common.train_dispatch import TrainDispatchUpdate
+from train_system.mbo_manager.mbo_train_dispatch import MBOTrainDispatch
 
 #assuming recieving train_positions as {'train_id' : train_id, 'position' : m, 'block' : #}
 #sending speed and authority as data = {'train_id' : train_id, 'authority' : m, 'commanded_speed' : m/s}
 
 class MBOOffice(QObject):
+    train_dispatch_updated = pyqtSignal(TrainDispatchUpdate)
     
     def __init__(self):
         super().__init__()
@@ -22,6 +25,10 @@ class MBOOffice(QObject):
         """
         self.green_line = Line('Green')
         self.green_line.load_track_blocks()
+        
+        # Create a list of train objects
+        self.trains: Dict[int, MBOTrainDispatch] = {}
+        self.last_train_dispatched = None
                 
         self.route_authority_green = {'Glenbury Down' : 400 , 'Dormont Down' : 950, 'Mt Lebanon Down' : 500, 'Poplar' : 2786.6, 'Castle Shannon' : 612.5, 
                       'Mt Lebanon Up' : 2887.5 , 'Dormont Up' : 515, 'Glenbury Up' : 921, 'Overbrook Up' : 546, 'Inglewood' : 450, 
@@ -63,14 +70,13 @@ class MBOOffice(QObject):
     
      return (breaking_distance)
             
-    def commanded_speed(self, train_position):
+    def compute_commanded_speed(self, train_position):
         """
         Calculate trains commanded speed based on current block 
         
         return commanded_speed, equal to the speed limit 
         """ 
-        #set up to read in dictionary of trains for now, similar to 
-        # set equal to speed limit of block 
+        
         block_num = train_position.get("block")
         block = self.green_line.get_track_block(block_num)
         
@@ -81,7 +87,7 @@ class MBOOffice(QObject):
             
         return(self.block_speed)
     
-    def authority(self, train_position):
+    def compute_authority(self, train_position):
         """
         Calculate trains authority such that more than one train can be in a block 
         each train stops at it's desitnation and opens the doors, and stops before any block maintenance 
@@ -147,8 +153,8 @@ class MBOOffice(QObject):
             
             """
             self.train_info = self.train_positions[train_id]
-            self.authority = self.mbo_office.authority(self.train_info)
-            self.commanded_speed = self.mbo_office.commanded_speed(self.train_info)
+            self.authority = self.mbo_office.compute_authority(self.train_info)
+            self.commanded_speed = self.mbo_office.compute_commanded_speed(self.train_info)
              
             if (self.mbo_mode == True):
                 """
@@ -194,6 +200,9 @@ class MBOOffice(QObject):
             self.drive_length = timedelta(hours=4)
             self.break_length = timedelta(minutes=30)
             
+            self.green_line = Line('Green')
+            self.green_line.load_track_blocks()
+            
             #time to travel from one station to another 
             self.route_schedule_green = {'Glenbury Down' : timedelta(seconds=20) , 'Dormont Down' : timedelta(minutes=1, seconds=13), 'Mt Lebanon Down' : timedelta(seconds=39), 
                                 'Poplar' : timedelta(minutes=2, seconds=45), 'Castle Shannon' : timedelta(minutes=1, seconds=28), 'Mt Lebanon Up' : timedelta(minutes=2, seconds=59), 
@@ -211,11 +220,20 @@ class MBOOffice(QObject):
                 date_time (_type_): _description_
             """
             print(f"making schedule for: {date_time}")
-                                  
-
-
+            
+            i = 65
+            block = self.green_line.get_track_block(i)
+            station = block.station
+            print(station)
+            print("in create schedules")
+            
+            
+            
+            
+            
+            
 #pass if __name__ == "__main__":
-    
+
     
     
     
