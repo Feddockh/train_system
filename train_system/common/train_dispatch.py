@@ -73,6 +73,8 @@ class TrainDispatch:
 
     def pop_route_block(self) -> None:
         last_block = None
+
+        # TODO: pop the station if needed
         if self.route:
             last_block = self.route.popleft()
 
@@ -89,6 +91,11 @@ class TrainDispatch:
 
     def get_current_block(self) -> int:
         if self.route:
+            return self.route[0]
+        return None
+    
+    def get_next_block(self) -> int:
+        if len(self.route) > 1:
             return self.route[0]
         return None
     

@@ -73,14 +73,6 @@ class Line(QObject):
         self.track_blocks[track_block.number - 1] = track_block
         self.connect_signals(track_block)
 
-    def connect_signals(self, track_block: TrackBlock) -> None:
-        track_block.suggested_speed_updated.connect(lambda new_speed, blk=track_block: self.track_block_suggested_speed_updated.emit(blk.number, new_speed))
-        track_block.authority_updated.connect(lambda new_authority, blk=track_block: self.track_block_authority_updated.emit(blk.number, new_authority))
-        track_block.occupancy_updated.connect(lambda new_occupancy, blk=track_block: self.track_block_occupancy_updated.emit(blk.number, new_occupancy))
-        track_block.switch_position_updated.connect(lambda new_position, blk=track_block: self.track_block_switch_position_updated.emit(blk.number, new_position))
-        track_block.crossing_signal_updated.connect(lambda new_signal, blk=track_block: self.track_block_crossing_signal_updated.emit(blk.number, new_signal))
-        track_block.under_maintenance_updated.connect(lambda new_maintenance, blk=track_block: self.track_block_under_maintenance_updated.emit(blk.number, new_maintenance))
-
     def get_track_block(self, number: int) -> TrackBlock:
 
         """
@@ -99,153 +91,13 @@ class Line(QObject):
             print(f"Track block {number} not found.")
             return None
 
-    def load_track_blocks(self, file_path: str = None) -> None:
-
-        """
-        Loads track blocks from an Excel file.
-        
-        Args:
-            file_path (str): The path to the Excel file.
-        
-        Returns:
-            None
-        """
-        
-        if not file_path:
-            file_path = os.path.abspath(os.path.join("system_data\\lines", f"{self.name.lower()}_line.xlsx"))
-
-        if not os.path.isfile(file_path):
-            print(f"Error: The file {file_path} does not exist.")
-            return
-        
-        try:
-            df = pd.read_excel(file_path)
-        except PermissionError:
-            print(
-                f"Error: Permission denied while trying to read the file "
-                f"{file_path}."
-            )
-            return
-        except Exception as e:
-            print(
-                f"Error: An error occurred while trying to read the file "
-                f"{file_path}."
-            )
-            print(e)
-            return
-
-        for _, row in df.iterrows():
-            connecting_blocks = [int(block.strip()) for block in str(row['Connecting Blocks']).split(',') if block.strip().isdigit()]
-            next_blocks = [int(block.strip()) for block in str(row['Initial Next Blocks']).split(',') if block.strip().isdigit()]
-            station = row['Station'] if not pd.isna(row['Station']) and str(row['Station']).strip() else ""
-            station_side = row['Station Side'] if not pd.isna(row['Station Side']) and str(row['Station Side']).strip() else ""
-            switch_options = [int(block.strip()) for block in str(row['Switch Options']).split(',') if block.strip().isdigit()]
-            block = TrackBlock(
-                line=row['Line'],
-                section=row['Section'],
-                number=row['Block Number'],
-                length=row['Block Length (m)'],
-                grade=row['Block Grade (%)'],
-                speed_limit=row['Speed Limit (Km/Hr)'],
-                elevation=row['ELEVATION (M)'],
-                cumulative_elevation=row['CUMALTIVE ELEVATION (M)'],
-                connecting_blocks=connecting_blocks,
-                next_blocks=next_blocks,
-                station=station,
-                station_side=station_side,
-                switch_options=switch_options
-            )
-            self.add_track_block(block)
-
-    def load_routes(self, file_path: str = None) -> None:
-
-        if not file_path:
-            file_path = os.path.abspath(os.path.join("system_data\\routes", f"{self.name.lower()}_routes.json"))
-
-        with open(file_path, 'r') as file:
-            data = json.load(file)
-
-        self.yard = data['yard']
-        self.to_yard = data['to_yard']
-        self.from_yard = data['from_yard']
-        self.past_yard = data['past_yard']
-        self.default_route = data['default_route']
-
-    def get_travel_time(self, start: int, end: int) -> int:
-
-        """
-        Computes the travel time between two blocks on the line exclusive of
-        the start and end blocks.
-
-        Args:
-            start (int): The starting block number.
-            end (int): The ending block number.
-
-        Returns:
-            int: The time to travel (in seconds) between the two blocks.
-        """
-
-        time = 0
-        path = self.get_path(start, end)
-        for i in range(len(path) - 1):
-            time += self.get_track_block(path[i]).traversal_time
-        return time
-
-    def get_travel_time(self, path: List[int]) -> int:
-
-        """
-        Computes the travel time between two blocks on the line exclusive of
-        the start and end blocks.
-
-        Args:
-            path (List[int]): The list of block numbers in the path.
-
-        Returns:
-            int: The time to travel (in seconds) between the two blocks.
-        """
-
-        time = 0
-        for i in range(1, len(path) - 1):
-            time += self.get_track_block(path[i]).traversal_time
-        return time
-
-    def get_distance(self, start: int, end: int) -> float:
-        
-        """
-        Computes the distance between two blocks on the line exclusive of the
-        start and end blocks.
-
-        Args:
-            start (int): The starting block number.
-            end (int): The ending block number.
-
-        Returns:
-            float: The distance between the two blocks.
-        """
-
-        distance = 0
-        path = self.get_path(start, end)
-        for i in range(1, len(path) - 1):
-            distance += self.get_track_block(path[i]).length
-        return distance
-
-    def get_distance(self, path: List[int]) -> float:
-            
-            """
-            Computes the distance between two blocks on the line exclusive of the
-            start and end blocks.
-    
-            Args:
-                path (List[int]): The list of block numbers in the path.
-    
-            Returns:
-                float: The distance between the two blocks.
-            """
-    
-            distance = 0
-            for i in range(1, len(path) - 1):
-                distance += self.get_track_block(path[i]).length
-            return distance
+    def connect_signals(self, track_block: TrackBlock) -> None:
+        track_block.suggested_speed_updated.connect(lambda new_speed, blk=track_block: self.track_block_suggested_speed_updated.emit(blk.number, new_speed))
+        track_block.authority_updated.connect(lambda new_authority, blk=track_block: self.track_block_authority_updated.emit(blk.number, new_authority))
+        track_block.occupancy_updated.connect(lambda new_occupancy, blk=track_block: self.track_block_occupancy_updated.emit(blk.number, new_occupancy))
+        track_block.switch_position_updated.connect(lambda new_position, blk=track_block: self.track_block_switch_position_updated.emit(blk.number, new_position))
+        track_block.crossing_signal_updated.connect(lambda new_signal, blk=track_block: self.track_block_crossing_signal_updated.emit(blk.number, new_signal))
+        track_block.under_maintenance_updated.connect(lambda new_maintenance, blk=track_block: self.track_block_under_maintenance_updated.emit(blk.number, new_maintenance))
 
     def get_path(self, start: int, end: int) -> List[int]:
 
@@ -398,6 +250,96 @@ class Line(QObject):
                 return i
         
         return -1
+
+    def get_travel_time(self, path: List[int]) -> int:
+
+        """
+        Computes the travel time between two blocks on the line exclusive of
+        the start and end blocks.
+
+        Args:
+            path (List[int]): The list of block numbers in the path.
+
+        Returns:
+            int: The time to travel (in seconds) between the two blocks.
+        """
+
+        time = 0
+        for i in range(1, len(path) - 1):
+            time += self.get_track_block(path[i]).traversal_time
+        return time
+
+    def load_track_blocks(self, file_path: str = None) -> None:
+
+        """
+        Loads track blocks from an Excel file.
+        
+        Args:
+            file_path (str): The path to the Excel file.
+        
+        Returns:
+            None
+        """
+        
+        if not file_path:
+            file_path = os.path.abspath(os.path.join("system_data\\lines", f"{self.name.lower()}_line.xlsx"))
+
+        if not os.path.isfile(file_path):
+            print(f"Error: The file {file_path} does not exist.")
+            return
+        
+        try:
+            df = pd.read_excel(file_path)
+        except PermissionError:
+            print(
+                f"Error: Permission denied while trying to read the file "
+                f"{file_path}."
+            )
+            return
+        except Exception as e:
+            print(
+                f"Error: An error occurred while trying to read the file "
+                f"{file_path}."
+            )
+            print(e)
+            return
+
+        for _, row in df.iterrows():
+            connecting_blocks = [int(block.strip()) for block in str(row['Connecting Blocks']).split(',') if block.strip().isdigit()]
+            next_blocks = [int(block.strip()) for block in str(row['Initial Next Blocks']).split(',') if block.strip().isdigit()]
+            station = row['Station'] if not pd.isna(row['Station']) and str(row['Station']).strip() else ""
+            station_side = row['Station Side'] if not pd.isna(row['Station Side']) and str(row['Station Side']).strip() else ""
+            switch_options = [int(block.strip()) for block in str(row['Switch Options']).split(',') if block.strip().isdigit()]
+            block = TrackBlock(
+                line=row['Line'],
+                section=row['Section'],
+                number=row['Block Number'],
+                length=row['Block Length (m)'],
+                grade=row['Block Grade (%)'],
+                speed_limit=row['Speed Limit (Km/Hr)'],
+                elevation=row['ELEVATION (M)'],
+                cumulative_elevation=row['CUMALTIVE ELEVATION (M)'],
+                connecting_blocks=connecting_blocks,
+                next_blocks=next_blocks,
+                station=station,
+                station_side=station_side,
+                switch_options=switch_options
+            )
+            self.add_track_block(block)
+
+    def load_routes(self, file_path: str = None) -> None:
+
+        if not file_path:
+            file_path = os.path.abspath(os.path.join("system_data\\routes", f"{self.name.lower()}_routes.json"))
+
+        with open(file_path, 'r') as file:
+            data = json.load(file)
+
+        self.yard = data['yard']
+        self.to_yard = data['to_yard']
+        self.from_yard = data['from_yard']
+        self.past_yard = data['past_yard']
+        self.default_route = data['default_route']
 
 if __name__ == "__main__":
     line = Line('Green')
