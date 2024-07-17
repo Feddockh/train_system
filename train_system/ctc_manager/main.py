@@ -52,7 +52,8 @@ dispatcher_ui.show()
 sys.exit(app.exec())
 
 # TODO:
-# - Implement switch position into the track block class
-# - Implement the dispatching logic
 # - Compute dispatch times
+# - Implement dispatch logic
+# - Implement conversions between back end and gui
+# - Testbench mode
 # - Create top level system main
