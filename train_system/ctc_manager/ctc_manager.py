@@ -6,10 +6,11 @@ from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
 from train_system.common.time_keeper import TimeKeeper
 from train_system.common.dispatch_mode import DispatchMode
 from train_system.common.line import Line
-from train_system.ctc_manager.train import Train
+from train_system.common.train_dispatch import TrainDispatchUpdate
+from train_system.ctc_manager.ctc_train_dispatch import CTCTrainDispatch
 
 class CTCOffice(QObject):
-    trains_updated = pyqtSignal()
+    train_updated = pyqtSignal(TrainDispatchUpdate)
 
     def __init__(self, time_keeper: TimeKeeper, line_name: str) -> None:
 
@@ -23,6 +24,7 @@ class CTCOffice(QObject):
         # Create the line object
         self.line = Line(line_name)
         self.line.load_track_blocks()
+        self.line.load_routes()
 
         # Connect the Line signals to the CTC Manager slots
         self.line.track_block_occupancy_updated.connect(self.handle_occupancy_update)
@@ -30,7 +32,7 @@ class CTCOffice(QObject):
         self.line.track_block_crossing_signal_updated.connect(self.handle_crossing_signal_update)
 
         # Create a list of train objects
-        self.trains: Dict[Train] = {}
+        self.trains: Dict[CTCTrainDispatch] = {}
 
         # Initialize the mode
         self.test_bench_mode = False
@@ -94,6 +96,9 @@ class CTCOffice(QObject):
         dispatched_train = self.get_train(train_id)
         dispatched_train.add_stop(target_block, arrival_time)
         
+        # Compute the initial authority for the train
+
+        # Compute the initial suggested speed for the train
 
         # print(f"Dispatched trains: {train_id} to block {target_block} at {arrival_time}")
 
@@ -113,13 +118,20 @@ class CTCOffice(QObject):
         # # Update the trains table
         # self.trains_updated.emit()\
 
+    @pyqtSlot(TrainDispatchUpdate)
+    def handle_train_dispatch_update(self, train_update: TrainDispatchUpdate):
+        if not self.train_exists(train_update.train_id):
+            self.add_train(train_update.train_id, self.line) # TODO: Change this to check for line
+        train_dispatch = self.get_train(train_update.train_id)
+        train_dispatch.update(train_update)
+        
     def train_exists(self, train_id: int) -> bool:
         return train_id in self.trains
 
     def add_train(self, train_id: int, line: Line) -> None:
-        self.trains[train_id] = Train(train_id, line)
+        self.trains[train_id] = CTCTrainDispatch(train_id, line, self.time_keeper)
 
-    def get_train(self, train_id: int) -> Train:
+    def get_train(self, train_id: int) -> CTCTrainDispatch:
         if self.train_exists(train_id):
             return self.trains[train_id]
         return None
