@@ -820,7 +820,7 @@ class Maintenance(QtWidgets.QMainWindow):
         self.add_block_info_table_data(waysideIndex)
 
         #Handling updates to block info table
-        self.blockInfoTable.itemChanged.connect(lambda item: self.item_changed_blockInfo(item))
+        #self.blockInfoTable.itemChanged.connect(lambda item: self.item_changed_blockInfo(item))
         self.blockInfoTable.itemClicked.connect(lambda item: self.item_changed_blockInfo_Signal(item))
 
         #Updating comboboxes
