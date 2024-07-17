@@ -171,7 +171,95 @@ class Line(QObject):
         self.past_yard = data['past_yard']
         self.default_route = data['default_route']
 
+    def get_travel_time(self, start: int, end: int) -> int:
+
+        """
+        Computes the travel time between two blocks on the line exclusive of
+        the start and end blocks.
+
+        Args:
+            start (int): The starting block number.
+            end (int): The ending block number.
+
+        Returns:
+            int: The time to travel (in seconds) between the two blocks.
+        """
+
+        time = 0
+        path = self.get_path(start, end)
+        for i in range(len(path) - 1):
+            time += self.get_track_block(path[i]).traversal_time
+        return time
+
+    def get_travel_time(self, path: List[int]) -> int:
+
+        """
+        Computes the travel time between two blocks on the line exclusive of
+        the start and end blocks.
+
+        Args:
+            path (List[int]): The list of block numbers in the path.
+
+        Returns:
+            int: The time to travel (in seconds) between the two blocks.
+        """
+
+        time = 0
+        for i in range(1, len(path) - 1):
+            time += self.get_track_block(path[i]).traversal_time
+        return time
+
+    def get_distance(self, start: int, end: int) -> float:
+        
+        """
+        Computes the distance between two blocks on the line exclusive of the
+        start and end blocks.
+
+        Args:
+            start (int): The starting block number.
+            end (int): The ending block number.
+
+        Returns:
+            float: The distance between the two blocks.
+        """
+
+        distance = 0
+        path = self.get_path(start, end)
+        for i in range(1, len(path) - 1):
+            distance += self.get_track_block(path[i]).length
+        return distance
+
+    def get_distance(self, path: List[int]) -> float:
+            
+            """
+            Computes the distance between two blocks on the line exclusive of the
+            start and end blocks.
+    
+            Args:
+                path (List[int]): The list of block numbers in the path.
+    
+            Returns:
+                float: The distance between the two blocks.
+            """
+    
+            distance = 0
+            for i in range(1, len(path) - 1):
+                distance += self.get_track_block(path[i]).length
+            return distance
+
     def get_path(self, start: int, end: int) -> List[int]:
+
+        """
+        Computes the path between two blocks on the line inclusive of the
+        start and end blocks.
+
+        Args:
+            start (int): The starting block number.
+            end (int): The ending block number.
+
+        Returns:
+            List[int]: The list of block numbers in the path.
+        """
 
         path = []
 
@@ -317,6 +405,6 @@ if __name__ == "__main__":
     line.load_routes()
     print(line)
 
-    target = 86
+    target = 100
     path = line.get_path(line.yard, target)
     print(f"Path from yard to block {target}: {path}")

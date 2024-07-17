@@ -5,9 +5,10 @@ from PyQt6.QtGui import QColor, QPalette
 from PyQt6.QtCore import Qt, pyqtSignal
 
 from train_system.common.line import Line
+from train_system.common.conversions import time_to_seconds
 
 class DispatchCommandWidget(QWidget):
-    dispatched_train = pyqtSignal(int, int, str)
+    dispatched_train = pyqtSignal(int, int, int)
 
     def __init__(self, line: Line, parent: Optional[QWidget] = None):
         super().__init__(parent)
@@ -170,13 +171,13 @@ class DispatchCommandWidget(QWidget):
         """
         
         for row in range(self.rows):
-            train_id = self.table.cellWidget(row, 0).currentText()
-            arrival_time = self.table.cellWidget(row, 2).currentText()
+            train_id = int(self.table.cellWidget(row, 0).currentText())
+            arrival_time = time_to_seconds(self.table.cellWidget(row, 2).currentText())
 
             target_block_text = self.table.cellWidget(row, 1).currentText()
-            target_block = ''.join(filter(str.isdigit, target_block_text[:2]))
+            target_block = int(''.join(filter(str.isdigit, target_block_text[:2])))
 
-            self.dispatched_train.emit(int(train_id), int(target_block), arrival_time)
+            self.dispatched_train.emit(train_id, target_block, arrival_time)
 
         self.rows = 0
         self.table.setRowCount(self.rows)
