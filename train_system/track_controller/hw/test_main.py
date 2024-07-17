@@ -21,16 +21,18 @@ def create_track_blocks(num_blocks):
         elif i == 3:  # Setting properties for the third block
             block.switch_options = [1]
         elif i == 58:  # Setting properties for block 58
-            block.switch_options = [63]
+            block.switch_options = [56,59]
         elif i == 76:  # Setting properties for block 76
-            block.switch_options = [77, 101]
+            block.switch_options = [75, 78]
         
         #simulating an emergency stop
         elif i == 57: #simulate block 78 being occupied to make the switch go to 101
-            block._occupancy = True
+            block._occupancy = False
         elif i == 60:#simulate block 125 being occupied.
             block._occupancy = True
-        
+        elif i == 125:
+            block._occupancy = True
+
         blocks.append(block)
     return blocks
 

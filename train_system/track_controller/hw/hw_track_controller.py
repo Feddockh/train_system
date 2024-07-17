@@ -220,52 +220,41 @@ class TrackController(QObject):
     def convert_to_strings(self):
     
     #Check block 58 Switch Position
-        if(self.track_blocks[57].switch_position == 1):
-            self.message_switch58 = "Switch from 58 to yard is connected, all trains going into yard"
-            
-            #Emergency Stop
-            if(self.track_blocks[57].authority == 0):
-                self.message_switch58 = "EMERGENCY STOP at switch 58"
-        else:
+        if(self.track_blocks[57]._switch_position == 1):
+            self.message_switch58 = "Switch from 58 to yard is connected, all trains going into yard"  
+        
+        #checks if the track to yard is not connected
+        elif(self.track_blocks[57]._switch_position == 0):
             self.message_switch58 = "Switch from 58 to yard is not connected, all trains are continuing along section J"
+        
+        #checks if all signals are red
+        elif(self.track_blocks[57]._light_signal == False 
+             and self.track_blocks[56]._light_signal == False 
+             and self.track_blocks[58]._light_signal == False):
+            self.message_switch58 = "ALL Trains must stop, all tracks occupied.\nWait till tracks clear"
 
-            #Emergency Stop
-            if(self.track_blocks[57].authority == 0):
-                self.message_switch58 = "EMERGENCY STOP at Switch 58"
-
+    
     #Check block 63 switch position
-        if(self.track_blocks[62].switch_position == 1):
+        if(self.track_blocks[62]._switch_position == 1):
             self.message_switch63 = "Switch from yard to Block 63 is open, Trains can leave the yard"
-            
-            #Emergency Stop
-            if(self.track_blocks[62].authority == 0):
-                self.message_switch63 = "EMERGENCY STOP at Switch 63"
         else:
             self.message_switch63 = "Switch from yard is open, Trains cannot leave yard, Trains must wait for section J to be unoccupied"
-            
-            #Emergency Stop
-            if(self.track_blocks[62].authority == 0):
-                self.message_switch63 = "EMERGENCY STOP at Switch 63"
 
     #Check block 76 switch position
-        if(self.track_blocks[75].switch_position == 1):
+        if(self.track_blocks[75]._switch_position == 1):
             self.message_switch76 = "Switch from 76 to 77 is connected"
-            
-            #EMERGENCY STOP
-            if(self.track_blocks[75].authority == 0):
-                self.message_switch76 =  "EMERGENCY STOP at Switch 76"
-        else:
+        elif(self.track_blocks[75]._switch_position == 0):
             self.message_switch76 = "Switch from 76 to 101 is connected"
-            
-            #EMERGENCY STOP
-            if(self.track_blocks[75].authority == 0):
-                self.message_switch76 = "EMERGENCY STOP at Switch 76"
+        #check if light colors are all red, all trains must stop
+        elif(self.track_blocks[75]._light_signal == False
+             and self.track_block[76]._light_signal == False
+             and self.track_block[100]._light_signal == False):
+            self.message_switch76 = "All Trains must stop, all tracks occupied.\nWait till tracks clear"
 
 
 
 
 #original send to pi
-
     def send_to_pi(self):
         # Initialize the SSH client
         ssh = paramiko.SSHClient()

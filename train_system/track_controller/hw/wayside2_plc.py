@@ -1,4 +1,4 @@
-#train_system/track_controller/sw_plc.py
+#train_system/track_controller/wayside2_plc.py
 
 """
 PLC program used to determine switch, crossing, and light state.
@@ -18,6 +18,7 @@ Returns:
 #Determining switch position
 
 #switch from 58 to yard
+#checks if any of J and K are occupied, if so, it switches to  yard
 if (track_blocks[62].occupancy 
     or track_blocks[63].occupancy 
     or track_blocks[64].occupancy
@@ -29,7 +30,7 @@ if (track_blocks[62].occupancy
     or track_blocks[61].occupancy): 
     
     #setting switch position
-    track_blocks[57].switch_position = 1
+    track_blocks[57]._switch_position = 1
 
     #setting light signals
     track_blocks[56]._light_signal = True  # Light is Green leading up to the switch
@@ -40,6 +41,7 @@ if (track_blocks[62].occupancy
     print("Switch from 58 to yard is connected, all trains going into yard")
 
 #emergency stop instance
+#checks if 
 elif ((track_blocks[62].occupancy 
        or track_blocks[63].occupancy 
        or track_blocks[64].occupancy
@@ -62,9 +64,10 @@ elif ((track_blocks[62].occupancy
     #print to terminal to error check
     print("EMERGENCY STOP TRAINS AT BLOCK 57")
 
+
 else:
     #setting switch positions
-    track_blocks[57].switch_position = 0
+    track_blocks[57]._switch_position = 0
 
     #setting light colors
     track_blocks[56]._light_signal = True  # This light will typically be green unless a collision on J
@@ -75,7 +78,7 @@ else:
     print("Switch from 58 to yard is not connected, all trains are continuing along section J")
 
 
-#switch from yard to 63
+#switch from yard to 63 checks J K L M and J to amake sure that there aren't any occupancies. If all are clear, then the switch from yard will connect
 if (track_blocks[58].occupancy 
     or track_blocks[59].occupancy 
     or track_blocks[60].occupancy # checks the block occupancies of block J,K,L, and M 
@@ -96,8 +99,10 @@ if (track_blocks[58].occupancy
 
     #setting switch position
 
-    track_blocks[62].switch_position = 0 # zero if section J is occupied, trains must stay in the yard
+    track_blocks[62]._switch_position = 0 # zero if section J is occupied, trains must stay in the yard
+
     track_blocks[62].authority = 0
+    
     #setting light color
     track_blocks[62]._light_signal = False # switch is not connected, so light is RED
 
@@ -106,7 +111,7 @@ if (track_blocks[58].occupancy
 
 else:
     #setting switch position
-    track_blocks[62].switch_position = 1 # Trains can leave the yard
+    track_blocks[62]._switch_position = 1 # Trains can leave the yard
 
     #setting light color
     track_blocks[62]._light_signal = True # Light is Green
@@ -116,6 +121,8 @@ else:
 
 
 #switch from 76 - 77 and 76 to 101
+
+#looks at Block N if occupied, switches to 101
 if (track_blocks[76].occupancy 
     or track_blocks[77].occupancy 
     or track_blocks[78].occupancy 
@@ -127,7 +134,10 @@ if (track_blocks[76].occupancy
     or track_blocks[84].occupancy): # I want to add an AND here to AND it will 101 and make sure it and other blocks are unoccupied
     
     #set switch_position
-    track_blocks[75].switch_position = 0
+    track_blocks[75]._switch_position = 0
+
+    #set track block 77 authority to 0 so that if occupied on that train, it will stop, and therefore won't drive into an open track, if coming from that direction
+    track_block[76].authority = 0
 
     #set the light signals
     track_blocks[75]._light_signal = True  # Signal at 75 is Green because it is still safe to enter the switch block
@@ -137,7 +147,8 @@ if (track_blocks[76].occupancy
     #Print to terminal to error check and make sure 
     print("Switch from 76 to 101 is connected")
 
-#else that checks T, U, V, W, X, Y, Z
+#else that checks T, U, V, W, X, Y, Z. 
+#if there are any occupancies int hese sections, the train connects to block 76
 elif (track_blocks[100].occupancy or
       track_blocks[101].occupancy or
       track_blocks[102].occupancy or
@@ -190,7 +201,10 @@ elif (track_blocks[100].occupancy or
       track_blocks[149].occupancy):
 
     #set switch position
-    track_blocks[75].switch_position = 1
+    track_blocks[75]._switch_position = 1
+
+    #set block authority for 101 so that if there is a train at 101 it'll stop until the track connects.
+    track_blocks[100].authority = 0
 
     #set light colors
     track_blocks[76]._light_signal = True  # Light signal is Green, Train will continue straight
@@ -198,6 +212,7 @@ elif (track_blocks[100].occupancy or
     track_blocks[100]._light_signal = False # Light to blue 101 is RED
     print("Switch from 76 to 77 is connected")
 
+#if sections N R S T U V W X Y Z have any occupancies a the same time, the trains must emergency stop
 elif ((track_blocks[76].occupancy 
        or track_blocks[77].occupancy 
        or track_blocks[78].occupancy 
@@ -262,6 +277,11 @@ elif ((track_blocks[76].occupancy
     track_blocks[75]._light_signal = False #Red emergency
     track_blocks[100]._light_signal = False #Red emergency
 
-    track_blocks[75].authority = 0 #emergency so authority set to 0
+    #make all authorities around the switch 0, so the train doesn't continue driving in a 3 way occupied intersection of track
+    #EMERGENCY
+    track_blocks[75].authority = 0 
+    track_blocks[76].authority = 0
+    track_blocks[100].authority = 0
+    
     #Print to terminal to error check
     print("EMERGENCY STOP, TRAIN HAS NO WHERE TO GO AT BLOCK 76")
