@@ -7,13 +7,8 @@ def main():
     
     tc = TrainController(tm)
 
-    #test ui inputs
-    #tc.faults[1] = True
-
-    #tc.update_train_controller()
-
-    #print("controller speed " + str(tc.authority))
-    #print("train model authority " + str(tc.train_model.authority))
+    driver = DriverWindow()
+    
 
     #open ui
     app = QApplication(sys.argv)

@@ -1,9 +1,10 @@
 import sys
 from PyQt6.QtWidgets import *
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, pyqtSlot, pyqtSignal
 from train_system.train_controller.tc_widgets import CircleWidget, EngineerTable
 #from train_system.train_controller import TrainController
 from train_system.common.gui_features import CustomTable
+from train_system.train_controller.train_controller import TrainModel
 
 GREEN = "#29C84C"
 RED = "#FF4444"
@@ -582,15 +583,12 @@ class TestBenchWindow(QMainWindow):
 
 
 class DriverWindow(QMainWindow): ###DriverWindow
-    def __init__(self, train_controller):
+    def __init__(self):
         super().__init__()
 
         self.setWindowTitle("Driver") #Driver
 
-        self.train = train_controller
-
-        #update classes
-        self.train.simulate_timestep()
+        self.tm = TrainModel()
 
         self.test_window = None
         self.manual_window = None
@@ -652,7 +650,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
 
         #create the engine fault signal
         self.engine_circle = CircleWidget(10, 200)
-        if(self.train.train_model.faults[0] == False):
+        if(self.tm.faults[0] == False):
             self.engine_circle.setColor(GREEN)
         else:
             self.engine_circle.setColor(RED)
@@ -661,7 +659,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
 
         #create the brake fault signal
         self.brake_circle = CircleWidget(20, 200)
-        if(self.train.train_model.faults[1] == False):
+        if(self.tm.faults[1] == False):
             self.brake_circle.setColor(GREEN)
         else:
             self.brake_circle.setColor(RED)
@@ -670,7 +668,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
 
         #create the signal fault signal
         self.signal_circle = CircleWidget(30, 200)
-        if(self.train.train_model.faults[2] == False):
+        if(self.tm.faults[2] == False):
             self.signal_circle.setColor(GREEN)
         else:
             self.signal_circle.setColor(RED)
@@ -695,7 +693,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         header_font.setPointSize(12)
         curr_speed_label.setFont(header_font)
         
-        self.curr_speed_stat = QLabel(str(self.convert_to_mph(self.train.train_model.get_current_speed())) + " mph") 
+        self.curr_speed_stat = QLabel(str(self.convert_to_mph(self.tm.get_current_speed())) + " mph") 
         self.curr_speed_stat.setFixedSize(50, 25)
         self.curr_speed_stat.setStyleSheet("background-color: #C8C8C8; color: black;")
 
@@ -709,7 +707,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         comm_speed_label.setFixedSize(150, 25)
         comm_speed_label.setFont(header_font)
 
-        self.comm_speed_stat = QLabel(str(self.convert_to_mph(self.train.train_model.get_commanded_speed())) + " mph")
+        self.comm_speed_stat = QLabel(str(self.convert_to_mph(self.tm.get_commanded_speed())) + " mph")
         self.comm_speed_stat.setFixedSize(50, 25)
         self.comm_speed_stat.setFont(data_font)
         self.comm_speed_stat.setStyleSheet("background-color: #C8C8C8; color: black;")
@@ -719,7 +717,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         curr_authority_label.setFixedSize(150, 25)
         curr_authority_label.setFont(header_font)
 
-        self.curr_authority_stat = QLabel(str(self.convert_to_ft(self.train.train_model.authority)) + " ft")
+        self.curr_authority_stat = QLabel(str(self.convert_to_ft(self.tm.authority)) + " ft")
         self.curr_authority_stat.setFixedSize(50, 25)
         self.curr_authority_stat.setFont(data_font)
         self.curr_authority_stat.setStyleSheet("background-color: #C8C8C8; color: black;")
@@ -899,10 +897,10 @@ class DriverWindow(QMainWindow): ###DriverWindow
         loc_and_des_label.setFixedSize(250, 50)
         loc_and_des_label.setFont(header_font)
 
-        self.loc_label = QLabel("Location: " + str(self.train.train_model.get_position())) 
+        self.loc_label = QLabel("Location: " + str(self.tm.get_position())) 
         self.loc_label.setFixedSize(100, 50)
 
-        self.des_label = QLabel(str(self.train.train_model.get_station_name()))
+        self.des_label = QLabel(str(self.tm.get_station_name()))
         self.des_label.setFixedSize(100, 50)
 
         #create emergency brake
@@ -941,7 +939,8 @@ class DriverWindow(QMainWindow): ###DriverWindow
         widget.setLayout(main_layout)
         self.setCentralWidget(widget)
 
-    def toggle_driver_mode(self, check): ###REDO
+    @pyqtSlot (bool)
+    def handle_toggle_driver_mode(self, check: bool) -> None:
         if check:
             self.driver_mode = "automatic"
             self.train.set_driver_mode("automatic")
@@ -986,87 +985,135 @@ class DriverWindow(QMainWindow): ###DriverWindow
     """
     NEEDS ERROR CHECKING
     """
-    def setpoint_edit_changed(self, x):
+    @pyqtSlot (str)
+    def handle_setpoint_edit_changed(self, x: str) -> None:
         if(x != ""):
             self.setpoint_speed = float(x)
-            self.train.setpoint_speed = self.convert_to_ms(float(x))
+            #self.train.setpoint_speed = self.convert_to_ms(float(x))
 
-    def service_brake_toggled(self, check):
+    @pyqtSlot (bool)
+    def handle_service_brake_toggled(self, check: bool) -> None:
         if check:
             self.serv_brake_status = True
-            self.train.brake.set_service_brake(True)
+            #self.train.brake.set_service_brake(True)
         else:
             self.serv_brake_status = False
-            self.train.brake.set_service_brake(False)
+            #self.train.brake.set_service_brake(False)
 
-    def emergency_brake_toggled(self, check):
+    @pyqtSlot (bool)
+    def handle_emergency_brake_toggled(self, check: bool) -> None:
         if check:
             self.emerg_brake_status = True
-            self.train.brake.set_emergency_brake(True)
+            #self.train.brake.set_emergency_brake(True)
         else:
             self.emerg_brake_status = False
-            self.train.brake.set_emergency_brake(False)
+            #self.train.brake.set_emergency_brake(False)
 
 
     """
     NEEDS ERROR CHECKING
     """
-    def comm_temp_changed(self, x):
+    @pyqtSlot (str)
+    def handle_comm_temp_changed(self, x: str) -> None:
         if(x != ""):
             self.train.train_model.set_train_temp(int(x))
-            self.train.ac.set_commanded_temp(int(x))
+            #self.train.ac.set_commanded_temp(int(x))
 
-    def refresh(self):
-        """
-        Updates all train controller values
-        """
-        self.train.simulate_timestep()
+    @pyqtSlot(TrainModel)
+    def handle_mock_train_update(self, train_model: TrainModel) -> None:
+        self.tm = train_model
 
-        #this function refreshes all dynamic variables and displays
-        #self.faults_list = self.train.faults
-        #self.curr_speed = self.convert_to_mph(self.train.current_speed)
-        #self.comm_speed = self.convert_to_mph(self.train.commanded_speed)
-        #self.authority = self.convert_to_ft(self.train.authority)
-        self.setpoint_speed = self.convert_to_mph(self.train.setpoint_speed)
-        self.power = self.train.get_power_command()
-        """
-        add indoor and outdoor
-        """
-        self.light_status = self.train.lights.get_status()
-        self.left_door = self.train.doors.get_left()
-        self.right_door = self.train.doors.get_right()
-        #self.temp = self.train.ac.get_current_temp()
-        self.comm_temp = self.train.ac.get_commanded_temp()
-        #self.position = self.train.position
-        self.brake_on = self.train.brake.get_service_brake() or self.train.brake.get_emergency_brake()
-        self.driver_mode = self.train.get_driver_mode()
+        self.curr_speed_stat.setText(str(self.convert_to_mph(self.tm.get_current_speed())) + " mph")
+        self.comm_speed_stat.setText(str(self.convert_to_mph(self.tm.get_commanded_speed())) + " mph")
+        self.curr_authority_stat.setText(str(self.convert_to_ft(self.tm.authority)) + " ft")
+        self.loc_label.setText("Location: " + str(self.tm.get_position()))
+        self.des_label.setText(str(self.tm.get_station_name()))
 
-        self.curr_speed_stat.setText(str(self.convert_to_mph(self.train.train_model.get_current_speed())) + " mph")
-        self.comm_speed_stat.setText(str(self.convert_to_mph(self.train.train_model.get_commanded_speed())) + " mph")
-        self.curr_authority_stat.setText(str(self.convert_to_ft(self.train.train_model.authority)) + " ft")
-        self.power_stat.setText(str(self.power) + " kW")
-        self.curr_temp.setText("Train Temperature: " + str(self.temp) + " F")
-        self.loc_label.setText("Location: " + str(self.train.train_model.get_position()))
-        self.des_label.setText(str(self.train.train_model.get_station_name()))
-
-        if(self.train.train_model.faults[0] == False):
+        if(self.tm.faults[0] == False):
             self.engine_circle.setColor(GREEN)
         else:
             self.engine_circle.setColor(RED)
 
-        if(self.train.train_model.faults[1] == False):
+        if(self.tm.faults[1] == False):
             self.brake_circle.setColor(GREEN)
         else:
             self.brake_circle.setColor(RED)
 
-        if(self.train.train_model.faults[2] == False):
+        if(self.tm.faults[2] == False):
             self.signal_circle.setColor(GREEN)
         else:
             self.signal_circle.setColor(RED)
 
+    ###??? and commanded temp
+    @pyqtSlot(float)
+    def handle_setpoint_speed_update(self, speed: float) -> None:
+        self.setpoint_speed = self.convert_to_mph(speed)
+
+
+    @pyqtSlot(float) 
+    def handle_power_update(self, power: float) -> None:
+        self.power = power
+        self.power_stat.setText(str(self.power) + " kW")
+
+    @pyqtSlot(bool)
+    def handle_light_status_update(self, lights: bool) -> None:
+        self.light_status = lights
+
+        if(self.light_status == True): ###might change colors
+            self.light_staus_label.setText("Lights On")
+            self.light_staus_label.setStyleSheet("background-color: #29C84C; color: white;")
+        else:
+            self.light_staus_label.setText("Lights Off")
+            self.light_staus_label.setStyleSheet("background-color: #FF4444; color: white;")
+
+    @pyqtSlot(bool)
+    def handle_left_door_update(self, door: bool) -> None:
+        self.left_door = door
+
+        if(self.left_door == True):
+            self.left_door_label.setText("Left Door Status: Open")
+        else:
+            self.left_door_label.setText("Left Door Status: Closed")
+            
+    @pyqtSlot(bool)
+    def handle_right_door_update(self, door: bool) -> None:
+        self.right_door = door
+
+        if(self.right_door == True):
+            self.right_door_label.setText("Right Door Status: Open")
+        else:
+            self.right_door_label.setText("Right Door Status: Closed")
+
+    @pyqtSlot(int)
+    def handle_train_temp_update(self, temp: int) -> None:
+        self.temp = temp
+
+        self.curr_temp.setText("Train Temperature: " + str(self.temp) + " F")
+
+    @pyqtSlot(bool)
+    def handle_service_brake_update(self, brake: int) -> None:
+        self.serv_brake_status = brake
+
+        self.brake_on = self.serv_brake_status or self.emerg_brake_status
+
         if self.serv_brake_status == True:
             self.service_brake_button.setChecked(True)
-        
+
+        if self.brake_on == True:
+            self.brake_status_label.setText("Brake Status: On")
+            self.brake_status_label.setFixedSize(75, 50)
+            self.brake_status_label.setStyleSheet("background-color: #FF4444; color: white;")
+        else:
+            self.brake_status_label.setText("Brake Status: Off")
+            self.brake_status_label.setFixedSize(75, 50)
+            self.brake_status_label.setStyleSheet("background-color: #29C84C; color: white;")
+
+    @pyqtSlot(bool)
+    def handle_emerg_brake_update(self, brake: int) -> None:
+        self.emerg_brake_status = brake
+
+        self.brake_on = self.serv_brake_status or self.emerg_brake_status
+
         if self.emerg_brake_status == True:
             self.em_brake_button.setChecked(True)
 
@@ -1079,22 +1126,9 @@ class DriverWindow(QMainWindow): ###DriverWindow
             self.brake_status_label.setFixedSize(75, 50)
             self.brake_status_label.setStyleSheet("background-color: #29C84C; color: white;")
 
-        if(self.light_status == True): ###might change colors
-            self.light_staus_label.setText("Lights On")
-            self.light_staus_label.setStyleSheet("background-color: #29C84C; color: white;")
-        else:
-            self.light_staus_label.setText("Lights Off")
-            self.light_staus_label.setStyleSheet("background-color: #FF4444; color: white;")
-        
-        if(self.right_door == True):
-            self.right_door_label.setText("Right Door Status: Open")
-        else:
-            self.right_door_label.setText("Right Door Status: Closed")
-        
-        if(self.left_door == True):
-            self.left_door_label.setText("Left Door Status: Open")
-        else:
-            self.left_door_label.setText("Left Door Status: Closed")
+    @pyqtSlot(str)
+    def handle_driver_mode_update(self, mode: str) -> None:
+        self.driver_mode = mode
 
         if self.driver_mode == "automatic":
             self.mode_button.setChecked(True)
@@ -1104,7 +1138,27 @@ class DriverWindow(QMainWindow): ###DriverWindow
             self.mode_button.setChecked(False)
             self.mode_button.setText("Manual")
             self.speed_input.setEnabled(True)
+    
 
+
+
+
+
+
+        
+
+"""
+
+
+
+
+        
+        
+        
+        
+
+        
+"""
         
 
 
@@ -1112,7 +1166,7 @@ class EngineerWindow(QMainWindow):
     def __init__(self, train_controller):
         super().__init__()
 
-        train = train_controller
+        self.train = train_controller
 
         headers = ["Train", "Kp", "Ki"]
         self.data = []
