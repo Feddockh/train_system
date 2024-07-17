@@ -7,7 +7,7 @@ from train_system.common.crossing_signal import CrossingSignal
 crossing_signal_map = {
     CrossingSignal.ON: True,
     CrossingSignal.OFF: False,
-    CrossingSignal.NA: False
+    CrossingSignal.NA: None
 }
 
 class TrackBlock(QObject):
