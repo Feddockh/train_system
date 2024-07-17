@@ -3,6 +3,7 @@
 import os
 import json
 import pandas as pd
+import math
 from typing import List
 from PyQt6.QtCore import QObject, pyqtSignal
 
@@ -325,6 +326,11 @@ class Line(QObject):
                 station_side=station_side,
                 switch_options=switch_options
             )
+            block._crossing_signal_bool = row['Railway Crossing']
+            block._light_signal = row['Light Signal']
+            pos = row['Switch Position']
+            if(pos is not None and not (isinstance(pos, float) and math.isnan(pos))):
+                block._switch_position = int(row['Switch Position'])
             self.add_track_block(block)
 
     def load_routes(self, file_path: str = None) -> None:
