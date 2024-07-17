@@ -46,10 +46,10 @@ class TrackBlock(QObject):
         self.station = station
         self.station_side = station_side
         self.switch_options = switch_options
+        self.beacon = beacon
 
         # Calculated parameters
         self.traversal_time = self.length / (self.speed_limit / 3.6) # seconds
-        self.beacon = beacon
 
         # Dynamic parameters
         self._suggested_speed = 0
