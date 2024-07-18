@@ -86,7 +86,6 @@ class CTCOffice(QObject):
         
         # Get the train object
         train = self.get_train(train_id)
-<<<<<<< HEAD
 
         # If the train is boarding, do not update the authority
         if not train.departed and train.departure_time > self.time_keeper.current_second:
@@ -102,26 +101,6 @@ class CTCOffice(QObject):
         # Compute the authority by summing the lengths of the blocks in the path and half the length of the stop block
         authority = self.line.get_path_length(unobstructed_path)
         authority += self.line.get_track_block(next_stop_id).length / 2
-=======
-        current_block_id = train.get_current_block_id()
-        next_stop_id = train.get_next_stop()[1]
-
-        # Get the unobstructed path to the next stop
-        unobstructed_path = self.line.get_unobstructed_path(current_block_id, next_stop_id)
-        
-        # Compute the authority by summing the lengths of the blocks in the path
-        authority = 0
-        for i in range(1, len(unobstructed_path)):
-            next_block_id = unobstructed_path[i]
-            next_block = self.line.get_track_block(next_block_id)
-            authority += next_block.length
-
-            # If we are reaching the stop, set authority to half the distance, else add the full distance
-            if next_block.number == next_stop_id:
-                authority += next_block.length / 2
-            else:
-                authority += next_block.length
->>>>>>> 5642103 (New and improved implementation of switches)
 
         # If the next stop is the yard negate authority
         if next_stop_id == self.line.yard:
@@ -337,10 +316,6 @@ class CTCOffice(QObject):
     
     @pyqtSlot(int, bool)
     def handle_occupancy_update(self, block_number: int, occupancy: bool) -> None:
-<<<<<<< HEAD
-=======
-        
->>>>>>> 5642103 (New and improved implementation of switches)
         # Check if it is CTC's responsibility to update the speed and authority of the trains
         if self.mbo_mode:
             return
@@ -402,8 +377,12 @@ class CTCOffice(QObject):
             # Update the speed and authority of the trains
             self.update_all_trains_speed_authority()
 
+<<<<<<< HEAD
         print(f"Block {block_number} occupancy updated to {occupancy}")
 >>>>>>> 5642103 (New and improved implementation of switches)
+=======
+        # print(f"Block {block_number} occupancy updated to {occupancy}")
+>>>>>>> 16e88e9 (Modified line get path functions to handle bidirectional starting points, updated train dispatch to accomadate changes, updated ctc authority computation)
 
     @pyqtSlot(int, int)
     def handle_crossing_signal_update(self, block_number: int, new_signal: int) -> None:
