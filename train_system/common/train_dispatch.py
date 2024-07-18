@@ -248,6 +248,26 @@ class TrainDispatch(QObject, metaclass=MetaQObjectABC):
 
         return self.departure_time
 
+    def update_eta_lag(self, tick: int = None) -> None:
+
+        # If the route is empty, return None
+        if not self.route:
+            self.eta = None
+            self.lag = None
+            return
+        
+        # If the tick is None, get the current time from the time keeper
+        if not tick:
+            tick = self.time_keeper.current_second
+
+        # Compute the estimated time of arrival based on the travel time to the next stop
+        route_to_next_stop = self.get_route_to_next_stop()
+        self.eta = tick + self.line.get_travel_time(route_to_next_stop) # 100s
+
+        # Compute the lag time
+        arrival_time, _ = self.get_next_stop() # 300s
+        self.lag = self.eta - arrival_time # 100 - 300 = -200
+
     def compute_route(self, reset: bool = False) -> None:
 
         # If reset is True, plan the route from the current block to the first stop

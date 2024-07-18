@@ -178,6 +178,40 @@ class CTCOffice(QObject):
                     current_block.occupancy = False
                     next_block.occupancy = True
 
+    def test_bench_simulation(self) -> None:
+
+        # Get the sorted list of trains by lag
+        ordered_trains = self.get_trains_ordered_by_lag()
+
+        # Check through all the trains to see if they are ready to move
+        for train in ordered_trains:
+
+            if train.dispatched:
+
+                # Get the current and next block of the train
+                current_block_id = train.get_current_block_id()
+                current_block = self.line.get_track_block(current_block_id)
+                next_block_id = train.get_next_block_id()
+                next_block = self.line.get_track_block(next_block_id)
+
+                # Check if the train is dispatched and sitting at the yard
+                move_train = False
+                if current_block_id == self.line.yard:
+                    move_train = True
+
+                # Check if the train has exceeded the time per block
+                elif train.time_in_block >= current_block.length / train.suggested_speed:
+                    move_train = True
+
+                # Check if the next block is clear, not under maintenance, and in the next blocks of the current block (switch)
+                if next_block.occupancy or next_block.under_maintenance or (next_block.number not in current_block.next_blocks):
+                    move_train = False
+
+                # Move the train to the next block using the occupancies if all conditions are met
+                if move_train:
+                    current_block.occupancy = False
+                    next_block.occupancy = True
+
     @pyqtSlot(int)
     def handle_time_update(self, tick: int) -> None:
         
