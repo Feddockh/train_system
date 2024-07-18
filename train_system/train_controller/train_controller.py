@@ -214,6 +214,7 @@ class TrainController(QObject):
     @pyqtSlot(bool)
     def handle_service_brake_toggled(self, check: bool) -> None:
         if check:
+            print("in tc handler")
             self.brake.set_service_brake(True)
         else:
             self.brake.set_service_brake(False)
@@ -274,6 +275,7 @@ class TrainController(QObject):
         ## Mutator functions
         # Input) status: boolean
         def set_service_brake(self, status: bool):
+            print("in set service brake")
             self.service_brake = status
             self.service_brake_updated.emit(status)
         # Input) status: boolean
