@@ -98,13 +98,21 @@ class MBOOffice(QObject):
         Calculate trains authority such that more than one train can be in a block 
         each train stops at it's desitnation and opens the doors, and stops before any block maintenance 
         """
+        #initialize to 0
         self.authority = 0
+        
+        #get block info
         current_block = self.green_line.get_track_block(block)
+        #get the next block on track
         next_blocks = current_block.next_blocks()
-        train_to_close = False
+        
+        #if train does not exist return 0 (not dispatched)
         if not self.train_exists(train_id):
             return 0
+        
+        #get info about dispatched train
         train = self.get_train(train_id)
+        #finding the block the train is supposed to stop in for station 
         next_stop_block = train.get_next_stop()
         
         print(f"calculating authority for {train_id} at position {position} at block {current_block} and going to {next_stop_block} ")
@@ -112,16 +120,14 @@ class MBOOffice(QObject):
         #list of blocks to next stop, including start and end 
         path = train.get_route_to_next_stop()
         
-        #if next stop block has not changed 
         path_length = 0
-        
         for blocks in path:
             path_length_m += blocks.length 
         
         #set authority to next station stop 
         
-        #TODO 
-        self.authority = path_length - ((next_stop_block.length / 2) + (32.2/2)) ##NEED TO FIX TO TAKE INTO ACCOUNT TRAINS CURRENT POSITION AND ASSUMPTION THAT THE TRAIN POSITION IS FROM THE FRONT OF THE TRAIN AND WANT MIDDLE OF TRAIN TO STOP AT THE MIDDLE OF THE BLOCK 
+        #TODO NEED TO FIX TO ACCOUNT FOR TRAIN CURRENT POSITION 
+        self.authority = path_length - ((next_stop_block.length / 2) + (32.2/2))
         
         #change authority to service break distance if... 
         
@@ -157,15 +163,15 @@ class MBOOffice(QObject):
                 #pop next stop?
                 
         #conditions to change authority 
-            #to close to next train on path
+            # to close to next train on path
             # XX next block is under maint (next_block.under_mainenance = True)
             # XX switch is not in the right position (next_block != next_block_path)
-            # XX going to yard (next_stop_block = self.line.yard then authority is negative)
-            #1Mil to show open doors, for a minute while at stop 
+            # going to yard (next_stop_block = self.line.yard then authority is negative)
+            # 1Mil to show open doors, for a minute while at stop 
                 #train is within 1 trains length of middle of block AND has been at the same position for two ticks in a row
                 #train_dispatch compute_departure_time
                 #pop next stop??
-            #if minute has passed, start authority to next stop 
+            # if minute has passed, start authority to next stop 
                 #if time_keeper = departure time 
                     #authority = path to next station 
         
@@ -177,9 +183,9 @@ class MBOOffice(QObject):
             each train stops at it's desitnation and opens the doors, and stops before any block maintenance 
             """
          self.authority = 0
-         
-         current_block = self.green_line.get_track_block(block)
-         next_blocks = current_block.next_blocks()
+
+         # block_info = self.green_line.get_track_block(block)
+         next_blocks = block.next_blocks()
          
          path = self.green_line.get_path(block, destination_block)
          next_blocks = block
@@ -189,7 +195,11 @@ class MBOOffice(QObject):
             
          #if next stop block has not changed 
          path_length = 0
-            
+         for blocks in path:
+            path_length_m += blocks.length
+        
+         self.authority = path_length
+         
          #set authority to next station stop  
           
          #if next block is under maint or switch is not in right position 
@@ -201,7 +211,7 @@ class MBOOffice(QObject):
             self.authority = -(self.authority)
             
             #checking if train is at full stop at station, signalling to open doors with authority 
-         elif (current_block == destination_block):
+         elif (block == destination_block):
             #should keep authority big while only resetting departure time once
             if (position == self.previous_position[{train_id}]):
                 self.authority = 1,000,000 
@@ -209,7 +219,6 @@ class MBOOffice(QObject):
          return (self.authority)
     
                
-    #incorporate time keeper here, every tick call load in posotions, calculate speed and authority, check if can send, if so encypt and emit data   
     class Satellite(QObject):
         
         send_data_signal = pyqtSignal(str, float, float)
@@ -223,6 +232,10 @@ class MBOOffice(QObject):
             
             self.train_positions = {}
             self.train_id = ''
+            
+            time_keeper = TimeKeeper()
+            
+            self.mbo_office = MBOOffice(time_keeper)
         
         @pyqtSlot(str, float, int)
         def satellite_recieve(self, train_id: str, position: float, block: int) -> None:
@@ -234,24 +247,27 @@ class MBOOffice(QObject):
                 position (float): _description_
                 blcok (int): _description_
             """
-            self.train_positions[train_id] = {'position' : position, 'block' : block}
-            self.satellite_send(train_id)
+            #pass self.train_positions[train_id] = {'position' : position, 'block' : block}
+            self.satellite_send(train_id, position, float)
         
-        def satellite_send(self, train_id: str):
+        def satellite_send(self, train_id: str, position: float, block: int):
             """
             gathering info to send over satellite, authority and speed
             
             """
-            self.train_info = self.train_positions[train_id]
-            self.authority = self.compute_authority(self.train_info)
-            self.commanded_speed = self.compute_commanded_speed(self.train_info)
+            #pass self.train_info = self.train_positions[train_id]
+            #####
+            self.authority = self.mbo_office.test_authority(train_id, position, block, 65)
+            self.commanded_speed = self.mbo_office.compute_commanded_speed(train_id, block)
              
             if (self.mbo_mode == True):
                 """
                 send speed and authority 
                 """ 
                 print('mbo mode is true')
-                #pass encrypted_data = self.encrypty(data)
+                #pass encrypted_id = self.encrypty(train_id)
+                #pass encrypted_authority = self.encrypt(authority)
+                #pass encrypted_speed = self.(commanded_speed)
                 
                 #will emit encrypt
                 self.send_data_signal.emit(self.train_id, self.authority, self.commanded_speed)
@@ -266,12 +282,14 @@ class MBOOffice(QObject):
             """
             encryption to send vital information
             """
+            #will generate key in top level main to use here, and encrypt the speed and authority 
             
         
         def decrypt(self):
             """
             decryption to recieve position(s)
             """
+            #will generate key in top level main to use here, and decrypt the speed and authority 
                 
     #create schedules from planners selected date and time on UI
     class Schedules:
@@ -357,7 +375,7 @@ class MBOOffice(QObject):
                                 if arrival_time > shift_end_time:
                                     break
 
-                                schedule.append([f"Train{train_id}", f"{station}", self.green_line.name, arrival_time, driver, crew1, crew2])
+                                schedule.append([f"Train{train_id}", self.green_line.name,f"{station}", arrival_time, driver, crew1, crew2])
 
                                 # Adding time to stop at station for 1 minute
                                 train_current_time = arrival_time + timedelta(minutes=1)
@@ -383,14 +401,7 @@ class MBOOffice(QObject):
          create_schedule(filtered_route_schedule1, f"1_{train_throughput.lower()}")
          create_schedule(filtered_route_schedule2, f"2_{train_throughput.lower()}")
                     
-                
-            
-            
-    
-       
-            
-            
-                  
+                               
             
 # pass if __name__ == "__main__":
     
