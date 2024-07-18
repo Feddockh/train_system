@@ -8,18 +8,21 @@ from typing import List
 from PyQt6.QtCore import QObject, pyqtSignal
 
 from train_system.common.track_block import TrackBlock
+from train_system.common.track_switch import TrackSwitch
 from train_system.common.station import Station
 
 class Line(QObject):
 
-    # Signals to notify updates (block number, attribute value)
+    # Signals to notify track block updates (block number, attribute value)
     track_block_suggested_speed_updated = pyqtSignal(int, int)
     track_block_authority_updated = pyqtSignal(int, int)
     track_block_occupancy_updated = pyqtSignal(int, bool)
-    track_block_switch_position_updated = pyqtSignal(int, int)
     track_block_crossing_signal_updated = pyqtSignal(int, int)
     track_block_under_maintenance_updated = pyqtSignal(int, bool)
     track_block_track_failure_updated = pyqtSignal(int, int)
+
+    # Signals to notify switch updates
+    switch_position_updated = pyqtSignal(int)
 
     def __init__(self, name: str) -> None:
         super().__init__()
@@ -36,6 +39,8 @@ class Line(QObject):
 
         self.name = name
         self.track_blocks: List[TrackBlock] = []
+        self.switches: List[TrackSwitch] = []
+        self.stations: List[Station] = [] # TODO: Implement stations
         self.yard: int = None
         self.to_yard: List[int] = []
         self.from_yard: List[int] = []
@@ -55,9 +60,14 @@ class Line(QObject):
             repr(block) for block in self.track_blocks
         )
 
+        switch_repr = "\n".join(
+            repr(switch) for switch in self.switches
+        )
+
         res = (
             f"Line:          {self.name}\n"
             f"track_blocks:  [\n{blocks_repr}\n]\n"
+            f"switches:      [\n{switch_repr}\n]\n"
             f"yard:          {self.yard}\n"
             f"to_yard:       {self.to_yard}\n"
             f"from_yard:     {self.from_yard}\n"
@@ -69,11 +79,11 @@ class Line(QObject):
 
     def add_track_block(self, track_block: TrackBlock) -> None:
         self.track_blocks.append(track_block)
-        self.connect_signals(track_block)
+        self.connect_track_block_signals(track_block)
 
     def set_track_block(self, track_block: TrackBlock) -> None:
         self.track_blocks[track_block.number - 1] = track_block
-        self.connect_signals(track_block)
+        self.connect_track_block_signals(track_block)
 
     def get_track_block(self, number: int) -> TrackBlock:
 
@@ -93,13 +103,71 @@ class Line(QObject):
             print(f"Track block {number} not found.")
             return None
 
-    def connect_signals(self, track_block: TrackBlock) -> None:
+    def connect_track_block_signals(self, track_block: TrackBlock) -> None:
         track_block.suggested_speed_updated.connect(lambda new_speed, blk=track_block: self.track_block_suggested_speed_updated.emit(blk.number, new_speed))
         track_block.authority_updated.connect(lambda new_authority, blk=track_block: self.track_block_authority_updated.emit(blk.number, new_authority))
         track_block.occupancy_updated.connect(lambda new_occupancy, blk=track_block: self.track_block_occupancy_updated.emit(blk.number, new_occupancy))
-        track_block.switch_position_updated.connect(lambda new_position, blk=track_block: self.track_block_switch_position_updated.emit(blk.number, new_position))
         track_block.crossing_signal_updated.connect(lambda new_signal, blk=track_block: self.track_block_crossing_signal_updated.emit(blk.number, new_signal))
         track_block.under_maintenance_updated.connect(lambda new_maintenance, blk=track_block: self.track_block_under_maintenance_updated.emit(blk.number, new_maintenance))
+
+    def add_switch(self, track_switch: TrackSwitch) -> None:
+        self.switches.append(track_switch)
+        self.connect_switch_signals(track_switch)
+
+        for switch in self.switches:
+            for block_id in switch.connected_blocks:
+                block = self.get_track_block(block_id)
+                block.switch = switch
+
+    def get_switch(self, number: int) -> TrackSwitch:
+            
+            """
+            Retrieves a switch by its number.
+            
+            Args:
+                number (int): The switch number to retrieve.
+            
+            Returns:
+                TrackSwitch: The retrieved TrackSwitch object.
+            """
+    
+            for switch in self.switches:
+                if switch.number == number:
+                    return switch
+            print(f"Switch {number} not found.")
+            return None
+
+    def connect_switch_signals(self, switch: TrackSwitch) -> None:
+        switch.position_updated.connect(lambda new_position, sw=switch: self.switch_position_updated.emit(sw.number))
+
+    def get_unobstructed_path(self, start: int, end: int) -> List[int]:
+
+        # Get the path between the start and end blocks
+        path = self.get_path(start, end)
+
+        # Check if the first block is obstructed
+        if not path:
+            return []
+
+        # Check if the path is obstructed
+        current_block = self.get_track_block(start)
+        for i in range(1, len(path)):
+            
+            # Get the next track block along the path
+            next_block = self.get_track_block(path[i])
+
+            # Check if the block is occupied or under maintenance
+            if next_block.occupancy or next_block.under_maintenance:
+                return path[:i]
+
+            # Check if the block is a switch and the next block is not the next block in the path
+            if current_block.switch is not None and next_block.switch is not None:
+                if not current_block.switch.is_connected(current_block.number, next_block.number):
+                    return path[:i]
+
+            current_block = next_block
+
+        return path
 
     def get_path(self, start: int, end: int) -> List[int]:
 
@@ -271,6 +339,19 @@ class Line(QObject):
             time += self.get_track_block(path[i]).traversal_time
         return time
 
+    def load_defaults(self) -> None:
+            
+        """
+        Loads track blocks, switches, and routes from default files.
+        
+        Returns:
+            None
+        """
+
+        self.load_track_blocks()
+        self.load_routes()
+        self.load_switches()
+
     def load_track_blocks(self, file_path: str = None) -> None:
 
         """
@@ -327,7 +408,7 @@ class Line(QObject):
                 station_side=station_side,
                 switch_options=switch_options
             )
-            block._crossing_signal_bool = row['Railway Crossing']
+            block._crossing_signal_bool = row['Railway Crossing'] # TODO: Change this implementation 
             block._light_signal = row['Light Signal']
             pos = row['Switch Position']
             if(pos is not None and not (isinstance(pos, float) and math.isnan(pos))):
@@ -335,6 +416,10 @@ class Line(QObject):
             self.add_track_block(block)
 
     def load_routes(self, file_path: str = None) -> None:
+
+        if not self.track_blocks:
+            print("Error: Track blocks must be loaded before routes.")
+            return
 
         if not file_path:
             file_path = os.path.abspath(os.path.join("system_data\\routes", f"{self.name.lower()}_routes.json"))
@@ -347,6 +432,28 @@ class Line(QObject):
         self.from_yard = data['from_yard']
         self.past_yard = data['past_yard']
         self.default_route = data['default_route']
+
+    def load_switches(self, file_path: str = None) -> None:
+
+        if not self.track_blocks:
+            print("Error: Track blocks must be loaded before switches.")
+            return
+
+        if not file_path:
+            file_path = os.path.abspath(os.path.join("system_data\\switches", f"{self.name.lower()}_switches.json"))
+
+        with open(file_path, 'r') as file:
+            data = json.load(file)
+
+        for switch_info in data['track_switches']:
+            switch = TrackSwitch(
+                line=self.name,
+                number=switch_info['number'],
+                parent_block=switch_info['parent_block'],
+                child_blocks=switch_info['child_blocks'],
+                initial_child=switch_info['initial_child']
+            )
+            self.add_switch(switch)
 
 if __name__ == "__main__":
     line = Line('Green')
