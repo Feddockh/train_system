@@ -683,7 +683,7 @@ class TrainModel(QObject):
     commanded_speed_changed = pyqtSignal(float)
     authority_changed = pyqtSignal(float)
     train_temp_changed = pyqtSignal(int)
-    faults_changed = pyqtSignal(str[3])
+    faults_changed = pyqtSignal(bool[3])
     
     def __init__(self):
         super().__init__()
