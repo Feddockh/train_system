@@ -4,7 +4,7 @@ import os
 import json
 import pandas as pd
 import math
-from typing import List
+from typing import List, Optional
 from PyQt6.QtCore import QObject, pyqtSignal
 
 from train_system.common.track_block import TrackBlock
@@ -140,17 +140,14 @@ class Line(QObject):
     def connect_switch_signals(self, switch: TrackSwitch) -> None:
         switch.position_updated.connect(lambda new_position, sw=switch: self.switch_position_updated.emit(sw.number))
 
-    def get_unobstructed_path(self, start: int, end: int) -> List[int]:
-
-        # Get the path between the start and end blocks
-        path = self.get_path(start, end)
+    def get_unobstructed_path(self, path: List[int]) -> List[int]:
 
         # Check if the first block is obstructed
         if not path:
             return []
 
         # Check if the path is obstructed
-        current_block = self.get_track_block(start)
+        current_block = self.get_track_block(path[0])
         for i in range(1, len(path)):
             
             # Get the next track block along the path
@@ -169,13 +166,14 @@ class Line(QObject):
 
         return path
 
-    def get_path(self, start: int, end: int) -> List[int]:
+    def get_path(self, prev: int, start: int, end: int) -> List[int]:
 
         """
         Computes the path between two blocks on the line inclusive of the
         start and end blocks.
 
         Args:
+            prev (int): The previous block number.
             start (int): The starting block number.
             end (int): The ending block number.
 
@@ -206,13 +204,13 @@ class Line(QObject):
         
         # Determine the path if we start in the "from yard" segment
         elif start in self.from_yard:
-            start_index = self.search_route(start, self.from_yard)
+            start_index = self.search_route(start, self.from_yard, prev=prev)
             if end == self.yard:
                 path = self.from_yard[start_index:] + self.default_route + self.to_yard + [self.yard]
             elif end == self.from_yard:
 
                 # Find the index of the end block in the "from yard" segment, ideally after the start block
-                end_index = self.search_route(end, self.from_yard, start_index)
+                end_index = self.search_route(end, self.from_yard, seed=start_index)
                 if start_index < end_index:
                     path = self.from_yard[start_index:end_index + 1]
                 
@@ -233,14 +231,14 @@ class Line(QObject):
 
         # Determine the path if we start in the "default route" segment
         elif start in self.default_route:
-            start_index = self.search_route(start, self.default_route)
+            start_index = self.search_route(start, self.default_route, prev=prev)
             if end == self.yard:
                 path = self.default_route[start_index:] + self.to_yard + [self.yard]
             elif end in self.from_yard:
                 end_index = self.search_route(end, self.from_yard)
                 path = self.default_route[start_index:] + self.to_yard + [self.yard] + self.from_yard[:end_index + 1]
             elif end in self.default_route:
-                end_index = self.search_route(end, self.default_route, start_index)
+                end_index = self.search_route(end, self.default_route, seed=start_index)
                 if start_index < end_index:
                     path = self.default_route[start_index:end_index + 1]
                 else:
@@ -256,7 +254,7 @@ class Line(QObject):
 
         # Determine the path if we start in the "to yard" segment
         elif start in self.to_yard:
-            start_index = self.search_route(start, self.to_yard)
+            start_index = self.search_route(start, self.to_yard, prev=prev)
             if end == self.yard:
                 path = self.to_yard[start_index:] + [self.yard]
             elif end in self.from_yard:
@@ -266,7 +264,7 @@ class Line(QObject):
                 end_index = self.search_route(end, self.default_route)
                 path = self.to_yard[start_index:] + [self.yard] + self.from_yard + self.default_route[:end_index + 1]
             elif end in self.to_yard:
-                end_index = self.search_route(end, self.to_yard, start_index)
+                end_index = self.search_route(end, self.to_yard, seed=start_index)
                 if start_index < end_index:
                     path = self.to_yard[start_index:end_index + 1]
                 else:
@@ -279,7 +277,7 @@ class Line(QObject):
         
         # Determine the path if we start in the "past yard" segment
         elif start in self.past_yard:
-            start_index = self.search_route(start, self.past_yard)
+            start_index = self.search_route(start, self.past_yard, prev=prev)
             if end == self.yard:
                 path = self.past_yard[start_index:] + self.default_route + self.to_yard + [self.yard]
             elif end in self.from_yard:
@@ -292,7 +290,7 @@ class Line(QObject):
                 end_index = self.search_route(end, self.to_yard)
                 path = self.past_yard[start_index:] + self.default_route + self.to_yard[:end_index + 1]
             elif end in self.past_yard:
-                end_index = self.search_route(end, self.past_yard, start_index)
+                end_index = self.search_route(end, self.past_yard, seed=start_index)
                 if start_index < end_index:
                     path = self.past_yard[start_index:end_index + 1]
                 else:
@@ -306,19 +304,51 @@ class Line(QObject):
 
         return path
     
-    def search_route(self, block_number: int, route_segment: List[int], seed: int = 0) -> int:
+    def search_route(self, start: int, route_segment: List[int], seed: int = 0, prev: Optional[int] = None) -> int:
+        """
+        Searches for the index of a specific block in a route segment.
 
-        # Try to return the block in front of the seed index
-        if seed > 0:
-            for i in range(seed, len(route_segment)):
-                if route_segment[i] == block_number:
-                    return i
+        Parameters:
+        - start (int): The block to search for.
+        - route_segment (List[int]): The route segment to search within.
+        - seed (int): The starting index for the search.
+        - prev (Optional[int]): The previous block before the start block, if applicable.
 
-        # If there is no block in front of the seed index, search the entire segment
-        for i in range(len(route_segment)):
-            if route_segment[i] == block_number:
-                return i
+        Returns:
+        - int: The index of the start block in the route segment, or -1 if not found.
+        """
         
+        # If the route segment is empty or the start block is not in the route segment, return -1
+        if not route_segment or start not in route_segment:
+            print(f"Error: Route does not exist or {start} is not in the route.")
+            return -1
+        
+        # If the route segment has only one block, return 0
+        if len(route_segment) == 1:
+            return 0
+        
+        # If no previous block was given, find the first instance of the start block after the seed
+        if prev is None:
+            for i in range(seed, len(route_segment)):
+                if route_segment[i] == start:
+                    return i
+                
+        # If the previous block is the same as the start block, search for the first instance of the start block after the seed
+        if prev == start:
+            for i in range(seed, len(route_segment)):
+                if route_segment[i] == start:
+                    return i
+        
+        # If a previous block was given, find the index of the (prev, start) block pair
+        else:
+            if prev not in route_segment:
+                return 0
+            
+            for i in range(seed, len(route_segment)):
+                if route_segment[i] == start and i > 0 and route_segment[i - 1] == prev:
+                    return i
+        
+        # If the block or pair is not found, return -1
         return -1
 
     def get_travel_time(self, path: List[int]) -> int:
@@ -462,5 +492,5 @@ if __name__ == "__main__":
     print(line)
 
     target = 100
-    path = line.get_path(line.yard, target)
+    path = line.get_path(line.yard, line.yard, target)
     print(f"Path from yard to block {target}: {path}")

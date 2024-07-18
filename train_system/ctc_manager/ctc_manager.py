@@ -81,7 +81,8 @@ class CTCOffice(QObject):
         next_stop_id = train.get_next_stop()[1]
 
         # Get the unobstructed path to the next stop
-        unobstructed_path = self.line.get_unobstructed_path(current_block_id, next_stop_id)
+        path = train.get_route_to_next_stop()
+        unobstructed_path = self.line.get_unobstructed_path(path)
         
         # Compute the authority by summing the lengths of the blocks in the path
         authority = 0
@@ -267,7 +268,7 @@ class CTCOffice(QObject):
             # Update the speed and authority of the trains
             self.update_all_trains_speed_authority()
 
-        print(f"Block {block_number} occupancy updated to {occupancy}")
+        # print(f"Block {block_number} occupancy updated to {occupancy}")
 
     @pyqtSlot(int, int)
     def handle_crossing_signal_update(self, block_number: int, new_signal: int) -> None:
