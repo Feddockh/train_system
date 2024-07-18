@@ -652,6 +652,10 @@ class DriverWindow(QMainWindow): ###DriverWindow
 
         self.setpoint_speed = 5
         
+        self.faults = [False, False, False]
+        self.curr_speed = 0
+        self.comm_speed = 0
+        self.authority  = 0
 
 
         #the left outputs will use a vertical layout
@@ -698,8 +702,8 @@ class DriverWindow(QMainWindow): ###DriverWindow
 
 
         #create the engine fault signal
-        self.engine_circle = CircleWidget(10, 200)
-        if(self.tm.faults[0] == False):
+        self.engine_circle = CircleWidget(10, 75)
+        if(self.faults[0] == False):
             self.engine_circle.setColor(GREEN)
         else:
             self.engine_circle.setColor(RED)
@@ -707,8 +711,8 @@ class DriverWindow(QMainWindow): ###DriverWindow
         engine_label.setFixedSize(100, 50)
 
         #create the brake fault signal
-        self.brake_circle = CircleWidget(20, 200)
-        if(self.tm.faults[1] == False):
+        self.brake_circle = CircleWidget(20, 75)
+        if(self.faults[1] == False):
             self.brake_circle.setColor(GREEN)
         else:
             self.brake_circle.setColor(RED)
@@ -716,8 +720,8 @@ class DriverWindow(QMainWindow): ###DriverWindow
         brake_label.setFixedSize(100, 50)
 
         #create the signal fault signal
-        self.signal_circle = CircleWidget(30, 200)
-        if(self.tm.faults[2] == False):
+        self.signal_circle = CircleWidget(30, 75)
+        if(self.faults[2] == False):
             self.signal_circle.setColor(GREEN)
         else:
             self.signal_circle.setColor(RED)
@@ -742,7 +746,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         header_font.setPointSize(12)
         curr_speed_label.setFont(header_font)
         
-        self.curr_speed_stat = QLabel(str(self.convert_to_mph(self.tm.get_current_speed())) + " mph") 
+        self.curr_speed_stat = QLabel(str(self.curr_speed) + " mph") 
         self.curr_speed_stat.setFixedSize(100, 25)
         self.curr_speed_stat.setStyleSheet("background-color: #C8C8C8; color: black;")
 
@@ -756,7 +760,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         comm_speed_label.setFixedSize(150, 25)
         comm_speed_label.setFont(header_font)
 
-        self.comm_speed_stat = QLabel(str(self.convert_to_mph(self.tm.get_commanded_speed())) + " mph")
+        self.comm_speed_stat = QLabel(str(self.comm_speed) + " mph")
         self.comm_speed_stat.setFixedSize(100, 25)
         self.comm_speed_stat.setFont(data_font)
         self.comm_speed_stat.setStyleSheet("background-color: #C8C8C8; color: black;")
@@ -766,7 +770,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         curr_authority_label.setFixedSize(150, 25)
         curr_authority_label.setFont(header_font)
 
-        self.curr_authority_stat = QLabel(str(self.convert_to_ft(self.tm.authority)) + " ft")
+        self.curr_authority_stat = QLabel(str(self.authority) + " ft")
         self.curr_authority_stat.setFixedSize(100, 25)
         self.curr_authority_stat.setFont(data_font)
         self.curr_authority_stat.setStyleSheet("background-color: #C8C8C8; color: black;")
@@ -1076,26 +1080,11 @@ class DriverWindow(QMainWindow): ###DriverWindow
     def handle_mock_train_update(self, train_model: TrainModel) -> None:
         self.tm = train_model
 
-        self.curr_speed_stat.setText(str(self.convert_to_mph(self.tm.get_current_speed())) + " mph")
-        self.comm_speed_stat.setText(str(self.convert_to_mph(self.tm.get_commanded_speed())) + " mph")
-        self.curr_authority_stat.setText(str(self.convert_to_ft(self.tm.authority)) + " ft")
+        
         self.loc_label.setText("Location: " + str(self.tm.get_position()))
         self.des_label.setText(str(self.tm.get_station_name()))
 
-        if(self.tm.faults[0] == False):
-            self.engine_circle.setColor(GREEN)
-        else:
-            self.engine_circle.setColor(RED)
 
-        if(self.tm.faults[1] == False):
-            self.brake_circle.setColor(GREEN)
-        else:
-            self.brake_circle.setColor(RED)
-
-        if(self.tm.faults[2] == False):
-            self.signal_circle.setColor(GREEN)
-        else:
-            self.signal_circle.setColor(RED)
 
     ###??? and commanded temp
     @pyqtSlot(float)
@@ -1181,6 +1170,57 @@ class DriverWindow(QMainWindow): ###DriverWindow
             self.brake_status_label.setText("Brake Status: Off")
             self.brake_status_label.setFixedSize(75, 50)
             self.brake_status_label.setStyleSheet("background-color: #29C84C; color: white;")
+
+    
+    @pyqtSlot(bool)
+    def handle_engine_fault_update(self, status: bool) -> None:
+        self.faults[0] = status
+
+        if(self.faults[0] == False):
+            self.engine_circle.setColor(GREEN)
+        else:
+            self.engine_circle.setColor(RED)
+
+        
+
+    @pyqtSlot(bool)
+    def handle_brake_fault_update(self, status: bool) -> None:
+        self.faults[1] = status
+
+        if(self.faults[1] == False):
+            self.brake_circle.setColor(GREEN)
+        else:
+            self.brake_circle.setColor(RED)
+
+    @pyqtSlot(bool)
+    def handle_signal_fault_update(self, status: bool) -> None:
+        self.faults[2] = status
+
+        if(self.faults[2] == False):
+            self.signal_circle.setColor(GREEN)
+        else:
+            self.signal_circle.setColor(RED)
+
+    @pyqtSlot(float)
+    def handle_curr_speed_update(self, speed: float) -> None:
+        self.curr_speed = round(self.convert_to_mph(speed))
+
+        self.curr_speed_stat.setText(str(self.curr_speed) + " mph")
+
+
+    @pyqtSlot(float)
+    def handle_comm_speed_update(self, speed: float) -> None:
+        self.comm_speed = round(self.convert_to_mph(speed))
+
+        self.comm_speed_stat.setText(str(self.comm_speed) + " mph")
+
+    @pyqtSlot(float)
+    def handle_authority_update(self, a: float) -> None:
+        self.authority = round(self.convert_to_ft(a))
+        
+        self.curr_authority_stat.setText(str(self.authority) + " ft")
+
+
     """
     @pyqtSlot(str)
     def handle_driver_mode_update(self, mode: str) -> None:
@@ -1219,10 +1259,8 @@ class DriverWindow(QMainWindow): ###DriverWindow
 
 
 class EngineerWindow(QMainWindow):
-    def __init__(self, train_controller):
+    def __init__(self):
         super().__init__()
-
-        self.train = train_controller
 
         headers = ["Train", "Kp", "Ki"]
         self.data = []
@@ -1257,4 +1295,10 @@ class EngineerWindow(QMainWindow):
             self.train.engineer.set_kp(int(new_item))
             
         print(self.data)
+
+    def handle_kp_update(self, kp: int):
+        self.data[0][1] = kp
+
+    def handle_ki_update(self, ki: int):
+        self.data[0][2] = ki
 

@@ -229,8 +229,43 @@ class TrainController(QObject):
     @pyqtSlot(str)
     def handle_comm_temp_changed(self, x: str) -> None:
         if(x != ""):
-            self.ac.set_commanded_temp(int(x))
+            self.ac.set_commanded_temp(float(x))
+
+    @pyqtSlot(bool)
+    def handle_engine_fault_changed(self, fault: bool) -> None:
+        self.train_model.set_engine_fault(fault)
+
+    @pyqtSlot(bool)
+    def handle_brake_fault_changed(self, fault: bool) -> None:
+        self.train_model.set_brake_fault(fault)
         
+    @pyqtSlot(bool)
+    def handle_signal_fault_changed(self, fault: bool) -> None:
+        self.train_model.set_signal_fault(fault)
+
+    @pyqtSlot(float)
+    def handle_curr_speed_changed(self, speed: float) -> None:
+        self.train_model.set_current_speed(speed)
+    
+    @pyqtSlot(float)
+    def handle_comm_speed_changed(self, speed: float) -> None:
+        self.train_model.set_commanded_speed(speed)
+
+    @pyqtSlot(float)
+    def handle_authority_changed(self, a: float) -> None:
+        self.train_model.set_authority(a)
+
+    @pyqtSlot(bool)
+    def handle_light_status_changed(self, light: bool) -> None:
+        self.lights.set_lights(light)
+
+    @pyqtSlot(bool)
+    def handle_right_door_changed(self, door: bool) -> None:
+        self.doors.set_right(door)
+
+    @pyqtSlot(bool)
+    def handle_left_door_changed(self, door: bool) -> None:
+        self.doors.set_left(door)
 
     ## Engineer class to hold Kp and Ki
     class Engineer(QObject):
@@ -635,13 +670,20 @@ class TrainController(QObject):
 # Does beacon need to be encrypted
 # All information from MBO needs to be encrypted
 class TrainModel(QObject):
+    engine_fault_updated = pyqtSignal(bool)
+    brake_fault_updated = pyqtSignal(bool)
+    signal_fault_updated = pyqtSignal(bool)
+    curr_speed_updated = pyqtSignal(float)
+    comm_speed_updated = pyqtSignal(float)
+    authority_updated = pyqtSignal(float)
     def __init__(self):
+        super().__init__() 
         # Train Model variables
         self.current_speed: float = 0
         self.commanded_speed: float = 0
         self.authority: float = 1000
         self.train_temp: int = 69
-        self.faults: int[3] = [0, 0, 0]
+        self.faults: bool[3] = [0, 0, 0]
 
         # Track block variables
         self.track_block: int = 0
@@ -658,6 +700,7 @@ class TrainModel(QObject):
         return self.current_speed
     def set_current_speed(self, speed: float):
         self.current_speed = round(speed, 2)
+        self.curr_speed_updated.emit(self.current_speed)
     
     # Float
     def get_speed_limit(self):
@@ -680,6 +723,7 @@ class TrainModel(QObject):
         return self.authority
     def set_authority(self, authority: float):
         self.authority = round(authority, 2)
+        self.authority_updated.emit(self.authority)
 
     # Float
     def get_commanded_speed(self):
@@ -687,6 +731,7 @@ class TrainModel(QObject):
         return self.commanded_speed
     def set_commanded_speed(self, speed: float):
         self.commanded_speed = round(speed)
+        self.comm_speed_updated.emit(self.commanded_speed)
 
     # float
     def get_train_temp(self):
@@ -743,6 +788,18 @@ class TrainModel(QObject):
         return self.faults
     def set_fault_statuses(self, faults: list[bool]):
         self.faults = faults[0:3]   # Only take the first 3 elements
+
+    def set_engine_fault(self, status: bool):
+        self.faults[0] = status
+        self.engine_fault_updated.emit(status)
+
+    def set_brake_fault(self, status: bool):
+        self.faults[1] = status
+        self.brake_fault_updated.emit(status)
+    
+    def set_signal_fault(self, status: bool):
+        self.faults[2] = status
+        self.signal_fault_updated.emit(status)
     
     
     # This is used to update all train model variables with the real Train Model
