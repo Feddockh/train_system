@@ -21,7 +21,7 @@ from train_system.common.line import Line
 
 class MBOWindow(QMainWindow):
     
-    schedule_created = pyqtSignal(QDateTime, str, list)
+    schedule_created = pyqtSignal(QDateTime, str, list, list)
     
     def __init__(self):
         super(MBOWindow, self).__init__()
@@ -40,22 +40,22 @@ class MBOWindow(QMainWindow):
         
         #lable to prompt/dircetion for user to enter date and time
         self.enter_label = QLabel('Please enter the date and time for the new schedules, then select the button.')
-        self.enter_label.setFont(QFont('Times', 18))
+        self.enter_label.setFont(QFont('Times', 15))
         self.enter_label.setFixedHeight(50)
         
         #Creating calendar pop up to enter date and time
         self.schedule_date_time = QDateTimeEdit(datetime.now(),self)
         self.schedule_date_time.setFixedSize(400,50)
-        self.schedule_date_time.setFont(QFont('Times', 12))
+        self.schedule_date_time.setFont(QFont('Times', 15))
         self.schedule_date_time.setCalendarPopup(True)
         
         #create combo box to select train throughput for the given day 
         self.throughput_label = QLabel('Select the train throughput for the given day.')
-        self.throughput_label.setFont(QFont('Times', 18))
+        self.throughput_label.setFont(QFont('Times', 15))
         self.throughput_label.setFixedHeight(50)
         self.througput_options = ["Low", "High"]
         self.train_throughput_selection = QComboBox()
-        self.train_throughput_selection.setFixedSize(100,70)
+        self.train_throughput_selection.setFixedSize(100,50)
         self.train_throughput_selection.setFont(QFont('Times', 12))
         self.train_throughput_selection.addItems(self.througput_options)
         
@@ -65,7 +65,6 @@ class MBOWindow(QMainWindow):
         scroll_layout = QVBoxLayout(scroll_widget)
         scroll_area.setWidget(scroll_widget)
         scroll_area.setWidgetResizable(True)
-    
 
         # Add checkable items to the layout
         self.checkboxes = []
@@ -76,16 +75,44 @@ class MBOWindow(QMainWindow):
             scroll_layout.addWidget(checkbox)
         
         
-        
+        scroll_area2 = QScrollArea()
+        scroll_widget2 = QWidget()
+        scroll_layout2 = QVBoxLayout(scroll_widget2)
+        scroll_area2.setWidget(scroll_widget2)
+        scroll_area2.setWidgetResizable(True)
+
+        # Add checkable items to the layout
+        self.checkboxes2 = []
+        items = ["Glenbury", "Dormont", "Mt. Lebanon", "Poplar", "Castle Shannon", "Overbrook", "Inglewood", "Central", "Edgebrook", "Pioneer", "Station", "Whited", "Southbank"]
+        for item_text in items:
+            checkbox2 = QCheckBox(item_text)
+            self.checkboxes2.append(checkbox2)
+            scroll_layout2.addWidget(checkbox2)
         
         #Creat New Schedules Button, when clicked calls handle slot 
         self.create_schedules = QPushButton('Create New Schedules', self)
-        self.create_schedules.setFixedSize(300,100)
+        self.create_schedules.setFixedSize(300,80)
         self.create_schedules.setFont(QFont('Times', 18))
         self.create_schedules.setStyleSheet("background-color : lime") 
         self.create_schedules.clicked.connect(self.handle_schedule)
         
         #page layout 
+        self.select_label = QLabel("Please select the stations you would like the each schedule option to include")
+        self.select_label.setFont(QFont('Times', 15))
+        
+        self.option1 = QLabel("Schedule Option 1")
+        self.option1.setFont(QFont('Times', 11))
+        self.option2 = QLabel("Schedule Option 2")
+        self.option2.setFont(QFont('Times', 11))
+        
+        self.horizontal_layout_option = QHBoxLayout()
+        self.horizontal_layout_option.addWidget(self.option1)
+        self.horizontal_layout_option.addWidget(self.option2)
+        
+        self.horizontal_layout_scrolls = QHBoxLayout()
+        self.horizontal_layout_scrolls.addWidget(scroll_area)
+        self.horizontal_layout_scrolls.addWidget(scroll_area2)
+        
         self.vertical_layout = QVBoxLayout()
 
         self.vertical_layout.addWidget(self.MBO_mode_view_button)
@@ -93,7 +120,9 @@ class MBOWindow(QMainWindow):
         self.vertical_layout.addWidget(self.schedule_date_time)
         self.vertical_layout.addWidget(self.throughput_label)
         self.vertical_layout.addWidget(self.train_throughput_selection)
-        self.vertical_layout.addWidget(scroll_area)
+        self.vertical_layout.addWidget(self.select_label)
+        self.vertical_layout.addLayout(self.horizontal_layout_option)
+        self.vertical_layout.addLayout(self.horizontal_layout_scrolls)
         self.vertical_layout.addWidget(self.create_schedules)
         
         main_widget = QWidget()
@@ -115,22 +144,24 @@ class MBOWindow(QMainWindow):
         emit date and start time selected 
         """    
         checked_items = []
+        checked_items2 = []
         
         for checkbox in self.checkboxes:
             if checkbox.isChecked():
                 checked_items.append(checkbox.text())
+        
+        for checkbox2 in self.checkboxes2:
+            if checkbox2.isChecked():
+                checked_items2.append(checkbox2.text())
                 
         throughput = self.train_throughput_selection.currentText()
         selected_datetime = self.schedule_date_time.dateTime()
-        self.schedule_created.emit(selected_datetime, throughput, checked_items)
+        self.schedule_created.emit(selected_datetime, throughput, checked_items, checked_items2)
     
     #slot to disable MBO Mode View button (not clickable) when in fixed block mode
 
 class MBOModeView(QMainWindow):
-    def __init__(self, time_keeper: TimeKeeper, line: Line, trains: list[CTCTrainDispatch]):
-        
-        self.line = line
-        self.trains = trains
+    def __init__(self):
         
         super(MBOModeView, self).__init__()
             #name window

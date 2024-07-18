@@ -153,7 +153,7 @@ class MBOOffice(QObject):
                 self.authority = 1,000,000 
                 if(train.departure_time < self.time_keeper.current_second):
                     #train to stop for 1 minute at station
-                    train.departure_time = self.time_keeper.current_second + 60
+                    train.departure_time = self.time_keeper.current_second + 30
                 #pop next stop?
                 
         #conditions to change authority 
@@ -170,6 +170,44 @@ class MBOOffice(QObject):
                     #authority = path to next station 
         
         return (self.authority)
+    
+    def test_authority(self, train_id, position, block, destination_block):
+         """
+            Calculate trains authority such that more than one train can be in a block 
+            each train stops at it's desitnation and opens the doors, and stops before any block maintenance 
+            """
+         self.authority = 0
+         
+         current_block = self.green_line.get_track_block(block)
+         next_blocks = current_block.next_blocks()
+         
+         path = self.green_line.get_path(block, destination_block)
+         next_blocks = block
+         print(f"calculating authority for {train_id} at position {position} going to Glenbury ")
+            
+         #list of blocks to next stop, including start and end 
+            
+         #if next stop block has not changed 
+         path_length = 0
+            
+         #set authority to next station stop  
+          
+         #if next block is under maint or switch is not in right position 
+         if (path[1].under_maintenance) or (path[1] not in next_blocks):
+            self.authority = self.service_breaking_distance()
+            
+            #going to yard
+         elif destination_block == self.green_line.yard:
+            self.authority = -(self.authority)
+            
+            #checking if train is at full stop at station, signalling to open doors with authority 
+         elif (current_block == destination_block):
+            #should keep authority big while only resetting departure time once
+            if (position == self.previous_position[{train_id}]):
+                self.authority = 1,000,000 
+                                    
+         return (self.authority)
+    
                
     #incorporate time keeper here, every tick call load in posotions, calculate speed and authority, check if can send, if so encypt and emit data   
     class Satellite(QObject):
@@ -256,30 +294,94 @@ class MBOOffice(QObject):
             self.green_line.load_track_blocks()
             
             #time to travel from one station to another 
-            self.route_schedule_green = {'Glenbury Down' : timedelta(seconds=20) , 'Dormont Down' : timedelta(minutes=1, seconds=13), 'Mt Lebanon Down' : timedelta(seconds=39), 
-                                'Poplar' : timedelta(minutes=2, seconds=45), 'Castle Shannon' : timedelta(minutes=1, seconds=28), 'Mt Lebanon Up' : timedelta(minutes=2, seconds=59), 
-                                'Dormont Up' : timedelta(seconds= 17), 'Glenbury Up' : timedelta(minutes=1, seconds=54), 'Overbrook Up' : timedelta(minutes= 1, seconds=35), 
-                                'Inglewood' : timedelta(minutes=1, seconds=21), 'Central Up' : timedelta(minutes=1, seconds=21), 'Edgebrook' : timedelta(minutes=4, seconds=50), 
+            self.route_schedule_green = {'Glenbury' : timedelta(seconds=20) , 'Dormont' : timedelta(minutes=1, seconds=13), 'Mt. Lebanon' : timedelta(seconds=39), 
+                                'Poplar' : timedelta(minutes=2, seconds=45), 'Castle Shannon' : timedelta(minutes=1, seconds=28), 'Overbrook' : timedelta(minutes= 1, seconds=35), 
+                                'Inglewood' : timedelta(minutes=1, seconds=21), 'Central' : timedelta(minutes=1, seconds=21), 'Edgebrook' : timedelta(minutes=4, seconds=50), 
                                 'Pioneer' : timedelta(minutes=1, seconds=4), 'Station' : timedelta(seconds=39), 'Whited' : timedelta(minutes=1, seconds=1), 
-                                'South Bank' : timedelta(minutes=1, seconds=21),'Central Down' : timedelta(seconds=48), 'Overbrook Down' : timedelta(minutes= 1, seconds=48), 
-                                'Yard' : timedelta(seconds=15)}
+                                'South Bank' : timedelta(minutes=1, seconds=21)}
+            
+            self.route_blocks_green = {'Glenbury' : 65 , 'Dormont' : 73, 'Mt. Lebanon' : 77, 
+                                'Poplar' : 88, 'Castle Shannon' : 96, 'Overbrook' : 123, 
+                                'Inglewood' : 132, 'Central' : 141, 'Edgebrook' : 9, 
+                                'Pioneer' : 2, 'Station' : 16, 'Whited' : 22 , 
+                                'South Bank' : 31}
         
         
-        def create_schedules(self, date_time, train_throughput, checked_items):
-            """_summary_
+        def create_schedules(self, date_time, train_throughput, checked_items1, checked_items2):
+         """Create schedules for trains based on selected stations."""
+            
+            # Set the number of trains based on throughput
+         if train_throughput == "Low":
+                num_of_trains = 1
+         elif train_throughput == "High":
+                num_of_trains = 3
+            
+         selected_day = date_time.toString('MM-dd-yyyy')
+         selected_start_time = date_time.toString('HH:mm:ss')
+         print("in create schedules")
+         print(f"making schedule for: {date_time}, with a {train_throughput} throughput")
+         print("checked items 1 are", checked_items1)
+         print("checked items 2 are", checked_items2)
 
-            Args:
-                date_time (_type_): _description_
-            """
+         # Filter route schedule based on checked items
+         filtered_route_schedule1 = {station: time for station, time in self.route_schedule_green.items() if station in checked_items1}
+         filtered_route_schedule2 = {station: time for station, time in self.route_schedule_green.items() if station in checked_items2}
+
+         start_time = datetime.datetime.strptime(selected_day + ' ' + selected_start_time, '%m-%d-%Y %H:%M:%S')
+         end_time = start_time + timedelta(hours=24)
+
+         train_departure_interval = timedelta(minutes=20) if train_throughput == "High" else timedelta(hours=1)
+
+         def create_schedule(filtered_route_schedule, file_suffix):
+                current_time = start_time
+                crew_index = 0
+                driver_index = 0
+                schedule = []
+
+                for train_id in range(1, num_of_trains + 1):
+                    train_current_time = start_time + (train_id - 1) * train_departure_interval
+                    
+                    while train_current_time < end_time:
+                        driver = self.drivers[driver_index % len(self.drivers)]
+                        crew1 = self.crew[crew_index % len(self.crew)]
+                        crew2 = self.crew[(crew_index + 1) % len(self.crew)]
+                        crew_index += 2
+                        driver_index += 1
+
+                        shift_end_time = train_current_time + self.shift_length
+                        shift_start = train_current_time
+
+                        while train_current_time < shift_end_time and train_current_time < end_time:
+                            for station, travel_time in filtered_route_schedule.items():
+                                arrival_time = train_current_time + travel_time
+                                if arrival_time > shift_end_time:
+                                    break
+
+                                schedule.append([f"Train{train_id}", f"{station}", self.green_line.name, arrival_time, driver, crew1, crew2])
+
+                                # Adding time to stop at station for 1 minute
+                                train_current_time = arrival_time + timedelta(minutes=1)
+
+                            if (train_current_time - shift_start) >= self.drive_length:
+                                train_current_time += self.break_length
+                                if train_current_time >= shift_end_time or train_current_time >= end_time:
+                                    break
+
+                        train_current_time = shift_end_time
+                        if train_current_time >= end_time:
+                            break
+
+                file_name = f"{selected_day}_green_{file_suffix}.csv"
+                with open(file_name, 'w', newline='') as csvfile:
+                    schedule_writer = csv.writer(csvfile)
+                    schedule_writer.writerow(["Train", "Line", "Station", "Arrival Time", "Driver", "Crew 1", "Crew 2"])
+
+                    for t in schedule:
+                        schedule_writer.writerow(t)
             
-            print("in create schedules")
-            
-            print(f"making schedule for: {date_time}, with a {train_throughput} throughput")
-            print("checked items are", checked_items)
-            
-            #will need to make a way to iterate through all of the blocks to find the route with line object! 
-            #pass for blocks in self.green_line: 
-                #pass for stations in checked_items:
+         # Create schedules for both sets of checked items
+         create_schedule(filtered_route_schedule1, f"1_{train_throughput.lower()}")
+         create_schedule(filtered_route_schedule2, f"2_{train_throughput.lower()}")
                     
                 
             

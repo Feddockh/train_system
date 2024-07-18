@@ -32,6 +32,7 @@ schedules = MBOOffice.Schedules()
 satellite = MBOOffice.Satellite()
 satellite.mbo_mode = True
 
+
 #pass time_keeper.tick.connect(mbo_office.handle_time_update)
 
 #train example for testing? 
@@ -67,12 +68,16 @@ mbo_main_ui.schedule_created.connect(schedules.create_schedules)
 
 if __name__ == "__main__":
     
-    t_time_keeper = TimeKeeper()
+    """t_time_keeper = TimeKeeper()
     t_time_keeper.start_timer()
     
+    green_line = Line('Green')
+    green_line.load_defaults()
+    
     satellite = MBOOffice(t_time_keeper).Satellite()
-    ctc_office = CTCOffice(t_time_keeper, 'Green')
-    dispatched_trains = TrainDispatch('Train1', 'Green', time_keeper)
+    ctc_office = CTCOffice(t_time_keeper, green_line)
+    
+    dispatched_trains = TrainDispatch('Train1', green_line, time_keeper)
     
     ctc_office.add_train('Train1', 'Green')
     dispatched_trains.add_stop(50, 65)
@@ -88,7 +93,7 @@ if __name__ == "__main__":
     
     #train at station 
     #@313m in middle of block 
-    train.update_position('Train1', 329.1, 65 )
+    train.update_position('Train1', 329.1, 65 )"""
 
     mbo_main_ui.show()
     sys.exit(app.exec())
