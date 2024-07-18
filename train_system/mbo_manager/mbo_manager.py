@@ -277,9 +277,11 @@ class MBOOffice(QObject):
             print(station)
             print("in create schedules")
     
+       
             
             print(f"making schedule for: {date_time}, with a {train_throughput} throughput")
             
+                  
             
     
        
