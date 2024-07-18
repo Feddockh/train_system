@@ -276,6 +276,10 @@ class MBOOffice(QObject):
             station = block.station
             print(station)
             print("in create schedules")
+            
+            print(f"making schedule for: {date_time}, with a {train_throughput} throughput")
+            
+            
     
        
             
