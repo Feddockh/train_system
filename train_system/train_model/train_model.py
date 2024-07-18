@@ -66,7 +66,6 @@ class TrainModel(QWidget) :
         self.commanded_speed = 0
         self.authority = 0
         self.track_polarity = False
-
         # beacon intermediate variables
         self.beacon_data = ""
         self.station_name = ""
