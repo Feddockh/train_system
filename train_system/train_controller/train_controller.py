@@ -145,6 +145,7 @@ class TrainController(QObject):
         self.setpoint_speed = min(speed, self.MAX_SPEED)
         self.setpoint_speed = max(self.setpoint_speed, 0)
         self.setpoint_speed_updated.emit(self.setpoint_speed)
+        print("new setpoint speed " + str(self.setpoint_speed))
     def get_setpoint_speed(self):
         return self.setpoint_speed
     

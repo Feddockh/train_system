@@ -16,8 +16,10 @@ tc = TrainController(time_keeper, train_model=tm)
 
 driver = DriverWindow()
 
-print("TC: " + str(tc.ac.get_commanded_temp()))
-print("UI: " + str(driver.tm.get_train_temp()))
+print("TC: " + str(tc.get_setpoint_speed()))
+print("UI: " + str(driver.setpoint_speed))
+
+
 
 
 driver.mode_button.toggled.connect(tc.handle_toggle_driver_mode) ###checked
@@ -40,6 +42,11 @@ window.show()
 
 app.exec()
 
-print("TC: " + str(tc.ac.get_commanded_temp()))
-print("UI: " + str(driver.tm.get_train_temp()))
+tc.set_setpoint_speed(20)
+tc.brake.set_emergency_brake(True)
+
+print("TC: " + str(tc.get_setpoint_speed()))
+print("UI: " + str(driver.setpoint_speed))
+print("TC: " + str(tc.brake.get_emergency_brake()))
+print("UI: " + str(driver.emerg_brake_status))
 

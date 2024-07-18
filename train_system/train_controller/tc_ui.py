@@ -1051,8 +1051,9 @@ class DriverWindow(QMainWindow): ###DriverWindow
     ###??? and commanded temp
     @pyqtSlot(float)
     def handle_setpoint_speed_update(self, speed: float) -> None:
+        print("in handler")
         self.setpoint_speed = self.convert_to_mph(speed)
-
+        
 
     @pyqtSlot(float) 
     def handle_power_update(self, power: float) -> None:
@@ -1063,6 +1064,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
     def handle_light_status_update(self, lights: bool) -> None:
         self.light_status = lights
 
+        print("in handler")
         if(self.light_status == True): ###might change colors
             self.light_staus_label.setText("Lights On")
             self.light_staus_label.setStyleSheet("background-color: #29C84C; color: white;")
@@ -1114,6 +1116,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
 
     @pyqtSlot(bool)
     def handle_emerg_brake_update(self, brake: bool) -> None:
+        
         self.emerg_brake_status = brake
 
         self.brake_on = self.serv_brake_status or self.emerg_brake_status
