@@ -14,3 +14,7 @@ class CTCTrainDispatch(TrainDispatch):
     def update(self, suggested_speed: int, authority: int) -> None:
         self.suggested_speed = suggested_speed
         self.authority = authority
+
+    def dispatch(self, suggested_speed: int, authority: int) -> None:
+        self.update(suggested_speed, authority)
+        self.dispatched = True

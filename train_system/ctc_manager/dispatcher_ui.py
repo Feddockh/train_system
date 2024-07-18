@@ -157,14 +157,15 @@ class DispatcherUI(QMainWindow):
 
         # Train Information Widget
         self.trains = trains
-        self.train_info_widget = TrainInfoWidget(self.line, self.trains)
+        self.train_info_widget = TrainInfoWidget(self.time_keeper, self.line, self.trains)
         self.bottom_layout.addWidget(self.train_info_widget)
+        self.time_keeper.tick.connect(self.train_info_widget.handle_time_update)
 
         ### TEST BENCH WIDGET ###
 
         # Create and add the OccupancyWidget to the bottom stacked widget
-        self.set_occupancy_widget = OccupancyWidget(self.line)
-        self.bottom_stacked_widget.addWidget(self.set_occupancy_widget)
+        # self.set_occupancy_widget = OccupancyWidget(self.line)
+        # self.bottom_stacked_widget.addWidget(self.set_occupancy_widget)
 
         ### MAINTENANCE WIDGET ###
 
@@ -175,11 +176,11 @@ class DispatcherUI(QMainWindow):
     @pyqtSlot(bool)
     def handle_test_bench_toggle(self, state: bool) -> None:
         if state:
-            self.bottom_stacked_widget.setCurrentWidget(self.set_occupancy_widget)
-            self.dispatch_command_widget.setEnabled(False)
+            # self.bottom_stacked_widget.setCurrentWidget(self.set_occupancy_widget)
+            # self.dispatch_command_widget.setEnabled(False)
             self.schedule_selection_widget.setEnabled(False)
         else:
-            self.bottom_stacked_widget.setCurrentWidget(self.bottom_widget)
+            # self.bottom_stacked_widget.setCurrentWidget(self.bottom_widget)
             if not self.maintenance_toggle_switch.isChecked():
                 self.dispatch_command_widget.setEnabled(True)
                 self.schedule_selection_widget.setEnabled(True)

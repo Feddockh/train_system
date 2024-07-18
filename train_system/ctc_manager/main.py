@@ -34,8 +34,8 @@ dispatcher_ui.mbo_toggle_switch.toggled.connect(ctc_manager.handle_mbo_toggle)
 dispatcher_ui.automatic_toggle_switch.toggled.connect(ctc_manager.handle_automatic_toggle)
 
 # Connect the GUI dispatch signals to the CTC Manager slots
-dispatcher_ui.dispatch_command_widget.dispatched_train.connect(ctc_manager.handle_dispatched_trains)
-dispatcher_ui.schedule_selection_widget.dispatched_train.connect(ctc_manager.handle_dispatched_trains)
+dispatcher_ui.dispatch_command_widget.dispatched_train.connect(ctc_manager.handle_dispatcher_command)
+dispatcher_ui.schedule_selection_widget.dispatched_train.connect(ctc_manager.handle_dispatcher_command)
 
 # Connect the Line signals to the DispatcherUI slots
 ctc_manager.line.track_block_occupancy_updated.connect(dispatcher_ui.handle_occupancy_update)
@@ -44,7 +44,6 @@ ctc_manager.line.track_block_crossing_signal_updated.connect(dispatcher_ui.handl
 ctc_manager.line.track_block_under_maintenance_updated.connect(dispatcher_ui.handle_maintenance_update)
 
 # Connect the CTC Manager signals to the DispatcherUI slots
-ctc_manager.train_info_updated.connect(dispatcher_ui.train_info_widget.handle_train_update)
 
 
 # Show the dispatcher UI
