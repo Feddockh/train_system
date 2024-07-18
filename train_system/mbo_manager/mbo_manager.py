@@ -11,8 +11,6 @@ from train_system.common.time_keeper import TimeKeeper
 from train_system.common.line import Line
 from train_system.common.track_block import TrackBlock
 from train_system.common.train_dispatch import TrainDispatchUpdate
-from train_system.mbo_manager.mbo_train_dispatch import MBOTrainDispatch
-
 
 class MBOOffice(QObject):
     train_dispatch_updated = pyqtSignal(TrainDispatchUpdate)
@@ -27,7 +25,7 @@ class MBOOffice(QObject):
         self.green_line.load_track_blocks()
         
         # Create a list of train objects
-        self.trains: Dict[int, MBOTrainDispatch] = {}
+        self.trains: Dict[int, TrainDispatchUpdate] = {}
         self.last_train_dispatched = None
                 
         self.route_authority_green = {'Glenbury Down' : 400 , 'Dormont Down' : 950, 'Mt Lebanon Down' : 500, 'Poplar' : 2786.6, 'Castle Shannon' : 612.5, 
@@ -71,20 +69,27 @@ class MBOOffice(QObject):
     
      return (breaking_distance)
             
-    def compute_commanded_speed(self, train_id, position):
+    def compute_commanded_speed(self, train_id, block):
         """
         Calculate trains commanded speed based on current block 
         
         return commanded_speed, equal to the speed limit 
         """ 
         
-        block_num = position.get("block")
+        """block_num = position.get("block")
         block = self.green_line.get_track_block(block_num)
         
         print(f"calculating commanded speed for {train_id} in block ", block_num)
 
         if block: 
             self.block_speed = self.kmhr_to_ms(block.speed_limit)
+            """
+        
+        current_block = block
+        block_info = self.green_line.get_track_block(current_block)
+        
+        if current_block:
+            self.block_speed = self.kmhr_to_ms(block.speed_limit) 
             
         return(self.block_speed)
     
@@ -176,10 +181,10 @@ class MBOOffice(QObject):
         def __init__(self):
             super().__init__()
             self.mbo_mode = True
-            self.mbo_office = MBOOffice()
+            #pass self.mbo_office = MBOOffice()
             
             self.train_positions = {}
-            self.train_id = 'Train1'
+            self.train_id = ''
         
         @pyqtSlot(str, float, int)
         def satellite_recieve(self, train_id: str, position: float, block: int) -> None:
@@ -200,8 +205,8 @@ class MBOOffice(QObject):
             
             """
             self.train_info = self.train_positions[train_id]
-            self.authority = self.mbo_office.compute_authority(self.train_info)
-            self.commanded_speed = self.mbo_office.compute_commanded_speed(self.train_info)
+            self.authority = self.compute_authority(self.train_info)
+            self.commanded_speed = self.compute_commanded_speed(self.train_info)
              
             if (self.mbo_mode == True):
                 """
@@ -274,15 +279,14 @@ class MBOOffice(QObject):
             print(station)
             print("in create schedules")
     
+       
             
             
+                  
             
-            
-            
-            
-            
-            
-#pass if __name__ == "__main__":
+# pass if __name__ == "__main__":
+    
+    
 
     
     
