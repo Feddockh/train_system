@@ -60,13 +60,14 @@ satellite.send_data_signal.connect(handle_sent_data)
 #Connect GUI signals
 #for planner create schedule
 
+
 #is this connected right?? 
 mbo_main_ui.schedule_created.connect(schedules.create_schedules)
 
 
 if __name__ == "__main__":
     
-    """t_time_keeper = TimeKeeper()
+    t_time_keeper = TimeKeeper()
     t_time_keeper.start_timer()
     
     satellite = MBOOffice(t_time_keeper).Satellite()
@@ -87,7 +88,7 @@ if __name__ == "__main__":
     
     #train at station 
     #@313m in middle of block 
-    train.update_position('Train1', 329.1, 65 ) """
+    train.update_position('Train1', 329.1, 65 )
 
     mbo_main_ui.show()
     sys.exit(app.exec())

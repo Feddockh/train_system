@@ -277,6 +277,12 @@ class MBOOffice(QObject):
             print(f"making schedule for: {date_time}, with a {train_throughput} throughput")
             print("checked items are", checked_items)
             
+            #will need to make a way to iterate through all of the blocks to find the route with line object! 
+            #pass for blocks in self.green_line: 
+                #pass for stations in checked_items:
+                    
+                
+            
             
     
        
