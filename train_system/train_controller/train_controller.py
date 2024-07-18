@@ -115,6 +115,8 @@ class TrainController:
     def set_setpoint_speed(self, speed: float):
         self.setpoint_speed = min(speed, self.MAX_SPEED)
         self.setpoint_speed = max(self.setpoint_speed, 0)
+        self.setpoint_speed_updated.emit(self.setpoint_speed)
+        print("new setpoint speed " + str(self.setpoint_speed))
     def get_setpoint_speed(self):
         return self.setpoint_speed
     
@@ -163,11 +165,95 @@ class TrainController:
         done = (self.current_speed != 0)
         self.brake.set_emergency_brake(done)
         self.set_maintenance_mode(done)
+
+    @pyqtSlot(bool)
+    def handle_toggle_driver_mode(self, check):
+        if check:
+            print("Automatic Mode")
+            self.set_driver_mode("automatic")
+        else:
+            print("Manual Mode")
+            self.set_driver_mode("manual")
+
+    """
+    AMBER ADD CONVERT TO MS FUNCTION SOOON!!!!!!!!
+    """
+    @pyqtSlot(str)
+    def handle_setpoint_edit_changed(self, x: str) -> None:
+        if(x != ""):
+            self.set_setpoint_speed(float(x))
+
+    @pyqtSlot(bool)
+    def handle_service_brake_toggled(self, check: bool) -> None:
+        if check:
+            print("in tc handler")
+            self.brake.set_service_brake(True)
+        else:
+            self.brake.set_service_brake(False)
+
+    @pyqtSlot(bool)
+    def handle_emergency_brake_toggled(self, check: bool) -> None:
+        if check:
+            self.brake.set_emergency_brake(True)
+        else:
+            self.brake.set_emergency_brake(False)
+
+    @pyqtSlot(str)
+    def handle_comm_temp_changed(self, x: str) -> None:
+        if(x != ""):
+            self.ac.set_commanded_temp(float(x))
+
+    @pyqtSlot(bool)
+    def handle_engine_fault_changed(self, fault: bool) -> None:
+        self.train_model.set_engine_fault(fault)
+
+    @pyqtSlot(bool)
+    def handle_brake_fault_changed(self, fault: bool) -> None:
+        self.train_model.set_brake_fault(fault)
         
+    @pyqtSlot(bool)
+    def handle_signal_fault_changed(self, fault: bool) -> None:
+        self.train_model.set_signal_fault(fault)
+
+    @pyqtSlot(float)
+    def handle_curr_speed_changed(self, speed: float) -> None:
+        self.train_model.set_current_speed(speed)
+    
+    @pyqtSlot(float)
+    def handle_comm_speed_changed(self, speed: float) -> None:
+        self.train_model.set_commanded_speed(speed)
+
+    @pyqtSlot(float)
+    def handle_authority_changed(self, a: float) -> None:
+        self.train_model.set_authority(a)
+
+    @pyqtSlot(bool)
+    def handle_light_status_changed(self, light: bool) -> None:
+        self.lights.set_lights(light)
+
+    @pyqtSlot(bool)
+    def handle_right_door_changed(self, door: bool) -> None:
+        self.doors.set_right(door)
+
+    @pyqtSlot(bool)
+    def handle_left_door_changed(self, door: bool) -> None:
+        self.doors.set_left(door)
+
+    @pyqtSlot(int)
+    def handle_kp_changed(self, kp: int) -> None:
+        self.engineer.set_kp(kp)
+
+    @pyqtSlot(int)
+    def handle_ki_changed(self, ki: int) -> None:
+        self.engineer.set_ki(ki)
 
     ## Engineer class to hold Kp and Ki
-    class Engineer:
+    class Engineer(QObject):
+        kp_updated = pyqtSignal(int)
+        ki_updated = pyqtSignal(int)
+        
         def __init__(self, kp=25, ki=0.5):
+            super().__init__()
             self.kp = kp
             self.ki = ki
 
@@ -175,10 +261,12 @@ class TrainController:
         def set_kp(self, kp: float):
             if kp > 0:
                 self.kp = kp
+                self.kp_updated.emit(self.kp)
             else: raise ValueError("kp must be positive")
         def set_ki(self, ki: float):
             if ki > 0:
                 self.ki = ki
+                self.ki_updated.emit(self.ki)
             else: raise ValueError("ki must be positive")
         def set_engineer(self, kp: float, ki: float):
             self.set_kp(kp)
@@ -205,6 +293,7 @@ class TrainController:
         ## Mutator functions
         # Input) status: boolean
         def set_service_brake(self, status: bool):
+            print("in set service brake")
             self.service_brake = status
         # Input) status: boolean
         def set_emergency_brake(self, status: bool):
@@ -550,13 +639,21 @@ class TrainController:
 
 # Does beacon need to be encrypted
 # All information from MBO needs to be encrypted
-class TrainModel:
+class TrainModel(QObject):
+    engine_fault_updated = pyqtSignal(bool)
+    brake_fault_updated = pyqtSignal(bool)
+    signal_fault_updated = pyqtSignal(bool)
+    curr_speed_updated = pyqtSignal(float)
+    comm_speed_updated = pyqtSignal(float)
+    authority_updated = pyqtSignal(float)
     def __init__(self):
+        super().__init__() 
+        # Train Model variables
         self.current_speed: float = 0
         self.commanded_speed: float = 0
         self.authority: float = 1000
         self.train_temp: int = 69
-        self.faults: int[3] = [0, 0, 0]
+        self.faults: bool[3] = [0, 0, 0]
 
         self.block: int = 0
         self.station: str = "station_name"
@@ -572,6 +669,7 @@ class TrainModel:
         return self.current_speed
     def set_current_speed(self, speed: float):
         self.current_speed = round(speed, 2)
+        self.curr_speed_updated.emit(self.current_speed)
     
     # Float
     def get_speed_limit(self):
@@ -602,6 +700,7 @@ class TrainModel:
         return self.authority
     def set_authority(self, authority: float):
         self.authority = round(authority, 2)
+        self.authority_updated.emit(self.authority)
 
     # Float
     def get_commanded_speed(self):
@@ -609,6 +708,7 @@ class TrainModel:
         return self.commanded_speed
     def set_commanded_speed(self, speed: float):
         self.commanded_speed = round(speed)
+        self.comm_speed_updated.emit(self.commanded_speed)
 
     # float
     def get_train_temp(self):
@@ -656,6 +756,18 @@ class TrainModel:
         return self.faults
     def set_fault_statuses(self, faults: list[bool]):
         self.faults = faults[0:3]   # Only take the first 3 elements
+
+    def set_engine_fault(self, status: bool):
+        self.faults[0] = status
+        self.engine_fault_updated.emit(status)
+
+    def set_brake_fault(self, status: bool):
+        self.faults[1] = status
+        self.brake_fault_updated.emit(status)
+    
+    def set_signal_fault(self, status: bool):
+        self.faults[2] = status
+        self.signal_fault_updated.emit(status)
     
     
     # This is used to update all train model variables with the real Train Model
