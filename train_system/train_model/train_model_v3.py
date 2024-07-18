@@ -2,8 +2,11 @@ import math
 
 from PyQt6.QtWidgets import QWidget
 from train_system.common.time_keeper import TimeKeeper
-from train_system.common.time_keeper import TimeKeeper
 
+import sys
+from PyQt6.QtWidgets import QApplication, QInputDialog, QVBoxLayout, QWidget, QPushButton, QLabel
+from train_system.common.time_keeper import TimeKeeper
+from PyQt6.QtCore import QTimer
 
 #from train_system.train_controller.train_controller import TrainController
 #from train_system.track_model.track_model import TrackModel 
@@ -91,10 +94,6 @@ class TrainModel(QWidget) :
         else :
             self.power = commanded_power
 
-        # ouput
-        print("set_power() called :")
-        print(self.power)
-
     # this function sets the train id number variable
     def set_train_id(self, train_id) :
         self.train_id = train_id
@@ -124,8 +123,6 @@ class TrainModel(QWidget) :
             self.service_brake = False
         else :
             self.service_brake = True
-        print("service brake toggled:")
-        print(self.service_brake)
 
     # this function toggles the emergency brake boolean variable
     def toggle_emergency_brake(self) :
@@ -133,8 +130,6 @@ class TrainModel(QWidget) :
             self.emergency_brake = False
         else :
             self.emergency_brake = True
-        print("emergency brake toggled:")
-        print(self.emergency_brake)
 
     # this function toggles the right side doors boolean variable
     def toggle_right_side_doors(self) :
@@ -142,8 +137,6 @@ class TrainModel(QWidget) :
             self.right_side_doors = False
         else :
             self.right_side_doors = True
-        print("right side doors toggled:")
-        print(self.right_side_doors)
 
     # this function toggles the left side doors boolean variable
     def toggle_left_side_doors(self) :
@@ -151,8 +144,6 @@ class TrainModel(QWidget) :
             self.left_side_doors = False
         else :
             self.left_side_doors = True
-        print("left side doors toggled:")
-        print(self.left_side_doors)
 
     # this function toggles the interior lights boolean variable
     def toggle_interior_lights(self) :
@@ -160,8 +151,6 @@ class TrainModel(QWidget) :
             self.interior_lights = False
         else :
             self.interior_lights = True
-        print("interior lights toggled:")
-        print(self.interior_lights)
 
     # this function toggles the exterior lights boolean variable
     def toggle_exterior_lights(self) :
@@ -169,8 +158,6 @@ class TrainModel(QWidget) :
             self.exterior_lights = False
         else :
             self.exterior_lights = True
-        print("exterior lights toggled:")
-        print(self.exterior_lights)
 
     # this function toggles the ac boolean variable
     def toggle_ac(self) :
@@ -178,8 +165,6 @@ class TrainModel(QWidget) :
             self.ac = False
         else :
             self.ac = True
-        print("ac toggled:")
-        print(self.ac)
 
     # this function toggles the heater boolean variable
     def toggle_heater(self) :
@@ -187,8 +172,6 @@ class TrainModel(QWidget) :
             self.heater = False
         else :
             self.heater = True
-        print("heater toggled:")
-        print(self.heater)
 
     # this function toggles the engine failure boolean variable
     def toggle_engine_failure(self) :
@@ -196,8 +179,6 @@ class TrainModel(QWidget) :
             self.failures[0] = False
         else :
             self.failures[0] = True
-        print("engine failure toggled:")
-        print(self.failures[0])
 
     # this function toggles the brake failure boolean variable
     def toggle_brake_failure(self) :
@@ -205,8 +186,6 @@ class TrainModel(QWidget) :
             self.failures[1] = False
         else :
             self.failures[1] = True
-        print("brake failure toggled:")
-        print(self.failures[1])
 
     # this function toggles the signal failure boolean variable
     def toggle_signal_failure(self) :
@@ -214,8 +193,6 @@ class TrainModel(QWidget) :
             self.failures[2] = False
         else :
             self.failures[2] = True
-        print("signal failure toggled:")
-        print(self.failures[2])
 
 ###########################
 #### ^^^^ Toggles ^^^^ ####
@@ -293,9 +270,6 @@ class TrainModel(QWidget) :
 #### ^^^^ Getters ^^^^ ####
 ###########################
 
-###########################
-#### vvvv Others  vvvv ####
-###########################
 
     # this function updates the trian temperature each time step
     #   if the ac or heater or on, train temp decreased or increases by 0.1 respectively
@@ -315,19 +289,17 @@ class TrainModel(QWidget) :
     # this function updates all physics values each time step
     #   parameters: self
     def physics_update(self) :
+        print(self.last_second)
         # let one tick run if current = last
         if self.last_second == self.time_keeper.current_second :
             print("Wait for first tick")
         else :
 
             # calculate engine forces
-            if self.power > 0 :
-                if self.current_speed < 0.0001 :
-                    engine_force = self.power / 0.1
-                else :
-                    engine_force = (self.power / self.last_velocity)
+            if self.power > 0.0001 and self.current_speed < 0.0001 :
+                engine_force = self.power / 0.1
             else :
-                engine_force = 0
+                engine_force = (self.power / self.last_velocity)
 
             # engine force = 0 if either brake engaged
             if self.service_brake or self.emergency_brake :
@@ -353,7 +325,7 @@ class TrainModel(QWidget) :
             # Fn = m*g*cos(angle)
             if self.power == 0 :
                 normal_force = (-1 * current_mass * self.G_ACCEL * math.cos(grade))
-                friction_force = (-1 * normal_force * self.FRICTION_COEFF)
+                friction_force = (-1 * normal_force * self.FRICTION_COEF)
             else :
                 friction_force = 0
 
@@ -388,7 +360,3 @@ class TrainModel(QWidget) :
             self.last_acceleration = total_acceleration
             self.last_velocity = total_velocity
             self.last_second = self.time_keeper.current_second
-
-###########################
-#### ^^^^ Others  ^^^^ ####
-###########################

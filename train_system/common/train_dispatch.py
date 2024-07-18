@@ -39,6 +39,7 @@ class TrainDispatch(QObject):
         self.time_in_block: int = 0
         
         self.route: deque[int] = deque([self.line.yard])
+        self.prev_block_id: int = self.line.yard
         self.stop_priority_queue: List[Tuple[int, int]] = []
 
         self.authority: float = 0
@@ -98,9 +99,9 @@ class TrainDispatch(QObject):
         return (None, None)
 
     def get_route_to_next_stop(self) -> List[int]:
-        _, next_stop = self.get_next_stop()
+        next_stop = self.get_next_stop()[1]
         if next_stop:
-            return self.line.get_path(self.get_current_block_id(), next_stop)
+            return self.line.get_path(self.prev_block_id, self.get_current_block_id(), next_stop)
         return None
 
     def get_last_stop(self) -> Tuple[int, int]:
@@ -118,34 +119,56 @@ class TrainDispatch(QObject):
 
         # Pop the previous block from route
         # Should be called after the train leaves the block
-        prev_block_id = None
-        if self.route:
-            prev_block_id = self.route.popleft()
 
-        # Send train back to yard if no more blocks in route
-        if not self.route and (prev_block_id != self.line.yard):
-            path_to_yard = self.line.get_path(prev_block_id, self.line.yard)
+        # Get the previous and current block id and the next stop id
+        current_block_id = self.get_current_block_id()
+        next_block_id = self.get_next_block_id()
+        next_stop_id = self.get_next_stop()[1]
+
+        # Case 0: Train is at the yard
+        if current_block_id == self.line.yard and self.dispatched == False:
+            print("Train is at the yard")
+            self.authority = 0
+
+        # Case 1: Train is en route to next stop
+        elif self.route and next_block_id != next_stop_id:
+            self.prev_block_id = self.route.popleft()
+            self.departed = True
+
+        # Case 2: Train is at the stop (which is not the last stop)
+        elif self.route and next_block_id == next_stop_id and len(self.stop_priority_queue) > 1:
+            self.prev_block_id = self.route.popleft()
+            self.pop_stop()
+            self.compute_departure_time()
+            self.update_eta_lag()
+            self.departed = False
+
+        # Case 3: Train is at the last stop (which is the yard)
+        elif self.route and next_block_id == next_stop_id and \
+                len(self.stop_priority_queue) == 1 and \
+                next_stop_id == self.line.yard:
+            self.prev_block_id = self.route.popleft()
+            self.pop_stop()
+            self.departed = False
+            self.dispatched = False
+
+        # Case 4: Train is at the last stop (which is not the yard)
+        elif self.route and next_block_id == next_stop_id and \
+                len(self.stop_priority_queue) == 1 and \
+                next_stop_id != self.line.yard:
+            self.prev_block_id = self.route.popleft()
+            self.pop_stop()
+
+            # Send train back to yard if no more blocks in route
+            path_to_yard = self.line.get_path(current_block_id, next_block_id, self.line.yard)
             travel_time = self.line.get_travel_time(path_to_yard)
             current_time = self.time_keeper.current_second
             arrival_time = current_time + travel_time
             heapq.heappush(self.stop_priority_queue, (arrival_time, self.line.yard))
             self.route.extend(path_to_yard[1:])
-        
-        # TODO: Else the train is at the yard, remove
 
-        # Update the departed status
-        if self.route:
-            self.departed = True
-
-        # If the now current block is the stop, pop the stop
-        current_block_id = self.get_current_block_id()
-        _, next_stop_id = self.get_next_stop()
-        if current_block_id == next_stop_id:
-            self.pop_stop()
-            
-            # Update the departure time and reset departed flag
-            self.compute_departure_time()
             self.departed = False
+            self.dispatched = False
 
         # Reset the time in block
         self.time_in_block = 0
@@ -213,18 +236,19 @@ class TrainDispatch(QObject):
             self.route.clear()
             self.route.append(self.line.yard)
 
-            # Plan the route to the next stop
-            last_stop = self.line.yard
+            # Plan the route from the previous stop to the next
             for _, next_stop in self.stop_priority_queue:
-                path = self.line.get_path(last_stop, next_stop)
+
+                # If the train is in the yard, plan from the yard
+                if self.route[0] == self.line.yard:
+                    path = self.line.get_path(self.line.yard, self.line.yard, next_stop)
+                else:
+                    path = self.line.get_path(self.route[-2], self.route[-1], next_stop)
                 self.add_route_blocks(path[1:])
-                last_stop = next_stop
 
         # Plan the route to the next stop
         else:
-            last_stop = self.route[-1]
-            _, next_stop = self.get_last_stop()
-            path = self.line.get_path(last_stop, next_stop)
+            path = self.line.get_path(self.route[-2], self.route[-1], self.get_last_stop()[1])
             self.add_route_blocks(path[1:])
 
     def process_update_message(self, update: TrainDispatchUpdate) -> None:
@@ -233,6 +257,10 @@ class TrainDispatch(QObject):
             return
         self.route = update.route
         self.stop_priority_queue = update.stop_priority_queue
+    
+    def get_position (self) -> None:
+        current_block = self.get_current_block
+        path = current_block.get
 
     @pyqtSlot(int)
     def handle_time_update(self, tick: int) -> None:

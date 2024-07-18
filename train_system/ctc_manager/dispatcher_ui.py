@@ -217,9 +217,9 @@ class DispatcherUI(QMainWindow):
         # Update the train visual widget display
         self.train_visual_widget.update()
 
-    @pyqtSlot(int, int)
-    def handle_switch_position_update(self, block_number: int, position: int) -> None:
-        print(f"Block {block_number} switch position updated: {position}")
+    @pyqtSlot(int)
+    def handle_switch_position_update(self, switch_number: int) -> None:
+        print(f"Switch {switch_number} position updated")
 
     @pyqtSlot(int, int)
     def handle_crossing_signal_update(self, block_number: int, signal: int) -> None:
