@@ -5,8 +5,9 @@ from datetime import timedelta
 from typing import List, Dict, Optional
 from cryptography.fernet import Fernet
 import json
-
 from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
+
+from train_system.common.time_keeper import TimeKeeper
 from train_system.common.line import Line
 from train_system.common.track_block import TrackBlock
 from train_system.common.train_dispatch import TrainDispatchUpdate
@@ -16,11 +17,12 @@ from train_system.mbo_manager.mbo_train_dispatch import MBOTrainDispatch
 class MBOOffice(QObject):
     train_dispatch_updated = pyqtSignal(TrainDispatchUpdate)
     
-    def __init__(self):
+    def __init__(self, time_keeper: TimeKeeper):
         super().__init__()
         """
         Initialize the MBO Office
         """
+        self.time_keeper = time_keeper
         self.green_line = Line('Green')
         self.green_line.load_track_blocks()
         
@@ -69,32 +71,33 @@ class MBOOffice(QObject):
     
      return (breaking_distance)
             
-    def compute_commanded_speed(self, train_position):
+    def compute_commanded_speed(self, train_id, position):
         """
         Calculate trains commanded speed based on current block 
         
         return commanded_speed, equal to the speed limit 
         """ 
         
-        block_num = train_position.get("block")
+        block_num = position.get("block")
         block = self.green_line.get_track_block(block_num)
         
-        print("calculating commanded speed for train in block ", block_num)
+        print(f"calculating commanded speed for {train_id} in block ", block_num)
 
         if block: 
             self.block_speed = self.kmhr_to_ms(block.speed_limit)
             
         return(self.block_speed)
     
-    def compute_authority(self, train_id, position, current_block):
+    def compute_authority(self, train_id, position, block):
         """
         Calculate trains authority such that more than one train can be in a block 
         each train stops at it's desitnation and opens the doors, and stops before any block maintenance 
         """
         self.authority = 0
         
-        #decrease authority!! 
-        #compare two positions along the line
+        current_block = self.green_line.get_track_block(block)
+        next_blocks = current_block.next_blocks()
+        train_to_close = False
         
         #want to take in signal that has trains_id, position, and block number??
         
@@ -117,18 +120,48 @@ class MBOOffice(QObject):
             path_length_m += blocks.length 
         
         #set authority to next station stop 
-        self.authority = path_length - (next_stop_block.length / 2) ##NEED TO FIX TO TAKE INTO ACCOUNT TRAINS CURRENT POSITION AND ASSUMPTION THAT THE TRAIN POSITION IS FROM THE FRONT OF THE TRAIN AND WANT MIDDLE OF TRAIN TO STOP AT THE MIDDLE OF THE BLOCK 
+        
+        #TODO 
+        self.authority = path_length - ((next_stop_block.length / 2) + (32.2/2)) ##NEED TO FIX TO TAKE INTO ACCOUNT TRAINS CURRENT POSITION AND ASSUMPTION THAT THE TRAIN POSITION IS FROM THE FRONT OF THE TRAIN AND WANT MIDDLE OF TRAIN TO STOP AT THE MIDDLE OF THE BLOCK 
         
         #change authority to service break distance if... 
         
-        #next block is under maint or next block != path[1]
+        #TODO
+        #Should check if trains are gonna crash first 
+        #for ids in self.trains:
+            #distance_between = ids.get_position() -  position
         
+        #if (distance_between < self.service_breaking_distance) and (distance_between > 0) #if negative train behind is to close
         
+        #if next block is under maint or switch is not in right position 
+        if (path[1].under_maintenance) or (path[1] not in next_blocks):
+            self.authority = self.service_breaking_distance()
+        
+        #going to yard
+        elif next_stop_block == self.green_line.yard:
+            self.authority = -(self.authority)
+        
+        #resetting authority to next station
+        elif (self.time_keeper.current_second >= train.departure_time):
+            #pop next stop 
+            #then authority = path_length to new next station 
+            self.authority = 1
+        
+        #checking if train is at full stop at station, signalling to open doors with authority 
+        elif (current_block == next_stop_block):
+            #should keep authority big while only resetting departure time once
+            if (position == self.previous_position[{train_id}]):
+                self.authority = 1,000,000 
+                if(train.departure_time < self.time_keeper.current_second):
+                    #train to stop for 1 minute at station
+                    train.departure_time = self.time_keeper.current_second + 60
+                #pop next stop?
+                
         #conditions to change authority 
             #to close to next train on path
-            # next block is under maint (next_block.under_mainenance = True)
-            # switch is not in the right position (next_block != next_block_path)
-            #going to yard (next_stop_block = self.line.yard then authority is negative)
+            # XX next block is under maint (next_block.under_mainenance = True)
+            # XX switch is not in the right position (next_block != next_block_path)
+            # XX going to yard (next_stop_block = self.line.yard then authority is negative)
             #1Mil to show open doors, for a minute while at stop 
                 #train is within 1 trains length of middle of block AND has been at the same position for two ticks in a row
                 #train_dispatch compute_departure_time
@@ -136,6 +169,8 @@ class MBOOffice(QObject):
             #if minute has passed, start authority to next stop 
                 #if time_keeper = departure time 
                     #authority = path to next station 
+        
+        
         
         return (self.authority)
                
@@ -246,6 +281,7 @@ class MBOOffice(QObject):
             station = block.station
             print(station)
             print("in create schedules")
+    
             
             
             
