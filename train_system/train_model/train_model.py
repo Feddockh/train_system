@@ -99,10 +99,6 @@ class TrainModel(QWidget) :
         else :
             self.commanded_power = commanded_power
 
-        # ouput
-        print("set_power() called :")
-        print(self.commanded_power)
-
         self.physics_update()
 
     # this function sets the train id number variable
@@ -135,9 +131,6 @@ class TrainModel(QWidget) :
         else :
             self.service_brake = True
         self.set_power(0)
-        print("service brake toggled:")
-        print(self.service_brake)
-
 
     # this function toggles the emergency brake boolean variable
     def toggle_emergency_brake(self) :
@@ -348,8 +341,6 @@ class TrainModel(QWidget) :
         # engine force = 0 if either brake engaged
         if self.service_brake or self.emergency_brake :
             engine_force = 0
-
-        print(engine_force)
 
         # determine current mass
         current_mass = self.EMPTY_TRAIN_MASS + (self.passengers * self.PASSENGER_MASS)
