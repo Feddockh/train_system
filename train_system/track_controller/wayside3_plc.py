@@ -72,12 +72,17 @@ if((track_blocks[74].occupancy == False
     or track_blocks[92].occupancy == True
     or track_blocks[93].occupancy == True
     or track_blocks[94].occupancy == True
-    or track_blocks[95].occupancy == True)
+    or track_blocks[95].occupancy == True
     or track_blocks[96].occupancy == True
     or track_blocks[97].occupancy == True
     or track_blocks[98].occupancy == True
     or track_blocks[99].occupancy == True
-    or track_blocks[100].occupancy == True):
+    or track_blocks[100].occupancy == True) and 
+    track_block[77].switch_position == 0 and
+    track_block[85].switch_positon == 0):
+    #Updating switch positions
+    track_block[77].switch_position == 1
+    track_block[85].switch_positon == 1
 
 
 
