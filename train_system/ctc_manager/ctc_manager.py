@@ -86,6 +86,7 @@ class CTCOffice(QObject):
         
         # Get the train object
         train = self.get_train(train_id)
+<<<<<<< HEAD
 
         # If the train is boarding, do not update the authority
         if not train.departed and train.departure_time > self.time_keeper.current_second:
@@ -101,6 +102,26 @@ class CTCOffice(QObject):
         # Compute the authority by summing the lengths of the blocks in the path and half the length of the stop block
         authority = self.line.get_path_length(unobstructed_path)
         authority += self.line.get_track_block(next_stop_id).length / 2
+=======
+        current_block_id = train.get_current_block_id()
+        next_stop_id = train.get_next_stop()[1]
+
+        # Get the unobstructed path to the next stop
+        unobstructed_path = self.line.get_unobstructed_path(current_block_id, next_stop_id)
+        
+        # Compute the authority by summing the lengths of the blocks in the path
+        authority = 0
+        for i in range(1, len(unobstructed_path)):
+            next_block_id = unobstructed_path[i]
+            next_block = self.line.get_track_block(next_block_id)
+            authority += next_block.length
+
+            # If we are reaching the stop, set authority to half the distance, else add the full distance
+            if next_block.number == next_stop_id:
+                authority += next_block.length / 2
+            else:
+                authority += next_block.length
+>>>>>>> 5642103 (New and improved implementation of switches)
 
         # If the next stop is the yard negate authority
         if next_stop_id == self.line.yard:
@@ -232,7 +253,7 @@ class CTCOffice(QObject):
                 current_block = self.line.get_track_block(current_block_id)
                 next_block_id = train.get_next_block_id()
                 next_block = self.line.get_track_block(next_block_id)
-
+        
                 # Check if the train is dispatched and sitting at the yard
                 move_train = False
                 if current_block_id == self.line.yard:
@@ -242,9 +263,14 @@ class CTCOffice(QObject):
                 elif train.time_in_block >= current_block.length / train.suggested_speed:
                     move_train = True
 
-                # Check if the next block is clear, not under maintenance, and in the next blocks of the current block (switch)
-                if next_block.occupancy or next_block.under_maintenance or (next_block.number not in current_block.next_blocks):
+                # Check if the next block is clear and not under maintenance
+                if next_block.occupancy or next_block.under_maintenance:
                     move_train = False
+
+                # Check if the current block is a switch and if the train can move to the next block
+                if current_block.switch is not None and next_block.switch is not None:
+                    if not current_block.switch.is_connected(current_block_id, next_block_id):
+                        move_train = False
 
                 # Move the train to the next block using the occupancies if all conditions are met
                 if move_train:
@@ -311,6 +337,10 @@ class CTCOffice(QObject):
     
     @pyqtSlot(int, bool)
     def handle_occupancy_update(self, block_number: int, occupancy: bool) -> None:
+<<<<<<< HEAD
+=======
+        
+>>>>>>> 5642103 (New and improved implementation of switches)
         # Check if it is CTC's responsibility to update the speed and authority of the trains
         if self.mbo_mode:
             return
@@ -318,6 +348,7 @@ class CTCOffice(QObject):
         # Update train position when incoming occupancy is true (this helps with multi-block occupancies)
         if occupancy:
 
+<<<<<<< HEAD
             # Get the next block candidate of the train (newly occupied block)
             candidate_block = self.line.get_track_block(block_number)
 
@@ -345,6 +376,34 @@ class CTCOffice(QObject):
 
         # Update the speed and authority of the trains (this is done on positive and negative occupancy signals)
         self.update_all_trains_speed_authority()
+=======
+            # Update train position when incoming occupancy is true
+            if occupancy:
+                next_block = self.line.get_track_block(block_number)
+
+                # Check if the block is not under maintenance
+                if not next_block.under_maintenance:
+                    for train_id, train in self.trains.items():
+
+                        # Check that the train was dispatched and train's next block was the now occupied block
+                        if train.dispatched and train.get_next_block_id() == next_block.number:
+
+                            # Get the train's current block and check if the train can move to the now occupied block
+                            current_block = self.line.get_track_block(train.get_current_block_id())
+                            if current_block.switch is None or next_block.switch is None:
+                                train.move_train_to_next_block()
+                                self.send_train_dispatch_update(train_id)
+                                break
+                            elif current_block.switch.is_connected(current_block.number, next_block.number):
+                                train.move_train_to_next_block()
+                                self.send_train_dispatch_update(train_id)
+                                break
+
+            # Update the speed and authority of the trains
+            self.update_all_trains_speed_authority()
+
+        print(f"Block {block_number} occupancy updated to {occupancy}")
+>>>>>>> 5642103 (New and improved implementation of switches)
 
     @pyqtSlot(int, int)
     def handle_crossing_signal_update(self, block_number: int, new_signal: int) -> None:
@@ -352,7 +411,11 @@ class CTCOffice(QObject):
     
     @pyqtSlot(int)
     def handle_switch_position_update(self, switch_number: int) -> None:
+<<<<<<< HEAD
         self.update_all_trains_speed_authority()
+=======
+        print(f"Switch {switch_number} position updated")
+>>>>>>> 5642103 (New and improved implementation of switches)
 
     @pyqtSlot(int, int, int)
     def handle_dispatcher_command(self, train_id: int, target_block: int, arrival_time: int) -> None:

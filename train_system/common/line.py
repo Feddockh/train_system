@@ -555,6 +555,10 @@ class Line(QObject):
             print("Error: Track blocks must be loaded before routes.")
             return
 
+        if not self.track_blocks:
+            print("Error: Track blocks must be loaded before routes.")
+            return
+
         if not file_path:
             file_path = os.path.abspath(os.path.join("system_data\\routes", f"{self.name.lower()}_routes.json"))
 
@@ -637,6 +641,28 @@ class Line(QObject):
             
             
             
+
+    def load_switches(self, file_path: str = None) -> None:
+
+        if not self.track_blocks:
+            print("Error: Track blocks must be loaded before switches.")
+            return
+
+        if not file_path:
+            file_path = os.path.abspath(os.path.join("system_data\\switches", f"{self.name.lower()}_switches.json"))
+
+        with open(file_path, 'r') as file:
+            data = json.load(file)
+
+        for switch_info in data['track_switches']:
+            switch = TrackSwitch(
+                line=self.name,
+                number=switch_info['number'],
+                parent_block=switch_info['parent_block'],
+                child_blocks=switch_info['child_blocks'],
+                initial_child=switch_info['initial_child']
+            )
+            self.add_switch(switch)
 
 if __name__ == "__main__":
     line = Line('Red')
