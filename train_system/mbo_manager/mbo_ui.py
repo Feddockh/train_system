@@ -9,6 +9,14 @@ import sys
 
 from PyQt6.QtWidgets import QWidget
 from train_system.mbo_manager.gui_features import CustomTable
+from train_system.common.time_keeper import TimeKeeper
+from train_system.common.time_keeper import TimeKeeperWidget
+
+from train_system.common.train_dispatch import TrainDispatchUpdate
+from train_system.common.train_dispatch import TrainDispatch
+from train_system.ctc_manager.ctc_manager import CTCOffice
+from train_system.ctc_manager.ctc_train_dispatch import CTCTrainDispatch
+from train_system.common.line import Line
 
 
 class MBOWindow(QMainWindow):
@@ -80,7 +88,14 @@ class MBOWindow(QMainWindow):
     #slot to disable MBO Mode View button (not clickable) when in fixed block mode
 
 class MBOModeView(QMainWindow):
-    def __init__(self):
+    def __init__(self, time_keeper: TimeKeeper, line: Line, trains: list[CTCTrainDispatch]):
+        
+        self.time_keeper = time_keeper
+        self.time_keeper_widget = TimeKeeperWidget(self.time_keeper)
+        
+        self.line = line
+        self.trains = trains
+        
         super(MBOModeView, self).__init__()
             #name window
         self.setWindowTitle("MBO Mode View")
