@@ -19,6 +19,8 @@ driver = DriverWindow()
 print("TC: " + str(tc.ac.get_commanded_temp()))
 print("UI: " + str(driver.tm.get_train_temp()))
 
+time_keeper.tick.connect(tc.handle_time_update)
+time_keeper.current_second.connect(tc.lights.update_lights)
 
 driver.mode_button.toggled.connect(tc.handle_toggle_driver_mode) ###checked
 driver.em_brake_button.toggled.connect(tc.handle_emergency_brake_toggled) ###checked
