@@ -193,7 +193,7 @@ class CTCOffice(QObject):
                 current_block = self.line.get_track_block(current_block_id)
                 next_block_id = train.get_next_block_id()
                 next_block = self.line.get_track_block(next_block_id)
-
+        
                 # Check if the train is dispatched and sitting at the yard
                 move_train = False
                 if current_block_id == self.line.yard:
@@ -203,9 +203,14 @@ class CTCOffice(QObject):
                 elif train.time_in_block >= current_block.length / train.suggested_speed:
                     move_train = True
 
-                # Check if the next block is clear, not under maintenance, and in the next blocks of the current block (switch)
-                if next_block.occupancy or next_block.under_maintenance or (next_block.number not in current_block.next_blocks):
+                # Check if the next block is clear and not under maintenance
+                if next_block.occupancy or next_block.under_maintenance:
                     move_train = False
+
+                # Check if the current block is a switch and if the train can move to the next block
+                if current_block.switch is not None and next_block.switch is not None:
+                    if not current_block.switch.is_connected(current_block_id, next_block_id):
+                        move_train = False
 
                 # Move the train to the next block using the occupancies if all conditions are met
                 if move_train:
@@ -272,7 +277,6 @@ class CTCOffice(QObject):
     
     @pyqtSlot(int, bool)
     def handle_occupancy_update(self, block_number: int, occupancy: bool) -> None:
-
         # Check if it is CTC's responsibility to update the speed and authority of the trains
         if self.mbo_mode:
             return
