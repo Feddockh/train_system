@@ -27,7 +27,14 @@ Storing previous beacon data: How are we going to do that and what will it look 
 '''
 
 class TrainController(QObject):
-    trains_updated = pyqtSignal()
+    setpoint_speed_updated = pyqtSignal(float)
+    power_updated = pyqtSignal(float)
+    #lights_updated = pyqtSignal(bool) -> in lights class
+    #left_door_updated = pyqtSignal(bool) -> in doors class
+    #right_door_updated = pyqtSignal(bool) -> in doors class
+    #train_temp_updated = pyqtSignal(int) -> in ac class
+    #service_brake_updated = pyqtSignal(bool) -> in brakes class
+    #emergency_brake_updated = pyqtSignal(bool) -> in brakes class
     
     def __init__(self, time_keeper: TimeKeeper, kp: float=25, ki: float=0.1, train_model=None, ssh=None) -> None:
         self.time_keeper = time_keeper
@@ -137,6 +144,7 @@ class TrainController(QObject):
     def set_setpoint_speed(self, speed: float):
         self.setpoint_speed = min(speed, self.MAX_SPEED)
         self.setpoint_speed = max(self.setpoint_speed, 0)
+        self.setpoint_speed_updated.emit(self.setpoint_speed)
     def get_setpoint_speed(self):
         return self.setpoint_speed
     
@@ -186,7 +194,7 @@ class TrainController(QObject):
         self.set_maintenance_mode(done)
 
     @pyqtSlot(bool)
-    def handle_toggle_driver_mode2(self, check):
+    def handle_toggle_driver_mode(self, check):
         if check:
             print("Automatic Mode")
             self.set_driver_mode("automatic")
@@ -251,7 +259,10 @@ class TrainController(QObject):
 
     ## Brake class to hold brake status
     class Brake(QObject):
+        service_brake_updated = pyqtSignal(bool)
+        emergency_brake_updated = pyqtSignal(bool)
         def __init__(self):
+            super().__init__()
             # These are for outputting to the Train Model and for UI status
             self.service_brake = False
             self.emergency_brake = False
@@ -263,9 +274,11 @@ class TrainController(QObject):
         # Input) status: boolean
         def set_service_brake(self, status: bool):
             self.service_brake = status
+            self.service_brake_updated.emit(status)
         # Input) status: boolean
         def set_emergency_brake(self, status: bool):
             self.emergency_brake = status
+            self.emergency_brake_updated.emit(status)
         def set_user_service_brake(self, status: bool):
             self.user_service_brake = status
         def set_user_emergency_brake(self, status: bool):
@@ -274,8 +287,10 @@ class TrainController(QObject):
         ## Toggle Functions
         def toggle_service_brake(self):
             self.service_brake = not self.service_brake
+            self.service_brake_updated.emit(self.service_brake)
         def toggle_emergency_brake(self):
             self.emergency_brake = not self.emergency_brake
+            self.emergency_brake_updated.emit(self.emergency_brake)
         def toggle_user_service_brake(self):
             self.user_service_brake = not self.user_service_brake
         def toggle_user_emergency_brake(self):
@@ -474,7 +489,10 @@ class TrainController(QObject):
     # Door status = bool
     # False = closed, True = open
     class Doors(QObject):
+        left_door_updated = pyqtSignal(bool)
+        right_door_updated = pyqtSignal(bool)
         def __init__(self, exit_door="L"):
+            super().__init__()
             self.left = False
             self.right = False
             self.exit_door = exit_door   # False = "left", True = "right"
@@ -483,15 +501,19 @@ class TrainController(QObject):
         # Input) status: boolean
         def set_left(self, status: bool):
             self.left = status
+            self.left_door_updated.emit(self.left)
         # Input) status: boolean
         def set_right(self, status: bool):
             self.right = status
+            self.right_door_updated.emit(self.right)
 
         ## Toggle Functions
         def toggle_left(self):
             self.left = not self.left
+            self.left_door_updated.emit(self.left)
         def toggle_right(self):
             self.right = not self.right
+            self.right_door_updated.emit(self.right)
 
         ## Accessor Functions
         def get_left(self):
@@ -510,16 +532,20 @@ class TrainController(QObject):
         def open_door(self):
             if self.exit_door == "left":
                 self.set_left(True)
+                self.left_door_updated.emit(self.left)
             elif self.exit_door == "right":
                 self.set_right(True)
+                self.right_door_updated.emit(self.right)
             else: 
                 raise ValueError("Exit door not set")
             
         def close_door(self):
             if self.exit_door == "left":
                 self.set_left(False)
+                self.left_door_updated.emit(self.left)
             elif self.exit_door == "right":
                 self.set_right(False)
+                self.right_door_updated.emit(self.right)
             else: 
                 raise ValueError("Exit door not set")
         
@@ -527,7 +553,10 @@ class TrainController(QObject):
     # Light status = bool
     # False = off, True = on
     class Lights(QObject):
+        lights_updated = pyqtSignal(bool)
         def __init__(self, underground=False):
+
+            super().__init__()
             self.lights = False
             self.underground = underground # List of blocks that are underground
             self.night_time = 43200 # 12 hours in seconds
@@ -535,14 +564,18 @@ class TrainController(QObject):
         ## Mutator Functions
         def lights_on(self):
             self.lights = True
+            self.lights_updated.emit(self.lights)
         def lights_off(self):
             self.lights = False
+            self.lights_updated.emit(self.lights)
         def set_lights(self, status: bool):
             self.lights = status
+            self.lights_updated.emit(self.lights)
 
         ## Toggle Function
         def toggle_lights(self):
             self.lights = not self.lights
+            self.lights_updated.emit(self.lights)
 
         ## Accessor Function
         def get_lights(self):
@@ -563,7 +596,9 @@ class TrainController(QObject):
     # Commanded temperature from driver (initialized to 69)
     # Current temperature from Train Model
     class AC(QObject):
+        train_temp_updated = pyqtSignal(int)
         def __init__(self, temp: int):
+            super().__init__() 
             # Automatic temperature when in Automatic mode (69 degrees Fahrenheit)
             self.auto_temp = 69
             self.MAX_TEMP = 80
@@ -588,6 +623,7 @@ class TrainController(QObject):
         # Input) TrainModel object, string: "automatic" or "manual"
         def update_current_temp(self, train_model, driver_mode: str):
             self.current_temp = train_model.get_train_temp()
+            self.train_temp_updated.emit(self.current_temp)
             # If in automatic mode, set the commanded temperature to the automatic temperature
             if(driver_mode == "automatic"):
                 self.set_commanded_temp(self.auto_temp)

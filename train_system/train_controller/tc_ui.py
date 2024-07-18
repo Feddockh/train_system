@@ -603,6 +603,9 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.left_door = False
         self.temp = 0
 
+        self.setpoint_speed = 0
+        
+
 
         #the left outputs will use a vertical layout
         left_out_layout = QVBoxLayout()
@@ -831,7 +834,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
             self.brake_status_label.setFixedSize(75, 50)
             self.brake_status_label.setStyleSheet("background-color: #29C84C; color: white;")
 
-        #yes i know there's a typo
+        """FIX LIGHTS!!!!!!"""
         self.light_staus_label = QLabel("Lights On")
         self.light_staus_label.setFixedSize(75, 50)
         if(self.light_status == True): ###might change colors
@@ -882,7 +885,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.comm_temp_input = QLineEdit() 
         self.comm_temp_input.setPlaceholderText("Enter Temp")
         self.comm_temp_input.setFixedSize(100, 50)
-        #self.comm_temp_input.textChanged.connect(self.handle_comm_temp_changed)###enabled/disabled depends on mode
+        self.comm_temp_input.textChanged.connect(self.handle_comm_temp_changed)###enabled/disabled depends on mode
 
         temp_unit_label = QLabel("F")
         temp_unit_label.setFixedSize(50, 50)
@@ -1092,7 +1095,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.curr_temp.setText("Train Temperature: " + str(self.temp) + " F")
 
     @pyqtSlot(bool)
-    def handle_service_brake_update(self, brake: int) -> None:
+    def handle_service_brake_update(self, brake: bool) -> None:
         self.serv_brake_status = brake
 
         self.brake_on = self.serv_brake_status or self.emerg_brake_status
@@ -1110,7 +1113,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
             self.brake_status_label.setStyleSheet("background-color: #29C84C; color: white;")
 
     @pyqtSlot(bool)
-    def handle_emerg_brake_update(self, brake: int) -> None:
+    def handle_emerg_brake_update(self, brake: bool) -> None:
         self.emerg_brake_status = brake
 
         self.brake_on = self.serv_brake_status or self.emerg_brake_status
