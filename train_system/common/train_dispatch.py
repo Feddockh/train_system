@@ -203,6 +203,10 @@ class TrainDispatch(QObject):
             return
         self.route = update.route
         self.stop_priority_queue = update.stop_priority_queue
+    
+    def get_position (self) -> None:
+        current_block = self.get_current_block
+        path = current_block.get
 
     @pyqtSlot(int)
     def update_eta_lag(self, tick: int) -> None:
