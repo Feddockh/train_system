@@ -170,8 +170,6 @@ class MBOOffice(QObject):
                 #if time_keeper = departure time 
                     #authority = path to next station 
         
-        
-        
         return (self.authority)
                
     #incorporate time keeper here, every tick call load in posotions, calculate speed and authority, check if can send, if so encypt and emit data   
