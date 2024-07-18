@@ -27,8 +27,8 @@ def create_track_blocks(num_blocks):
             block.switch_options = [30, 150]
         
         #simulating an emergency stop
-        elif i == 9:
-            block._occupancy = True
+        #elif i == 9:
+            #block._occupancy = True
         elif i == 57: #simulate block 78 being occupied to make the switch go to 101
             block._occupancy = False
         elif i == 60:#simulate block 125 being occupied.

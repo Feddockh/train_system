@@ -223,8 +223,10 @@ class TrackController(QObject):
 
     def convert_to_strings(self):
         # Check block 58 Switch Position
+
         if self.track_blocks[57]._switch_position == 0 and self.track_blocks[57].authority < 0:
             self.message_switch58 = (
+                #"RUNNING PLC ON PI\n"
                 "Block 57 Information:\n"
                 f"Light Signal: {self.track_blocks[56]._light_signal}\n"
                 f"Authority: {self.track_blocks[56].authority}\n\n"
@@ -299,8 +301,8 @@ class TrackController(QObject):
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-        self.run_PLC_program()
-        self.convert_to_strings()
+        #self.run_PLC_program()
+        #self.convert_to_strings()
         #command = self.run_PLC_program
 	
 	#convert to strings
@@ -308,16 +310,17 @@ class TrackController(QObject):
             # Connect to the Raspberry Pi
             ssh.connect(self.hostname, port=self.port, username=self.username, password=self.password)
 
-             
+            self.run_PLC_program()
+            self.convert_to_strings() 
             # Prepare the command to be sent to Raspberry Pi
             command = ""
             
             #reset log
-            command = "echo 'Log Reset' > /home/garrett/pi_monitor.log\n "
+            command = "echo 'RUNNING PLC ON PI' > /home/garrett/pi_monitor.log\n "
 
             #original code for pi
             
-            command += "echo 'Running PLC Code' >>/home/garrett/pi_monitor.log\n"
+            #ommand += "echo 'Running PLC Code' >>/home/garrett/pi_monitor.log\n"
 
             #testing only
             command += f"echo 'TESTING' >>/home/garrett/pi_monitor.log\n"
