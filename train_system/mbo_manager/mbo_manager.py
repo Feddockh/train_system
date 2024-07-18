@@ -94,18 +94,12 @@ class MBOOffice(QObject):
         each train stops at it's desitnation and opens the doors, and stops before any block maintenance 
         """
         self.authority = 0
-        
         current_block = self.green_line.get_track_block(block)
         next_blocks = current_block.next_blocks()
         train_to_close = False
-        
-        #want to take in signal that has trains_id, position, and block number??
-        
         if not self.train_exists(train_id):
             return 0
-        
         train = self.get_train(train_id)
-        #get trains current block from satellite not train dispatch 
         next_stop_block = train.get_next_stop()
         
         print(f"calculating authority for {train_id} at position {position} at block {current_block} and going to {next_stop_block} ")

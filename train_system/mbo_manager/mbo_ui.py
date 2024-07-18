@@ -86,16 +86,57 @@ class MBOModeView(QMainWindow):
         self.setWindowTitle("MBO Mode View")
         self.setFixedSize(1222, 702)
         
-        self.table_widget = QTableWidget()
-        self.table_widget.setColumnCount(6)
-        self.table_widget.setHorizontalHeaderLabels(["Train ID", "Line", "Station", "Position", "Commanded Speed", "Authority"])
+        
+        self.title = QLabel('Current Commanded Speed and Authority')
+        self.title.setFont(QFont('Times',12))
+        
+        self.test_bench_window = None
+        self.test_bench_window = None
+        #button to navigate to test bench view 
+        self.test_bench_view = QPushButton('Test Bench')
+        self.test_bench_view.setFont(QFont('Times', 12))
+        self.test_bench_view.setFixedSize(100,50)
+        self.test_bench_view.clicked.connect(self.open_test_bench_view) 
+        
+        self.headers = ['Trains', 'Line', 'Station', 'Position [ft from yard]', 'Authority [ft]', 'Commanded Speed [mph]']
+        self.table = QTableWidget(3,6)
+        self.table.setHorizontalHeaderLabels(self.headers)
+        self.table.verticalHeader().setVisible(False)
+        self.table.horizontalHeader().setStretchLastSection(True)
+        for col in range(6):
+            self.table.horizontalHeader().setSectionResizeMode(
+                col, QHeaderView.ResizeMode.Stretch
+            )
+    
 
-        # Set the layout
-        layout = QVBoxLayout()
-        layout.addWidget(self.table_widget)
-        container = QWidget()
-        container.setLayout(layout)
-        self.setCentralWidget(container)
+        self.table.setStyleSheet("""
+            QHeaderView::section { 
+                background-color: #C8C8C8;
+                color: #333333;
+                font-size: 12pt;
+            }
+            QTableWidget::item {
+                background-color: #FDFDFD;
+                border: 1px solid #333333; 
+            }
+            QTableWidget {
+                gridline-color: #333333; 
+            }
+        """)
+
+        # Set the palette for the table to control the background and text colors
+        palette = self.table.palette()
+        palette.setColor(QPalette.ColorRole.Base, QColor(0xd9d9d9))
+        palette.setColor(QPalette.ColorRole.Text, QColor(0x333333))
+        self.table.setPalette(palette)
+        
+        self.main_layout = QVBoxLayout()
+        self.main_layout.addWidget(self.table)
+        
+        main_widget = QWidget()
+        main_widget.setLayout(self.main_layout)
+        self.setCentralWidget(main_widget)
+    
 
     def update_table(self, train_data):
         self.table_widget.setRowCount(len(train_data))
@@ -106,6 +147,23 @@ class MBOModeView(QMainWindow):
             self.table_widget.setItem(row, 3, QTableWidgetItem(str(train["position"])))
             self.table_widget.setItem(row, 4, QTableWidgetItem(str(train["commanded_speed"])))
             self.table_widget.setItem(row, 5, QTableWidgetItem(str(train["authority"])))
+
+    def open_test_bench_view(self):
+        if self.test_bench_window is None:
+            self.test_bench_window = TestBench()
+            self.test_bench_window.show()
+        else:
+            self.test_bench_window.close()
+            self.test_bench_window = None
+
+class TestBench(QMainWindow):
+    def __init__(self):
+        super(TestBench,self).__init__()
+        
+        #label for page window 
+        self.setWindowTitle("MBO Test Bench")
+        self.setFixedSize(1222, 702)
+
 
 app = QApplication(sys.argv)
 
