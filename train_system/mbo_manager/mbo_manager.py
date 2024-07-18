@@ -12,8 +12,6 @@ from train_system.common.track_block import TrackBlock
 from train_system.common.train_dispatch import TrainDispatchUpdate
 from train_system.mbo_manager.mbo_train_dispatch import MBOTrainDispatch
 
-#assuming recieving train_positions as {'train_id' : train_id, 'position' : m, 'block' : #}
-#sending speed and authority as data = {'train_id' : train_id, 'authority' : m, 'commanded_speed' : m/s}
 
 class MBOOffice(QObject):
     train_dispatch_updated = pyqtSignal(TrainDispatchUpdate)
@@ -35,7 +33,8 @@ class MBOOffice(QObject):
                       'Central Up' : 450, 'Edgebrook' : 3684, 'Pioneer' : 700, 'Station' : 675, 'Whited' : 1125, 'South Bank' : 1275,
                       'Central Down' : 400, 'Overbrook Down' : 900, 'Yard' : -125}
         
-           
+        self.previous_position = {}
+              
     def kmhr_to_ms(self, km_hr):
         """convert km/hr to m/s
 
@@ -87,37 +86,58 @@ class MBOOffice(QObject):
             
         return(self.block_speed)
     
-    def compute_authority(self, train_position):
+    def compute_authority(self, train_id, position, current_block):
         """
         Calculate trains authority such that more than one train can be in a block 
         each train stops at it's desitnation and opens the doors, and stops before any block maintenance 
         """
+        self.authority = 0
         
-        #want to take in signal that has trains_id, position, and block number
+        #decrease authority!! 
+        #compare two positions along the line
         
-        print("calculating authority for train at position ")
-        authorities = 222
+        #want to take in signal that has trains_id, position, and block number??
         
-        #LOOK AT LINE AND TRACK BLOCK TO FIND WAY TO USE TRAINS CURRENT POSITION AND DESITINATION OF TRAIN TO FIND AUTHORITY
-        #WHAT STATION ARE WE DOING FOR ITERATION? 
-        #JUST USE IT HOW I HAVE IT?? WITH HARDCODED AUTHORITY VALUES
+        if not self.train_exists(train_id):
+            return 0
         
-        #set authorirty to next destination 
+        train = self.get_train(train_id)
+        #get trains current block from satellite not train dispatch 
+        next_stop_block = train.get_next_stop()
         
-         #if next block on route = under maint
-            #set to service breaking distance 
-            
-         # if next block does not follow trains route (switch is not in correct position)
-            #set to service breaking distance
-            
-         #if another train is within service breaking distance 
-            #set to service breaking distance
-             
-         #if train is at destination ?
-            #set authority to 0 
-            # after 1 minute has passed, set authority to next stop 
+        print(f"calculating authority for {train_id} at position {position} at block {current_block} and going to {next_stop_block} ")
         
-        return (authorities)
+        #list of blocks to next stop, including start and end 
+        path = train.get_route_to_next_stop()
+        
+        #if next stop block has not changed 
+        path_length = 0
+        
+        for blocks in path:
+            path_length_m += blocks.length 
+        
+        #set authority to next station stop 
+        self.authority = path_length - (next_stop_block.length / 2) ##NEED TO FIX TO TAKE INTO ACCOUNT TRAINS CURRENT POSITION AND ASSUMPTION THAT THE TRAIN POSITION IS FROM THE FRONT OF THE TRAIN AND WANT MIDDLE OF TRAIN TO STOP AT THE MIDDLE OF THE BLOCK 
+        
+        #change authority to service break distance if... 
+        
+        #next block is under maint or next block != path[1]
+        
+        
+        #conditions to change authority 
+            #to close to next train on path
+            # next block is under maint (next_block.under_mainenance = True)
+            # switch is not in the right position (next_block != next_block_path)
+            #going to yard (next_stop_block = self.line.yard then authority is negative)
+            #1Mil to show open doors, for a minute while at stop 
+                #train is within 1 trains length of middle of block AND has been at the same position for two ticks in a row
+                #train_dispatch compute_departure_time
+                #pop next stop??
+            #if minute has passed, start authority to next stop 
+                #if time_keeper = departure time 
+                    #authority = path to next station 
+        
+        return (self.authority)
                
     #incorporate time keeper here, every tick call load in posotions, calculate speed and authority, check if can send, if so encypt and emit data   
     class Satellite(QObject):
@@ -226,6 +246,8 @@ class MBOOffice(QObject):
             station = block.station
             print(station)
             print("in create schedules")
+            
+            
             
             
             
