@@ -83,7 +83,8 @@ class TrackController(QObject):
             self.plc_program_uploaded = True
             self.plc_program = plc_program
             print(self.plc_program)
-            self.send_to_pi()
+            if(self.wayside_name == "Wayside 2"):
+                self.send_to_pi()
             
 
     def run_PLC_program(self):
