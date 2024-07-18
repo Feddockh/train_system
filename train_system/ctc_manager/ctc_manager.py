@@ -276,7 +276,7 @@ class CTCOffice(QObject):
     
     @pyqtSlot(int)
     def handle_switch_position_update(self, switch_number: int) -> None:
-        print(f"Switch {switch_number} position updated")
+        self.update_all_trains_speed_authority()
 
     @pyqtSlot(int, int, int)
     def handle_dispatcher_command(self, train_id: int, target_block: int, arrival_time: int) -> None:

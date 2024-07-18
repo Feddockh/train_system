@@ -121,21 +121,25 @@ class Line(QObject):
 
     def get_switch(self, number: int) -> TrackSwitch:
             
-            """
-            Retrieves a switch by its number.
-            
-            Args:
-                number (int): The switch number to retrieve.
-            
-            Returns:
-                TrackSwitch: The retrieved TrackSwitch object.
-            """
-    
-            for switch in self.switches:
-                if switch.number == number:
-                    return switch
-            print(f"Switch {number} not found.")
-            return None
+        """
+        Retrieves a switch by its number.
+        
+        Args:
+            number (int): The switch number to retrieve.
+        
+        Returns:
+            TrackSwitch: The retrieved TrackSwitch object.
+        """
+
+        if number < len(self.switches) and number > 0:
+            return self.switches[number - 1]
+        print(f"Switch {number} does not exist.")
+        return None
+
+    def toggle_switch(self, number: int) -> None:
+        switch = self.get_switch(number)
+        if switch is not None:
+            switch.toggle()
 
     def connect_switch_signals(self, switch: TrackSwitch) -> None:
         switch.position_updated.connect(lambda new_position, sw=switch: self.switch_position_updated.emit(sw.number))
