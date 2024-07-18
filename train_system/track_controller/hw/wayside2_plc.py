@@ -17,6 +17,7 @@ Returns:
 #switch 58 is going to look at the track occupancy of 63. If occupied it will go to yard
 #Determining switch position
 
+print("Computations in Pi")
 print("Wayside 2: ")
 #switch from 58 to yard
 #checks if any of J and K are occupied, if so, it switches to  yard

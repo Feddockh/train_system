@@ -23,13 +23,14 @@ def create_track_blocks(num_blocks):
             block.switch_options = ["go to yard",59]
         elif i == 63:  # Setting properties for block 76
             block.switch_options = ["stay in yard",63]
+        elif i == 29:
+            block.switch_options = [30, 150]
         
         #simulating an emergency stop
         elif i == 9:
             block._occupancy = True
         elif i == 57: #simulate block 78 being occupied to make the switch go to 101
             block._occupancy = False
-            block.authority = -5
         elif i == 60:#simulate block 125 being occupied.
             block._occupancy = True
         #elif i == 125:
