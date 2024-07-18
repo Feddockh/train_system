@@ -17,10 +17,10 @@ from train_system.common.line import Line
 
 class LiveMap(QWidget):
 
-    def __init__(self, line: Line):
+    def __init__(self):
+
         super().__init__()
 
-        self.line = line
         self.graph = nx.DiGraph()
         self.fig = mpl.figure()
         self.canvas = FigureCanvasQTAgg(self.fig)
@@ -28,6 +28,11 @@ class LiveMap(QWidget):
         lo = QVBoxLayout()
         lo.addWidget(self.canvas)
         self.setLayout(lo)
+
+
+    def set_line(self, line: Line):
+
+        self.line = line
 
         self.nodes = []
         self.edges = []
@@ -39,7 +44,6 @@ class LiveMap(QWidget):
                 if not (len(block.connecting_blocks) > 2 and len(block.switch_options) < 2 and len(self.line.get_track_block(num).switch_options) < 2):
                     self.edges.append([str(block.number), str(num)])
 
-        
         self.graph.add_edges_from(self.edges)
         self.map = nx.kamada_kawai_layout(self.graph)
 
@@ -49,6 +53,8 @@ class LiveMap(QWidget):
     def plot(self):
 
         self.fig.clear()
+
+        self.fig.add_axes((0, 0, 1, 1))
 
         color_map = []
         for block in self.line.track_blocks:

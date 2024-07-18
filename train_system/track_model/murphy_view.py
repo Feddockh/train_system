@@ -2,7 +2,7 @@ from PyQt6.QtWidgets import QWidget
 
 class MurphyUI(QWidget):
     
-    def __init__(self, parent: object):
+    def __init__(self):
 
         super().__init__()
 
