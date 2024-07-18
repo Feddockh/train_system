@@ -10,28 +10,30 @@ def create_track_blocks(num_blocks):
     for i in range(1, num_blocks + 1):
         block = TrackBlock("", "", i, 1, 1, 1, 1, 1, 1, "")
         block.authority = 45
-        if i == 1:  # Example of setting some specific properties for the first block
-            block.crossing_signal = CrossingSignal.OFF
-            block._light_signal = False
-            block.switch_options = [2, 3]
+        if i == 13:  # Example of setting some specific properties for the first block
+            #block.crossing_signal = CrossingSignal.OFF
+            #block._light_signal = False
+            block.switch_options = [1, 12]
             block.switch_position = 1
-            block._occupancy = True
-        elif i == 2:  # Setting properties for the second block
-            block.switch_options = [1]
-        elif i == 3:  # Setting properties for the third block
-            block.switch_options = [1]
+        elif i == 1:  # Setting properties for the second block
+            block.switch_options = [13]
+        elif i == 12:  # Setting properties for the third block
+            block.switch_options = [13]
         elif i == 58:  # Setting properties for block 58
-            block.switch_options = [56,59]
-        elif i == 76:  # Setting properties for block 76
-            block.switch_options = [75, 78]
+            block.switch_options = ["go to yard",59]
+        elif i == 63:  # Setting properties for block 76
+            block.switch_options = ["stay in yard",63]
         
         #simulating an emergency stop
+        elif i == 9:
+            block._occupancy = True
         elif i == 57: #simulate block 78 being occupied to make the switch go to 101
             block._occupancy = False
+            block.authority = -5
         elif i == 60:#simulate block 125 being occupied.
             block._occupancy = True
-        elif i == 125:
-            block._occupancy = True
+        #elif i == 125:
+           # block._occupancy = True
 
         blocks.append(block)
     return blocks

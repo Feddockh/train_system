@@ -17,6 +17,7 @@ Returns:
 #switch 58 is going to look at the track occupancy of 63. If occupied it will go to yard
 #Determining switch position
 
+print("Wayside 2: ")
 #switch from 58 to yard
 #checks if any of J and K are occupied, if so, it switches to  yard
 if (track_blocks[62].occupancy 
@@ -27,18 +28,39 @@ if (track_blocks[62].occupancy
     or track_blocks[58].occupancy
     or track_blocks[59].occupancy
     or track_blocks[60].occupancy
-    or track_blocks[61].occupancy): 
+    or track_blocks[61].occupancy
+    or (track_blocks[57].authority < 0)): #checks if authority from ctc is negative then makes decision on train 
+
     
     #setting switch position
-    track_blocks[57]._switch_position = 1
+    track_blocks[57]._switch_position = 0
 
     #setting light signals
     track_blocks[56]._light_signal = True  # Light is Green leading up to the switch
     track_blocks[57]._light_signal = True  # Light is GREEN light on block 58, is green. Showing that the switch to the yard is connected
     track_blocks[58]._light_signal = False # Light at the beginning of section J is RED showing that the train will not continue on the green line
-
+    
+    #checking if authority was zero /manually changing if not
+    if(track_blocks[57].authority > 0):
+        track_blocks[57].authority = -track_blocks[57].authority
+        
     #print to terminal/ for error checking
-    print("Switch from 58 to yard is connected, all trains going into yard")
+    
+    print("Switch 58 Information:\n")
+    #block 1
+    print("Block 57 Information: ")
+    print(f"Light Signal: {track_blocks[56]._light_signal}")
+    print(f"Authority: {track_blocks[56].authority}")
+
+    #Block 12
+    print("Block 58 (Switch) Information: ")
+    print(f"Light Signal: {track_blocks[57]._light_signal}")
+    print(f"Switch Position: {track_blocks[57]._switch_position}")
+    print(f"Authority: {track_blocks[57].authority}\n")
+
+    print("Block 59 Information: ")
+    print(f"Light Signal: {track_blocks[58]._light_signal}")
+    print(f"Authority: {track_blocks[58].authority}\n")
 
 #emergency stop instance
 #checks if 
@@ -46,7 +68,7 @@ elif ((track_blocks[62].occupancy
        or track_blocks[63].occupancy 
        or track_blocks[64].occupancy
        or track_blocks[65].occupancy
-       or track_blocks[66].occupancy  # checks if anything from section J till K is occupied, if so authority set to zero
+       or track_blocks[66].occupancy  #checks if anything from section J till K is occupied, if so authority set to zero
        or track_blocks[58].occupancy
        or track_blocks[59].occupancy
        or track_blocks[60].occupancy
@@ -62,12 +84,30 @@ elif ((track_blocks[62].occupancy
     track_blocks[58]._light_signal = False # RED because all paths are occupied
 
     #print to terminal to error check
-    print("EMERGENCY STOP TRAINS AT BLOCK 57")
+    
+    
+   
+    print("Switch 58 Information:\n")
+    #block 1
 
+    print(f"EMERGENCY STOP TRAINS AT BLOCK 57\nAuthority:\n")
 
+    print("Block 57 Information: ")
+    print(f"Light Signal: {track_blocks[56]._light_signal}")
+    print(f"Authority: {track_blocks[56].authority}")
+
+    #Block 12
+    print("Block 58 (Switch) Information: ")
+    print(f"Light Signal: {track_blocks[57]._light_signal}")
+    print(f"Switch Position: {track_blocks[57]._switch_position}")
+    print(f"Authority: {track_blocks[57].authority}\n")
+
+    print("Block 59 Information: ")
+    print(f"Light Signal: {track_blocks[58]._light_signal}")
+    print(f"Authority: {track_blocks[58].authority}\n")
 else:
     #setting switch positions
-    track_blocks[57]._switch_position = 0
+    track_blocks[57]._switch_position = 1
 
     #setting light colors
     track_blocks[56]._light_signal = True  # This light will typically be green unless a collision on J
@@ -75,7 +115,22 @@ else:
     track_blocks[58]._light_signal = True  # Light is Green and headed towards section J
 
     #print to terminal to error check
-    print("Switch from 58 to yard is not connected, all trains are continuing along section J")
+
+    print("Switch 58 Information:\n")
+    #block 1
+    print("Block 57 Information: ")
+    print(f"Light Signal: {track_blocks[56]._light_signal}")
+    print(f"Authority: {track_blocks[56].authority}")
+
+    #Block 12
+    print("Block 58 (Switch) Information: ")
+    print(f"Light Signal: {track_blocks[57]._light_signal}")
+    print(f"Switch Position: {track_blocks[57]._switch_position}")
+    print(f"Authority: {track_blocks[57].authority}\n")
+
+    print("Block 59 Information: ")
+    print(f"Light Signal: {track_blocks[58]._light_signal}")
+    print(f"Authority: {track_blocks[58].authority}\n")
 
 
 #switch from yard to 63 checks J K L M and J to amake sure that there aren't any occupancies. If all are clear, then the switch from yard will connect
@@ -104,10 +159,14 @@ if (track_blocks[58].occupancy
     track_blocks[62].authority = 0
     
     #setting light color
+    track_blocks[61]._light_signal = True
     track_blocks[62]._light_signal = False # switch is not connected, so light is RED
 
     #print to terminal to error check
+    print("Switch 63 Information: ")
     print("Switch from yard is open, Trains cannot leave yard, Trains must wait for section J to be unoccupied")
+    print(f"Authority: {track_blocks[62].authority}")
+    print(f"Light Color: {track_blocks[62]._light_signal}\n")
 
 else:
     #setting switch position
@@ -115,13 +174,19 @@ else:
 
     #setting light color
     track_blocks[62]._light_signal = True # Light is Green
+    track_blocks[61]._light_signal = False
 
     #print to terminal to error check
+    print("Switch 63 Information: ")
     print("Switch from yard to Block 63 is open, Trains can leave the yard")
+    print(f"Authority: {track_blocks[62].authority}")
+    print(f"Light Color: {track_block[62]._light_signal}\n")
+    
 
 
+
+"""
 #switch from 76 - 77 and 76 to 101
-
 #looks at Block N if occupied, switches to 101
 if (track_blocks[76].occupancy 
     or track_blocks[77].occupancy 
@@ -285,3 +350,4 @@ elif ((track_blocks[76].occupancy
     
     #Print to terminal to error check
     print("EMERGENCY STOP, TRAIN HAS NO WHERE TO GO AT BLOCK 76")
+"""

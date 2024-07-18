@@ -90,7 +90,8 @@ class ProgrammerUI(QtWidgets.QMainWindow):
             self.timer.start(3000)
 
         #Used in multiple widgets
-        waysides = [track_controllers[0].wayside_name, track_controllers[1].wayside_name, track_controllers[2].wayside_name,track_controllers[3].wayside_name, track_controllers[4].wayside_name]
+        #waysides = [track_controllers[0].wayside_name, track_controllers[1].wayside_name, track_controllers[2].wayside_name,track_controllers[3].wayside_name, track_controllers[4].wayside_name]
+        waysides = [track_controllers[0].wayside_name, track_controllers[1].wayside_name, track_controllers[2].wayside_name]
         lines = ['Green Line', 'Red Line']
         
         #Creating universal font
@@ -243,7 +244,7 @@ class ProgrammerUI(QtWidgets.QMainWindow):
     def update_ui(self):
         lineIndex = self.comboBox_3.currentIndex()
         waysideIndex = self.comboBox.currentIndex()
-        self.track_controllers[waysideIndex].run_PLC_program()
+        #self.track_controllers[waysideIndex].run_PLC_program()
         self.add_wayside_blk_table_data(lineIndex)
         self.add_block_info_table_data(waysideIndex)
         self.display_plc_uploaded(waysideIndex)
@@ -433,7 +434,8 @@ class TestBench(QtWidgets.QMainWindow):
         self.setCentralWidget(self.centralwidget)
 
         #Used in multiple widgets
-        waysides = [self.track_controllers[0].wayside_name, self.track_controllers[1].wayside_name, self.track_controllers[2].wayside_name, self.track_controllers[3].wayside_name, self.track_controllers[4].wayside_name]
+        #waysides = [track_controllers[0].wayside_name, track_controllers[1].wayside_name, track_controllers[2].wayside_name,track_controllers[3].wayside_name, track_controllers[4].wayside_name]
+        waysides = [self.track_controllers[0].wayside_name, self.track_controllers[1].wayside_name, self.track_controllers[2].wayside_name]
         lines = ['Green Line', 'Red Line']
 
         #Creating universal font
@@ -584,7 +586,7 @@ class TestBench(QtWidgets.QMainWindow):
         self.blockInfoTable.blockSignals(True)
         lineIndex = self.comboBox_3.currentIndex()
         waysideIndex = self.comboBox.currentIndex()
-        self.track_controller.run_PLC_program()
+        #self.track_controller.run_PLC_program()
         self.add_wayside_blk_table_data(lineIndex)
         self.add_block_info_table_data(waysideIndex)
         self.blockInfoTable.blockSignals(False)
@@ -722,7 +724,8 @@ class Maintenance(QtWidgets.QMainWindow):
         self.setCentralWidget(self.centralwidget)
 
         #Used in multiple widgets
-        waysides = [self.track_controllers[0].wayside_name, self.track_controllers[1].wayside_name, self.track_controllers[2].wayside_name, self.track_controllers[3].wayside_name, self.track_controllers[4].wayside_name]
+        #waysides = [track_controllers[0].wayside_name, track_controllers[1].wayside_name, track_controllers[2].wayside_name,track_controllers[3].wayside_name, track_controllers[4].wayside_name]
+        waysides = [self.track_controllers[0].wayside_name, self.track_controllers[1].wayside_name, self.track_controllers[2].wayside_name]
         lines = ['Green Line', 'Red Line']
 
         #Creating universal font
@@ -871,7 +874,7 @@ class Maintenance(QtWidgets.QMainWindow):
         self.blockInfoTable.blockSignals(True)
         lineIndex = self.comboBox_3.currentIndex()
         waysideIndex = self.comboBox.currentIndex()
-        self.track_controllers[waysideIndex].run_PLC_program()
+        #self.track_controllers[waysideIndex].run_PLC_program()
         self.add_wayside_blk_table_data(lineIndex)
         self.add_block_info_table_data(waysideIndex)
         self.blockInfoTable.blockSignals(False)
@@ -968,7 +971,7 @@ class Maintenance(QtWidgets.QMainWindow):
         #checking to see if there is a crossing at this block
         if(self.track_controllers[waysideIndex].track_blocks[x]._crossing_signal != CrossingSignal.NA):
             #Getting current signal
-            curr_crossing = self.track_controllers[waysideIndex].track_blocks[x]._crossing_signal_bool
+            curr_crossing = self.track_controllers[waysideIndex].track_blocks[x]._crossing_signal
             print("Curr")
             print(curr_crossing)
 
@@ -1080,9 +1083,9 @@ class Maintenance(QtWidgets.QMainWindow):
 
     #Displays crossing signals
     def display_crossing_signal(self, x, waysideIndex):
-        if (self.track_controllers[waysideIndex].track_blocks[x]._crossing_signal_bool == False):
+        if (self.track_controllers[waysideIndex].track_blocks[x]._crossing_signal == False):
             return "Up"
-        elif(self.track_controllers[waysideIndex].track_blocks[x]._crossing_signal_bool == True):
+        elif(self.track_controllers[waysideIndex].track_blocks[x]._crossing_signal == True):
             return "Down"
         else:
             return "-"

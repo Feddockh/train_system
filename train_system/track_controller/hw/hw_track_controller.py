@@ -6,6 +6,7 @@ from train_system.common.line import Line
 from train_system.common.crossing_signal import CrossingSignal
 import sys
 import paramiko
+import time
 
 crossing_signal_map = {
     CrossingSignal.ON: True,
@@ -20,6 +21,7 @@ class TrackController(QObject):
         """
         super().__init__()
 
+        
         self.track_blocks = track_blocks
         self.plc_program_uploaded = False
         self.plc_program = ""
@@ -29,12 +31,13 @@ class TrackController(QObject):
         self.message_switch58 = ""
         self.message_switch63 = ""
         self.message_switch76 = ""
-
+        
         self.hostname = 'raspberrypi'
         self.port = 22
         self.username = 'garrett'
         self.password = 'Cornell@26'
-
+        
+        
         for block in self.track_blocks:
                 block.authority_updated.connect(self.handle_authority_update)
                 block.occupancy_updated.connect(self.handle_occupancy_update)
@@ -80,7 +83,7 @@ class TrackController(QObject):
             self.plc_program_uploaded = True
             self.plc_program = plc_program
             print(self.plc_program)
-            self.send_to_pi()
+            #self.send_to_pi()
             
 
     def run_PLC_program(self):
@@ -217,42 +220,30 @@ class TrackController(QObject):
                 self.track_blocks[x]._crossing_signal_bool = new_crossing
                 print("Safe Decision")
 
+
     def convert_to_strings(self):
     
     #Check block 58 Switch Position
-        if(self.track_blocks[57]._switch_position == 1):
-            self.message_switch58 = "Switch from 58 to yard is connected, all trains going into yard"  
+        if(self.track_blocks[57]._switch_position == 0 and self.track_blocks[57].authority < 0):
+            self.message_switch58 = f"Switch from 58 to yard is connected, all trains going into yard\nAuthority: {self.track_blocks[57].authority}"  
         
         #checks if the track to yard is not connected
-        elif(self.track_blocks[57]._switch_position == 0):
+        elif(self.track_blocks[57]._switch_position == 1):
             self.message_switch58 = "Switch from 58 to yard is not connected, all trains are continuing along section J"
         
+
         #checks if all signals are red
         elif(self.track_blocks[57]._light_signal == False 
              and self.track_blocks[56]._light_signal == False 
              and self.track_blocks[58]._light_signal == False):
             self.message_switch58 = "ALL Trains must stop, all tracks occupied.\nWait till tracks clear"
 
-    
+
     #Check block 63 switch position
         if(self.track_blocks[62]._switch_position == 1):
             self.message_switch63 = "Switch from yard to Block 63 is open, Trains can leave the yard"
         else:
             self.message_switch63 = "Switch from yard is open, Trains cannot leave yard, Trains must wait for section J to be unoccupied"
-
-    #Check block 76 switch position
-        if(self.track_blocks[75]._switch_position == 1):
-            self.message_switch76 = "Switch from 76 to 77 is connected"
-        elif(self.track_blocks[75]._switch_position == 0):
-            self.message_switch76 = "Switch from 76 to 101 is connected"
-        #check if light colors are all red, all trains must stop
-        elif(self.track_blocks[75]._light_signal == False
-             and self.track_block[76]._light_signal == False
-             and self.track_block[100]._light_signal == False):
-            self.message_switch76 = "All Trains must stop, all tracks occupied.\nWait till tracks clear"
-
-
-
 
 #original send to pi
     def send_to_pi(self):
@@ -265,22 +256,25 @@ class TrackController(QObject):
             # Connect to the Raspberry Pi
             ssh.connect(self.hostname, port=self.port, username=self.username, password=self.password)
 
-            
+             
             # Prepare the command to be sent to Raspberry Pi
             command = ""
             
             #reset log
             command = "echo 'Log Reset' > /home/garrett/pi_monitor.log\n "
+
+            #original code for pi
+            
             command += "echo 'Running PLC Code' >>/home/garrett/pi_monitor.log\n"
             #testing only
             command += f"echo 'TESTING' >>/home/garrett/pi_monitor.log\n"
-            command += "echo '{self.wayside}' >>/home/garrett/pi_monitor.log\n"
+            command += f"echo '{self.wayside_name}' >>/home/garrett/pi_monitor.log\n"
 		
             #actual outputs on pi  
             command += f"echo '{self.message_switch58}' >>/home/garrett/pi_monitor.log\n"
             command += f"echo '{self.message_switch63}' >>/home/garrett/pi_monitor.log\n"
-            command += f"echo '{self.message_switch76}' >> /home/garrett/pi_monitor.log\n"
-         
+           # command += f"echo '{self.message_switch76}' >> /home/garrett/pi_monitor.log\n"
+            
             
             # Execute the command
             stdin, stdout, stderr = ssh.exec_command(command)
@@ -305,3 +299,17 @@ class TrackController(QObject):
             ssh.close()
 
         return response
+
+
+"""
+    #Check block 76 switch position
+        if(self.track_blocks[75]._switch_position == 1):
+            self.message_switch76 = "Switch from 76 to 77 is connected"
+        elif(self.track_blocks[75]._switch_position == 0):
+            self.message_switch76 = "Switch from 76 to 101 is connected"
+        #check if light colors are all red, all trains must stop
+        elif(self.track_blocks[75]._light_signal == False
+             and self.track_block[76]._light_signal == False
+             and self.track_block[100]._light_signal == False):
+            self.message_switch76 = "All Trains must stop, all tracks occupied.\nWait till tracks clear"
+"""
