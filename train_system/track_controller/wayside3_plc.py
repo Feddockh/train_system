@@ -43,10 +43,10 @@ elif track_blocks[2].occupancy == True and track_blocks[11].switch_position == 1
     track_blocks[11].switch_position = 0
     track_blocks[11].authority = 0 # UNSAFE
 
-# elif (M.lastBlock) // can update other blocks {switch1 = N-M & switch2 = N-0}
-#elif track_blocks[2].occupancy == True:
-#    track_blocks[3].switch_position = 0
-#    track_blocks[11].switch_position = 0
+#elif (M.lastBlock) // can update other blocks {switch1 = N-M & switch2 = N-0}
+elif track_blocks[2].occupancy == True:
+    track_blocks[3].switch_position = 0
+    track_blocks[11].switch_position = 0
 
 # elif (Loop.lastBlock & (N-O OR N-M)) // emergency stop
 elif track_blocks[26].occupancy == True and track_blocks[3].switch_position == 0:
@@ -59,9 +59,9 @@ elif track_blocks[26].occupancy == True and track_blocks[11].switch_position == 
     track_blocks[11].switch_position = 1
 
 # elif (Loop.lastBlock) // can update other blocks {switch2 = N-Q & N-M}
-#elif track_blocks[26].occupancy == True:
-#    track_blocks[3].switch_position = 1
-#    track_blocks[11].switch_position = 1
+elif track_blocks[26].occupancy == True:
+    track_blocks[3].switch_position = 1
+    track_blocks[11].switch_position = 1
 
 # elif (N): // no switches can be changed while in N
 elif (track_blocks[3].occupancy == True or
@@ -96,6 +96,37 @@ elif track_blocks[11].switch_position == 0 and track_blocks[26]._light_signal ==
 elif track_blocks[11].switch_position == 0 and track_blocks[12]._light_signal == True:
     track_blocks[12].authority = 0 # UNSAFE
 
+
+elif(track_blocks[3].switch_position == 0
+    and track_blocks[2].occupancy == True and
+    track_blocks[2]._light_signal == False):
+    track_blocks[2].authority = 0
+
+elif(track_blocks[3].switch_position == 0
+    and track_blocks[2].occupancy == True and
+    track_blocks[3]._light_signal == False):
+    track_blocks[3].authority = 0
+
+elif(track_blocks[3].switch_position == 0
+    and track_blocks[2].occupancy == True and
+    track_blocks[27]._light_signal == False):
+    track_blocks[27].authority = 0
+
+elif(track_blocks[3].switch_position == 0
+    and track_blocks[2].occupancy == True and
+    track_blocks[11]._light_signal == False):
+    track_blocks[11].authority = 0
+
+elif(track_blocks[3].switch_position == 0
+    and track_blocks[2].occupancy == True and
+    track_blocks[12]._light_signal == False):
+    track_blocks[12].authority = 0
+
+elif(track_blocks[3].switch_position == 0
+    and track_blocks[2].occupancy == True and
+    track_blocks[26]._light_signal == False):
+    track_blocks[26].authority = 0
+
 # elif (N-M & M.lastBlock)
 elif (track_blocks[3].switch_position == 0 and
     track_blocks[2].occupancy == True):
@@ -105,7 +136,38 @@ elif (track_blocks[3].switch_position == 0 and
     track_blocks[11]._light_signal = True
     track_blocks[12]._light_signal = False
     track_blocks[26]._light_signal = False
+    
+elif (track_blocks[11].switch_position == 0 and 
+    track_blocks[26].occupancy == True and 
+    track_blocks[2]._light_signal == False):
+    track_blocks[2].authority = 0
 
+elif (track_blocks[11].switch_position == 0 and 
+    track_blocks[26].occupancy == True and 
+    track_blocks[3]._light_signal == False):
+    track_blocks[3].authority = 0
+
+elif (track_blocks[11].switch_position == 0 and 
+    track_blocks[26].occupancy == True and 
+    track_blocks[27]._light_signal == False):
+    track_blocks[27].authority = 0
+
+elif (track_blocks[11].switch_position == 0 and 
+    track_blocks[26].occupancy == True and 
+    track_blocks[11]._light_signal == False):
+    track_blocks[11].authority = 0
+
+elif (track_blocks[11].switch_position == 0 and 
+    track_blocks[26].occupancy == True and 
+    track_blocks[12]._light_signal == False):
+    track_blocks[12].authority = 0
+
+elif (track_blocks[11].switch_position == 0 and 
+    track_blocks[26].occupancy == True and 
+    track_blocks[26]._light_signal == False):
+    track_blocks[26].authority = 0
+
+#elif (N-Q & Loop.last block)
 elif (track_blocks[11].switch_position == 0 and 
     track_blocks[26].occupancy == True):
     track_blocks[2]._light_signal = False
@@ -115,6 +177,87 @@ elif (track_blocks[11].switch_position == 0 and
     track_blocks[12]._light_signal = False
     track_blocks[26]._light_signal = True
 
+
+elif(track_blocks[3].switch_position == 1
+    and track_blocks[2].occupancy == True and
+    track_blocks[2]._light_signal == True):
+    track_blocks[2].authority = 0
+
+elif(track_blocks[3].switch_position == 1
+    and track_blocks[2].occupancy == True and
+    track_blocks[3]._light_signal == True):
+    track_blocks[3].authority = 0
+
+elif(track_blocks[3].switch_position == 1
+    and track_blocks[2].occupancy == True and
+    track_blocks[27]._light_signal == True):
+    track_blocks[27].authority = 0
+
+elif(track_blocks[3].switch_position == 1
+    and track_blocks[2].occupancy == True and
+    track_blocks[11]._light_signal == True):
+    track_blocks[11].authority = 0
+
+elif(track_blocks[3].switch_position == 1
+    and track_blocks[2].occupancy == True and
+    track_blocks[12]._light_signal == True):
+    track_blocks[12].authority = 0
+
+elif(track_blocks[3].switch_position == 1
+    and track_blocks[2].occupancy == True and
+    track_blocks[26]._light_signal == True):
+    track_blocks[26].authority = 0
+
+# elif (N-M & M.lastBlock)
+elif (track_blocks[3].switch_position == 1 and
+    track_blocks[2].occupancy == True):
+    track_blocks[2]._light_signal = True
+    track_blocks[3]._light_signal = False
+    track_blocks[27]._light_signal = False
+    track_blocks[11]._light_signal = True
+    track_blocks[12]._light_signal = False
+    track_blocks[26]._light_signal = False
+    
+elif (track_blocks[11].switch_position == 1 and 
+    track_blocks[26].occupancy == True and 
+    track_blocks[2]._light_signal == True):
+    track_blocks[2].authority = 0
+
+elif (track_blocks[11].switch_position == 1 and 
+    track_blocks[26].occupancy == True and 
+    track_blocks[3]._light_signal == False):
+    track_blocks[3].authority = 0
+
+elif (track_blocks[11].switch_position == 1 and 
+    track_blocks[26].occupancy == True and 
+    track_blocks[27]._light_signal == True):
+    track_blocks[27].authority = 0
+
+elif (track_blocks[11].switch_position == 1 and 
+    track_blocks[26].occupancy == True and 
+    track_blocks[11]._light_signal == True):
+    track_blocks[11].authority = 0
+
+elif (track_blocks[11].switch_position == 1 and 
+    track_blocks[26].occupancy == True and 
+    track_blocks[12]._light_signal == True):
+    track_blocks[12].authority = 0
+
+elif (track_blocks[11].switch_position == 1 and 
+    track_blocks[26].occupancy == True and 
+    track_blocks[26]._light_signal == False):
+    track_blocks[26].authority = 0
+
+#elif (N-Q & Loop.last block)
+elif (track_blocks[11].switch_position == 1 and 
+    track_blocks[26].occupancy == True):
+    track_blocks[2]._light_signal = False
+    track_blocks[3]._light_signal = True
+    track_blocks[27]._light_signal = False
+    track_blocks[11]._light_signal = False
+    track_blocks[12]._light_signal = False
+    track_blocks[26]._light_signal = True
+    
 # elif (N): // no switches can be changed while in N
 elif (track_blocks[3].occupancy == True or
     track_blocks[4].occupancy == True or

@@ -71,8 +71,6 @@ def main():
     Wayside_1.numBlocks = 33
     Wayside_1.wayside_name = "Wayside 1"
 
-    print(Wayside_1.track_blocks[12].switch_options)
-
     
     Wayside_2 = TrackController(track_blocks2)
     Wayside_2.numBlocks = 110
@@ -82,7 +80,6 @@ def main():
     Wayside_3 = TrackController(track_blocks3)
     Wayside_3.numBlocks = 28
     Wayside_3.wayside_name = "Wayside 3"
-
     
     Wayside_5 = TrackController(track_blocks5)
     Wayside_5.numBlocks = 1

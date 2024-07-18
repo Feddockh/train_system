@@ -732,6 +732,7 @@ class Maintenance(QtWidgets.QMainWindow):
         font = QtGui.QFont()
         font.setPointSize(15)
 
+        """
         #FileUpload button
         self.fileUploadPushButton = QtWidgets.QPushButton(parent=self.centralwidget)
         self.fileUploadPushButton.setGeometry(QtCore.QRect(720, 100, 135, 40))
@@ -744,6 +745,7 @@ class Maintenance(QtWidgets.QMainWindow):
         self.label.setGeometry(QtCore.QRect(530, 100, 180, 40))
         self.label.setObjectName("label")
         self.label.setFont(font)
+        """
 
         #Combobox for wayside selection
         self.comboBox = QtWidgets.QComboBox(parent=self.centralwidget)
@@ -865,8 +867,8 @@ class Maintenance(QtWidgets.QMainWindow):
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
         self.setWindowTitle(_translate("Maintenance", "Maintenance"))
-        self.fileUploadPushButton.setText(_translate("Maintenance", "Upload File"))
-        self.label.setText(_translate("Maintenance", "Select PLC Program:"))
+        #self.fileUploadPushButton.setText(_translate("Maintenance", "Upload File"))
+        #self.label.setText(_translate("Maintenance", "Select PLC Program:"))
         #self.plcUploadedLabel.setText(_translate("Maintenance", "PLC program uploaded."))
 
     #Updates UI values to reflect backend changes
