@@ -5,6 +5,7 @@ from typing import List
 from train_system.common.crossing_signal import CrossingSignal
 from train_system.common.track_failures import TrackFailure
 from train_system.track_model.beacon import Beacon
+from train_system.common.track_switch import TrackSwitch
 
 crossing_signal_map = {
     CrossingSignal.ON: True,
@@ -18,7 +19,7 @@ class TrackBlock(QObject):
     suggested_speed_updated = pyqtSignal(int)
     authority_updated = pyqtSignal(int)
     occupancy_updated = pyqtSignal(bool)
-    switch_position_updated = pyqtSignal(int)
+    switch_position_updated = pyqtSignal(int) # TODO: Remove this
     crossing_signal_updated = pyqtSignal(CrossingSignal)
     under_maintenance_updated = pyqtSignal(bool)
     track_failure_updated = pyqtSignal(TrackFailure)
@@ -28,7 +29,7 @@ class TrackBlock(QObject):
                  cumulative_elevation: float, connecting_blocks: List[int],
                  next_blocks: List[int] = None, station: str = None,
                  station_side: str = None, switch_options: List[int] = None,
-                 beacon: Beacon = None) -> None:
+                 switch: TrackSwitch = None, beacon: Beacon = None) -> None:
 
         super().__init__()
 
@@ -42,10 +43,11 @@ class TrackBlock(QObject):
         self.elevation = elevation # meters
         self.cumulative_elevation = cumulative_elevation # meters
         self.connecting_blocks = connecting_blocks
-        self.next_blocks = next_blocks
+        self.next_blocks = next_blocks # TODO: Remove this
         self.station = station
         self.station_side = station_side
-        self.switch_options = switch_options
+        self.switch_options = switch_options # TODO: Remove this
+        self.switch = switch
         self.beacon = beacon
 
         # Calculated parameters
@@ -149,10 +151,12 @@ class TrackBlock(QObject):
         self._occupancy = value
         self.occupancy_updated.emit(value)
 
+    # TODO: Remove this
     @property
     def switch_position(self) -> int:
         return self._switch_position
 
+    # TODO: Remove this
     @switch_position.setter
     def switch_position(self, value: int) -> None:
         if self._switch_position != value:
