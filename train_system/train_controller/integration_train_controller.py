@@ -87,24 +87,24 @@ class TrainController(QObject):
         self.train_model.current_speed_changed.connect(self.update_current_speed)
         
         
-    ## THIS IS NO LONGER USED ##
-    def update_train_controller(self, train_model=None):
-        if train_model:
-            self.train_model = train_model
+    # ## THIS IS NO LONGER USED ##
+    # def update_train_controller(self, train_model=None):
+    #     if train_model:
+    #         self.train_model = train_model
             
-        # Update variables with train model input
-        self.current_speed = self.train_model.get_current_speed()
-        self.commanded_speed = self.train_model.get_commanded_speed()
-        self.authority = self.train_model.get_authority()
-        self.ac.current_temp = self.train_model # Update AC temperature
+    #     # Update variables with train model input
+    #     self.current_speed = self.train_model.get_current_speed()
+    #     self.commanded_speed = self.train_model.get_commanded_speed()
+    #     self.authority = self.train_model.get_authority()
+    #     self.ac.current_temp = self.train_model # Update AC temperature
 
-        self.update_fault_status(self.train_model)  # Update fault status and call maintenance if necessary
+    #     self.update_fault_status(self.train_model)  # Update fault status and call maintenance if necessary
         
-        self.lights.update_lights(time_to_seconds)  # Update lights based on time
+    #     self.lights.update_lights(self.time)  # Update lights based on time
 
-        self.calculate_position(self.time_step) # Update Position and polarity
+    #     self.calculate_position(self.time_step) # Update Position and polarity
         
-        self.calculate_power_command(self.get_desired_speed())  # Calculate power command based on desired speed
+    #     self.calculate_power_command(self.get_desired_speed())  # Calculate power command based on desired speed
 
     ## Track Block Functions
     # Reset the route queue, exit door dictionary, and update the track block

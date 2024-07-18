@@ -799,9 +799,9 @@ class TrainSystem:
         if(host and port and username and password):
             self.ssh_client = self.create_ssh_connection(HOST, PORT, USERNAME, PASSWORD)
         # Hardware
-        self.controller = TrainController(25, 0.1, self.train_model, self.ssh_client)
+        # self.controller = TrainController(25, 0.1, self.train_model, self.ssh_client)
         # Software
-        # self.controller = TrainController(25, 0.1, self.train_model)
+        self.controller = TrainController(25, 0.1, self.train_model)
 
     # Example usage
     def create_ssh_connection(self, host, port=22, username='danim', password='danim'):
