@@ -8,7 +8,7 @@
             "name": "Python Debugger: Module",
             "type": "debugpy",
             "request": "launch",
-            "module": "train_system.ctc_office.main"
+            "module": "train_system.ctc_manager.main"
         }
     ]
 }
