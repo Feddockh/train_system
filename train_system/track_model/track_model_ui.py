@@ -8,7 +8,7 @@ from train_system.track_model.builder_view import BuilderUI
 
 class TrackModelUI(QMainWindow):
 
-    def __init__(self, line: Line):
+    def __init__(self):
 
         super().__init__()
 
