@@ -10,9 +10,10 @@ import os
 
 from train_system.common.schedule import Schedule
 from train_system.common.line import Line
+from train_system.common.conversions import time_to_seconds
 
 class ScheduleSelectionWidget(QWidget):
-    dispatched_train = pyqtSignal(int, int, str)
+    dispatched_train = pyqtSignal(int, int, int)
 
     def __init__(self, line: Line, parent: Optional[QWidget] = None) -> None:
 
@@ -26,7 +27,7 @@ class ScheduleSelectionWidget(QWidget):
         super().__init__(parent)
         self.title = "Schedule Selection"
         self.line = line
-        self.schedules = []
+        self.schedules: List[Schedule] = []
         self.current_schedule_index = -1
         self.rows = 0
         self.cols = 3
@@ -179,13 +180,13 @@ class ScheduleSelectionWidget(QWidget):
 
         current_schedule = self.schedules[self.current_schedule_index]
         for i in range(len(current_schedule.trains)):
-            train_id = current_schedule.trains[i]
-            arrival_time = current_schedule.arrival_times[i].strftime('%H:%M')
+            train_id = int(current_schedule.trains[i])
+            arrival_time = time_to_seconds(current_schedule.arrival_times[i].strftime('%H:%M'))
 
             target_block_text = str(current_schedule.stops[i])
-            target_block = ''.join(filter(str.isdigit, target_block_text[:2]))
+            target_block = int(''.join(filter(str.isdigit, target_block_text[:2])))
 
-            self.dispatched_train.emit(int(train_id), int(target_block), arrival_time)
+            self.dispatched_train.emit(train_id, target_block, arrival_time)
 
         self.rows = 0
         self.table.setRowCount(self.rows)

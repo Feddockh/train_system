@@ -1,3 +1,4 @@
+from PyQt6.QtCore import QObject, pyqtSignal, pyqtSlot
 import paramiko
 import json
 
