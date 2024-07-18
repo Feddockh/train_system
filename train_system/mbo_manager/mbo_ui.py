@@ -21,7 +21,7 @@ from train_system.common.line import Line
 
 class MBOWindow(QMainWindow):
     
-    schedule_created = pyqtSignal(QDateTime)
+    schedule_created = pyqtSignal(QDateTime, str)
     
     def __init__(self):
         super(MBOWindow, self).__init__()
@@ -49,6 +49,13 @@ class MBOWindow(QMainWindow):
         self.schedule_date_time.setFont(QFont('Times', 12))
         self.schedule_date_time.setCalendarPopup(True)
         
+        
+        #create combo box to select train throughput for the given day 
+        self.througput_options = ["Low", "High"]
+        self.train_throughput_selection = QComboBox()
+        self.train_throughput_selection.addItems(self.througput_options)
+        
+        
         #Creat New Schedules Button, when clicked calls handle slot 
         self.create_schedules = QPushButton('Create New Schedules', self)
         self.create_schedules.setFixedSize(300,100)
@@ -62,6 +69,7 @@ class MBOWindow(QMainWindow):
         self.vertical_layout.addWidget(self.MBO_mode_view_button)
         self.vertical_layout.addWidget(self.enter_label)
         self.vertical_layout.addWidget(self.schedule_date_time)
+        self.vertical_layout.addWidget(self.train_throughput_selection)
         self.vertical_layout.addWidget(self.create_schedules)
         
         main_widget = QWidget()
@@ -82,8 +90,9 @@ class MBOWindow(QMainWindow):
         """
         emit date and start time selected 
         """      
+        throughput = self.train_throughput_selection.currentText()
         selected_datetime = self.schedule_date_time.dateTime()
-        self.schedule_created.emit(selected_datetime)
+        self.schedule_created.emit(selected_datetime, throughput)
     
     #slot to disable MBO Mode View button (not clickable) when in fixed block mode
 

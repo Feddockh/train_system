@@ -66,7 +66,7 @@ mbo_main_ui.schedule_created.connect(schedules.create_schedules)
 
 if __name__ == "__main__":
     
-    t_time_keeper = TimeKeeper()
+    """t_time_keeper = TimeKeeper()
     t_time_keeper.start_timer()
     
     satellite = MBOOffice(t_time_keeper).Satellite()
@@ -87,7 +87,7 @@ if __name__ == "__main__":
     
     #train at station 
     #@313m in middle of block 
-    train.update_position('Train1', 329.1, 65 )
+    train.update_position('Train1', 329.1, 65 ) """
 
     #pass mbo_main_ui.show()
     #pass sys.exit(app.exec())
