@@ -4,22 +4,25 @@ import os
 import json
 import pandas as pd
 import math
-from typing import List
+from typing import List, Optional
 from PyQt6.QtCore import QObject, pyqtSignal
 
 from train_system.common.track_block import TrackBlock
+from train_system.common.track_switch import TrackSwitch
 from train_system.common.station import Station
 
 class Line(QObject):
 
-    # Signals to notify updates (block number, attribute value)
+    # Signals to notify track block updates (block number, attribute value)
     track_block_suggested_speed_updated = pyqtSignal(int, int)
     track_block_authority_updated = pyqtSignal(int, int)
     track_block_occupancy_updated = pyqtSignal(int, bool)
-    track_block_switch_position_updated = pyqtSignal(int, int)
     track_block_crossing_signal_updated = pyqtSignal(int, int)
     track_block_under_maintenance_updated = pyqtSignal(int, bool)
     track_block_track_failure_updated = pyqtSignal(int, int)
+
+    # Signals to notify switch updates
+    switch_position_updated = pyqtSignal(int)
 
     def __init__(self, name: str) -> None:
         super().__init__()
@@ -36,6 +39,8 @@ class Line(QObject):
 
         self.name = name
         self.track_blocks: List[TrackBlock] = []
+        self.switches: List[TrackSwitch] = []
+        self.stations: List[Station] = [] # TODO: Implement stations
         self.yard: int = None
         self.to_yard: List[int] = []
         self.from_yard: List[int] = []
@@ -55,9 +60,14 @@ class Line(QObject):
             repr(block) for block in self.track_blocks
         )
 
+        switch_repr = "\n".join(
+            repr(switch) for switch in self.switches
+        )
+
         res = (
             f"Line:          {self.name}\n"
             f"track_blocks:  [\n{blocks_repr}\n]\n"
+            f"switches:      [\n{switch_repr}\n]\n"
             f"yard:          {self.yard}\n"
             f"to_yard:       {self.to_yard}\n"
             f"from_yard:     {self.from_yard}\n"
@@ -69,11 +79,11 @@ class Line(QObject):
 
     def add_track_block(self, track_block: TrackBlock) -> None:
         self.track_blocks.append(track_block)
-        self.connect_signals(track_block)
+        self.connect_track_block_signals(track_block)
 
     def set_track_block(self, track_block: TrackBlock) -> None:
         self.track_blocks[track_block.number - 1] = track_block
-        self.connect_signals(track_block)
+        self.connect_track_block_signals(track_block)
 
     def get_track_block(self, number: int) -> TrackBlock:
 
@@ -93,21 +103,77 @@ class Line(QObject):
             print(f"Track block {number} not found.")
             return None
 
-    def connect_signals(self, track_block: TrackBlock) -> None:
+    def connect_track_block_signals(self, track_block: TrackBlock) -> None:
         track_block.suggested_speed_updated.connect(lambda new_speed, blk=track_block: self.track_block_suggested_speed_updated.emit(blk.number, new_speed))
         track_block.authority_updated.connect(lambda new_authority, blk=track_block: self.track_block_authority_updated.emit(blk.number, new_authority))
         track_block.occupancy_updated.connect(lambda new_occupancy, blk=track_block: self.track_block_occupancy_updated.emit(blk.number, new_occupancy))
-        track_block.switch_position_updated.connect(lambda new_position, blk=track_block: self.track_block_switch_position_updated.emit(blk.number, new_position))
         track_block.crossing_signal_updated.connect(lambda new_signal, blk=track_block: self.track_block_crossing_signal_updated.emit(blk.number, new_signal))
         track_block.under_maintenance_updated.connect(lambda new_maintenance, blk=track_block: self.track_block_under_maintenance_updated.emit(blk.number, new_maintenance))
 
-    def get_path(self, start: int, end: int) -> List[int]:
+    def add_switch(self, track_switch: TrackSwitch) -> None:
+        self.switches.append(track_switch)
+        self.connect_switch_signals(track_switch)
+
+        for switch in self.switches:
+            for block_id in switch.connected_blocks:
+                block = self.get_track_block(block_id)
+                block.switch = switch
+
+    def get_switch(self, number: int) -> TrackSwitch:
+            
+            """
+            Retrieves a switch by its number.
+            
+            Args:
+                number (int): The switch number to retrieve.
+            
+            Returns:
+                TrackSwitch: The retrieved TrackSwitch object.
+            """
+    
+            for switch in self.switches:
+                if switch.number == number:
+                    return switch
+            print(f"Switch {number} not found.")
+            return None
+
+    def connect_switch_signals(self, switch: TrackSwitch) -> None:
+        switch.position_updated.connect(lambda new_position, sw=switch: self.switch_position_updated.emit(sw.number))
+
+    def get_unobstructed_path(self, path: List[int]) -> List[int]:
+
+        # Check if the first block is obstructed
+        if not path:
+            return []
+
+        # Check if the path is obstructed
+        current_block = self.get_track_block(path[0])
+        for i in range(1, len(path)):
+            
+            # Get the next track block along the path
+            next_block = self.get_track_block(path[i])
+
+            # Check if the block is occupied or under maintenance
+            if next_block.occupancy or next_block.under_maintenance:
+                return path[:i]
+
+            # Check if the block is a switch and the next block is not the next block in the path
+            if current_block.switch is not None and next_block.switch is not None:
+                if not current_block.switch.is_connected(current_block.number, next_block.number):
+                    return path[:i]
+
+            current_block = next_block
+
+        return path
+
+    def get_path(self, prev: int, start: int, end: int) -> List[int]:
 
         """
         Computes the path between two blocks on the line inclusive of the
         start and end blocks.
 
         Args:
+            prev (int): The previous block number.
             start (int): The starting block number.
             end (int): The ending block number.
 
@@ -138,13 +204,13 @@ class Line(QObject):
         
         # Determine the path if we start in the "from yard" segment
         elif start in self.from_yard:
-            start_index = self.search_route(start, self.from_yard)
+            start_index = self.search_route(start, self.from_yard, prev=prev)
             if end == self.yard:
                 path = self.from_yard[start_index:] + self.default_route + self.to_yard + [self.yard]
             elif end == self.from_yard:
 
                 # Find the index of the end block in the "from yard" segment, ideally after the start block
-                end_index = self.search_route(end, self.from_yard, start_index)
+                end_index = self.search_route(end, self.from_yard, seed=start_index)
                 if start_index < end_index:
                     path = self.from_yard[start_index:end_index + 1]
                 
@@ -165,14 +231,14 @@ class Line(QObject):
 
         # Determine the path if we start in the "default route" segment
         elif start in self.default_route:
-            start_index = self.search_route(start, self.default_route)
+            start_index = self.search_route(start, self.default_route, prev=prev)
             if end == self.yard:
                 path = self.default_route[start_index:] + self.to_yard + [self.yard]
             elif end in self.from_yard:
                 end_index = self.search_route(end, self.from_yard)
                 path = self.default_route[start_index:] + self.to_yard + [self.yard] + self.from_yard[:end_index + 1]
             elif end in self.default_route:
-                end_index = self.search_route(end, self.default_route, start_index)
+                end_index = self.search_route(end, self.default_route, seed=start_index)
                 if start_index < end_index:
                     path = self.default_route[start_index:end_index + 1]
                 else:
@@ -188,7 +254,7 @@ class Line(QObject):
 
         # Determine the path if we start in the "to yard" segment
         elif start in self.to_yard:
-            start_index = self.search_route(start, self.to_yard)
+            start_index = self.search_route(start, self.to_yard, prev=prev)
             if end == self.yard:
                 path = self.to_yard[start_index:] + [self.yard]
             elif end in self.from_yard:
@@ -198,7 +264,7 @@ class Line(QObject):
                 end_index = self.search_route(end, self.default_route)
                 path = self.to_yard[start_index:] + [self.yard] + self.from_yard + self.default_route[:end_index + 1]
             elif end in self.to_yard:
-                end_index = self.search_route(end, self.to_yard, start_index)
+                end_index = self.search_route(end, self.to_yard, seed=start_index)
                 if start_index < end_index:
                     path = self.to_yard[start_index:end_index + 1]
                 else:
@@ -211,7 +277,7 @@ class Line(QObject):
         
         # Determine the path if we start in the "past yard" segment
         elif start in self.past_yard:
-            start_index = self.search_route(start, self.past_yard)
+            start_index = self.search_route(start, self.past_yard, prev=prev)
             if end == self.yard:
                 path = self.past_yard[start_index:] + self.default_route + self.to_yard + [self.yard]
             elif end in self.from_yard:
@@ -224,7 +290,7 @@ class Line(QObject):
                 end_index = self.search_route(end, self.to_yard)
                 path = self.past_yard[start_index:] + self.default_route + self.to_yard[:end_index + 1]
             elif end in self.past_yard:
-                end_index = self.search_route(end, self.past_yard, start_index)
+                end_index = self.search_route(end, self.past_yard, seed=start_index)
                 if start_index < end_index:
                     path = self.past_yard[start_index:end_index + 1]
                 else:
@@ -238,19 +304,51 @@ class Line(QObject):
 
         return path
     
-    def search_route(self, block_number: int, route_segment: List[int], seed: int = 0) -> int:
+    def search_route(self, start: int, route_segment: List[int], seed: int = 0, prev: Optional[int] = None) -> int:
+        """
+        Searches for the index of a specific block in a route segment.
 
-        # Try to return the block in front of the seed index
-        if seed > 0:
-            for i in range(seed, len(route_segment)):
-                if route_segment[i] == block_number:
-                    return i
+        Parameters:
+        - start (int): The block to search for.
+        - route_segment (List[int]): The route segment to search within.
+        - seed (int): The starting index for the search.
+        - prev (Optional[int]): The previous block before the start block, if applicable.
 
-        # If there is no block in front of the seed index, search the entire segment
-        for i in range(len(route_segment)):
-            if route_segment[i] == block_number:
-                return i
+        Returns:
+        - int: The index of the start block in the route segment, or -1 if not found.
+        """
         
+        # If the route segment is empty or the start block is not in the route segment, return -1
+        if not route_segment or start not in route_segment:
+            print(f"Error: Route does not exist or {start} is not in the route.")
+            return -1
+        
+        # If the route segment has only one block, return 0
+        if len(route_segment) == 1:
+            return 0
+        
+        # If no previous block was given, find the first instance of the start block after the seed
+        if prev is None:
+            for i in range(seed, len(route_segment)):
+                if route_segment[i] == start:
+                    return i
+                
+        # If the previous block is the same as the start block, search for the first instance of the start block after the seed
+        if prev == start:
+            for i in range(seed, len(route_segment)):
+                if route_segment[i] == start:
+                    return i
+        
+        # If a previous block was given, find the index of the (prev, start) block pair
+        else:
+            if prev not in route_segment:
+                return 0
+            
+            for i in range(seed, len(route_segment)):
+                if route_segment[i] == start and i > 0 and route_segment[i - 1] == prev:
+                    return i
+        
+        # If the block or pair is not found, return -1
         return -1
 
     def get_travel_time(self, path: List[int]) -> int:
@@ -270,6 +368,19 @@ class Line(QObject):
         for i in range(1, len(path) - 1):
             time += self.get_track_block(path[i]).traversal_time
         return time
+
+    def load_defaults(self) -> None:
+            
+        """
+        Loads track blocks, switches, and routes from default files.
+        
+        Returns:
+            None
+        """
+
+        self.load_track_blocks()
+        self.load_routes()
+        self.load_switches()
 
     def load_track_blocks(self, file_path: str = None) -> None:
 
@@ -327,7 +438,7 @@ class Line(QObject):
                 station_side=station_side,
                 switch_options=switch_options
             )
-            block._crossing_signal_bool = row['Railway Crossing']
+            block._crossing_signal_bool = row['Railway Crossing'] # TODO: Change this implementation 
             block._light_signal = row['Light Signal']
             pos = row['Switch Position']
             if(pos is not None and not (isinstance(pos, float) and math.isnan(pos))):
@@ -335,6 +446,10 @@ class Line(QObject):
             self.add_track_block(block)
 
     def load_routes(self, file_path: str = None) -> None:
+
+        if not self.track_blocks:
+            print("Error: Track blocks must be loaded before routes.")
+            return
 
         if not file_path:
             file_path = os.path.abspath(os.path.join("system_data\\routes", f"{self.name.lower()}_routes.json"))
@@ -348,6 +463,28 @@ class Line(QObject):
         self.past_yard = data['past_yard']
         self.default_route = data['default_route']
 
+    def load_switches(self, file_path: str = None) -> None:
+
+        if not self.track_blocks:
+            print("Error: Track blocks must be loaded before switches.")
+            return
+
+        if not file_path:
+            file_path = os.path.abspath(os.path.join("system_data\\switches", f"{self.name.lower()}_switches.json"))
+
+        with open(file_path, 'r') as file:
+            data = json.load(file)
+
+        for switch_info in data['track_switches']:
+            switch = TrackSwitch(
+                line=self.name,
+                number=switch_info['number'],
+                parent_block=switch_info['parent_block'],
+                child_blocks=switch_info['child_blocks'],
+                initial_child=switch_info['initial_child']
+            )
+            self.add_switch(switch)
+
 if __name__ == "__main__":
     line = Line('Green')
     line.load_track_blocks()
@@ -355,5 +492,5 @@ if __name__ == "__main__":
     print(line)
 
     target = 100
-    path = line.get_path(line.yard, target)
+    path = line.get_path(line.yard, line.yard, target)
     print(f"Path from yard to block {target}: {path}")

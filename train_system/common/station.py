@@ -17,7 +17,7 @@ class Station:
 
         self.name = name
         self.line = line
-        self.block_number = block_number
+        self.connected_blocks = []
 
     def __repr__(self) -> str:
 
@@ -53,6 +53,7 @@ class Station:
             raise TypeError(
                 f"Expected a Station object, but got {type(other).__name__}"
             )
-        return (self.name, self.line, self.block_number) == (
-            other.name, other.line, other.block_number
+        return (self.name, self.line) == (
+            other.name, other.line
         )
+    
