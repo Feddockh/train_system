@@ -35,6 +35,9 @@ class TrainController(QObject):
     #train_temp_updated = pyqtSignal(int) -> in ac class
     #service_brake_updated = pyqtSignal(bool) -> in brakes class
     #emergency_brake_updated = pyqtSignal(bool) -> in brakes class
+
+    position_updated = pyqtSignal(int) #may change depending on how we represent location
+    destination_updated = pyqtSignal(str)
     
     def __init__(self, time_keeper: TimeKeeper, kp: float=25, ki: float=0.1, train_model=None, ssh=None) -> None:
         self.time_keeper = time_keeper
@@ -194,6 +197,20 @@ class TrainController(QObject):
         self.brake.set_emergency_brake(done)
         self.set_maintenance_mode(done)
 
+    def get_position(self):
+        return self.position
+    
+    def set_position(self, pos: int):
+        self.position = pos
+        self.position_updated.emit(pos)
+
+    def get_station(self):
+        return self.station
+    
+    def set_station(self, s: str):
+        self.station = s
+        self.destination_updated.emit(s)
+
     @pyqtSlot(bool)
     def handle_toggle_driver_mode(self, check):
         if check:
@@ -274,6 +291,14 @@ class TrainController(QObject):
     @pyqtSlot(int)
     def handle_ki_changed(self, ki: int) -> None:
         self.engineer.set_ki(ki)
+
+    @pyqtSlot(int)
+    def handle_position_changed(self, loc: int) -> None:
+        self.set_position(loc)
+
+    @pyqtSlot(str)
+    def handle_destination_changed(self, des: str) -> None:
+        self.set_station(des)
 
     ## Engineer class to hold Kp and Ki
     class Engineer(QObject):
