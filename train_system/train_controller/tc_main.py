@@ -23,7 +23,10 @@ print("Engineer UI: " + str(engineer.data[0][2]))
 print("TC: " + str(tc.engineer.get_ki()))
 
 
+time_keeper.tick.connect(tc.handle_tick)
+
 #TRAIN CONTROLLER TO EXTERNAL
+
 
 #TEST BENCH TO TRAIN CONTROLLER
 test.setpoint_updated.connect(tc.handle_setpoint_edit_changed) 
@@ -53,7 +56,7 @@ driver.comm_temp_input.textChanged.connect(tc.handle_comm_temp_changed) ###check
 
 #TRAIN CONTROLLER TO DRIVER
 tc.setpoint_speed_updated.connect(driver.handle_setpoint_speed_update) ###checked
-tc.power_updated.connect(driver.handle_power_update)
+tc.engine.power_updated.connect(driver.handle_power_update)
 tc.lights.lights_updated.connect(driver.handle_light_status_update) ###checked but does not change ui
 tc.doors.left_door_updated.connect(driver.handle_left_door_update)
 tc.doors.right_door_updated.connect(driver.handle_right_door_update)

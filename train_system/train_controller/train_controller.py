@@ -28,7 +28,7 @@ Storing previous beacon data: How are we going to do that and what will it look 
 
 class TrainController(QObject):
     setpoint_speed_updated = pyqtSignal(float)
-    power_updated = pyqtSignal(float)
+    #power_updated = pyqtSignal(float)
     #lights_updated = pyqtSignal(bool) -> in lights class
     #left_door_updated = pyqtSignal(bool) -> in doors class
     #right_door_updated = pyqtSignal(bool) -> in doors class
@@ -175,6 +175,7 @@ class TrainController(QObject):
             power_command = self.engine.compute_power_command_hardware(speed, self.current_speed, self.time_step, self.engineer, self.brake, self.maintenance_mode)
         power_command, self.current_speed = self.engine.calculate_current_speed(power_command, self.train_model.current_speed, self.time_step, self.brake)
         self.elapsed_time += self.time_step
+        self.train_model.current_speed = self.current_speed
         print(f"Power Command: {power_command}, Current Speed: {self.current_speed}")
     
     # Update the fault status of the train
@@ -300,6 +301,10 @@ class TrainController(QObject):
     def handle_destination_changed(self, des: str) -> None:
         self.set_station(des)
 
+    @pyqtSlot()
+    def handle_tick(self) -> None:
+        self.update_train_controller()
+
     ## Engineer class to hold Kp and Ki
     class Engineer(QObject):
         kp_updated = pyqtSignal(int)
@@ -389,7 +394,9 @@ class TrainController(QObject):
        
     ## Engine class calculates power command and can simulate train response
     class Engine(QObject):
+        power_updated = pyqtSignal(float)
         def __init__(self, ssh):
+            super().__init__()
             self.speed_limit = None  # Speed limit of the train
             self.P_MAX = 120  # Maximum power (kW)
             self.power_command = 0 # Power command
@@ -490,7 +497,7 @@ class TrainController(QObject):
             if self.power_command < 0:
                 brake.set_service_brake(True)
                 #### THIS LINE IS FOR TESTING PURPOSES ONLY ####
-                self.power_command = max(self.power_command , -self.P_MAX)    # self.power_command = 0
+                # self.power_command = max(self.power_command , -self.P_MAX)    # self.power_command = 0
 
             return self.power_command 
         
@@ -536,7 +543,7 @@ class TrainController(QObject):
             if self.power_command < 0:
                 brake.set_service_brake(True)
                 #### THIS LINE IS FOR TESTING PURPOSES ONLY ####
-                self.power_command = max(self.power_command, -self.P_MAX)    # self.power_command = 0
+                # self.power_command = max(self.power_command, -self.P_MAX)    # self.power_command = 0
 
             return self.power_command
         
@@ -549,10 +556,12 @@ class TrainController(QObject):
                 power_command = -self.P_MAX
                 
             ##### JUST FOR TESTING #####
-            if brake.get_status():
-                power_command = -self.P_MAX
+            # if brake.get_status():
+            #     power_command = -self.P_MAX
             
             self.power_command = power_command
+            
+            self.power_updated.emit(self.power_command)
 
             current_speed += power_command * time_step
             current_speed = min(current_speed, self.speed_limit)

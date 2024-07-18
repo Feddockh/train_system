@@ -880,11 +880,11 @@ class DriverWindow(QMainWindow): ###DriverWindow
         #create status labels at bottom-center
         if self.brake_on == True:
             self.brake_status_label = QLabel("Brake Status: On")
-            self.brake_status_label.setFixedSize(100, 50)
+            self.brake_status_label.setFixedSize(150, 50)
             self.brake_status_label.setStyleSheet("background-color: #FF4444; color: white;") #brake on, box red
         else:
             self.brake_status_label = QLabel("Brake Status: Off")
-            self.brake_status_label.setFixedSize(100, 50)
+            self.brake_status_label.setFixedSize(150, 50)
             self.brake_status_label.setStyleSheet("background-color: #29C84C; color: white;") #brake off, box green
 
         self.light_staus_label = QLabel("Lights Off")
