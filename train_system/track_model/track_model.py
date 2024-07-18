@@ -13,6 +13,7 @@ class Train:
     block: int
     pos: int = 0
     passengers: int = 0
+
 class TrackModel:
 
     def __init__(self, lines: list[Line]) -> None:
@@ -166,7 +167,7 @@ class TrackModel:
             moving_train.pos = new_pos
 
             #Determine if train is boarding from a station (stopped within 15 meters of center of station block)
-            if distance == 0 and curr_block.station.isascii() and (abs(moving_train.pos - curr_block.length/2) < 15):
+            if distance == 0 and curr_block.station.isascii() and (abs(moving_train.pos - curr_block.length/2) < 32.2):
                 self.board_at_station(curr_block.station, moving_train)
 
 

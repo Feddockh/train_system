@@ -1,6 +1,5 @@
 import os
 import sys
-import copy
 import networkx as nx
 from matplotlib.figure import Figure
 import matplotlib.pyplot as mpl
@@ -16,7 +15,7 @@ from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 from train_system.track_model.track_model import TrackModel
 from train_system.common.line import Line
 
-class Window(QWidget):
+class LiveMap(QWidget):
 
     def __init__(self, line: Line):
         super().__init__()
@@ -74,7 +73,7 @@ if __name__ == "__main__":
     line.load_track_blocks(file_path)
     
     app = QApplication(sys.argv)
-    w = Window(line)
+    w = LiveMap(line)
     w.show()
 
     sys.exit(app.exec())
