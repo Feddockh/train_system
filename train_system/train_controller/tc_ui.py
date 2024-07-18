@@ -1289,16 +1289,18 @@ class EngineerWindow(QMainWindow):
         
         if(col == 1):
             self.data[row][col] = new_item
-            self.train.engineer.set_kp(int(new_item))
+            #self.train.engineer.set_kp(int(new_item))
         if(col == 2):
             self.data[row][col] = new_item
-            self.train.engineer.set_kp(int(new_item))
+            #self.train.engineer.set_kp(int(new_item))
             
         print(self.data)
 
     def handle_kp_update(self, kp: int):
-        self.data[0][1] = kp
+        self.data[0][1] = str(kp)
+        self.table.update_table_data(self.data)
 
     def handle_ki_update(self, ki: int):
-        self.data[0][2] = ki
+        self.data[0][2] = str(ki)
+        self.table.update_table_data(self.data)
 

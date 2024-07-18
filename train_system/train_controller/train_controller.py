@@ -267,9 +267,21 @@ class TrainController(QObject):
     def handle_left_door_changed(self, door: bool) -> None:
         self.doors.set_left(door)
 
+    @pyqtSlot(int)
+    def handle_kp_changed(self, kp: int) -> None:
+        self.engineer.set_kp(kp)
+
+    @pyqtSlot(int)
+    def handle_ki_changed(self, ki: int) -> None:
+        self.engineer.set_ki(ki)
+
     ## Engineer class to hold Kp and Ki
     class Engineer(QObject):
+        kp_updated = pyqtSignal(int)
+        ki_updated = pyqtSignal(int)
+        
         def __init__(self, kp=25, ki=0.5):
+            super().__init__()
             self.kp = kp
             self.ki = ki
 
@@ -277,10 +289,12 @@ class TrainController(QObject):
         def set_kp(self, kp: float):
             if kp > 0:
                 self.kp = kp
+                self.kp_updated.emit(self.kp)
             else: raise ValueError("kp must be positive")
         def set_ki(self, ki: float):
             if ki > 0:
                 self.ki = ki
+                self.ki_updated.emit(self.ki)
             else: raise ValueError("ki must be positive")
         def set_engineer(self, kp: float, ki: float):
             self.set_kp(kp)
