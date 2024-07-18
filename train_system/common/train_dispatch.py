@@ -166,6 +166,12 @@ class TrainDispatch(QObject):
             arrival_time = current_time + travel_time
             heapq.heappush(self.stop_priority_queue, (arrival_time, self.line.yard))
             self.route.extend(path_to_yard[1:])
+        
+        # TODO: Else the train is at the yard, remove
+
+        # Update the departed status
+        if self.route:
+            self.departed = True
 
             self.departed = False
             self.dispatched = False
