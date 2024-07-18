@@ -1,6 +1,12 @@
-import time
+from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
 import paramiko
 import json
+from collections import deque as dq
+
+from train_system.common.conversions import time_to_seconds
+from train_system.common.time_keeper import TimeKeeper
+from train_system.common.line import Line
+from train_system.common.track_block import TrackBlock
 
 HOST= '192.168.0.114'
 PORT = 22
@@ -24,20 +30,25 @@ Storing previous beacon data: How are we going to do that and what will it look 
 '''
 
 class TrainController:
-    def __init__(self, kp: float=25, ki: float=0.1, train_model=None, ssh=None):
+    def __init__(self, ssh=None, line_name: str = "green", id: int = 0, kp: float = 25, ki: float = 0.1):
         self.hardware = True if ssh else False
         print(f"Hardware: {self.hardware}")
-        self.elapsed_time = 0
         self.time_step = 0.05  # 0.05 second time step
+        self.train_length = 32.2  # 32.2 meters
 
         ## Initialize objects
-        self.train_model = train_model if train_model else TrainModel()  # Used to store data received from Train Model. No computations done in the object
+        self.train_model = TrainModel()  # Used to store data received from Train Model. No computations done in the object
         self.engineer = self.Engineer(kp, ki) # Engineer holds Kp and Ki and is the only one that can set them
         self.brake = self.Brake()       # Brake holds service and emergency brake status
         self.engine = self.Engine(ssh)     # Engine calculates power command and simulates train response
-        self.doors = self.Doors(self.train_model.get_exit_door)       # Doors holds left and right door status
-        self.lights = self.Lights(self.train_model.get_underground)     # Lights holds light status
+        self.doors = self.Doors()       # Doors holds left and right door status
+        self.lights = self.Lights()     # Lights holds light status
         self.ac = self.AC(self.train_model.get_train_temp())             # AC holds temperature status
+        self.line = Line(line_name)
+        
+        self.line.load_track_blocks()
+        self.line.load_routes()
+        self.reset_route()  # Initialize track block, position, and polarity
 
         # Driver variables
         self.driver_mode = "manual" # Driver mode can be "automatic" or "manual"
@@ -46,16 +57,6 @@ class TrainController:
 
         # Train Controller Calculated Variables
         self.maintenance_mode = False     # Maintenance status of the train
-        self.position = 0  # Distance traveled by the train. Calculated in the Train Controller
-        
-        self.track_block: int = 0
-        self.block: int = 0
-        self.station: str = "station_name"
-        self.speed_limit: float = 19.44  #m/s
-        self.length: float = self.train_model.get_length()
-        self.polarity = self.train_model.get_length() # Polarity changes polarity < 0
-        self.exit_door: str = "L"
-        self.underground: bool = False
 
         # Train Model inputs (purely made for convenience)
         # THESE VALUES WILL RECEIVE NO CALCULATIONS (except for current speed FOR NOW)
@@ -67,43 +68,33 @@ class TrainController:
     # Simulate a time step of the train controller
     # Call this for ever press of the refresh button
     def simulate_timestep(self, train_model=None):
-        # Update Mock Train Model
-        param = train_model if train_model else self.train_model
-        self.train_model.update_mock_train_model(param)
+        # Pull from Train Model
+        
         ## Perform calculations then output them
         self.update_train_controller()    # This function will define all the "None" variables above
-        ## Transmit to Train Model 
-        self.transmit_to_train_model()  # Transmit via Serial communication (For now, also update current speed)
+        ## TESTING ONLY ## 
+        # Transmit to Train Model
+        self.transmit_to_train_model()
         
     # Update all variables with the train model input, calculate, then output to train model
     # Take train model outputs, update all variables, and transmit to train model the Train Controller's new values
-    def update_train_controller(self):
+    def update_train_controller(self, train_model=None):
+        if train_model:
+            self.train_model = train_model
+            
         # Update variables with train model input
         self.current_speed = self.train_model.get_current_speed()
         self.commanded_speed = self.train_model.get_commanded_speed()
         self.authority = self.train_model.get_authority()
-        # Update all status variables
-        self.ac.update_current_temp(self.train_model, self.driver_mode)
-        self.update_fault_status(self.train_model)
-        
-        # Update all track block variables
-        self.engine.update_speed_limit(self.train_model)
-        self.doors.set_exit_door(self.train_model)
-        self.lights.update_lights(self.train_model, self.elapsed_time)
-        self.station = self.train_model.get_station_name()
+        self.ac.current_temp = self.train_model # Update AC temperature
 
-        ### CHANGE THESE TO POLARITY AND DISTANCE USING LENGTH
-        self.position += self.train_model.get_current_speed()*self.time_step
-        self.polarity -= self.train_model.get_current_speed()*self.time_step
-        if self.polarity <= 0:
-            self.train_model.increment_track_block()
-            self.polarity += self.train_model.get_length()
-        self.block = self.train_model.get_block()
+        self.update_fault_status(self.train_model)  # Update fault status and call maintenance if necessary
         
+        self.lights.update_lights(time_to_seconds)  # Update lights based on time
 
-        ## Train Controller Calculations
-        # Run 1 more cycle of the simulation to update the current speed
-        self.simulate_power_command(self.get_desired_speed())
+        self.calculate_position(self.time_step) # Update Position and polarity
+        
+        self.calculate_power_command(self.get_desired_speed())  # Calculate power command based on desired speed
         
 
     # Transmit necessary variables to Main Computer (Train Model), then mock Train Model will be updated
@@ -111,6 +102,82 @@ class TrainController:
         ##### THIS WILL BE TAKEN OUT #####
         self.train_model.set_current_speed(self.current_speed)
         pass
+
+    ## Track Block Functions
+    # Reset the route queue, exit door dictionary, and update the track block
+    def reset_route(self):
+        self.route = dq(self.line.from_yard + self.line.default_route)
+        self.block = self.route[0]
+        self.track_block: TrackBlock = self.line.get_track_block(self.block)
+        self.exit_door_dict = {}
+
+        self.position = 0
+        self.polarity = 0
+        self.update_track_block()
+
+    # Update all Track Block variables
+    def update_track_block(self):
+        # Update all Track Block variables
+        self.engine.speed_limit = self.track_block.speed_limit
+        self.polarity += self.track_block.length
+        self.doors.update_exit_door(self.track_block.station_side in self.exit_door_dict)
+        self.lights.update_underground(self.track_block.underground)
+
+    # Dequeue current block from queue and update track block
+    # Decide whether to go to yard or loop around depending on authority
+    def increment_track_block(self):
+        # Pop to get next track block
+        self.route.popleft()
+
+        # If not next to finish, continue
+        if len(self.route) == 0:
+            ## If authority is positive, go back around
+            if self.authority >= 0:
+                self.route.append(self.line.past_yard, self.line.default_route) # Append past_yard and append default route again
+            else:
+                self.route.append(self.line.to_yard)    ## If authority is negative, go back to yard
+            
+            ## Clear dictionary if loop is finished
+            self.exit_door_dict = {}
+            
+        # Increment track block
+        self.block = self.route[0]
+        self.track_block = self.line.get_track_block(self.block)
+
+        # If station is already in dictionary, toggle exit door
+        if self.track_block.station not in self.exit_door_dict:
+            self.exit_door_dict[self.track_block.station] = True   # Add station to dictionary
+            
+        # Update all Track Block variables
+        self.update_track_block()
+        
+    def calculate_distance_traveled(self, time_step: float):
+        self.distance_traveled = self.current_speed * time_step
+
+    ## Position Functions
+    def set_position(self, position: float):
+        if(position > self.position):
+            self.polarity -= self.position - position
+        else:
+            # Reset Route and position
+            self.reset_route()
+            # Increment track blocks until polarity is positive and we're on the correct block
+            self.polarity = self.track_block.length - position
+        
+        # Increment track block until position is reached
+        if(self.polarity <= 0):
+            self.increment_track_block()
+        # Update position
+        self.position = position
+            
+    def calculate_position(self, time_step: float):
+        distance = self.current_speed * time_step
+        self.position += distance
+        self.polarity -= distance
+        self.authority -= distance
+        if self.polarity <= 0:
+            self.increment_track_block()
+
 
     ## Driver Mode Funtions
     # Output) string: "automatic" or "manual"
@@ -148,15 +215,38 @@ class TrainController:
 
     # Simulate the train's response to desired speeds
     ## Purely for debugging purposes
-    def simulate_power_command(self, speed: float):
+    def calculate_power_command(self, speed: float):
         if(self.engine.ssh is None):
             power_command = self.engine.compute_power_command_software(speed, self.current_speed, self.time_step, self.engineer, self.brake, self.maintenance_mode)
         else:
             power_command = self.engine.compute_power_command_hardware(speed, self.current_speed, self.time_step, self.engineer, self.brake, self.maintenance_mode)
         power_command, self.current_speed = self.engine.calculate_current_speed(power_command, self.train_model.current_speed, self.time_step, self.brake)
-        self.elapsed_time += self.time_step
+        # self.elapsed_time += self.time_step
         print(f"Power Command: {power_command}, Current Speed: {self.current_speed}")
     
+    # Check if the train needs to stop because of authority
+    def update_authority(self):
+        ### Authority shows it's a station
+        if self.authority == 1_000_000:
+            self.at_station()
+            distance = 0
+            self.authority = 0
+        else:
+            if self.station:
+                self.leaving_station()
+
+        # Use kinematics equation v^2 = v0^2 + 2a(x-x0) to calculate the distance needed to stop
+        # If the distance needed to stop is greater than the authority, set the service brake
+        distance = (self.current_speed ** 2) / (2 * 1.2)  # 1.2 m/s^2 is the deceleration rate
+
+        # True = need to brake, False = don't need to brake
+        # If the distance and a train's length needed to stop is less than the authority
+        ### ADD PADDING LATER ###
+        if distance < self.authority:
+            self.brake.set_service_brake(True)
+            self.engine.power_command = 0
+
+        
     # Update the fault status of the train
     # Call maintenance if there is a fault
     def update_fault_status(self, train_model):
@@ -177,6 +267,13 @@ class TrainController:
         self.brake.set_emergency_brake(done)
         self.set_maintenance_mode(done)
         
+    def at_station(self):
+        self.doors.open_door()
+        self.station = self.track_block.station
+
+    def leaving_station(self):
+        self.doors.close_door()
+        self.station = None
 
     ## Engineer class to hold Kp and Ki
     class Engineer:
@@ -253,7 +350,7 @@ class TrainController:
        
     ## Engine class calculates power command and can simulate train response
     class Engine:
-        def __init__(self, ssh):
+        def __init__(self, ssh=None):
             self.speed_limit = None  # Speed limit of the train
             self.P_MAX = 120  # Maximum power (kW)
             self.power_command = 0 # Power command
@@ -270,9 +367,8 @@ class TrainController:
             # - Brake Deceleration Rates: Service and Emergency
             '''
             
-            self.ssh = None
-            if(ssh):
-                self.ssh = ssh  # SSH client for communication with Raspberry Pi
+            self.ssh = ssh  # SSH client for communication with Raspberry Pi
+            if(self.ssh):
                 self.channel = self.create_channel()  # Persistent channel
 
         def create_channel(self):
@@ -300,16 +396,6 @@ class TrainController:
             except Exception as e:
                 print(f"An error occurred during communication: {e}")
                 return 0, self.u_k
-        
-        # Check if the train needs to stop because of authority
-        def stop_for_authority(self, authority: float, current_speed: float):
-            # Use kinematics equation v^2 = v0^2 + 2a(x-x0) to calculate the distance needed to stop
-            # If the distance needed to stop is greater than the authority, set the service brake
-            distance = (current_speed ** 2) / (2 * 1.2)  # 1.2 m/s^2 is the deceleration rate
-
-            # True = need to brake, False = don't need to brake
-            ## MIGHT NEED TO ADD A BIT OF PADDING IDK
-            return distance < authority # Return True if the distance needed to stop is less than the authority
 
         # PID controller to compute the power command
         # Input) desired_speed: float, current_speed: float, engineer: Engineer object
@@ -423,17 +509,14 @@ class TrainController:
             
             return power_command, current_speed
         
-        def update_speed_limit(self, train_model):
-            self.speed_limit = train_model.get_speed_limit()
-        
     ## Door class to hold door status
     # Door status = bool
     # False = closed, True = open
     class Doors:
-        def __init__(self, exit_door="L"):
-            self.left = False
-            self.right = False
-            self.exit_door = exit_door   # False = "left", True = "right"
+        def __init__(self):
+            self.left: bool = False
+            self.right: bool = False
+            self.exit_door: str = None   # False = "L", True = "R"
 
         ## Mutator Functions
         # Input) status: boolean
@@ -459,9 +542,17 @@ class TrainController:
             return self.get_left(), self.get_right()
         
         # Update the exit door status
-        def set_exit_door(self, train_model):
-            right_door = train_model.get_exit_door()
-            self.exit_door = "right" if right_door else "left"
+        # Input) bool: False = first value, Trye = second value
+        def update_exit_door(self, bool=False):
+            if bool:
+                if self.exit_door is "Right/Left":
+                    self.exit_door = "left"
+                elif self.exit_door is "Left/Right":
+                    self.exit_door = "right"
+                else:
+                    raise ValueError("Exit door not set")
+            else:
+                self.exit_door = "right" if self.exit_door[0] is "R" else "left"
 
         def open_door(self):
             if self.exit_door == "left":
@@ -483,10 +574,10 @@ class TrainController:
     # Light status = bool
     # False = off, True = on
     class Lights:
-        def __init__(self, underground=False):
-            self.lights = False
-            self.underground = underground # List of blocks that are underground
-            self.night_time = 43200 # 12 hours in seconds
+        def __init__(self):
+            self.lights: bool = False
+            self.underground: bool = None # Boolean
+            self.night_time: int = 43200 # 12 hours in seconds
 
         ## Mutator Functions
         def lights_on(self):
@@ -511,8 +602,7 @@ class TrainController:
         ## Update Functions
         def update_underground(self, underground: bool):
             self.underground = underground
-        def update_lights(self, train_model, elapsed_time: float):
-            self.update_underground(train_model.get_underground())    # Update underground blocks
+        def update_lights(self, elapsed_time: float):
             self.set_lights(self.underground or (elapsed_time % 86400) > 43200)   # Set external lights if current block is undreground
 
     ## AC class to hold temperature status
@@ -540,13 +630,6 @@ class TrainController:
         def get_current_temp(self):
             return self.current_temp
         
-        ## Update Function
-        # Input) TrainModel object, string: "automatic" or "manual"
-        def update_current_temp(self, train_model, driver_mode: str):
-            self.current_temp = train_model.get_train_temp()
-            # If in automatic mode, set the commanded temperature to the automatic temperature
-            if(driver_mode == "automatic"):
-                self.set_commanded_temp(self.auto_temp)
 
 
 # Does beacon need to be encrypted
@@ -560,14 +643,7 @@ class TrainModel:
         self.train_temp: int = 69
         self.faults: int[3] = [0, 0, 0]
 
-        # Track block variables
-        self.track_block: int = 0
-        self.block: int = 0
-        self.station: str = "station_name"
-        self.speed_limit: float = 19.44  #m/s
-        self.length: float = 0
-        self.exit_door: str = "L"
-        self.underground: bool = False
+        tm_updated = pyqtSignal()
 
     # Float
     def get_current_speed(self):
@@ -685,14 +761,13 @@ class TrainModel:
 
 class TrainSystem:
     def __init__(self, host=None, port=None, username=None, password=None):
-        self.train_model = TrainModel()
         self.ssh_client = None
         if(host and port and username and password):
             self.ssh_client = self.create_ssh_connection(HOST, PORT, USERNAME, PASSWORD)
         # Hardware
-        #self.controller = TrainController(25, 0.1, self.train_model, self.ssh_client)
+        #self.controller = TrainController(self.ssh_client)
         # Software
-        self.controller = TrainController(25, 0.1, self.train_model)
+        self.controller = TrainController()
 
     # Example usage
     def create_ssh_connection(self, host, port=22, username='danim', password='danim'):
