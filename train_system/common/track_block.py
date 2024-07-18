@@ -49,7 +49,7 @@ class TrackBlock(QObject):
 
         # Dynamic parameters
         self._suggested_speed = 0
-        self._authority = 0
+        self._authority = 10
         self._occupancy = False
         self._switch_position = None
         self._crossing_signal = CrossingSignal.NA

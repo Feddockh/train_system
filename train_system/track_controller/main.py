@@ -53,7 +53,7 @@ def main():
 
     track_blocks1 = line.track_blocks[:32] + line.track_blocks[149:150]
                          
-    track_blocks2 = line.track_blocks[28:85] + line.track_blocks[100:150]
+    track_blocks2 = line.track_blocks[28:85] + line.track_blocks[100:153]
 
     track_blocks3 = line.track_blocks[73:101]
 
@@ -68,14 +68,14 @@ def main():
 
     #Creating Waysides
     Wayside_1 = TrackController(track_blocks1)
-    Wayside_1.numBlocks = 32
+    Wayside_1.numBlocks = 33
     Wayside_1.wayside_name = "Wayside 1"
 
     print(Wayside_1.track_blocks[12].switch_options)
 
     
     Wayside_2 = TrackController(track_blocks2)
-    Wayside_2.numBlocks = 107
+    Wayside_2.numBlocks = 110
     Wayside_2.wayside_name = "Wayside 2"
 
     

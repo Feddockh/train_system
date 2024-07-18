@@ -959,7 +959,7 @@ class Maintenance(QtWidgets.QMainWindow):
             self.check_switch(row, waysideIndex)
         #If light signal column
         elif(item.column() == 2):
-            #getting block #
+            #getting block 
             row = item.row()
             self.check_signal(row, waysideIndex)
         #If crossing signal column

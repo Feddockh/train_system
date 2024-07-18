@@ -114,8 +114,6 @@ class TrackController(QObject):
             for block in self.track_blocks:
                 block.signal_updates_enabled = True
 
-            self.track_blocks[x]._authority = old_Auth
-
             #Emergency brake enabled - not safe
             if(test_track_blocks[x].authority == 0):
                 self.track_blocks[x].switch_position = old_pos
@@ -125,6 +123,8 @@ class TrackController(QObject):
                 print(new_pos)
                 self.track_blocks[x].switch_position = new_pos
                 print("Safe Decision")
+
+            self.track_blocks[x]._authority = old_Auth
     
     def check_PLC_program_signal(self, x, curr_signal, new_signal):
         #Will only run if PLC program has been uploaded
@@ -151,8 +151,6 @@ class TrackController(QObject):
             for block in self.track_blocks:
                 block.signal_updates_enabled = True
 
-            self.track_blocks[x]._authority = old_Auth
-
             #Emergency brake enabled - not safe
             if(test_track_blocks[x].authority == 0):
                 self.track_blocks[x]._light_signal = curr_signal
@@ -162,6 +160,9 @@ class TrackController(QObject):
                 print(new_signal)
                 self.track_blocks[x]._light_signal = new_signal
                 print("Safe Decision")
+
+            self.track_blocks[x]._authority = old_Auth
+
 
     def check_PLC_program_crossing(self, x, curr_crossing, new_crossing):
         #Will only run if PLC program has been uploaded
@@ -188,8 +189,6 @@ class TrackController(QObject):
             for block in self.track_blocks:
                 block.signal_updates_enabled = True
             
-            self.track_blocks[x]._authority = old_Auth
-            
             #Emergency brake enabled - not safe
             if(test_track_blocks[x].authority == 0):
                 self.track_blocks[x]._crossing_signal_bool = curr_crossing
@@ -199,4 +198,6 @@ class TrackController(QObject):
                 print(new_crossing)
                 self.track_blocks[x]._crossing_signal_bool = new_crossing
                 print("Safe Decision")
+
+            self.track_blocks[x]._authority = old_Auth
     
