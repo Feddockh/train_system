@@ -265,19 +265,17 @@ class MBOOffice(QObject):
                                 'Yard' : timedelta(seconds=15)}
         
         
-        def create_schedules(self, date_time, train_throughput):
+        def create_schedules(self, date_time, train_throughput, checked_items):
             """_summary_
 
             Args:
                 date_time (_type_): _description_
             """
-            i = 65
-            block = self.green_line.get_track_block(i)
-            station = block.station
-            print(station)
+            
             print("in create schedules")
             
             print(f"making schedule for: {date_time}, with a {train_throughput} throughput")
+            print("checked items are", checked_items)
             
             
     

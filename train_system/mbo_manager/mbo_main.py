@@ -89,8 +89,8 @@ if __name__ == "__main__":
     #@313m in middle of block 
     train.update_position('Train1', 329.1, 65 ) """
 
-    #pass mbo_main_ui.show()
-    #pass sys.exit(app.exec())
+    mbo_main_ui.show()
+    sys.exit(app.exec())
 
 
 
