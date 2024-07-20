@@ -2,7 +2,6 @@ import math
 
 from PyQt6.QtWidgets import QWidget
 from train_system.common.time_keeper import TimeKeeper
-from train_system.common.time_keeper import TimeKeeper
 
 
 #from train_system.train_controller.train_controller import TrainController
@@ -17,6 +16,7 @@ class TrainModel(QWidget) :
         # connect to TimeKeeper
         super().__init__()
         self.time_keeper = time_keeper
+        self.time_keeper.start_timer()
         self.time_keeper.tick.connect(self.physics_update)
         self.time_keeper.tick.connect(self.temperature_control)
 
@@ -25,14 +25,14 @@ class TrainModel(QWidget) :
 
         # physics variables  
         self.current_speed = 0 # m/s
-        self.power = 0 # vital
+        self.commanded_power = 0 # vital
         self.service_brake = False # vital
         self.emergency_brake = False # vital
         self.passengers = 0
-
+    
         self.last_velocity = 0
         self.last_acceleration = 0
-        self.last_second = time_keeper.current_second
+        self.last_second = time_keeper.current_second - 1
 
         # physics constants
         self.FRICTION_COEFF = 0.1 # typically 0.35 to 0.5 for steel
@@ -66,7 +66,7 @@ class TrainModel(QWidget) :
         self.commanded_speed = 0
         self.authority = 0
         self.track_polarity = False
-        
+
         # beacon intermediate variables
         self.beacon_data = ""
         self.station_name = ""
@@ -78,6 +78,14 @@ class TrainModel(QWidget) :
 #### vvvv Setters vvvv ####
 ###########################
         
+    # this function sets the commanded speed
+    def set_commanded_speed(self, commanded_speed) :
+        self.commanded_speed = commanded_speed
+
+    # this function sets the authority
+    def set_authority(self, authority) :
+        self.authority = authority
+
     # this function sets the engine power as commanded by the train controller, unless
     #   there is an engine failure. also limits to max engine characteristics
     #   parameters: self, commanded power
@@ -85,15 +93,13 @@ class TrainModel(QWidget) :
         
         # check if failure or max engine characteristics
         if self.failures [0] or commanded_power < 0 :
-            self.power = 0
+            self.commanded_power = 0
         elif commanded_power > 120 :
-            self.power = 120
+            self.commanded_power = 120
         else :
-            self.power = commanded_power
+            self.commanded_power = commanded_power
 
-        # ouput
-        print("set_power() called :")
-        print(self.power)
+        self.physics_update()
 
     # this function sets the train id number variable
     def set_train_id(self, train_id) :
@@ -124,8 +130,7 @@ class TrainModel(QWidget) :
             self.service_brake = False
         else :
             self.service_brake = True
-        print("service brake toggled:")
-        print(self.service_brake)
+        self.set_power(0)
 
     # this function toggles the emergency brake boolean variable
     def toggle_emergency_brake(self) :
@@ -133,6 +138,7 @@ class TrainModel(QWidget) :
             self.emergency_brake = False
         else :
             self.emergency_brake = True
+        self.set_power(0)
         print("emergency brake toggled:")
         print(self.emergency_brake)
 
@@ -229,6 +235,14 @@ class TrainModel(QWidget) :
     def get_current_speed(self) :
         return self.current_speed
     
+    # this function returns the curreny authority of the train
+    def get_authority(self) :
+        return self.authority
+    
+    #this function returns the commanded spee of the train
+    def get_commanded_speed(self) :
+        return self.commanded_speed
+    
     # this function returns the status of the service brake
     def get_service_brake(self) :
         return self.service_brake
@@ -270,7 +284,7 @@ class TrainModel(QWidget) :
         return self.left_side_doors
     
     # this function returns the interior lights status
-    def get_intetior_lights(self) :
+    def get_interior_lights(self) :
         return self.interior_lights
     
     # this function returns the exterior lights status
@@ -315,79 +329,86 @@ class TrainModel(QWidget) :
     # this function updates all physics values each time step
     #   parameters: self
     def physics_update(self) :
-        # let one tick run if current = last
-        if self.last_second == self.time_keeper.current_second :
-            print("Wait for first tick")
+        # calculate engine forces
+        if self.commanded_power > 0 :
+            if self.current_speed < 0.0001 :
+                engine_force = self.commanded_power / 0.1
+            else :
+                engine_force = (self.commanded_power / self.last_velocity)
         else :
+            engine_force = 0
 
-            # calculate engine forces
-            if self.power > 0 :
-                if self.current_speed < 0.0001 :
-                    engine_force = self.power / 0.1
-                else :
-                    engine_force = (self.power / self.last_velocity)
-            else :
-                engine_force = 0
+        # engine force = 0 if either brake engaged
+        if self.service_brake or self.emergency_brake :
+            engine_force = 0
 
-            # engine force = 0 if either brake engaged
-            if self.service_brake or self.emergency_brake :
-                engine_force = 0
+        # determine current mass
+        current_mass = self.EMPTY_TRAIN_MASS + (self.passengers * self.PASSENGER_MASS)
 
-            # determine current mass
-            current_mass = self.EMPTY_TRAIN_MASS + (self.passengers * self.PASSENGER_MASS)
+        # calculate force due to gravity
+        # m*g*sin(angle)
+        #grade = TrackModel.get_grade(TrainController.get_position())
+        #if grade > 0 : # if up hill
+        #    grav_force = (-1 * current_mass * self.G_ACCEL * math.sin(grade))
+        #elif grade < 0 : # if down hill
+        #    grav_force = (current_mass * self.G_ACCEL * math.sin(-1 * grade))
+        #else : # if flat
+        #    grav_force = 0
+        grav_force = 0 # remove when grade implemented
+        grade = 0 # remove when grade implemented
 
-            # calculate force due to gravity
-            # m*g*sin(angle)
-            #grade = TrackModel.get_grade(TrainController.get_position())
-            #if grade > 0 : # if up hill
-            #    grav_force = (-1 * current_mass * self.G_ACCEL * math.sin(grade))
-            #elif grade < 0 : # if down hill
-            #    grav_force = (current_mass * self.G_ACCEL * math.sin(-1 * grade))
-            #else : # if flat
-            #    grav_force = 0
-            grav_force = 0 # remove when grade implemented
-            grade = 0 # remove when grade implemented
+        # calculate force due to friction (only if power is 0)
+        # Ff = Fn*u
+        # Fn = m*g*cos(angle)
+        if self.commanded_power == 0 :
+            normal_force = (-1 * current_mass * self.G_ACCEL * math.cos(grade))
+            friction_force = (-1 * normal_force * self.FRICTION_COEFF)
+        else :
+            friction_force = 0
 
-            # calculate force due to friction (only if power is 0)
-            # Ff = Fn*u
-            # Fn = m*g*cos(angle)
-            if self.power == 0 :
-                normal_force = (-1 * current_mass * self.G_ACCEL * math.cos(grade))
-                friction_force = (-1 * normal_force * self.FRICTION_COEFF)
-            else :
-                friction_force = 0
+        # sum forces
+        net_force = engine_force + grav_force + friction_force
 
-            # sum forces
-            net_force = engine_force + grav_force + friction_force
+        # calcualte forward acceleration
+        current_acceleration = net_force / current_mass
+        
+        # limit to max forward acceleration
+        if current_acceleration > self.MAX_TRAIN_ACCEL :
+            current_acceleration = self.MAX_TRAIN_ACCEL
 
-            # calcualte forward acceleration
-            current_acceleration = net_force / current_mass
+        # add brake acceleration if brake applied
+        if self.emergency_brake :
+            current_acceleration += self.EMERGENCY_BRAKE_ACCEL
+        elif self.service_brake :
+            current_acceleration += self.SERVICE_BRAKE_ACCEL
 
-            # limit to max forward acceleration
-            if current_acceleration > self.MAX_TRAIN_ACCEL :
-                current_acceleration = self.MAX_TRAIN_ACCEL
+        # make sure no roll back
+        if self.last_velocity <= 0 and current_acceleration < 0 :
+            current_acceleration = 0
 
-            # add brake acceleration if brake applied
-            if self.emergency_brake :
-                current_acceleration += self.EMERGENCY_BRAKE_ACCEL
-            elif self.service_brake :
-                current_acceleration += self.SERVICE_BRAKE_ACCEL
+        # calculate velocity
+        delta_t = self.time_keeper.current_second - self.last_second
+        total_acceleration = current_acceleration + self.last_acceleration
+        total_velocity = self.last_velocity + (delta_t / 2 ) * total_acceleration
+        
+        # make sure no roll back
+        if total_velocity < 0 :
+            total_velocity = 0
 
-            # calculate velocity
-            delta_t = self.time_keeper.current_second - self.last_second
-            total_acceleration = current_acceleration + self.last_acceleration
-            total_velocity = self.last_velocity + (delta_t /2 ) * total_acceleration
+        # limit velocity to max characteristics
+        if total_velocity < 0 :
+            total_velocity = 0
+        elif total_velocity > self.MAX_TRAIN_VELOCITY :
+            total_velocity = self.MAX_TRAIN_VELOCITY
 
-            # limit velocity to max characteristics
-            if total_velocity < 0 :
-                total_velocity = 0
-            elif total_velocity > self.MAX_TRAIN_VELOCITY :
-                total_velocity = self.MAX_TRAIN_VELOCITY
-
-            # set last tick varaibles
+        # set last tick varaibles
+        if self.last_acceleration < 0 and total_velocity == 0 :
+            self.last_acceleration = 0
+        else :
             self.last_acceleration = total_acceleration
-            self.last_velocity = total_velocity
-            self.last_second = self.time_keeper.current_second
+        self.last_velocity = total_velocity
+        self.last_second = self.time_keeper.current_second
+        self.current_speed = self.last_velocity
 
 ###########################
 #### ^^^^ Others  ^^^^ ####
