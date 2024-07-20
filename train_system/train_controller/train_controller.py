@@ -61,7 +61,7 @@ class TrainController(QObject):
         # Train Block Inputs
         self.line.load_track_blocks()
         self.line.load_routes()
-        self.reset_route()  # Initialize track block, position, and polarity
+        # self.reset_route()  # Initialize track block, position, and polarity
 
         # self.track_block: int = 0
         # self.block: int = 0
