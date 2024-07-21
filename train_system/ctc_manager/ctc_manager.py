@@ -45,7 +45,12 @@ class CTCOffice(QObject):
         return train_id in self.trains
 
     def add_train(self, train_id: int, line: Line) -> None:
-        self.trains[train_id] = CTCTrainDispatch(train_id, line, self.time_keeper)
+        train = CTCTrainDispatch(train_id, line, self.time_keeper)
+        self.trains[train_id] = train
+
+    def remove_train(self, train_id: int) -> None:
+        if self.train_exists(train_id):
+            del self.trains[train_id]
 
     def get_train(self, train_id: int) -> CTCTrainDispatch:
         if self.train_exists(train_id):
@@ -148,7 +153,7 @@ class CTCOffice(QObject):
         # Check through all the trains to see if they are ready to move
         for train in ordered_trains:
 
-            if train.dispatched:
+            if train.dispatched and (train.departed or self.time_keeper.current_second >= train.departure_time):
 
                 # Get the current and next block of the train
                 current_block_id = train.get_current_block_id()
@@ -294,3 +299,5 @@ class CTCOffice(QObject):
                 self.add_train(train_update.train_id, self.line) # TODO: Change this to check for line
             train_dispatch = self.get_train(train_update.train_id)
             train_dispatch.process_update_message(train_update)
+
+            

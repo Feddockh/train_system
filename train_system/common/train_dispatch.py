@@ -4,7 +4,7 @@ from dataclasses import dataclass
 import heapq
 from typing import List, Tuple
 from collections import deque
-from PyQt6.QtCore import pyqtSlot, QObject
+from PyQt6.QtCore import pyqtSlot, QObject, pyqtSignal
 
 from train_system.common.line import Line
 from train_system.common.time_keeper import TimeKeeper
@@ -18,8 +18,8 @@ class TrainDispatchUpdate:
     stop_priority_queue: List[Tuple[int, int]]
 
 class TrainDispatch(QObject):
-    def __init__(self, train_id: int, line: Line, 
-                 time_keeper: TimeKeeper) -> None:
+    def __init__(self, time_keeper: TimeKeeper, train_id: int,
+                 line: Line) -> None:
         super().__init__()
 
         self.train_id = train_id
@@ -30,7 +30,7 @@ class TrainDispatch(QObject):
 
         self.boarding_time: int = 30
         self.departed: bool = False
-        self.departure_time: int = None
+        self.departure_time: int = 0
 
         self.dispatched: bool = False
         self.dispatch_time: int = None
@@ -70,21 +70,19 @@ class TrainDispatch(QObject):
         )
 
     def add_stop(self, arrival_time: int, block_number: int) -> None:
-        if not self.dispatched:
-            _, prev_last_stop = self.get_last_stop()
-            heapq.heappush(self.stop_priority_queue, (arrival_time, block_number))
-        
-            # Reset the route and times if the new stop was added within the current route
-            if prev_last_stop != block_number:
-                self.compute_route(True)
-                self.compute_dispatch_time()
-                self.compute_departure_time()
-                self.update_eta_lag()
-            else:
-                self.compute_route(False)
 
+        # Add a new stop to the priority queue
+        prev_last_stop = self.get_last_stop()[1]
+        heapq.heappush(self.stop_priority_queue, (arrival_time, block_number))
+    
+        # Reset the route and times if the new stop was added within the current route
+        if prev_last_stop != block_number:
+            self.compute_route(True)
+            # self.compute_departure_time()
+            self.compute_dispatch_time()
+            self.update_eta_lag()
         else:
-            print("ERROR: Train has already been dispatched")
+            self.compute_route(False)
     
     def pop_stop(self) -> None:
 
@@ -167,6 +165,7 @@ class TrainDispatch(QObject):
             heapq.heappush(self.stop_priority_queue, (arrival_time, self.line.yard))
             self.route.extend(path_to_yard[1:])
 
+            self.compute_departure_time()
             self.departed = False
             self.dispatched = False
 
@@ -262,4 +261,6 @@ class TrainDispatch(QObject):
     def handle_time_update(self, tick: int) -> None:
         self.update_eta_lag(tick)
         self.time_in_block += 1
+
+        
         
