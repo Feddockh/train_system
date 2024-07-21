@@ -7,17 +7,17 @@ from train_system.common.line import Line
 from train_system.common.time_keeper import TimeKeeper
 
 class CTCTrainDispatch(TrainDispatch):
-    def __init__(self, train_id: int, line: Line, 
-                 time_keeper: TimeKeeper) -> None:
-        super().__init__(train_id, line, time_keeper)
+    def __init__(self, time_keeper: TimeKeeper, train_id: int, 
+                 line: Line) -> None:
+        super().__init__(time_keeper, train_id, line)
 
         """
         Initialize the CTC train dispatch object.
         
         Args:
+            time_keeper (TimeKeeper): The time keeper for managing time updates.
             train_id (int): The unique identifier for the train.
             line (Line): The line on which the train is operating.
-            time_keeper (TimeKeeper): The time keeper for managing time updates.
         """
 
         self.suggested_speed = 0

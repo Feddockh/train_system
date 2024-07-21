@@ -1,6 +1,5 @@
 # train_system/ctc_manager/ctc_manager.py
 
-import bisect
 from typing import List, Dict, Optional
 from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
 
@@ -17,6 +16,10 @@ class CTCOffice(QObject):
 
         """
         Initialize the CTC Office.
+
+        Args:
+            time_keeper (TimeKeeper): The time keeper for managing time updates.
+            line_name (str): The name of the line.
         """
 
         super().__init__()
@@ -45,7 +48,7 @@ class CTCOffice(QObject):
         return train_id in self.trains
 
     def add_train(self, train_id: int, line: Line) -> None:
-        train = CTCTrainDispatch(train_id, line, self.time_keeper)
+        train = CTCTrainDispatch(self.time_keeper, train_id, line)
         self.trains[train_id] = train
 
     def remove_train(self, train_id: int) -> None:

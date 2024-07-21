@@ -1,8 +1,9 @@
 # train_system.common.train_dispatch.py
 
 from dataclasses import dataclass
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 import heapq
+from PyQt6.sip import wrappertype as PyQtWrapperType
 from typing import List, Tuple
 from collections import deque
 from PyQt6.QtCore import pyqtSlot, QObject, pyqtSignal
@@ -11,6 +12,9 @@ from train_system.common.line import Line
 from train_system.common.time_keeper import TimeKeeper
 
 
+class MetaQObjectABC(PyQtWrapperType, ABCMeta):
+    pass
+
 @dataclass
 class TrainDispatchUpdate:
     train_id: int
@@ -18,15 +22,15 @@ class TrainDispatchUpdate:
     route: deque[int]
     stop_priority_queue: List[Tuple[int, int]]
 
-class TrainDispatch(QObject, ABC):
+class TrainDispatch(QObject, metaclass=MetaQObjectABC):
 
     """
-    Base class for train dispatch systems.
+    Base class for train dispatch system.
 
     Attributes:
+        time_keeper (TimeKeeper): The time keeper for managing time updates.
         train_id (int): The unique identifier for the train.
         line (Line): The line on which the train is operating.
-        time_keeper (TimeKeeper): The time keeper for managing time updates.
         boarding_time (int): The boarding time in seconds.
         departed (bool): Indicates if the train has departed.
         departure_time (int): The departure time in seconds.
