@@ -1,6 +1,7 @@
 # train_system.common.train_dispatch.py
 
 from dataclasses import dataclass
+from abc import ABC, abstractmethod
 import heapq
 from typing import List, Tuple
 from collections import deque
@@ -17,16 +18,41 @@ class TrainDispatchUpdate:
     route: deque[int]
     stop_priority_queue: List[Tuple[int, int]]
 
-class TrainDispatch(QObject):
+class TrainDispatch(QObject, ABC):
+
+    """
+    Base class for train dispatch systems.
+
+    Attributes:
+        train_id (int): The unique identifier for the train.
+        line (Line): The line on which the train is operating.
+        time_keeper (TimeKeeper): The time keeper for managing time updates.
+        boarding_time (int): The boarding time in seconds.
+        departed (bool): Indicates if the train has departed.
+        departure_time (int): The departure time in seconds.
+        dispatched (bool): Indicates if the train has been dispatched.
+        dispatch_time (int): The dispatch time in seconds.
+        eta (int): Estimated time of arrival in seconds.
+        lag (int): Lag time in seconds.
+        time_in_block (int): Time spent in the current block in seconds.
+        route (deque[int]): The route of the train, with block IDs.
+        prev_block_id (int): The previous block ID.
+        stop_priority_queue (List[Tuple[int, int]]): A priority queue of stops,
+            where each tuple contains:
+                - arrival time (int): The arrival time in seconds.
+                - block number (int): The block number of the stop.
+        authority (float): The authority level of the train.
+    """
+
     def __init__(self, time_keeper: TimeKeeper, train_id: int,
                  line: Line) -> None:
         super().__init__()
 
-        self.train_id = train_id
-        self.line = line
-
         self.time_keeper = time_keeper
         self.time_keeper.tick.connect(self.handle_time_update)
+
+        self.train_id = train_id
+        self.line = line
 
         self.boarding_time: int = 30
         self.departed: bool = False
@@ -71,6 +97,15 @@ class TrainDispatch(QObject):
 
     def add_stop(self, arrival_time: int, block_number: int) -> None:
 
+        """
+        Add a new stop to the priority queue. If the new stop is added within the
+        current route, the entire route is recalculated.
+
+        Args:
+            arrival_time (int): The arrival time (in seconds) to reach the stop.
+            block_number (int): The block number of the stop.
+        """
+
         # Add a new stop to the priority queue
         prev_last_stop = self.get_last_stop()[1]
         heapq.heappush(self.stop_priority_queue, (arrival_time, block_number))
@@ -78,7 +113,6 @@ class TrainDispatch(QObject):
         # Reset the route and times if the new stop was added within the current route
         if prev_last_stop != block_number:
             self.compute_route(True)
-            # self.compute_departure_time()
             self.compute_dispatch_time()
             self.update_eta_lag()
         else:
@@ -86,110 +120,106 @@ class TrainDispatch(QObject):
     
     def pop_stop(self) -> None:
 
-        # Pop the previous stop from the priority queue
-        # This function should be called as soon as the train arrives at the stop
+        """
+        Pop the previous stop from the priority queue. This function should be called
+        as soon as the train arrives at the stop.
+        """
+
         if self.stop_priority_queue:
             heapq.heappop(self.stop_priority_queue)
 
     def get_next_stop(self) -> Tuple[int, int]:
+
+        """
+        Get the next stop from the priority queue.
+        
+        Returns:
+            Tuple[int, int]: The arrival time and block number of the next stop.
+        """
+
         if self.stop_priority_queue:
             return self.stop_priority_queue[0]
         return (None, None)
 
     def get_route_to_next_stop(self) -> List[int]:
+
+        """
+        Get the route to the next stop.
+        
+        Returns:
+            List[int]: The route to the next stop.
+        """
+
         next_stop = self.get_next_stop()[1]
         if next_stop:
             return self.line.get_path(self.prev_block_id, self.get_current_block_id(), next_stop)
         return None
 
     def get_last_stop(self) -> Tuple[int, int]:
+
+        """
+        Get the last stop from the priority queue.
+        
+        Returns:
+            Tuple[int, int]: The arrival time and block number of the last stop.
+        """
+
         if self.stop_priority_queue:
             return self.stop_priority_queue[-1]
         return (None, None)
 
-    def add_route_blocks(self, route: List[int]) -> None:
-        if not self.dispatched:
-            self.route.extend(route)
-        else:
-            print("ERROR: Train has already been dispatched")
+    def add_route_block_ids(self, route: List[int]) -> None:
 
-    def move_train_to_next_block(self) -> None:
+        """
+        Add a list of blocks to the route.
+        
+        Args:
+            route (List[int]): A list of block IDs to add to the route.
+        """
 
-        # Pop the previous block from route
-        # Should be called after the train leaves the block
-
-        # Get the previous and current block id and the next stop id
-        current_block_id = self.get_current_block_id()
-        next_block_id = self.get_next_block_id()
-        next_stop_id = self.get_next_stop()[1]
-
-        # Case 0: Train is at the yard
-        if current_block_id == self.line.yard and self.dispatched == False:
-            print("Train is at the yard")
-            self.authority = 0
-
-        # Case 1: Train is en route to next stop
-        elif self.route and next_block_id != next_stop_id:
-            self.prev_block_id = self.route.popleft()
-            self.departed = True
-
-        # Case 2: Train is at the stop (which is not the last stop)
-        elif self.route and next_block_id == next_stop_id and len(self.stop_priority_queue) > 1:
-            self.prev_block_id = self.route.popleft()
-            self.pop_stop()
-            self.compute_departure_time()
-            self.update_eta_lag()
-            self.departed = False
-
-        # Case 3: Train is at the last stop (which is the yard)
-        elif self.route and next_block_id == next_stop_id and \
-                len(self.stop_priority_queue) == 1 and \
-                next_stop_id == self.line.yard:
-            self.prev_block_id = self.route.popleft()
-            self.pop_stop()
-            self.departed = False
-            self.dispatched = False
-
-        # Case 4: Train is at the last stop (which is not the yard)
-        elif self.route and next_block_id == next_stop_id and \
-                len(self.stop_priority_queue) == 1 and \
-                next_stop_id != self.line.yard:
-            self.prev_block_id = self.route.popleft()
-            self.pop_stop()
-
-            # Send train back to yard if no more blocks in route
-            path_to_yard = self.line.get_path(current_block_id, next_block_id, self.line.yard)
-            travel_time = self.line.get_travel_time(path_to_yard)
-            current_time = self.time_keeper.current_second
-            arrival_time = current_time + travel_time
-            heapq.heappush(self.stop_priority_queue, (arrival_time, self.line.yard))
-            self.route.extend(path_to_yard[1:])
-
-            self.compute_departure_time()
-            self.departed = False
-            self.dispatched = False
-
-        # Reset the time in block
-        self.time_in_block = 0
+        self.route.extend(route)
 
     def get_current_block_id(self) -> int:
+
+        """
+        Get the current block ID.
+        
+        Returns:
+            int: The current block ID.
+        """
+
         if self.route:
             return self.route[0]
         return None
     
     def get_next_block_id(self) -> int:
+
+        """
+        Get the next block ID.
+
+        Returns:
+            int: The next block ID.
+        """
+
         if len(self.route) > 1:
             return self.route[1]
         return None
 
     def compute_dispatch_time(self) -> int:
+
+        """
+        Compute the dispatch time based on the travel time to the first stop.
+        
+        Returns:
+            int: The dispatch time in seconds.
+        """
         
         # Get the travel time to the first stop
         route_to_first_stop = self.get_route_to_next_stop()
         travel_time = self.line.get_travel_time(route_to_first_stop)
 
         # Get the first arrival time from the priority queue
-        arrival_time, _ = self.get_next_stop()
+        arrival_time = self.get_next_stop()[0]
         
         # Compute the dispatch time
         self.dispatch_time = arrival_time - travel_time
@@ -197,6 +227,13 @@ class TrainDispatch(QObject):
         return self.dispatch_time
     
     def compute_departure_time(self) -> int:
+
+        """
+        Compute the departure time based on the boarding time.
+        
+        Returns:
+            int: The departure time in seconds.
+        """
 
         # TODO: Consider time it takes to get to station from block entry
         
@@ -207,26 +244,6 @@ class TrainDispatch(QObject):
         self.departure_time = current_time + self.boarding_time
 
         return self.departure_time
-
-    def update_eta_lag(self, tick: int = None) -> None:
-
-        # If the route is empty, return None
-        if not self.route:
-            self.eta = None
-            self.lag = None
-            return
-        
-        # If the tick is None, get the current time from the time keeper
-        if not tick:
-            tick = self.time_keeper.current_second
-
-        # Compute the estimated time of arrival based on the travel time to the next stop
-        route_to_next_stop = self.get_route_to_next_stop()
-        self.eta = tick + self.line.get_travel_time(route_to_next_stop) # 100s
-
-        # Compute the lag time
-        arrival_time, _ = self.get_next_stop() # 300s
-        self.lag = self.eta - arrival_time # 100 - 300 = -200
 
     def compute_route(self, reset: bool = False) -> None:
 
@@ -243,12 +260,12 @@ class TrainDispatch(QObject):
                     path = self.line.get_path(self.line.yard, self.line.yard, next_stop)
                 else:
                     path = self.line.get_path(self.route[-2], self.route[-1], next_stop)
-                self.add_route_blocks(path[1:])
+                self.add_route_block_ids(path[1:])
 
         # Plan the route to the next stop
         else:
             path = self.line.get_path(self.route[-2], self.route[-1], self.get_last_stop()[1])
-            self.add_route_blocks(path[1:])
+            self.add_route_block_ids(path[1:])
 
     def process_update_message(self, update: TrainDispatchUpdate) -> None:
         if self.train_id != update.train_id or self.line.name != update.line_name:
@@ -262,5 +279,24 @@ class TrainDispatch(QObject):
         self.update_eta_lag(tick)
         self.time_in_block += 1
 
+    @abstractmethod
+    def move_train_to_next_block(self) -> None:
+
+        """
+        Move the train to the next block.
+        """
+
+        pass
         
+    @abstractmethod
+    def update_eta_lag(self, tick: int = None) -> None:
+            
+        """
+        Update the estimated time of arrival and lag time.
         
+        Args:
+            tick (int): The current time in seconds.
+        """
+
+        pass
+
