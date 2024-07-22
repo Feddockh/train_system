@@ -88,7 +88,7 @@ class CTCOffice(QObject):
         train = self.get_train(train_id)
 
         # If the train is boarding, do not update the authority
-        if not train.departed and train.dispatch_time > self.time_keeper.current_second:
+        if not train.departed and train.departure_time > self.time_keeper.current_second:
             return train.authority
 
         # Get the current block and next stop
@@ -119,24 +119,12 @@ class CTCOffice(QObject):
         # Get the train object
         train = self.get_train(train_id)
 
-        # If the train is boarding, do not update the suggested speed
-        if not train.departed and train.dispatch_time > self.time_keeper.current_second:
-            return train.suggested_speed
+        # If the train is boarding (has reached stop), suggested speed should be 5
+        if not train.departed and train.departure_time > self.time_keeper.current_second:
+            return 5
 
-        # Get the current block and next stop
-        current_block_id = train.get_current_block_id()
-        next_stop_id = train.get_next_stop()
-        
-        # Get the path to the next stop
-        block = self.line.get_track_block(current_block_id)
-
-        # Set the suggested speed as 1 when it reaches the next stop, otherwsie use the block speed limit
-        if current_block_id == next_stop_id:
-            suggested_speed = 1
-        else:
-            suggested_speed = block.speed_limit
-
-        return suggested_speed
+        # Return the speed limit of the block
+        return self.line.get_track_block(train.get_current_block_id()).speed_limit
 
     def update_all_trains_speed_authority(self) -> None:
 
@@ -194,19 +182,19 @@ class CTCOffice(QObject):
     def handle_time_update(self, tick: int) -> None:
         
         # Check if it is time to depart or dispatch any trains
-        # Add trains to dispatch to a list because we can only dispatch one train at a time
+        # Add trains to dispatch to a list because we can only dispatch one train at a time (from yard conflict)
         trains_to_dispatch = []
         for train_id, train in self.trains.items():
 
-            # Check for departing trains
+            # Check for departing trains (must be dispatched, not departed, and the departure time has passed)
             if train.dispatched and not train.departed and self.time_keeper.current_second >= train.departure_time:
                 
                 # Update the speed and authority of the train
                 train.suggested_speed = self.compute_train_suggested_speed(train_id)
                 train.authority = self.compute_train_authority(train_id)
             
-            # Check for dispatching trains
-            if not train.dispatched and self.time_keeper.current_second >= train.dispatch_time:
+            # Check for dispatching trains (must be dispatched, have a stop, and the dispatch time has passed)
+            if not train.dispatched and train.stop_priority_queue and self.time_keeper.current_second >= train.dispatch_time:
                 trains_to_dispatch.append(train)
 
         # Dispatch the train with the highest lag if there are trains to dispatch
@@ -251,33 +239,40 @@ class CTCOffice(QObject):
     @pyqtSlot(int, bool)
     def handle_occupancy_update(self, block_number: int, occupancy: bool) -> None:
 
-        # TODO: If the block the train moved into the yard, remove it.
-        
         # Check if it is CTC's responsibility to update the speed and authority of the trains
-        if not self.mbo_mode:
+        if self.mbo_mode:
+            return
+        
+        # Update train position when incoming occupancy is true (this helps with multi-block occupancies)
+        if occupancy:
 
-            # Update train position when incoming occupancy is true
-            if occupancy:
-                next_block = self.line.get_track_block(block_number)
+            # Get the next block candidate of the train (newly occupied block)
+            candidate_block = self.line.get_track_block(block_number)
 
-                # Check if the block is not under maintenance
-                if not next_block.under_maintenance:
-                    for train_id, train in self.trains.items():
+            # If the candidate block is the yard, remove the train from the list of trains
+            if block_number == self.line.yard:
+                for train_id, train in self.trains.items():
+                    if train.get_next_block_id() == self.line.yard:
+                        self.remove_train(train_id)
+                        break
 
-                        # Check that the train was dispatched and train's next block was the now occupied block
-                        if train.dispatched and train.get_next_block_id() == next_block.number:
+            # If the candidate block is not under maintenance, find the train that can move to that block
+            elif not candidate_block.under_maintenance:
+                for train_id, train in self.trains.items():
 
-                            # Get the train's current block and check if the train can move to the now occupied block
-                            current_block = self.line.get_track_block(train.get_current_block_id())
-                            if current_block.switch is None or next_block.switch is None:
-                                train.move_train_to_next_block()
-                                break
-                            elif current_block.switch.is_connected(current_block.number, next_block.number):
-                                train.move_train_to_next_block()
-                                break
+                    # Check that the train was dispatched and train's next block was the candidate block
+                    if train.dispatched and train.get_next_block_id() == candidate_block.number:
 
-            # Update the speed and authority of the trains
-            self.update_all_trains_speed_authority()
+                        # Get the train's current block and check if the train can move to the candidate block
+                        current_block = self.line.get_track_block(train.get_current_block_id())
+                        if (current_block.switch is None or 
+                                candidate_block.switch is None or
+                                current_block.switch.is_connected(current_block.number, candidate_block.number)):
+                            train.move_train_to_next_block()
+                            break
+
+        # Update the speed and authority of the trains (this is done on positive and negative occupancy signals)
+        self.update_all_trains_speed_authority()
 
     @pyqtSlot(int, int)
     def handle_crossing_signal_update(self, block_number: int, new_signal: int) -> None:

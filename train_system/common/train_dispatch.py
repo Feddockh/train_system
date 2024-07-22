@@ -250,22 +250,24 @@ class TrainDispatch(QObject, metaclass=MetaQObjectABC):
 
     def compute_route(self, reset: bool = False) -> None:
 
-        # Replan the route from the yard if reset is True
+        # If reset is True, plan the route from the current block to the first stop
         if reset:
-            self.route.clear()
-            self.route.append(self.line.yard)
 
-            # Plan the route from the previous stop to the next
-            for _, next_stop in self.stop_priority_queue:
+            # Clear the current route
+            self.route = deque([self.get_current_block_id()])
 
-                # If the train is in the yard, plan from the yard
-                if self.route[0] == self.line.yard:
-                    path = self.line.get_path(self.line.yard, self.line.yard, next_stop)
-                else:
-                    path = self.line.get_path(self.route[-2], self.route[-1], next_stop)
+            # Check if there is a stop in the priority queue.
+            # If so, plan the route to the first stop from current block
+            if self.stop_priority_queue:
+                path = self.line.get_path(self.prev_block_id, self.get_current_block_id(), self.get_next_stop()[1])
                 self.add_route_block_ids(path[1:])
 
-        # Plan the route to the next stop
+            # Plan the route from the previous stop to the next
+            for _, next_stop in self.stop_priority_queue[1:]:
+                path = self.line.get_path(self.route[-2], self.route[-1], next_stop)
+                self.add_route_block_ids(path[1:])
+
+        # Plan the route from the last stop to the next stop
         else:
             path = self.line.get_path(self.route[-2], self.route[-1], self.get_last_stop()[1])
             self.add_route_block_ids(path[1:])
