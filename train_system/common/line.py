@@ -78,10 +78,26 @@ class Line(QObject):
         return res
 
     def add_track_block(self, track_block: TrackBlock) -> None:
+
+        """
+        Adds a track block to the line and connects its signals.
+
+        Args:
+            track_block (TrackBlock): The track block to add.
+        """
+
         self.track_blocks.append(track_block)
         self.connect_track_block_signals(track_block)
 
     def set_track_block(self, track_block: TrackBlock) -> None:
+        
+        """
+        Sets a track block in the line and connects its signals.
+        
+        Args:
+            track_block (TrackBlock): The track block to set.
+        """
+        
         self.track_blocks[track_block.number - 1] = track_block
         self.connect_track_block_signals(track_block)
 
@@ -104,6 +120,14 @@ class Line(QObject):
             return None
 
     def connect_track_block_signals(self, track_block: TrackBlock) -> None:
+
+        """
+        Connects the signals of a track block to the corresponding signals of the line.
+        
+        Args:
+            track_block (TrackBlock): The track block to connect signals for.
+        """
+
         track_block.suggested_speed_updated.connect(lambda new_speed, blk=track_block: self.track_block_suggested_speed_updated.emit(blk.number, new_speed))
         track_block.authority_updated.connect(lambda new_authority, blk=track_block: self.track_block_authority_updated.emit(blk.number, new_authority))
         track_block.occupancy_updated.connect(lambda new_occupancy, blk=track_block: self.track_block_occupancy_updated.emit(blk.number, new_occupancy))
@@ -111,9 +135,18 @@ class Line(QObject):
         track_block.under_maintenance_updated.connect(lambda new_maintenance, blk=track_block: self.track_block_under_maintenance_updated.emit(blk.number, new_maintenance))
 
     def add_switch(self, track_switch: TrackSwitch) -> None:
+        
+        """
+        Adds a switch to the line and connects its signals.
+        
+        Args:
+            track_switch (TrackSwitch): The switch to add.
+        """
+        
         self.switches.append(track_switch)
         self.connect_switch_signals(track_switch)
 
+        # Connect the switch to the corresponding track blocks
         for switch in self.switches:
             for block_id in switch.connected_blocks:
                 block = self.get_track_block(block_id)
@@ -121,26 +154,58 @@ class Line(QObject):
 
     def get_switch(self, number: int) -> TrackSwitch:
             
-            """
-            Retrieves a switch by its number.
-            
-            Args:
-                number (int): The switch number to retrieve.
-            
-            Returns:
-                TrackSwitch: The retrieved TrackSwitch object.
-            """
-    
-            for switch in self.switches:
-                if switch.number == number:
-                    return switch
-            print(f"Switch {number} not found.")
-            return None
+        """
+        Retrieves a switch by its number.
+        
+        Args:
+            number (int): The switch number to retrieve.
+        
+        Returns:
+            TrackSwitch: The retrieved TrackSwitch object.
+        """
+
+        if number < len(self.switches) and number > 0:
+            return self.switches[number - 1]
+        print(f"Switch {number} does not exist.")
+        return None
+
+    def toggle_switch(self, number: int) -> None:
+
+        """
+        Toggles the position of a switch.
+        
+        Args:
+            number (int): The switch number to toggle.
+        """
+
+        switch = self.get_switch(number)
+        if switch is not None:
+            switch.toggle()
 
     def connect_switch_signals(self, switch: TrackSwitch) -> None:
+
+        """
+        Connects the signals of a switch to the corresponding signals of the line.
+        
+        Args:
+            switch (TrackSwitch): The switch to connect signals for.
+        """
+
         switch.position_updated.connect(lambda new_position, sw=switch: self.switch_position_updated.emit(sw.number))
 
     def get_unobstructed_path(self, path: List[int]) -> List[int]:
+
+        """
+        Computes the unobstructed path between two blocks on the line inclusive of the
+        start and end blocks. This includes checking for block occupancy, maintenance,
+        and switch connections.
+
+        Args:
+            path (List[int]): The list of block numbers in the path.
+
+        Returns:
+            List[int]: The list of block numbers in the unobstructed path.
+        """
 
         # Check if the first block is obstructed
         if not path:
@@ -170,7 +235,7 @@ class Line(QObject):
 
         """
         Computes the path between two blocks on the line inclusive of the
-        start and end blocks.
+        start and end blocks along the route.
 
         Args:
             prev (int): The previous block number.
@@ -305,8 +370,11 @@ class Line(QObject):
         return path
     
     def search_route(self, start: int, route_segment: List[int], seed: int = 0, prev: Optional[int] = None) -> int:
+        
         """
-        Searches for the index of a specific block in a route segment.
+        Searches for the index of a specific block in a route segment. The seed 
+        parameter is used to start the search from a specific index and the prev
+        parameter is used to search for a specific block pair.
 
         Parameters:
         - start (int): The block to search for.
@@ -364,18 +432,39 @@ class Line(QObject):
             int: The time to travel (in seconds) between the two blocks.
         """
 
-        time = 0
+        if not path:
+            return 0
+
+        time = 0       
         for i in range(1, len(path) - 1):
             time += self.get_track_block(path[i]).traversal_time
         return time
+
+    def get_path_length(self, path: List[int]) -> int:
+
+        """
+        Computes the distance between two blocks on the line exclusive of
+        the start and end blocks.
+
+        Args:
+            path (List[int]): The list of block numbers in the path.
+
+        Returns:
+            int: The distance (in meters) between the two blocks.
+        """
+
+        if not path:
+            return 0
+
+        distance = 0       
+        for i in range(1, len(path) - 1):
+            distance += self.get_track_block(path[i]).length
+        return distance
 
     def load_defaults(self) -> None:
             
         """
         Loads track blocks, switches, and routes from default files.
-        
-        Returns:
-            None
         """
 
         self.load_track_blocks()
@@ -389,9 +478,6 @@ class Line(QObject):
         
         Args:
             file_path (str): The path to the Excel file.
-        
-        Returns:
-            None
         """
         
         if not file_path:
@@ -447,6 +533,13 @@ class Line(QObject):
 
     def load_routes(self, file_path: str = None) -> None:
 
+        """
+        Loads routes from a JSON file.
+        
+        Args:
+            file_path (str): The path to the JSON file.
+        """
+
         if not self.track_blocks:
             print("Error: Track blocks must be loaded before routes.")
             return
@@ -464,6 +557,13 @@ class Line(QObject):
         self.default_route = data['default_route']
 
     def load_switches(self, file_path: str = None) -> None:
+
+        """
+        Loads switches from a JSON file.
+        
+        Args:
+            file_path (str): The path to the JSON file.
+        """
 
         if not self.track_blocks:
             print("Error: Track blocks must be loaded before switches.")
@@ -487,8 +587,7 @@ class Line(QObject):
 
 if __name__ == "__main__":
     line = Line('Green')
-    line.load_track_blocks()
-    line.load_routes()
+    line.load_defaults()
     print(line)
 
     target = 100
