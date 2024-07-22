@@ -16,41 +16,40 @@ class MetaQObjectABC(PyQtWrapperType, ABCMeta):
     pass
 
 @dataclass
-class TrainDispatchUpdate:
+class TrainRouteUpdate:
     train_id: int
     line_name: str
     route: deque[int]
     stop_priority_queue: List[Tuple[int, int]]
 
 class TrainDispatch(QObject, metaclass=MetaQObjectABC):
-
-    """
-    Base class for train dispatch system.
-
-    Attributes:
-        time_keeper (TimeKeeper): The time keeper for managing time updates.
-        train_id (int): The unique identifier for the train.
-        line (Line): The line on which the train is operating.
-        boarding_time (int): The boarding time in seconds.
-        departed (bool): Indicates if the train has departed.
-        departure_time (int): The departure time in seconds.
-        dispatched (bool): Indicates if the train has been dispatched.
-        dispatch_time (int): The dispatch time in seconds.
-        eta (int): Estimated time of arrival in seconds.
-        lag (int): Lag time in seconds.
-        time_in_block (int): Time spent in the current block in seconds.
-        route (deque[int]): The route of the train, with block IDs.
-        prev_block_id (int): The previous block ID.
-        stop_priority_queue (List[Tuple[int, int]]): A priority queue of stops,
-            where each tuple contains:
-                - arrival time (int): The arrival time in seconds.
-                - block number (int): The block number of the stop.
-        authority (float): The authority level of the train.
-    """
-
     def __init__(self, time_keeper: TimeKeeper, train_id: int,
                  line: Line) -> None:
         super().__init__()
+
+        """
+        Base class for train dispatch system.
+
+        Attributes:
+            time_keeper (TimeKeeper): The time keeper for managing time updates.
+            train_id (int): The unique identifier for the train.
+            line (Line): The line on which the train is operating.
+            boarding_time (int): The boarding time in seconds.
+            departed (bool): Indicates if the train has departed.
+            departure_time (int): The departure time in seconds.
+            dispatched (bool): Indicates if the train has been dispatched.
+            dispatch_time (int): The dispatch time in seconds.
+            eta (int): Estimated time of arrival in seconds.
+            lag (int): Lag time in seconds.
+            time_in_block (int): Time spent in the current block in seconds.
+            route (deque[int]): The route of the train, with block IDs.
+            prev_block_id (int): The previous block ID.
+            stop_priority_queue (List[Tuple[int, int]]): A priority queue of stops,
+                where each tuple contains:
+                    - arrival time (int): The arrival time in seconds.
+                    - block number (int): The block number of the stop.
+            authority (float): The authority level of the train.
+        """
 
         self.time_keeper = time_keeper
         self.time_keeper.tick.connect(self.handle_time_update)
@@ -271,7 +270,7 @@ class TrainDispatch(QObject, metaclass=MetaQObjectABC):
             path = self.line.get_path(self.route[-2], self.route[-1], self.get_last_stop()[1])
             self.add_route_block_ids(path[1:])
 
-    def process_update_message(self, update: TrainDispatchUpdate) -> None:
+    def handle_route_update(self, update: TrainRouteUpdate) -> None:
         if self.train_id != update.train_id or self.line.name != update.line_name:
             print("ERROR: Train ID or Line Name mismatch for update")
             return
@@ -291,7 +290,7 @@ class TrainDispatch(QObject, metaclass=MetaQObjectABC):
         """
 
         pass
-        
+
     @abstractmethod
     def update_eta_lag(self, tick: int = None) -> None:
             

@@ -22,7 +22,7 @@ class CTCTrainDispatch(TrainDispatch):
 
         self.suggested_speed = 0
 
-    def update(self, suggested_speed: int, authority: int) -> None:
+    def update_speed_authority(self, suggested_speed: int, authority: int) -> None:
 
         """
         Update the suggested speed and authority of the train.
@@ -45,7 +45,7 @@ class CTCTrainDispatch(TrainDispatch):
             authority (int): The authority level of the train.
         """
 
-        self.update(suggested_speed, authority)
+        self.update_speed_authority(suggested_speed, authority)
         self.dispatched = True
 
     def move_train_to_next_block(self) -> None:
@@ -62,8 +62,7 @@ class CTCTrainDispatch(TrainDispatch):
 
         # Case 0: Train is at the yard
         if current_block_id == self.line.yard and self.dispatched == False:
-            print("Train is at the yard")
-            self.authority = 0
+            print("ERROR: Train cannot move because it has not been dispatched yet.")
 
         # Case 1: Train is en route to next stop
         elif self.route and next_block_id != next_stop_id:
@@ -133,7 +132,10 @@ class CTCTrainDispatch(TrainDispatch):
         self.eta = tick + self.line.get_travel_time(route_to_next_stop) # 100s
 
         # Compute the lag time
-        arrival_time, _ = self.get_next_stop() # 300s
-        self.lag = self.eta - arrival_time # 100 - 300 = -200
+        arrival_time = self.get_next_stop()[0] # 300s
+        if arrival_time is not None:
+            self.lag = self.eta - arrival_time # 100 - 300 = -200
+        else:
+            self.lag = 0
 
 

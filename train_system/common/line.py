@@ -440,6 +440,45 @@ class Line(QObject):
             time += self.get_track_block(path[i]).traversal_time
         return time
 
+    def get_path_length(self, path: List[int]) -> int:
+
+        """
+        Computes the distance between two blocks on the line exclusive of
+        the start and end blocks.
+
+        Args:
+            path (List[int]): The list of block numbers in the path.
+
+        Returns:
+            int: The distance (in meters) between the two blocks.
+        """
+
+        if not path:
+            return 0
+
+        distance = 0       
+        for i in range(1, len(path) - 1):
+            distance += self.get_track_block(path[i]).length
+        return distance
+
+    def get_distance_to_block(self, start: int, end: int) -> int:
+            
+        """
+        Computes the distance between two blocks on the line exclusive of
+        the start and end blocks. This function does not handle the cases
+        of the blocks being on a bidirectional track segment.
+
+        Args:
+            start (int): The starting block number.
+            end (int): The ending block number.
+
+        Returns:
+            int: The distance (in meters) between the two blocks.
+        """
+
+        path = self.get_path(start, start, end)
+        return self.get_path_length(path)
+
     def load_defaults(self) -> None:
             
         """

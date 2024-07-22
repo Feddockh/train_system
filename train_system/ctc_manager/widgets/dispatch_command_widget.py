@@ -152,7 +152,7 @@ class DispatchCommandWidget(QWidget):
     def generate_time_slots(self) -> list[str]:
 
         """
-        Generates a list of time slots in 15-minute increments.
+        Generates a list of time slots in 1-minute increments.
 
         Returns:
             list[str]: A list of time slots as strings.
@@ -160,7 +160,7 @@ class DispatchCommandWidget(QWidget):
 
         times = []
         for hour in range(24):
-            for minute in [0, 15, 30, 45]:
+            for minute in range(0, 60):
                 times.append(f"{hour:02d}:{minute:02d}")
         return times
 

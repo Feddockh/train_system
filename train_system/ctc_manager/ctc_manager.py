@@ -4,13 +4,13 @@ from typing import List, Dict, Optional
 from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
 
 from train_system.common.time_keeper import TimeKeeper
-from train_system.common.dispatch_mode import DispatchMode
 from train_system.common.line import Line
-from train_system.common.train_dispatch import TrainDispatchUpdate
+from train_system.common.train_dispatch import TrainRouteUpdate
 from train_system.ctc_manager.ctc_train_dispatch import CTCTrainDispatch
 
+
 class CTCOffice(QObject):
-    train_dispatch_updated = pyqtSignal(TrainDispatchUpdate)
+    train_dispatch_updated = pyqtSignal(TrainRouteUpdate)
 
     def __init__(self, time_keeper: TimeKeeper, line_name: str) -> None:
 
@@ -47,9 +47,10 @@ class CTCOffice(QObject):
     def train_exists(self, train_id: int) -> bool:
         return train_id in self.trains
 
-    def add_train(self, train_id: int, line: Line) -> None:
+    def add_train(self, train_id: int, line: Line) -> CTCTrainDispatch:
         train = CTCTrainDispatch(self.time_keeper, train_id, line)
         self.trains[train_id] = train
+        return train
 
     def remove_train(self, train_id: int) -> None:
         if self.train_exists(train_id):
@@ -81,29 +82,25 @@ class CTCOffice(QObject):
 
         # Check if the train exists
         if not self.train_exists(train_id):
-            return 0
+            return 0 
         
-        # Get the train object, current block, and next stop
+        # Get the train object
         train = self.get_train(train_id)
-        current_block_id = train.get_current_block_id()
+
+        # If the train is boarding, do not update the authority
+        if not train.departed and train.dispatch_time > self.time_keeper.current_second:
+            return train.authority
+
+        # Get the current block and next stop
         next_stop_id = train.get_next_stop()[1]
 
         # Get the unobstructed path to the next stop
         path = train.get_route_to_next_stop()
         unobstructed_path = self.line.get_unobstructed_path(path)
         
-        # Compute the authority by summing the lengths of the blocks in the path
-        authority = 0
-        for i in range(1, len(unobstructed_path)):
-            next_block_id = unobstructed_path[i]
-            next_block = self.line.get_track_block(next_block_id)
-            authority += next_block.length
-
-            # If we are reaching the stop, set authority to half the distance, else add the full distance
-            if next_block.number == next_stop_id:
-                authority += next_block.length / 2
-            else:
-                authority += next_block.length
+        # Compute the authority by summing the lengths of the blocks in the path and half the length of the stop block
+        authority = self.line.get_path_length(unobstructed_path)
+        authority += self.line.get_track_block(next_stop_id).length / 2
 
         # If the next stop is the yard negate authority
         if next_stop_id == self.line.yard:
@@ -119,8 +116,14 @@ class CTCOffice(QObject):
         if not self.train_exists(train_id):
             return 0
         
-        # Get the train object, current block, and next stop
+        # Get the train object
         train = self.get_train(train_id)
+
+        # If the train is boarding, do not update the suggested speed
+        if not train.departed and train.dispatch_time > self.time_keeper.current_second:
+            return train.suggested_speed
+
+        # Get the current block and next stop
         current_block_id = train.get_current_block_id()
         next_stop_id = train.get_next_stop()
         
@@ -146,7 +149,7 @@ class CTCOffice(QObject):
                 authority = self.compute_train_authority(train_id)
 
                 # Update the train object
-                train.update(suggested_speed, authority)
+                train.update_speed_authority(suggested_speed, authority)
 
     def test_bench_simulation(self) -> None:
 
@@ -170,7 +173,7 @@ class CTCOffice(QObject):
                     move_train = True
 
                 # Check if the train has exceeded the time per block
-                elif train.time_in_block >= current_block.length / train.suggested_speed:
+                if train.time_in_block >= current_block.length / train.suggested_speed:
                     move_train = True
 
                 # Check if the next block is clear and not under maintenance
@@ -247,6 +250,8 @@ class CTCOffice(QObject):
     
     @pyqtSlot(int, bool)
     def handle_occupancy_update(self, block_number: int, occupancy: bool) -> None:
+
+        # TODO: If the block the train moved into the yard, remove it.
         
         # Check if it is CTC's responsibility to update the speed and authority of the trains
         if not self.mbo_mode:
@@ -266,17 +271,13 @@ class CTCOffice(QObject):
                             current_block = self.line.get_track_block(train.get_current_block_id())
                             if current_block.switch is None or next_block.switch is None:
                                 train.move_train_to_next_block()
-                                self.send_train_dispatch_update(train_id)
                                 break
                             elif current_block.switch.is_connected(current_block.number, next_block.number):
                                 train.move_train_to_next_block()
-                                self.send_train_dispatch_update(train_id)
                                 break
 
             # Update the speed and authority of the trains
             self.update_all_trains_speed_authority()
-
-        # print(f"Block {block_number} occupancy updated to {occupancy}")
 
     @pyqtSlot(int, int)
     def handle_crossing_signal_update(self, block_number: int, new_signal: int) -> None:
@@ -289,18 +290,24 @@ class CTCOffice(QObject):
     @pyqtSlot(int, int, int)
     def handle_dispatcher_command(self, train_id: int, target_block: int, arrival_time: int) -> None:
 
-        # Check if the train id is already in the list of trains
+        # If the train does not yet exist, add it and add the stop
         if not self.train_exists(train_id):
-            self.add_train(train_id, self.line)
-        train = self.get_train(train_id)
-        train.add_stop(arrival_time, target_block)
+            train = self.add_train(train_id, self.line)
+            train.add_stop(arrival_time, target_block)
+        
+        # If the train exists, add the stop and update the authority and suggested speed
+        else:
+            train = self.get_train(train_id)
+            train.add_stop(arrival_time, target_block)
+            train.suggested_speed = self.compute_train_suggested_speed(train_id)
+            train.authority = self.compute_train_authority(train_id)
 
-    @pyqtSlot(TrainDispatchUpdate)
-    def handle_train_dispatch_update(self, train_update: TrainDispatchUpdate):
+    @pyqtSlot(TrainRouteUpdate)
+    def handle_train_route_update(self, update: TrainRouteUpdate):
         if self.mbo_mode:
-            if not self.train_exists(train_update.train_id):
-                self.add_train(train_update.train_id, self.line) # TODO: Change this to check for line
-            train_dispatch = self.get_train(train_update.train_id)
-            train_dispatch.process_update_message(train_update)
+            if not self.train_exists(update.train_id):
+                self.add_train(update.train_id, self.line) # TODO: Change this to check for line
+            train_dispatch = self.get_train(update.train_id)
+            train_dispatch.handle_route_update(update)
 
             
