@@ -23,7 +23,7 @@ class TrackModel:
         self.dispatch_blocks: dict[str, int] = {}   #line, block num
         self._temperature: int = 85
         self.heaters: bool = False
-        self.stations_by_line: dict[str, dict[str, int]] = {}
+        self.stations_by_line: dict[str, object] = {}
 
         for line in self.lines:
             stations: dict[str, int] = {}
@@ -85,7 +85,7 @@ class TrackModel:
             dict[str, int]: Number of tickets sold by stations on line.
         """
 
-        temp = self.stations_by_line[line].copy()
+        temp = copy.copy(self.stations_by_line[line])
         for st in self.stations_by_line[line]:
             self.stations_by_line[line][st] = 0
 
@@ -198,6 +198,7 @@ class TrackModel:
   
 
 if __name__ == "__main__":
+    
     line = Line('Green')
     file_path = os.path.abspath(os.path.join("system_data/lines", "green_line.xlsx"))
     line.load_track_blocks(file_path)
@@ -208,9 +209,9 @@ if __name__ == "__main__":
 
     model.create_train(1, 'Green')
     model.create_train(2, 'Green')
-    model.move_train(2, 70)
+    # model.move_train(2, 70)
     model.move_train(1, 20)
-    model.move_train(2, 100)
+    # model.move_train(2, 100)
     model.move_train(1, 50)
 
     print('Occupied:')

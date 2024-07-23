@@ -26,10 +26,6 @@ class TrackModelUI(QMainWindow):
 
 
 if __name__ == "__main__":
-
-    #line = Line('Green')
-    #file_path = os.path.abspath(os.path.join("system_data/lines", "green_line.xlsx"))
-    #line.load_track_blocks(file_path)
     
     app = QApplication(sys.argv)
     ui = TrackModelUI()
