@@ -15,6 +15,7 @@ from train_system.common.station import Station
 
 class Route:
     def __init__(self, line: str, yard: int, to_yard: List[int], from_yard: List[int], past_yard: List[int], default_route: List[int]) -> None:
+
         """
         Initializes the Route object.
 
@@ -26,6 +27,7 @@ class Route:
             past_yard (List[int]): The list of block numbers in the "past yard" segment.
             default_route (List[int]): The list of block numbers in the default route segment.
         """
+
         self.line = line
         self.yard = yard
         self.to_yard = to_yard
@@ -38,6 +40,7 @@ class Route:
         self.build_tree()
 
     def build_tree(self):
+
         """
         Builds the route tree for the line.
 
@@ -55,6 +58,7 @@ class Route:
                                                    |
                                                   yard
         """
+
         # Create the root branch starting from the yard
         current_node = self.root
         for block_id in self.from_yard:
@@ -91,8 +95,10 @@ class Route:
         current_node = Node(self.yard, parent=current_node)
 
     def bfs_find_path(self, prev: int, start: int, end: int) -> Optional[List[int]]:
+
         """
-        Performs a breadth-first search to find the path from start to end after finding the first instance of (parent: prev, child: start).
+        Performs a breadth-first search to find the path from start to end after 
+        finding the first instance of (parent: prev, child: start).
 
         Args:
             prev (int): The parent block number to start the search from.
@@ -102,6 +108,7 @@ class Route:
         Returns:
             Optional[List[int]]: The path from start to end if found, otherwise None.
         """
+
         def bfs_find_start_node(root: Node, prev: int, start: int) -> Optional[Node]:
             queue = deque([root])
             while queue:
@@ -370,181 +377,7 @@ class Line(QObject):
             List[int]: The list of block numbers in the path.
         """
 
-        path = self.route.bfs_find_path(prev, start, end)
-
-        """
-        # Determine the path if we start from the yard
-        if start == self.yard:
-            if end == self.yard:
-                path = [start]
-            elif end in self.from_yard:
-                end_index = self.search_route(end, self.from_yard)
-                path = [start] + self.from_yard[:end_index + 1]
-            elif end in self.default_route:
-                end_index = self.search_route(end, self.default_route)
-                path = [start] + self.from_yard + self.default_route[:end_index + 1]
-            elif end in self.to_yard:
-                end_index = self.search_route(end, self.to_yard)
-                path = [start] + self.from_yard + self.default_route + self.to_yard[:end_index + 1]
-            elif end in self.past_yard:
-                end_index = self.search_route(end, self.past_yard)
-                path = [start] + self.from_yard + self.default_route + self.past_yard[:end_index + 1]
-            else:
-                print(f"Error: No path found between blocks {start} and {end}.")
-        
-        # Determine the path if we start in the "from yard" segment
-        elif start in self.from_yard:
-            start_index = self.search_route(start, self.from_yard, prev=prev)
-            if end in self.from_yard:
-
-                # Find the index of the end block in the "from yard" segment, ideally after the start block
-                # If the end block is before the start block in the "from yard" segment, the path wraps around the entire line
-                end_index = self.search_route(end, self.from_yard, seed=start_index)
-                if start_index < end_index:
-                    path = self.from_yard[start_index:end_index + 1]
-                else:
-                    path = self.from_yard[start_index:] + self.default_route + self.to_yard + [self.yard] + self.from_yard[:end_index + 1]
-            elif end in self.default_route:
-                end_index = self.search_route(end, self.default_route)
-                path = self.from_yard[start_index:] + self.default_route[:end_index + 1]
-            elif end in self.to_yard:
-                end_index = self.search_route(end, self.to_yard)
-                path = self.from_yard[start_index:] + self.default_route + self.to_yard[:end_index + 1]
-            elif end in self.past_yard:
-                end_index = self.search_route(end, self.past_yard)
-                path = self.from_yard[start_index:] + self.default_route + self.past_yard[:end_index + 1]
-            elif end == self.yard:
-                path = self.from_yard[start_index:] + self.default_route + self.to_yard + [self.yard]
-            else:
-                print(f"Error: No path found between blocks {start} and {end}.")
-
-        # Determine the path if we start in the "default route" segment
-        elif start in self.default_route:
-            start_index = self.search_route(start, self.default_route, prev=prev)
-            if end == self.yard:
-                path = self.default_route[start_index:] + self.to_yard + [self.yard]
-            elif end in self.from_yard:
-                end_index = self.search_route(end, self.from_yard)
-                path = self.default_route[start_index:] + self.to_yard + [self.yard] + self.from_yard[:end_index + 1]
-            elif end in self.default_route:
-                end_index = self.search_route(end, self.default_route, seed=start_index)
-                if start_index < end_index:
-                    path = self.default_route[start_index:end_index + 1]
-                else:
-                    path = self.default_route[start_index:] + self.past_yard + self.default_route[:end_index + 1]
-            elif end in self.to_yard:
-                end_index = self.search_route(end, self.to_yard)
-                path = self.default_route[start_index:] + self.to_yard[:end_index + 1]
-            elif end in self.past_yard:
-                end_index = self.search_route(end, self.past_yard)
-                path = self.default_route[start_index:] + self.past_yard[:end_index + 1]
-            else:
-                print(f"Error: No path found between blocks {start} and {end}.")
-
-        # Determine the path if we start in the "to yard" segment
-        elif start in self.to_yard:
-            start_index = self.search_route(start, self.to_yard, prev=prev)
-            if end == self.yard:
-                path = self.to_yard[start_index:] + [self.yard]
-            elif end in self.from_yard:
-                end_index = self.search_route(end, self.from_yard)
-                path = self.to_yard[start_index:] + [self.yard] + self.from_yard[:end_index + 1]
-            elif end in self.default_route:
-                end_index = self.search_route(end, self.default_route)
-                path = self.to_yard[start_index:] + [self.yard] + self.from_yard + self.default_route[:end_index + 1]
-            elif end in self.to_yard:
-                end_index = self.search_route(end, self.to_yard, seed=start_index)
-                if start_index < end_index:
-                    path = self.to_yard[start_index:end_index + 1]
-                else:
-                    path = self.to_yard[start_index:] + [self.yard] + self.from_yard + self.default_route + self.to_yard[:end_index + 1]
-            elif end in self.past_yard:
-                end_index = self.search_route(end, self.past_yard)
-                path = self.to_yard[start_index:] + [self.yard] + self.from_yard + self.default_route + self.past_yard[:end_index + 1]
-            else:
-                print(f"Error: No path found between blocks {start} and {end}.")
-        
-        # Determine the path if we start in the "past yard" segment
-        elif start in self.past_yard:
-            start_index = self.search_route(start, self.past_yard, prev=prev)
-            if end == self.yard:
-                path = self.past_yard[start_index:] + self.default_route + self.to_yard + [self.yard]
-            elif end in self.from_yard:
-                end_index = self.search_route(end, self.from_yard)
-                path = self.past_yard[start_index:] + self.default_route + self.to_yard + [self.yard] + self.from_yard[:end_index + 1]
-            elif end in self.default_route:
-                end_index = self.search_route(end, self.default_route)
-                path = self.past_yard[start_index:] + self.default_route[:end_index + 1]
-            elif end in self.to_yard:
-                end_index = self.search_route(end, self.to_yard)
-                path = self.past_yard[start_index:] + self.default_route + self.to_yard[:end_index + 1]
-            elif end in self.past_yard:
-                end_index = self.search_route(end, self.past_yard, seed=start_index)
-                if start_index < end_index:
-                    path = self.past_yard[start_index:end_index + 1]
-                else:
-                    path = self.past_yard[start_index:] + self.default_route + self.past_yard[:end_index + 1]
-            else:
-                print(f"Error: No path found between blocks {start} and {end}.")
-
-        # If the start block is not found in any segment, return an error
-        else:
-            print(f"Error: No path found between blocks {start} and {end}.")
-        """
-
-        return path
-    
-    def search_route(self, start: int, route_segment: List[int], seed: int = 0, prev: Optional[int] = None) -> int:
-        
-        """
-        Searches for the index of a specific block in a route segment. The seed 
-        parameter is used to start the search from a specific index and the prev
-        parameter is used to search for a specific block pair.
-
-        Parameters:
-        - start (int): The block to search for.
-        - route_segment (List[int]): The route segment to search within.
-        - seed (int): The starting index for the search.
-        - prev (Optional[int]): The previous block before the start block, if applicable.
-
-        Returns:
-        - int: The index of the start block in the route segment, or -1 if not found.
-        """
-        
-        # If the route segment is empty or the start block is not in the route segment, return -1
-        if not route_segment or start not in route_segment:
-            print(f"Error: Route does not exist or {start} is not in the route.")
-            return -1
-        
-        # If the route segment has only one block, return 0
-        if len(route_segment) == 1:
-            return 0
-        
-        # If no previous block was given or the previous block is the start block, find the first instance of the start block after the seed
-        # If the start block is not found after the seed, check before the seed
-        if prev is None or prev == start:
-            for i in range(seed, len(route_segment)):
-                if route_segment[i] == start:
-                    return i
-            for i in range(0, seed):
-                if route_segment[i] == start:
-                    return i
-        
-        # If a previous block was given, find the index of the (prev, start) block pair
-        # If the pair is not found after the seed, check before the seed
-        else:
-            if prev not in route_segment:
-                return 0
-            
-            for i in range(seed, len(route_segment)):
-                if route_segment[i] == start and i > 0 and route_segment[i - 1] == prev:
-                    return i
-            for i in range(0, seed):
-                if route_segment[i] == start and i > 0 and route_segment[i - 1] == prev:
-                    return i
-        
-        # If the block or pair is not found, return -1
-        return -1
+        return self.route.bfs_find_path(prev, start, end)
 
     def get_travel_time(self, path: List[int]) -> int:
 
@@ -642,7 +475,8 @@ class Line(QObject):
                 elevation=row['ELEVATION (M)'],
                 cumulative_elevation=row['CUMALTIVE ELEVATION (M)'],
                 underground=row['Underground'],
-                crossing=row['Crossing'],
+                crossing_signal=row['Crossing Signal'],
+                light_signal=row['Light Signal'],
                 connecting_blocks=connecting_blocks,
             )
             self.add_track_block(block)

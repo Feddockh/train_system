@@ -15,14 +15,16 @@ class TrackBlock(QObject):
     suggested_speed_updated = pyqtSignal(int)
     authority_updated = pyqtSignal(int)
     occupancy_updated = pyqtSignal(bool)
-    crossing_signal_updated = pyqtSignal(CrossingSignal)
+    crossing_signal_updated = pyqtSignal(bool)
+    light_signal_updated = pyqtSignal(bool)
     under_maintenance_updated = pyqtSignal(bool)
     track_failure_updated = pyqtSignal(TrackFailure)
 
     def __init__(self, line: str, section: str, number: int, length: int,
                  grade: float, speed_limit: int, elevation: float, 
                  cumulative_elevation: float, underground: bool, 
-                 crossing: bool, connecting_blocks: List[int],
+                 crossing_signal: bool, light_signal: bool,
+                 connecting_blocks: List[int],
                  station: Station = None, switch: TrackSwitch = None,
                  beacon: Beacon = None) -> None:
 
@@ -50,7 +52,8 @@ class TrackBlock(QObject):
         self._suggested_speed = 0
         self._authority = 0
         self._occupancy = False
-        self._crossing_signal = CrossingSignal.NA if crossing is False else CrossingSignal.OFF
+        self._crossing_signal = None if crossing_signal is False else False
+        self._light_signal = None if light_signal is False else False
         self._under_maintenance = False
         self._track_failure = TrackFailure.NONE
 
@@ -81,6 +84,7 @@ class TrackBlock(QObject):
             f"Authority:               {self._authority}\n"
             f"Occupancy:               {self._occupancy}\n"
             f"Crossing Signal:         {self._crossing_signal}\n"
+            f"Light Signal:            {self._light_signal}\n"
             f"Under Maintenance:       {self._under_maintenance}\n"
             f"Track Failure:           {self._track_failure}"
         )
@@ -138,15 +142,24 @@ class TrackBlock(QObject):
         self.occupancy_updated.emit(value)
 
     @property
-    def crossing_signal(self) -> CrossingSignal:
+    def crossing_signal(self) -> bool:
         return self._crossing_signal
 
     @crossing_signal.setter
-    def crossing_signal(self, value: CrossingSignal) -> None:
+    def crossing_signal(self, value: bool) -> None:
         if self._crossing_signal != value:
             self._crossing_signal = value
             self.crossing_signal_updated.emit(value)
             
+    @property
+    def light_signal(self) -> bool:
+        return self._light_signal
+    
+    @light_signal.setter
+    def light_signal(self, value: bool) -> None:
+        self._light_signal = value
+        self.light_signal_updated.emit(value)
+
     @property
     def under_maintenance(self) -> bool:
         return self._under_maintenance
