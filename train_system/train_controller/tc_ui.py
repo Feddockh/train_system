@@ -11,10 +11,10 @@ RED = "#FF4444"
 DARK_GREY = "#C8C8C8"
 YELLOW = "FFB800"
 
-KP_MIN = 1
+KP_MIN = 0
 KP_MAX = 50
 
-KI_MIN = 1
+KI_MIN = 0
 KI_MAX = 5
 
 SPEED_MIN = 0
@@ -1270,6 +1270,8 @@ class EngineerWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        self.setWindowTitle("Engineer")
+
         headers = ["Train", "Kp", "Ki"]
         self.data = []
 
@@ -1297,12 +1299,12 @@ class EngineerWindow(QMainWindow):
         
         if(col == 1):
             self.data[row][col] = new_item
-            #if(new_item != "-"):
-             #   self.kp_updated.emit(int(new_item))
+            if(new_item != "-"):
+                self.kp_updated.emit(int(new_item))
         if(col == 2):
             self.data[row][col] = new_item
-            #if(new_item != "-"):
-            #    self.ki_updated.emit(int(new_item))
+            if(new_item != "-"):
+                self.ki_updated.emit(int(new_item))
         
 
     def handle_kp_update(self, kp: int):

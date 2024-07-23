@@ -177,6 +177,7 @@ class TrainController(QObject):
         self.elapsed_time += self.time_step
         self.train_model.current_speed = self.current_speed
         print(f"Power Command: {power_command}, Current Speed: {self.current_speed}")
+        print(f"Position: {self.position}")
     
     # Update the fault status of the train
     # Call maintenance if there is a fault
@@ -287,11 +288,13 @@ class TrainController(QObject):
 
     @pyqtSlot(int)
     def handle_kp_changed(self, kp: int) -> None:
-        self.engineer.set_kp(kp)
+        #do this to keep from being recursive
+        self.kp = kp
 
     @pyqtSlot(int)
     def handle_ki_changed(self, ki: int) -> None:
-        self.engineer.set_ki(ki)
+        #do this to keep from being recursive
+        self.ki = ki
 
     @pyqtSlot(int)
     def handle_position_changed(self, loc: int) -> None:
@@ -317,15 +320,15 @@ class TrainController(QObject):
 
         ## Mutator functions
         def set_kp(self, kp: float):
-            if kp > 0:
+            if kp >= 0:
                 self.kp = kp
                 self.kp_updated.emit(self.kp)
-            else: raise ValueError("kp must be positive")
+            else: raise ValueError("kp must be non-negative")
         def set_ki(self, ki: float):
-            if ki > 0:
+            if ki >= 0:
                 self.ki = ki
                 self.ki_updated.emit(self.ki)
-            else: raise ValueError("ki must be positive")
+            else: raise ValueError("ki must be non-negative")
         def set_engineer(self, kp: float, ki: float):
             self.set_kp(kp)
             self.set_ki(ki)
