@@ -66,8 +66,8 @@ class Line(QObject):
 
         res = (
             f"Line:          {self.name}\n"
-            f"track_blocks:  [\n{blocks_repr}\n]\n"
-            f"switches:      [\n{switch_repr}\n]\n"
+            f"Track Blocks:  [\n{blocks_repr}\n]\n"
+            f"Switches:      [\n{switch_repr}\n]\n"
             f"yard:          {self.yard}\n"
             f"to_yard:       {self.to_yard}\n"
             f"from_yard:     {self.from_yard}\n"
@@ -505,10 +505,6 @@ class Line(QObject):
 
         for _, row in df.iterrows():
             connecting_blocks = [int(block.strip()) for block in str(row['Connecting Blocks']).split(',') if block.strip().isdigit()]
-            next_blocks = [int(block.strip()) for block in str(row['Initial Next Blocks']).split(',') if block.strip().isdigit()]
-            station = row['Station'] if not pd.isna(row['Station']) and str(row['Station']).strip() else ""
-            station_side = row['Station Side'] if not pd.isna(row['Station Side']) and str(row['Station Side']).strip() else ""
-            switch_options = [int(block.strip()) for block in str(row['Switch Options']).split(',') if block.strip().isdigit()]
             block = TrackBlock(
                 line=row['Line'],
                 section=row['Section'],
@@ -518,17 +514,10 @@ class Line(QObject):
                 speed_limit=row['Speed Limit (Km/Hr)'],
                 elevation=row['ELEVATION (M)'],
                 cumulative_elevation=row['CUMALTIVE ELEVATION (M)'],
+                underground=row['Underground'],
+                crossing=row['Crossing'],
                 connecting_blocks=connecting_blocks,
-                next_blocks=next_blocks,
-                station=station,
-                station_side=station_side,
-                switch_options=switch_options
             )
-            block._crossing_signal_bool = row['Railway Crossing'] # TODO: Change this implementation 
-            block._light_signal = row['Light Signal']
-            pos = row['Switch Position']
-            if(pos is not None and not (isinstance(pos, float) and math.isnan(pos))):
-                block._switch_position = int(row['Switch Position'])
             self.add_track_block(block)
 
     def load_routes(self, file_path: str = None) -> None:
