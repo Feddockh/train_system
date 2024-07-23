@@ -307,7 +307,6 @@ class TrainDispatch(QObject, metaclass=MetaQObjectABC):
     def handle_time_update(self, tick: int) -> None:
         self.update_eta_lag(tick)
         self.time_in_block += 1
-
     @abstractmethod
     def move_train_to_next_block(self) -> None:
 
