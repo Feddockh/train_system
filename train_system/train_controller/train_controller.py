@@ -49,12 +49,18 @@ class TrainController(QObject):
         self.train_model.comm_speed_updated.connect(self.handle_commanded_speed)
         self.train_model.authority_updated.connect(self.update_authority)
         self.train_model.curr_speed_updated.connect(self.handle_current_speed_update)
+
         self.engineer = self.Engineer(kp, ki) # Engineer holds Kp and Ki and is the only one that can set them
+
         self.brake = self.Brake()       # Brake holds service and emergency brake status
         self.brake.service_brake_updated.connect(self.train_model.handle_service_brake_update)
         self.brake.emergency_brake_updated.connect(self.train_model.handle_emergency_brake_update)
+
         self.engine = self.Engine(ssh)     # Engine calculates power command and simulates train response
+        self.engine.power_updated.connect(self.train_model.handle_power_update)
         self.doors = self.Doors()       # Doors holds left and right door status
+        self.doors.left_door_updated.connect(self.train_model.handle_left_door_update)
+        self.doors.right_door_updated.connect(self.train_model.handle_right_door_update)
         self.lights = self.Lights()     # Lights holds light status
         self.ac = self.AC(self.train_model.get_train_temp())             # AC holds temperature status
         self.ac.commanded_temp_updated.connect(self.train_model.handle_commanded_temp_update)
@@ -489,6 +495,8 @@ class TrainController(QObject):
        
     ## Engine class calculates power command and can simulate train response
     class Engine(QObject):
+        power_updated = pyqtSignal(float)
+
         def __init__(self, ssh):
             self.speed_limit = None  # Speed limit of the train
             self.P_MAX = 120  # Maximum power (kW)
@@ -550,8 +558,6 @@ class TrainController(QObject):
                 self.u_k_integral = 0 # Power integral
                 return 0
             
-            brake.set_service_brake(False)
-
             # Get kp and ki from engineer
             kp, ki = engineer.get_engineer()
 
@@ -579,6 +585,8 @@ class TrainController(QObject):
             if brake.get_service_brake():
                 #### THIS LINE IS FOR TESTING PURPOSES ONLY ####
                 self.power_command = max(self.power_command , -self.P_MAX)    # self.power_command = 0
+            
+            self.power_updated.emit(self.power_command)
 
         
         def calculate_power_command_hardware(self, desired_speed: float, current_speed: float, time_step: float, engineer, brake, maintenance_mode: bool = False):
@@ -589,8 +597,6 @@ class TrainController(QObject):
                 self.u_k_integral = 0 # Power integral
                 return 0
             
-            brake.set_service_brake(False)
-
             # Get kp and ki from engineer
             kp, ki = engineer.get_engineer()
 
@@ -623,6 +629,8 @@ class TrainController(QObject):
                 
             if self.brake.get_service_brake():
                 self.power_command = 0
+            
+            self.power_updated.emit(self.power_command)
         
         def calculate_current_speed(self, current_speed, time_step: float, brake):
             # If power command is greater than the maximum power, it's exceeded the physical limit so set it to the maximum power
@@ -813,13 +821,23 @@ class TrainModel(QObject):
         self.current_speed: float = 0
         self.commanded_speed: float = 0
         self.authority: float = 1000
+
+        self.power_command = 0
+        self.position = 0
+        self.block = 0
+
         self.commanded_temp = 69
         self.train_temp: int = 69
+
         self.engine_fault: bool = False
         self.brake_fault: bool = False
         self.signal_fault: bool = False
+        
         self.service_brake: bool = False
         self.emergency_brake: bool = False
+
+        self.left_door: bool = False
+        self.right_door: bool = False
 
         # # Track block variables
         # self.track_block: int = 0
@@ -829,6 +847,10 @@ class TrainModel(QObject):
         # self.length: float = 0
         # self.exit_door: str = "L"
         # self.underground: bool = False
+
+    @pyqtSlot(float)
+    def handle_power_command_update(self, power: float) -> None:
+        self.power_command = power
 
     # Float
     def get_current_speed(self):
@@ -853,6 +875,15 @@ class TrainModel(QObject):
     def set_commanded_speed(self, speed: float):
         self.commanded_speed = round(speed)
         self.comm_speed_updated.emit(self.commanded_speed)
+
+
+    @pyqtSlot(float)
+    def handle_position_update(self, position: float) -> None:
+        self.position = position
+    @pyqtSlot(int)
+    def handle_block_update(self, block: int) -> None:
+        self.block = block
+
 
     # Float
     def get_commanded_temp(self):
@@ -897,6 +928,16 @@ class TrainModel(QObject):
     @pyqtSlot(bool)
     def handle_emergency_brake_update(self, status: bool) -> None:
         self.service_brake = status
+
+
+    @pyqtSlot(bool)
+    def handle_left_door_update(self, status: bool) -> None:
+        self.left_door = status
+
+    @pyqtSlot(bool)
+    def handle_right_door_update(self, status: bool) -> None:
+        self.right_door = status
+
     
     
     # This is used to update all train model variables with the real Train Model
