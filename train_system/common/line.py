@@ -6,10 +6,132 @@ import pandas as pd
 import math
 from typing import List, Optional
 from PyQt6.QtCore import QObject, pyqtSignal
+from anytree import Node, RenderTree
+from collections import deque
 
 from train_system.common.track_block import TrackBlock
 from train_system.common.track_switch import TrackSwitch
 from train_system.common.station import Station
+
+class Route:
+    def __init__(self, line: str, yard: int, to_yard: List[int], from_yard: List[int], past_yard: List[int], default_route: List[int]) -> None:
+        """
+        Initializes the Route object.
+
+        Args:
+            line (str): The name of the train line.
+            yard (int): The block number of the yard.
+            to_yard (List[int]): The list of block numbers in the "to yard" segment.
+            from_yard (List[int]): The list of block numbers in the "from yard" segment.
+            past_yard (List[int]): The list of block numbers in the "past yard" segment.
+            default_route (List[int]): The list of block numbers in the default route segment.
+        """
+        self.line = line
+        self.yard = yard
+        self.to_yard = to_yard
+        self.from_yard = from_yard
+        self.past_yard = past_yard
+        self.default_route = default_route
+
+        # Build the route tree
+        self.root = Node(yard)
+        self.build_tree()
+
+    def build_tree(self):
+        """
+        Builds the route tree for the line.
+
+                          root(yard)
+                              |
+                          from_yard
+                              |
+                        default_route
+                     /                 \\
+                 to_yard             past_yard
+                    |                    |
+                   yard            default_route
+                  /            /                 \\
+            from_yard     past_yard             to_yard
+                                                   |
+                                                  yard
+        """
+        # Create the root branch starting from the yard
+        current_node = self.root
+        for block_id in self.from_yard:
+            current_node = Node(block_id, parent=current_node)
+        for block_id in self.default_route:
+            current_node = Node(block_id, parent=current_node)
+        end_of_default_route_node = current_node
+
+        # Create the to_yard branch starting from the end of the default route
+        current_node = end_of_default_route_node
+        for block_id in self.to_yard:
+            current_node = Node(block_id, parent=current_node)
+        current_node = Node(self.yard, parent=current_node)
+        for block_id in self.from_yard:
+            current_node = Node(block_id, parent=current_node)
+        
+        # Create the past_yard branch starting from the end of the default route
+        current_node = end_of_default_route_node
+        for block_id in self.past_yard:
+            current_node = Node(block_id, parent=current_node)
+        for block_id in self.default_route:
+            current_node = Node(block_id, parent=current_node)
+        end_of_default_route_node2 = current_node
+
+        # Create the second past_yard branch starting from the end of the second default route
+        current_node = end_of_default_route_node2
+        for block_id in self.past_yard:
+            current_node = Node(block_id, parent=current_node)
+        
+        # Create the second to_yard branch starting from the end of the second past yard
+        current_node = end_of_default_route_node2
+        for block_id in self.to_yard:
+            current_node = Node(block_id, parent=current_node)
+        current_node = Node(self.yard, parent=current_node)
+
+    def bfs_find_path(self, prev: int, start: int, end: int) -> Optional[List[int]]:
+        """
+        Performs a breadth-first search to find the path from start to end after finding the first instance of (parent: prev, child: start).
+
+        Args:
+            prev (int): The parent block number to start the search from.
+            start (int): The starting block number for the new search.
+            end (int): The ending block number for the path search.
+
+        Returns:
+            Optional[List[int]]: The path from start to end if found, otherwise None.
+        """
+        def bfs_find_start_node(root: Node, prev: int, start: int) -> Optional[Node]:
+            queue = deque([root])
+            while queue:
+                node = queue.popleft()
+                for child in node.children:
+                    if node.name == prev and child.name == start:
+                        return child
+                    queue.append(child)
+            return None
+
+        def bfs_find_path_from_node(start_node: Node, end: int) -> Optional[List[int]]:
+            queue = deque([(start_node, [start_node.name])])
+            while queue:
+                current_node, path = queue.popleft()
+                if current_node.name == end:
+                    return path
+                for child in current_node.children:
+                    queue.append((child, path + [child.name]))
+            return None
+
+        # If start is the yard block, start from the root
+        if start == self.yard:
+            start_node = self.root
+        else:
+            start_node = bfs_find_start_node(self.root, prev, start)
+
+        if start_node:
+            return bfs_find_path_from_node(start_node, end)
+        return None
+    
 
 class Line(QObject):
 
@@ -47,6 +169,8 @@ class Line(QObject):
         self.past_yard: List[int] = []
         self.default_route: List[int] = []
 
+        self.route: Route = None
+
     def __repr__(self) -> str:
 
         """
@@ -66,8 +190,8 @@ class Line(QObject):
 
         res = (
             f"Line:          {self.name}\n"
-            f"track_blocks:  [\n{blocks_repr}\n]\n"
-            f"switches:      [\n{switch_repr}\n]\n"
+            f"Track Blocks:  [\n{blocks_repr}\n]\n"
+            f"Switches:      [\n{switch_repr}\n]\n"
             f"yard:          {self.yard}\n"
             f"to_yard:       {self.to_yard}\n"
             f"from_yard:     {self.from_yard}\n"
@@ -246,8 +370,9 @@ class Line(QObject):
             List[int]: The list of block numbers in the path.
         """
 
-        path = []
+        path = self.route.bfs_find_path(prev, start, end)
 
+        """
         # Determine the path if we start from the yard
         if start == self.yard:
             if end == self.yard:
@@ -270,16 +395,13 @@ class Line(QObject):
         # Determine the path if we start in the "from yard" segment
         elif start in self.from_yard:
             start_index = self.search_route(start, self.from_yard, prev=prev)
-            if end == self.yard:
-                path = self.from_yard[start_index:] + self.default_route + self.to_yard + [self.yard]
-            elif end == self.from_yard:
+            if end in self.from_yard:
 
                 # Find the index of the end block in the "from yard" segment, ideally after the start block
+                # If the end block is before the start block in the "from yard" segment, the path wraps around the entire line
                 end_index = self.search_route(end, self.from_yard, seed=start_index)
                 if start_index < end_index:
                     path = self.from_yard[start_index:end_index + 1]
-                
-                # If the end block is before the start block in the "from yard" segment, the path wraps around the entire line
                 else:
                     path = self.from_yard[start_index:] + self.default_route + self.to_yard + [self.yard] + self.from_yard[:end_index + 1]
             elif end in self.default_route:
@@ -291,6 +413,8 @@ class Line(QObject):
             elif end in self.past_yard:
                 end_index = self.search_route(end, self.past_yard)
                 path = self.from_yard[start_index:] + self.default_route + self.past_yard[:end_index + 1]
+            elif end == self.yard:
+                path = self.from_yard[start_index:] + self.default_route + self.to_yard + [self.yard]
             else:
                 print(f"Error: No path found between blocks {start} and {end}.")
 
@@ -366,6 +490,7 @@ class Line(QObject):
         # If the start block is not found in any segment, return an error
         else:
             print(f"Error: No path found between blocks {start} and {end}.")
+        """
 
         return path
     
@@ -395,24 +520,26 @@ class Line(QObject):
         if len(route_segment) == 1:
             return 0
         
-        # If no previous block was given, find the first instance of the start block after the seed
-        if prev is None:
+        # If no previous block was given or the previous block is the start block, find the first instance of the start block after the seed
+        # If the start block is not found after the seed, check before the seed
+        if prev is None or prev == start:
             for i in range(seed, len(route_segment)):
                 if route_segment[i] == start:
                     return i
-                
-        # If the previous block is the same as the start block, search for the first instance of the start block after the seed
-        if prev == start:
-            for i in range(seed, len(route_segment)):
+            for i in range(0, seed):
                 if route_segment[i] == start:
                     return i
         
         # If a previous block was given, find the index of the (prev, start) block pair
+        # If the pair is not found after the seed, check before the seed
         else:
             if prev not in route_segment:
                 return 0
             
             for i in range(seed, len(route_segment)):
+                if route_segment[i] == start and i > 0 and route_segment[i - 1] == prev:
+                    return i
+            for i in range(0, seed):
                 if route_segment[i] == start and i > 0 and route_segment[i - 1] == prev:
                     return i
         
@@ -505,10 +632,6 @@ class Line(QObject):
 
         for _, row in df.iterrows():
             connecting_blocks = [int(block.strip()) for block in str(row['Connecting Blocks']).split(',') if block.strip().isdigit()]
-            next_blocks = [int(block.strip()) for block in str(row['Initial Next Blocks']).split(',') if block.strip().isdigit()]
-            station = row['Station'] if not pd.isna(row['Station']) and str(row['Station']).strip() else ""
-            station_side = row['Station Side'] if not pd.isna(row['Station Side']) and str(row['Station Side']).strip() else ""
-            switch_options = [int(block.strip()) for block in str(row['Switch Options']).split(',') if block.strip().isdigit()]
             block = TrackBlock(
                 line=row['Line'],
                 section=row['Section'],
@@ -518,17 +641,10 @@ class Line(QObject):
                 speed_limit=row['Speed Limit (Km/Hr)'],
                 elevation=row['ELEVATION (M)'],
                 cumulative_elevation=row['CUMALTIVE ELEVATION (M)'],
+                underground=row['Underground'],
+                crossing=row['Crossing'],
                 connecting_blocks=connecting_blocks,
-                next_blocks=next_blocks,
-                station=station,
-                station_side=station_side,
-                switch_options=switch_options
             )
-            block._crossing_signal_bool = row['Railway Crossing'] # TODO: Change this implementation 
-            block._light_signal = row['Light Signal']
-            pos = row['Switch Position']
-            if(pos is not None and not (isinstance(pos, float) and math.isnan(pos))):
-                block._switch_position = int(row['Switch Position'])
             self.add_track_block(block)
 
     def load_routes(self, file_path: str = None) -> None:
@@ -555,6 +671,15 @@ class Line(QObject):
         self.from_yard = data['from_yard']
         self.past_yard = data['past_yard']
         self.default_route = data['default_route']
+
+        self.route = Route(
+            line=self.name,
+            yard=self.yard,
+            to_yard=self.to_yard,
+            from_yard=self.from_yard,
+            past_yard=self.past_yard,
+            default_route=self.default_route
+        )
 
     def load_switches(self, file_path: str = None) -> None:
 
@@ -586,10 +711,10 @@ class Line(QObject):
             self.add_switch(switch)
 
 if __name__ == "__main__":
-    line = Line('Green')
+    line = Line('Red')
     line.load_defaults()
     print(line)
 
-    target = 100
+    target = 15
     path = line.get_path(line.yard, line.yard, target)
     print(f"Path from yard to block {target}: {path}")
