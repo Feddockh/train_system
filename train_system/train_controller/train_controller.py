@@ -23,6 +23,7 @@ class TrainController(QObject):
     setpoint_speed_updated = pyqtSignal(float)
     power_updated = pyqtSignal(float)
     position_updated = pyqtSignal(float)
+    faults_fixed = pyqtSignal()
     #lights_updated = pyqtSignal(bool) -> in lights class
     #left_door_updated = pyqtSignal(bool) -> in doors class
     #right_door_updated = pyqtSignal(bool) -> in doors class
@@ -42,12 +43,21 @@ class TrainController(QObject):
 
         ## Initialize objects
         self.train_model = TrainModel()  # Used to store data received from Train Model. No computations done in the object
+        self.train_model.engine_fault_updated.connect(self.handle_fault_update)
+        self.train_model.brake_fault_updated.connect(self.handle_fault_update)
+        self.train_model.signal_fault_updated.connect(self.handle_fault_update)
+        self.train_model.comm_speed_updated.connect(self.handle_commanded_speed)
+        self.train_model.authority_updated.connect(self.update_authority)
+        self.train_model.curr_speed_updated.connect(self.handle_current_speed_update)
         self.engineer = self.Engineer(kp, ki) # Engineer holds Kp and Ki and is the only one that can set them
         self.brake = self.Brake()       # Brake holds service and emergency brake status
+        self.brake.service_brake_updated.connect(self.train_model.handle_service_brake_update)
+        self.brake.emergency_brake_updated.connect(self.train_model.handle_emergency_brake_update)
         self.engine = self.Engine(ssh)     # Engine calculates power command and simulates train response
         self.doors = self.Doors()       # Doors holds left and right door status
         self.lights = self.Lights()     # Lights holds light status
         self.ac = self.AC(self.train_model.get_train_temp())             # AC holds temperature status
+        self.ac.commanded_temp_updated.connect(self.train_model.handle_commanded_temp_update)
         self.line = Line(line_name)
 
         # Driver variables
@@ -69,7 +79,10 @@ class TrainController(QObject):
         self.current_speed = self.train_model.current_speed    # Current speed of the train
         self.commanded_speed = self.train_model.commanded_speed  # Commanded speed from the Train Model (CTC or MBO)
         self.authority = self.train_model.authority        # Authority from the Train Model (CTC or MBO)
-        self.faults = self.train_model.faults           # Fault statuses from the Train Model (list of bools)
+        self.engine_fault = self.train_model.engine_fault           # Fault status from the Train Model
+        self.brake_fault = self.train_model.brake_fault           # Fault status from the Train Model
+        self.signal_fault = self.train_model.signal_fault           # Fault status from the Train Model
+
 
     # Simulate a time step of the train controller
     # Call this for ever press of the refresh button
@@ -90,13 +103,13 @@ class TrainController(QObject):
         self.brake.set_service_brake(False)
 
         # Update variables with train model input
-        self.current_speed = self.train_model.get_current_speed()
-        self.commanded_speed = self.train_model.get_commanded_speed()
-        self.update_authority(self.train_model.get_authority())
+        # self.current_speed = self.train_model.get_current_speed()
+        # self.commanded_speed = self.train_model.get_commanded_speed()
+        # self.update_authority(self.train_model.get_authority())
         
         # Update all status variables
-        self.ac.update_current_temp(self.train_model.get_train_temp())
-        self.update_fault_status(self.train_model.get_fault_statuses())
+        # self.ac.update_current_temp(self.train_model.get_train_temp())
+        # self.update_fault_status(self.train_model.get_fault_statuses())
 
         ## Train Controller Calculations
         self.calculate_position()
@@ -210,7 +223,15 @@ class TrainController(QObject):
     def toggle_driver_mode(self):
         self.driver_mode = "automatic" if self.driver_mode == "manual" else "manual"
 
-
+    def get_current_speed(self):
+        return self.current_speed
+    def handle_current_speed_update(self, speed: float):
+        self.current_speed = speed
+        if(self.current_speed == 0):
+            # Emit that faults are fixed
+            self.faults_fixed.emit()
+            self.brake.set_emergency_brake(False)
+        
     ## Setpoint and Commanded Speed Functions
     def set_setpoint_speed(self, speed: float):
         self.setpoint_speed = min(speed, self.MAX_SPEED)
@@ -222,6 +243,8 @@ class TrainController(QObject):
     
     def get_commanded_speed(self):
         return self.commanded_speed
+    def handle_commanded_speed(self, speed: float):
+        self.commanded_speed = speed
     
     ## Power Functions (assumes commanded speed has already been updated)
     # Input) TrainModel object
@@ -246,9 +269,9 @@ class TrainController(QObject):
         
     # Update the fault status of the train
     # Call maintenance if there is a fault
-    def update_fault_status(self, faults):
-        self.faults = faults
-        if(self.faults != [0, 0, 0]):
+    @pyqtSlot(bool)
+    def handle_fault_update(self, fault: bool):
+        if(fault):
             self.maintenance()
 
     ## Maintenance Mode Functions
@@ -331,7 +354,7 @@ class TrainController(QObject):
             self.brake.set_emergency_brake(False)
 
     @pyqtSlot(str)
-    def handle_comm_temp_changed(self, x: str) -> None:
+    def handle_commanded_temp_changed(self, x: str) -> None:
         if(x != ""):
             self.ac.set_commanded_temp(float(x))
 
@@ -349,27 +372,26 @@ class TrainController(QObject):
 
     @pyqtSlot(float)
     def handle_curr_speed_changed(self, speed: float) -> None:
-        self.train_model.set_current_speed(speed)
+        self.current_speed = speed
     
     @pyqtSlot(float)
     def handle_comm_speed_changed(self, speed: float) -> None:
-        self.train_model.set_commanded_speed(speed)
+        self.commanded_speed = speed
 
     @pyqtSlot(float)
-    def handle_authority_changed(self, a: float) -> None:
-        self.train_model.set_authority(a)
+    def handle_authority_changed(self, authority: float) -> None:
+        self.update_authority(authority)
 
     @pyqtSlot(bool)
     def handle_light_status_changed(self, light: bool) -> None:
         self.lights.set_lights(light)
 
     @pyqtSlot(bool)
-    def handle_right_door_changed(self, door: bool) -> None:
-        self.doors.set_right(door)
-
-    @pyqtSlot(bool)
     def handle_left_door_changed(self, door: bool) -> None:
         self.doors.set_left(door)
+    @pyqtSlot(bool)
+    def handle_right_door_changed(self, door: bool) -> None:
+        self.doors.set_right(door)
 
     @pyqtSlot(int)
     def handle_kp_changed(self, kp: int) -> None:
@@ -437,7 +459,7 @@ class TrainController(QObject):
         def set_user_service_brake(self, status: bool):
             self.user_service_brake = status
         def set_user_emergency_brake(self, status: bool):
-            self.user_emergency_brake
+            self.user_emergency_brake = status
 
         ## Toggle Functions
         def toggle_service_brake(self):
@@ -742,7 +764,9 @@ class TrainController(QObject):
     # Commanded temperature from driver (initialized to 69)
     # Current temperature from Train Model
     class AC(QObject):
-        train_temp_updated = pyqtSignal(int)
+        commanded_temp_updated = pyqtSignal(int)    # --> Train Model
+        train_temp_updated = pyqtSignal(int)    # --> UI
+
         def __init__(self, temp: int):
             super().__init__() 
             # Automatic temperature when in Automatic mode (69 degrees Fahrenheit)
@@ -758,6 +782,7 @@ class TrainController(QObject):
         def set_commanded_temp(self, temp: int):
             self.commanded_temp = min(round(temp), self.MAX_TEMP)
             self.commanded_temp = max(self.commanded_temp, self.MIN_TEMP)
+            self.commanded_temp_updated.emit(self.commanded_temp)
 
         ## Accessor Function
         def get_commanded_temp(self):
@@ -788,8 +813,11 @@ class TrainModel(QObject):
         self.current_speed: float = 0
         self.commanded_speed: float = 0
         self.authority: float = 1000
+        self.commanded_temp = 69
         self.train_temp: int = 69
-        self.faults: bool[3] = [0, 0, 0]
+        self.engine_fault: bool = False
+        self.brake_fault: bool = False
+        self.signal_fault: bool = False
         self.service_brake: bool = False
         self.emergency_brake: bool = False
 
@@ -809,13 +837,6 @@ class TrainModel(QObject):
     def set_current_speed(self, speed: float):
         self.current_speed = round(speed, 2)
         self.curr_speed_updated.emit(self.current_speed)
-    
-    # Float
-    def get_speed_limit(self):
-        # Logic to get the speed limit of the train
-        return self.speed_limit
-    def set_speed_limit(self, speed: float):
-        self.speed_limit = speed
 
     # Iterative (float representing meters)? Absolute (position representing when to stop by)?
     def get_authority(self):
@@ -832,6 +853,13 @@ class TrainModel(QObject):
     def set_commanded_speed(self, speed: float):
         self.commanded_speed = round(speed)
         self.comm_speed_updated.emit(self.commanded_speed)
+
+    # Float
+    def get_commanded_temp(self):
+        # Logic to get commanded speed from the train model
+        return self.commanded_temp
+    def handle_commanded_temp_update(self, temp: int):
+        self.commanded_temp = temp
 
     # float
     def get_train_temp(self):
@@ -861,6 +889,14 @@ class TrainModel(QObject):
     def set_signal_fault(self, status: bool):
         self.faults[2] = status
         self.signal_fault_updated.emit(status)
+
+
+    @pyqtSlot(bool)
+    def handle_service_brake_update(self, status: bool) -> None:
+        self.service_brake = status
+    @pyqtSlot(bool)
+    def handle_emergency_brake_update(self, status: bool) -> None:
+        self.service_brake = status
     
     
     # This is used to update all train model variables with the real Train Model
