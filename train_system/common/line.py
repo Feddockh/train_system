@@ -202,7 +202,7 @@ class Line(QObject):
             str: String representation of the Line object.
         """
 
-        blocks_repr = "\n".join(
+        blocks_repr = "\n\n".join(
             repr(block) for block in self.track_blocks
         )
 
@@ -305,10 +305,9 @@ class Line(QObject):
         self.connect_switch_signals(track_switch)
 
         # Connect the switch to the corresponding track blocks
-        for switch in self.switches:
-            for block_id in switch.connected_blocks:
-                block = self.get_track_block(block_id)
-                block.switch = switch
+        for block_id in track_switch.connected_blocks:
+            block = self.get_track_block(block_id)
+            block.switch = track_switch
 
     def get_switch(self, number: int) -> TrackSwitch:
             
@@ -350,6 +349,40 @@ class Line(QObject):
         """
 
         switch.position_updated.connect(lambda new_position, sw=switch: self.switch_position_updated.emit(sw.number))
+
+    def add_station(self, station: Station) -> None:
+        
+        """
+        Adds a station to the line.
+        
+        Args:
+            station (Station): The station to add.
+        """
+        
+        self.stations.append(station)
+
+        # Connect the station to the corresponding track blocks
+        for block_id in station.blocks:
+            block = self.get_track_block(block_id)
+            block.station = station
+
+    def get_station(self, name: str) -> Station:
+
+        """
+        Retrieves a station by its name.
+        
+        Args:
+            name (str): The station name to retrieve.
+        
+        Returns:
+            Station: The retrieved Station object.
+        """
+
+        for station in self.stations:
+            if station.name == name:
+                return station
+        print(f"Station {name} does not exist.")
+        return None
 
     def get_unobstructed_path(self, path: List[int]) -> List[int]:
 
@@ -451,12 +484,13 @@ class Line(QObject):
     def load_defaults(self) -> None:
             
         """
-        Loads track blocks, switches, and routes from default files.
+        Loads track blocks, route, switches, and stations from default file location.
         """
 
         self.load_track_blocks()
         self.load_route()
         self.load_switches()
+        self.load_stations()
 
     def load_track_blocks(self, file_path: str = None) -> None:
 
@@ -571,16 +605,49 @@ class Line(QObject):
             )
             self.add_switch(switch)
 
+    def load_stations(self, file_path: str = None) -> None:
+            
+            """
+            Loads stations from an Excel file.
+            
+            Args:
+                file_path (str): The path to the Excel file.
+            """
+    
+            if not self.track_blocks:
+                print("Error: Track blocks must be loaded before stations.")
+                return
+    
+            if not file_path:
+                file_path = os.path.abspath(os.path.join("system_data\\stations", f"{self.name.lower()}_stations.json"))
+    
+            with open(file_path, 'r') as file:
+                data = json.load(file)
+
+            for station_info in data['stations']:
+                sides = [(side['previous_block'], side['current_block'], side['side']) 
+                     for side in station_info['station_sides']]
+                station = Station(
+                    line=self.name,
+                    name=station_info['name'],
+                    blocks=station_info['connected_blocks'],
+                    sides=sides
+                )
+                self.add_station(station)
+            
+            
+            
+
 if __name__ == "__main__":
     line = Line('Red')
     line.load_defaults()
     print(line)
 
-    target = 15
-    path = line.get_path(line.yard, line.yard, target)
-    print(f"Path from yard to block {target}: {path}")
+    # target = 15
+    # path = line.get_path(line.yard, line.yard, target)
+    # print(f"Path from yard to block {target}: {path}")
 
-    a = 17
-    b = 16
-    next_block = line.get_next_block(a, b)
-    print(f"Block sequence: {a} -> {b} -> {next_block}")
+    # a = 17
+    # b = 16
+    # next_block = line.get_next_block(a, b)
+    # print(f"Block sequence: {a} -> {b} -> {next_block}")

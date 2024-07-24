@@ -38,7 +38,7 @@
         },
         {
             "number": 7,
-            "parent_block": 32,
+            "parent_block": 52,
             "child_blocks": [53, 66],
             "initial_child": 53
         }
