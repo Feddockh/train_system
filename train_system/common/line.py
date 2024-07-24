@@ -94,6 +94,26 @@ class Route:
             current_node = Node(block_id, parent=current_node)
         current_node = Node(self.yard, parent=current_node)
 
+    def bfs_find_start_node(self, root: Node, prev: int, start: int) -> Optional[Node]:
+            queue = deque([root])
+            while queue:
+                node = queue.popleft()
+                for child in node.children:
+                    if node.name == prev and child.name == start:
+                        return child
+                    queue.append(child)
+            return None
+    
+    def bfs_find_path_from_node(self, start_node: Node, end: int) -> Optional[List[int]]:
+            queue = deque([(start_node, [start_node.name])])
+            while queue:
+                current_node, path = queue.popleft()
+                if current_node.name == end:
+                    return path
+                for child in current_node.children:
+                    queue.append((child, path + [child.name]))
+            return None
+
     def bfs_find_path(self, prev: int, start: int, end: int) -> Optional[List[int]]:
 
         """
@@ -109,34 +129,14 @@ class Route:
             Optional[List[int]]: The path from start to end if found, otherwise None.
         """
 
-        def bfs_find_start_node(root: Node, prev: int, start: int) -> Optional[Node]:
-            queue = deque([root])
-            while queue:
-                node = queue.popleft()
-                for child in node.children:
-                    if node.name == prev and child.name == start:
-                        return child
-                    queue.append(child)
-            return None
-
-        def bfs_find_path_from_node(start_node: Node, end: int) -> Optional[List[int]]:
-            queue = deque([(start_node, [start_node.name])])
-            while queue:
-                current_node, path = queue.popleft()
-                if current_node.name == end:
-                    return path
-                for child in current_node.children:
-                    queue.append((child, path + [child.name]))
-            return None
-
         # If start is the yard block, start from the root
         if start == self.yard:
             start_node = self.root
         else:
-            start_node = bfs_find_start_node(self.root, prev, start)
+            start_node = self.bfs_find_start_node(self.root, prev, start)
 
         if start_node:
-            return bfs_find_path_from_node(start_node, end)
+            return self.bfs_find_path_from_node(start_node, end)
         return None
     
 
@@ -249,6 +249,22 @@ class Line(QObject):
         except IndexError:
             print(f"Track block {number} not found.")
             return None
+
+    def get_next_block(self, prev: int, current: int) -> TrackBlock:
+
+        """
+        Computes the next block along the route from the current block.
+
+        Args:
+            prev (int): The previous block number.
+            current (int): The current block number.
+
+        Returns:
+            TrackBlock: The next block along the route.
+        """
+
+        # Find the (prev, current) pair in the route tree
+        return self.route.bfs_find_start_node(self.route.root, prev, current).children[0].name
 
     def connect_track_block_signals(self, track_block: TrackBlock) -> None:
 
@@ -552,3 +568,8 @@ if __name__ == "__main__":
     target = 15
     path = line.get_path(line.yard, line.yard, target)
     print(f"Path from yard to block {target}: {path}")
+
+    a = 17
+    b = 16
+    next_block = line.get_next_block(a, b)
+    print(f"Block sequence: {a} -> {b} -> {next_block}")
