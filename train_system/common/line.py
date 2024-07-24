@@ -169,13 +169,8 @@ class Line(QObject):
         self.name = name
         self.track_blocks: List[TrackBlock] = []
         self.switches: List[TrackSwitch] = []
-        self.stations: List[Station] = [] # TODO: Implement stations
+        self.stations: List[Station] = []
         self.yard: int = None
-        self.to_yard: List[int] = []
-        self.from_yard: List[int] = []
-        self.past_yard: List[int] = []
-        self.default_route: List[int] = []
-
         self.route: Route = None
 
     def __repr__(self) -> str:
@@ -444,7 +439,7 @@ class Line(QObject):
         """
 
         self.load_track_blocks()
-        self.load_routes()
+        self.load_route()
         self.load_switches()
 
     def load_track_blocks(self, file_path: str = None) -> None:
@@ -497,7 +492,7 @@ class Line(QObject):
             )
             self.add_track_block(block)
 
-    def load_routes(self, file_path: str = None) -> None:
+    def load_route(self, file_path: str = None) -> None:
 
         """
         Loads routes from a JSON file.
@@ -517,18 +512,18 @@ class Line(QObject):
             data = json.load(file)
 
         self.yard = data['yard']
-        self.to_yard = data['to_yard']
-        self.from_yard = data['from_yard']
-        self.past_yard = data['past_yard']
-        self.default_route = data['default_route']
+        to_yard = data['to_yard']
+        from_yard = data['from_yard']
+        past_yard = data['past_yard']
+        default_route = data['default_route']
 
         self.route = Route(
             line=self.name,
             yard=self.yard,
-            to_yard=self.to_yard,
-            from_yard=self.from_yard,
-            past_yard=self.past_yard,
-            default_route=self.default_route
+            to_yard=to_yard,
+            from_yard=from_yard,
+            past_yard=past_yard,
+            default_route=default_route
         )
 
     def load_switches(self, file_path: str = None) -> None:
