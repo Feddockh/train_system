@@ -5,9 +5,12 @@ from typing import List
 from train_system.common.crossing_signal import CrossingSignal
 from train_system.common.track_failures import TrackFailure
 from train_system.track_model.beacon import Beacon
-from train_system.common.track_switch import TrackSwitch
-from train_system.common.station import Station
 
+crossing_signal_map = {
+    CrossingSignal.ON: True,
+    CrossingSignal.OFF: False,
+    CrossingSignal.NA: None
+}
 
 class TrackBlock(QObject):
 
@@ -15,17 +18,16 @@ class TrackBlock(QObject):
     suggested_speed_updated = pyqtSignal(int)
     authority_updated = pyqtSignal(int)
     occupancy_updated = pyqtSignal(bool)
-    crossing_signal_updated = pyqtSignal(bool)
-    light_signal_updated = pyqtSignal(bool)
+    switch_position_updated = pyqtSignal(int)
+    crossing_signal_updated = pyqtSignal(CrossingSignal)
     under_maintenance_updated = pyqtSignal(bool)
     track_failure_updated = pyqtSignal(TrackFailure)
 
     def __init__(self, line: str, section: str, number: int, length: int,
                  grade: float, speed_limit: int, elevation: float, 
-                 cumulative_elevation: float, underground: bool, 
-                 crossing_signal: bool, light_signal: bool,
-                 connecting_blocks: List[int],
-                 station: Station = None, switch: TrackSwitch = None,
+                 cumulative_elevation: float, connecting_blocks: List[int],
+                 next_blocks: List[int] = None, station: str = None,
+                 station_side: str = None, switch_options: List[int] = None,
                  beacon: Beacon = None) -> None:
 
         super().__init__()
@@ -39,10 +41,11 @@ class TrackBlock(QObject):
         self.speed_limit = speed_limit # km/h
         self.elevation = elevation # meters
         self.cumulative_elevation = cumulative_elevation # meters
-        self.underground = underground
         self.connecting_blocks = connecting_blocks
+        self.next_blocks = next_blocks
         self.station = station
-        self.switch = switch
+        self.station_side = station_side
+        self.switch_options = switch_options
         self.beacon = beacon
 
         # Calculated parameters
@@ -52,10 +55,14 @@ class TrackBlock(QObject):
         self._suggested_speed = 0
         self._authority = 0
         self._occupancy = False
-        self._crossing_signal = None if crossing_signal is False else False
-        self._light_signal = None if light_signal is False else False
+        self._switch_position = None
+        self._crossing_signal = CrossingSignal.NA
+        self._crossing_signal_bool = None
         self._under_maintenance = False
+        self._light_signal = None
         self._track_failure = TrackFailure.NONE
+
+        self.crossing_signal_updated.connect(self.update_crossing_signal_bool)
 
     def __repr__(self) -> str:
 
@@ -76,17 +83,18 @@ class TrackBlock(QObject):
             f"Elevation:               {self.elevation}\n"
             f"Cumulative Elevation:    {self.cumulative_elevation}\n"
             f"Connecting Track Blocks: {self.connecting_blocks}\n"
-            f"Underground:             {self.underground}\n"
+            f"Next Track Blocks:       {self.next_blocks}\n"
             f"Station:                 {self.station}\n"
-            f"Switch:                  {self.switch}\n"
+            f"Station Side:            {self.station_side}\n"
+            f"Switch Options:          {self.switch_options}\n"
             f"Beacon:                  {self.beacon}\n"
             f"Suggested Speed:         {self._suggested_speed}\n"
             f"Authority:               {self._authority}\n"
             f"Occupancy:               {self._occupancy}\n"
+            f"Switch Position:         {self._switch_position}\n" 
             f"Crossing Signal:         {self._crossing_signal}\n"
-            f"Light Signal:            {self._light_signal}\n"
             f"Under Maintenance:       {self._under_maintenance}\n"
-            f"Track Failure:           {self._track_failure}"
+            f"Failure:                 {self._track_failure}"
         )
 
     def __eq__(self, other: object) -> bool:
@@ -142,24 +150,40 @@ class TrackBlock(QObject):
         self.occupancy_updated.emit(value)
 
     @property
-    def crossing_signal(self) -> bool:
+    def switch_position(self) -> int:
+        return self._switch_position
+
+    @switch_position.setter
+    def switch_position(self, value: int) -> None:
+        if self._switch_position != value:
+            self._switch_position = value
+            self.switch_position_updated.emit(value)
+
+    @property
+    def crossing_signal(self) -> CrossingSignal:
         return self._crossing_signal
 
     @crossing_signal.setter
-    def crossing_signal(self, value: bool) -> None:
+    def crossing_signal(self, value: CrossingSignal) -> None:
         if self._crossing_signal != value:
             self._crossing_signal = value
             self.crossing_signal_updated.emit(value)
-            
-    @property
-    def light_signal(self) -> bool:
-        return self._light_signal
-    
-    @light_signal.setter
-    def light_signal(self, value: bool) -> None:
-        self._light_signal = value
-        self.light_signal_updated.emit(value)
 
+    @property
+    def crossing_signal_bool(self) -> bool:
+        return crossing_signal_map[self._crossing_signal]
+
+    @crossing_signal_bool.setter
+    def crossing_signal_bool(self, value: bool) -> None:
+        for signal, bool_value in crossing_signal_map.items():
+            if bool_value == value:
+                self.crossing_signal = signal
+                break
+
+    @pyqtSlot(CrossingSignal)
+    def update_crossing_signal_bool(self, signal: CrossingSignal) -> None:
+        self._crossing_signal_bool = crossing_signal_map[signal]
+            
     @property
     def under_maintenance(self) -> bool:
         return self._under_maintenance
