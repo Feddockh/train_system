@@ -14,13 +14,13 @@ from train_system.common.track_switch import TrackSwitch
 from train_system.common.station import Station
 
 class Route:
-    def __init__(self, line: str, yard: int, to_yard: List[int], from_yard: List[int], past_yard: List[int], default_route: List[int]) -> None:
+    def __init__(self, line_name: str, yard: int, to_yard: List[int], from_yard: List[int], past_yard: List[int], default_route: List[int]) -> None:
 
         """
         Initializes the Route object.
 
         Args:
-            line (str): The name of the train line.
+            line_name (str): The name of the train line.
             yard (int): The block number of the yard.
             to_yard (List[int]): The list of block numbers in the "to yard" segment.
             from_yard (List[int]): The list of block numbers in the "from yard" segment.
@@ -28,7 +28,7 @@ class Route:
             default_route (List[int]): The list of block numbers in the default route segment.
         """
 
-        self.line = line
+        self.line_name = line_name
         self.yard = yard
         self.to_yard = to_yard
         self.from_yard = from_yard
@@ -38,6 +38,26 @@ class Route:
         # Build the route tree
         self.root = Node(yard)
         self.build_tree()
+
+    def __repr__(self) -> str:
+            
+            """
+            Returns a string representation of the Route object.
+            
+            Returns:
+                str: String representation of the Route object.
+            """
+    
+            res = (
+                f"Line:          {self.line_name}\n"
+                f"Yard:          {self.yard}\n"
+                f"To Yard:       {self.to_yard}\n"
+                f"From Yard:     {self.from_yard}\n"
+                f"Past Yard:     {self.past_yard}\n"
+                f"Default Route: {self.default_route}"
+            )
+    
+            return res
 
     def build_tree(self):
 
@@ -194,11 +214,7 @@ class Line(QObject):
             f"Line:          {self.name}\n"
             f"Track Blocks:  [\n{blocks_repr}\n]\n"
             f"Switches:      [\n{switch_repr}\n]\n"
-            f"yard:          {self.yard}\n"
-            f"to_yard:       {self.to_yard}\n"
-            f"from_yard:     {self.from_yard}\n"
-            f"past_yard:     {self.past_yard}\n"
-            f"default_route: {self.default_route}"
+            f"Route:         [\n{self.route}\n]\n"
         )
 
         return res
@@ -518,7 +534,7 @@ class Line(QObject):
         default_route = data['default_route']
 
         self.route = Route(
-            line=self.name,
+            line_name=self.name,
             yard=self.yard,
             to_yard=to_yard,
             from_yard=from_yard,
