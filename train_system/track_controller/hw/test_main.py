@@ -25,6 +25,8 @@ def create_track_blocks(num_blocks):
             block.switch_options = ["stay in yard",63]
         elif i == 29:
             block.switch_options = [30, 150]
+        elif i == 76:
+            block.switch_options = [77, 101]
         
         #simulating an emergency stop
         #elif i == 9:
@@ -33,8 +35,8 @@ def create_track_blocks(num_blocks):
             block._occupancy = False
         elif i == 60:#simulate block 125 being occupied.
             block._occupancy = True
-        #elif i == 125:
-           # block._occupancy = True
+        elif i == 125:
+            block._occupancy = True
 
         blocks.append(block)
     return blocks

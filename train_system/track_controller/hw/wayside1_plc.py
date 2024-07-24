@@ -1,5 +1,13 @@
 print("Wayside 1: ")
 
+
+
+
+if(track_blocks[17].occupancy or track_blocks[16].occupancy or track_blocks[18]):
+    track_blocks[17]._crossing_signal = False
+else:
+    track_blocks[17]._crossing_signal = True
+
 # Check if D -> G or A are occupied
 if (track_blocks[13].occupancy 
     or track_blocks[14].occupancy

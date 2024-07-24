@@ -315,7 +315,10 @@ class TrackController(QObject):
             self.convert_to_strings() 
             # Prepare the command to be sent to Raspberry Pi
             command = ""
-            
+
+            #command = "echo 'preload' > /home/garrett/pi_monitor.log\n "
+
+        
             #reset log
             command = "echo 'RUNNING PLC ON PI' > /home/garrett/pi_monitor.log\n "
 
@@ -332,7 +335,7 @@ class TrackController(QObject):
             command += f"echo '{self.message_switch63}' >>/home/garrett/pi_monitor.log\n"
            # command += f"echo '{self.message_switch76}' >> /home/garrett/pi_monitor.log\n"
             
-            
+        
             # Execute the command
             stdin, stdout, stderr = ssh.exec_command(command)
 
