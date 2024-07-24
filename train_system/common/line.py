@@ -14,13 +14,13 @@ from train_system.common.track_switch import TrackSwitch
 from train_system.common.station import Station
 
 class Route:
-    def __init__(self, line_name: str, yard: int, to_yard: List[int], from_yard: List[int], past_yard: List[int], default_route: List[int]) -> None:
+    def __init__(self, line: str, yard: int, to_yard: List[int], from_yard: List[int], past_yard: List[int], default_route: List[int]) -> None:
 
         """
         Initializes the Route object.
 
         Args:
-            line_name (str): The name of the train line.
+            line (str): The name of the train line.
             yard (int): The block number of the yard.
             to_yard (List[int]): The list of block numbers in the "to yard" segment.
             from_yard (List[int]): The list of block numbers in the "from yard" segment.
@@ -28,7 +28,7 @@ class Route:
             default_route (List[int]): The list of block numbers in the default route segment.
         """
 
-        self.line_name = line_name
+        self.line = line
         self.yard = yard
         self.to_yard = to_yard
         self.from_yard = from_yard
@@ -49,7 +49,7 @@ class Route:
             """
     
             res = (
-                f"Line:          {self.line_name}\n"
+                f"Line:          {self.line}\n"
                 f"Yard:          {self.yard}\n"
                 f"To Yard:       {self.to_yard}\n"
                 f"From Yard:     {self.from_yard}\n"
@@ -534,7 +534,7 @@ class Line(QObject):
         default_route = data['default_route']
 
         self.route = Route(
-            line_name=self.name,
+            line=self.name,
             yard=self.yard,
             to_yard=to_yard,
             from_yard=from_yard,

@@ -1,7 +1,7 @@
 # train_system.common.station.py
 
 class Station:
-    def __init__(self, name: str, line: str, block_number: int) -> None:
+    def __init__(self, line: str, block_number: int) -> None:
 
         """
         Initializes the Station object.
