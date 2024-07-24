@@ -1,6 +1,6 @@
 PyQt6==6.7.0
 anytree==2.12.1
-cryptography==42.0.8
+cryptography==43.0.0
 matplotlib==3.9.0
 networkx==3.3
 pandas==2.2.2
