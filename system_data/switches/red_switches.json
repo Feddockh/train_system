@@ -1,0 +1,46 @@
+{
+    "track_switches": [
+        {
+            "number": 1,
+            "parent_block": 9,
+            "child_blocks": [10, 77],
+            "initial_child": 77
+        },
+        {
+            "number": 2,
+            "parent_block": 16,
+            "child_blocks": [1, 15],
+            "initial_child": 1
+        },
+        {
+            "number": 3,
+            "parent_block": 27,
+            "child_blocks": [28, 76],
+            "initial_child": 28
+        },
+        {
+            "number": 4,
+            "parent_block": 33,
+            "child_blocks": [32, 72],
+            "initial_child": 32
+        },
+        {
+            "number": 5,
+            "parent_block": 38,
+            "child_blocks": [39, 71],
+            "initial_child": 39
+        },
+        {
+            "number": 6,
+            "parent_block": 44,
+            "child_blocks": [43, 67],
+            "initial_child": 43
+        },
+        {
+            "number": 7,
+            "parent_block": 32,
+            "child_blocks": [53, 66],
+            "initial_child": 53
+        }
+    ]
+}
