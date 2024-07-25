@@ -1,3 +1,4 @@
+.vscode/
 train_system/__pycache__
 train_system/common/__pycache__
 train_system/ctc_manager/__pycache__
