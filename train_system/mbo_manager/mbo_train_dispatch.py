@@ -5,9 +5,9 @@ from train_system.common.line import Line
 from train_system.common.time_keeper import TimeKeeper
 
 class MBOTrainDispatch(TrainDispatch):
-    def __init__(self, train_id: int, line: Line, 
-                 time_keeper: TimeKeeper) -> None:
-        super().__init__(train_id, line, time_keeper)
+    def __init__(self, time_keeper: TimeKeeper, train_id: int,
+                 line: Line) -> None:
+        super().__init__(time_keeper, train_id, line)
 
         self.position = 0
         self.commanded_speed = 0

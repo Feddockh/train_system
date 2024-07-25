@@ -18,6 +18,7 @@ from train_system.ctc_manager.widgets.dispatch_command_widget import DispatchCom
 from train_system.ctc_manager.widgets.train_info_widget import TrainInfoWidget
 from train_system.ctc_manager.widgets.schedule_selection_widget import ScheduleSelectionWidget
 from train_system.ctc_manager.widgets.occupancy_widget import OccupancyWidget
+from train_system.ctc_manager.widgets.track_switch_widget import TrackSwitchWidget
 from train_system.ctc_manager.widgets.maintenance_widget import MaintenanceWidget
 
 
@@ -133,17 +134,15 @@ class DispatcherUI(QMainWindow):
         # Train visual widget
         self.line = line
         self.train_visual_widget = TrackVisualWidget(self.line)
-        self.train_visual_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        self.visual_layout.addWidget(self.train_visual_widget, stretch=1)
+        self.visual_layout.addWidget(self.train_visual_widget, stretch=4)
 
         # Throughput widget
         self.throughput_widget = ThroughputWidget()
-        self.throughput_widget.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
-        self.visual_layout.addWidget(self.throughput_widget, stretch=1)
+        self.visual_layout.addWidget(self.throughput_widget, stretch=0)
 
         ### CREATE THE DISPATCH COMMAND/SCHEDULE SELECTION STACKED WIDGET ###
         self.stacked_widget = QStackedWidget()
-        self.bottom_layout.addWidget(self.stacked_widget)
+        self.bottom_layout.addWidget(self.stacked_widget, stretch=2)
 
         # Dispatch Command Widget
         self.dispatch_command_widget = DispatchCommandWidget(self.line)
@@ -158,7 +157,7 @@ class DispatcherUI(QMainWindow):
         # Train Information Widget
         self.trains = trains
         self.train_info_widget = TrainInfoWidget(self.time_keeper, self.line, self.trains)
-        self.bottom_layout.addWidget(self.train_info_widget)
+        self.bottom_layout.addWidget(self.train_info_widget, stretch=3)
         self.time_keeper.tick.connect(self.train_info_widget.handle_time_update)
 
         ### TEST BENCH WIDGET ###
@@ -166,6 +165,11 @@ class DispatcherUI(QMainWindow):
         # Create and add the OccupancyWidget to the bottom stacked widget
         # self.set_occupancy_widget = OccupancyWidget(self.line)
         # self.bottom_stacked_widget.addWidget(self.set_occupancy_widget)
+
+        # Create a track switch widget
+        self.track_switch_widget = TrackSwitchWidget(self.line)
+        self.bottom_layout.addWidget(self.track_switch_widget, stretch=1)
+        self.track_switch_widget.hide()
 
         ### MAINTENANCE WIDGET ###
 
@@ -178,9 +182,11 @@ class DispatcherUI(QMainWindow):
         if state:
             # self.bottom_stacked_widget.setCurrentWidget(self.set_occupancy_widget)
             # self.dispatch_command_widget.setEnabled(False)
+            self.track_switch_widget.show()
             self.schedule_selection_widget.setEnabled(False)
         else:
             # self.bottom_stacked_widget.setCurrentWidget(self.bottom_widget)
+            self.track_switch_widget.hide()
             if not self.maintenance_toggle_switch.isChecked():
                 self.dispatch_command_widget.setEnabled(True)
                 self.schedule_selection_widget.setEnabled(True)
@@ -217,9 +223,9 @@ class DispatcherUI(QMainWindow):
         # Update the train visual widget display
         self.train_visual_widget.update()
 
-    @pyqtSlot(int, int)
-    def handle_switch_position_update(self, block_number: int, position: int) -> None:
-        print(f"Block {block_number} switch position updated: {position}")
+    # @pyqtSlot(int)
+    # def handle_switch_position_update(self, switch_number: int) -> None:
+    #     print(f"Switch {switch_number} position updated")
 
     @pyqtSlot(int, int)
     def handle_crossing_signal_update(self, block_number: int, signal: int) -> None:
