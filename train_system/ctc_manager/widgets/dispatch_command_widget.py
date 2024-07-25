@@ -1,6 +1,8 @@
+import sys
 from typing import Optional
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTableWidget,
-                             QTableWidgetItem, QHeaderView, QComboBox, QPushButton)
+                             QTableWidgetItem, QHeaderView, QComboBox, QPushButton,
+                             QApplication)
 from PyQt6.QtGui import QColor, QPalette
 from PyQt6.QtCore import Qt, pyqtSignal
 
@@ -143,8 +145,8 @@ class DispatchCommandWidget(QWidget):
         
         stops = []
         for block in self.line.track_blocks:
-            if len(block.station):
-                stops.append(f"{block.number} ({block.station})")
+            if block.station:
+                stops.append(f"{block.number} ({block.station.name})")
             else:
                 stops.append(f"{block.number}")
         return stops
@@ -182,3 +184,12 @@ class DispatchCommandWidget(QWidget):
         self.rows = 0
         self.table.setRowCount(self.rows)
             
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+
+    line = Line("Red")
+    line.load_defaults()
+
+    widget = DispatchCommandWidget(line)
+    widget.show()
+    sys.exit(app.exec())
