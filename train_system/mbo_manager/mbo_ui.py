@@ -68,7 +68,9 @@ class MBOWindow(QMainWindow):
 
         # Add checkable items to the layout
         self.checkboxes = []
-        items = ["Glenbury", "Dormont", "Mt. Lebanon", "Poplar", "Castle Shannon", "Overbrook", "Inglewood", "Central", "Edgebrook", "Pioneer", "Station", "Whited", "Southbank"]
+        items = ["Glenbury 1", "Dormont 1", "Mt. Lebanon 1", "Poplar", "Castle Shannon", "Mt. Lebanon 2", "Dormont 2", "Glenbury 2", 
+                 "Overbrook 1", "Inglewood", "Central 1", "Whited 1", "Edgebrook", "Pioneer", "Station", "Whited 2", "South Bank", 
+                 "Central 2", "Overbrook 2" ]
         for item_text in items:
             checkbox = QCheckBox(item_text)
             self.checkboxes.append(checkbox)
@@ -83,7 +85,11 @@ class MBOWindow(QMainWindow):
 
         # Add checkable items to the layout
         self.checkboxes2 = []
-        items = ["Glenbury", "Dormont", "Mt. Lebanon", "Poplar", "Castle Shannon", "Overbrook", "Inglewood", "Central", "Edgebrook", "Pioneer", "Station", "Whited", "Southbank"]
+        """items = ["Glenbury 1", "Dormont 1", "Mt. Lebanon 1", "Poplar", "Castle Shannon", "Mt. Lebanon 2", "Dormont 2", "Glenbury 2", 
+                 "Overbrook 1", "Inglewood", "Central 1", "Whited 1", "Edgebrook", "Pioneer", "Station", "Whited 2", "South Bank", 
+                 "Central 2", "Overbrook 2" ]"""
+        
+        
         for item_text in items:
             checkbox2 = QCheckBox(item_text)
             self.checkboxes2.append(checkbox2)
