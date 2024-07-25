@@ -41,7 +41,6 @@ dispatcher_ui.schedule_selection_widget.dispatched_train.connect(ctc_manager.han
 ctc_manager.line.track_block_occupancy_updated.connect(dispatcher_ui.handle_occupancy_update)
 ctc_manager.line.track_block_crossing_signal_updated.connect(dispatcher_ui.handle_crossing_signal_update)
 ctc_manager.line.track_block_under_maintenance_updated.connect(dispatcher_ui.handle_maintenance_update)
-ctc_manager.line.switch_position_updated.connect(dispatcher_ui.handle_switch_position_update)
 
 # Connect the CTC Manager signals to the DispatcherUI slots
 

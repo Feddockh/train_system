@@ -1,0 +1,187 @@
+{
+    "stations": [
+        {
+            "name": "Pioneer",
+            "connected_blocks": [2],
+            "station_sides": [
+                {
+                    "previous_block": 3,
+                    "current_block": 2,
+                    "side": "left"
+                }
+            ]
+        },
+        {
+            "name": "Edgebrook",
+            "connected_blocks": [9],
+            "station_sides": [
+                {
+                    "previous_block": 10,
+                    "current_block": 9,
+                    "side": "left"
+                }
+            ]
+        },
+        {
+            "name": "Station",
+            "connected_blocks": [16],
+            "station_sides": [
+                {
+                    "previous_block": 15,
+                    "current_block": 16,
+                    "side": "left"
+                },
+                {
+                    "previous_block": 17,
+                    "current_block": 16,
+                    "side": "right"
+                }
+            ]
+        },
+        {
+            "name": "Whited",
+            "connected_blocks": [22],
+            "station_sides": [
+                {
+                    "previous_block": 21,
+                    "current_block": 22,
+                    "side": "left"
+                },
+                {
+                    "previous_block": 23,
+                    "current_block": 22,
+                    "side": "right"
+                }
+            ]
+        },
+        {
+            "name": "South Bank",
+            "connected_blocks": [31],
+            "station_sides": [
+                {
+                    "previous_block": 30,
+                    "current_block": 31,
+                    "side": "left"
+                }
+            ]
+        },
+        {
+            "name": "Central",
+            "connected_blocks": [39, 141],
+            "station_sides": [
+                {
+                    "previous_block": 38,
+                    "current_block": 39,
+                    "side": "right"
+                },
+                {
+                    "previous_block": 140,
+                    "current_block": 141,
+                    "side": "right"
+                }
+            ]
+        },
+        {
+            "name": "Inglewood",
+            "connected_blocks": [48, 132],
+            "station_sides": [
+                {
+                    "previous_block": 47,
+                    "current_block": 48,
+                    "side": "right"
+                },
+                {
+                    "previous_block": 131,
+                    "current_block": 132,
+                    "side": "left"
+                }
+            ]
+        },
+        {
+            "name": "Overbook",
+            "connected_blocks": [57,123],
+            "station_sides": [
+                {
+                    "previous_block": 56,
+                    "current_block": 57,
+                    "side": "right"
+                },
+                {
+                    "previous_block": 122,
+                    "current_block": 123,
+                    "side": "right"
+                }
+            ]
+        },
+        {
+            "name": "Glenbury",
+            "connected_blocks": [65, 114],
+            "station_sides": [
+                {
+                    "previous_block": 64,
+                    "current_block": 65,
+                    "side": "right"
+                },
+                {
+                    "previous_block": 113,
+                    "current_block": 114,
+                    "side": "right"
+                }
+            ]
+        },
+        {
+            "name": "Dormont",
+            "connected_blocks": [73, 105],
+            "station_sides": [
+                {
+                    "previous_block": 72,
+                    "current_block": 73,
+                    "side": "right"
+                },
+                {
+                    "previous_block": 104,
+                    "current_block": 105,
+                    "side": "right"
+                }
+            ]
+        },
+        {
+            "name": "Mt. Lebanon",
+            "connected_blocks": [77],
+            "station_sides": [
+                {
+                    "previous_block": 76,
+                    "current_block": 77,
+                    "side": "right"
+                },
+                {
+                    "previous_block": 78,
+                    "current_block": 77,
+                    "side": "left"
+                }
+            ]
+        },
+        {
+            "name": "Poplar",
+            "connected_blocks": [88],
+            "station_sides": [
+                {
+                    "previous_block": 87,
+                    "current_block": 88,
+                    "side": "left"
+                }
+            ]
+        },
+        {
+            "name": "Castle Shannon",
+            "connected_blocks": [96],
+            "station_sides": [
+                {
+                    "previous_block": 95,
+                    "current_block": 96,
+                    "side": "left"
+                }
+            ]
+        }
+    ]
+}
