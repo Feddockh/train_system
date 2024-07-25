@@ -1,8 +1,116 @@
 print("Wayside 1: ")
 
+#Updated Wayside 1 as of 7/25/2024
 
 
+#switch at block 13
+#Scenario: Connecting block 13 to 12 (D to C)
+if(track_blocks[13].occupancy or track_blocks[14].occupancy or track_blocks[15].occupancy or track_blocks[16].occupancy):
+    
+    #set switch position so that block 13 connects to 12
+    track_blocks[13]._switch_position = 1
 
+    #set light colors
+    track_blocks[13]._light_signal = True
+    track_blocks[12]._light_signal = True
+    track_blocks[1]._light_signal = False
+
+    #set authority at block 1
+    track_blocks[1].authority = 0
+
+
+#Scenario: Connecting block 13 to 1 (D to A)
+if(track_blocks[13].occupancy == False and track_blocks[14].occupancy == False
+    and track_blocks[15].occupancy == False and track_blocks[16].occupancy == False
+    and track_blocks[17].occupancy == False and track_blocks[18].occupancy == False
+    and track_blocks[19].occupancy == False and track_blocks[20].occupancy == False
+    and track_blocks[21].occupancy == False and track_blocks[22].occupancy == False
+    and track_blocks[23].occupancy == False and track_blocks[24].occupancy == False
+    and track_blocks[25].occupancy == False and track_blocks[26].occupancy == False
+    and track_blocks[27].occupancy == False and track_blocks[28].occupancy == False
+    and track_blocks[29].occupancy == False):
+
+    #set switch position to connect 13 to 1
+    track_blocks[13]._switch_position = 0
+
+    #set light colors
+    track_blocks[13]._light_signal = True
+    track_blocks[12]._light_signal = False
+    track_blocks[1]._light_signal = True
+
+
+#Switch at Block 29
+
+#Scenario: Block 29 is connected to block 30
+
+if(track_blocks[13].occupancy or track_blocks[14].occupancy or track_blocks[15].occupancy or track_blocks[16].occupancy or track_blocks[17].occupancy or track_blocks[18].occupancy
+    or track_blocks[19].occupancy or track_blocks[20].occupancy or track_blocks[21].occupancy or track_blocks[22].occupancy
+    or track_blocks[23].occupancy or track_blocks[24].occupancy or track_blocks[25].occupancy or track_blocks[26].occupancy
+    or track_blocks[27].occupancy or track_blocks[28].occupancy or track_blocks[29].occupancy):
+
+    #connect block 29 to 30 [30, 150]
+    track_blocks[29]._switch_position = 0 
+
+    #set light colors
+    track_blocks[29]._light_signal = True
+    track_blocks[30]._light_signal = True
+    track_blocks[150]._light_signal = False
+
+#Scenario: Block 29 is connected to 150
+if(track_blocks[13].occupancy == False and track_blocks[14].occupancy == False
+    and track_blocks[15].occupancy == False and track_blocks[16].occupancy == False
+    and track_blocks[17].occupancy == False and track_blocks[18].occupancy == False
+    and track_blocks[19].occupancy == False and track_blocks[20].occupancy == False
+    and track_blocks[21].occupancy == False and track_blocks[22].occupancy == False
+    and track_blocks[23].occupancy == False and track_blocks[24].occupancy == False
+    and track_blocks[25].occupancy == False and track_blocks[26].occupancy == False
+    and track_blocks[27].occupancy == False and track_blocks[28].occupancy == False
+    and track_blocks[29].occupancy == False):
+
+    #connect block 29 to 150 [30, 150]
+    track_blocks[29]._switch_position = 1
+
+    #set light colors
+    track_blocks[29]._light_signal = True
+    track_blocks[150]._light_signal = True
+    track_blocks[30]._light_signal = False
+
+
+# Consolidated print statements for error checking
+print("Switch 13 Information:\n")
+# Block 1
+print("Block 1 Information: ")
+print(f"Light Signal: {track_blocks[1]._light_signal}")
+print(f"Authority: {track_blocks[1].authority}")
+
+# Block 12
+print("Block 12 Information: ")
+print(f"Light Signal: {track_blocks[12]._light_signal}")
+print(f"Authority: {track_blocks[12].authority}\n")
+
+# Block 13 (Switch)
+print("Block 13 (Switch) Information: ")
+print(f"Switch Position: {track_blocks[13]._switch_position}")
+print(f"Light Signal: {track_blocks[13]._light_signal}")
+print(f"Authority: {track_blocks[13].authority}\n")
+
+# Block 29 (Switch)
+print("Block 29 (Switch) Information: ")
+print(f"Switch Position: {track_blocks[29]._switch_position}")
+print(f"Light Signal: {track_blocks[29]._light_signal}")
+print(f"Authority: {track_blocks[29].authority}\n")
+
+#block 30
+print("Block 30 Information: ")
+print(f"Light Signal: {track_blocks[30]._light_signal}")
+print(f"Authority: {track_blocks[30].authority}\n")
+
+#block 150
+print("Block 150 Information: ")
+print(f"Light Signal: {track_blocks[150]._light_signal}")
+print(f"Authority: {track_blocks[150].authority}\n")
+
+"""
 if(track_blocks[17].occupancy or track_blocks[16].occupancy or track_blocks[18]):
     track_blocks[17]._crossing_signal = False
 else:
@@ -271,5 +379,5 @@ print("Block 12 Information: ")
 print(f"Light Signal: {track_blocks[149]._light_signal}")
 print(f"Authority: {track_blocks[149].authority}\n")
 
-
+"""
 

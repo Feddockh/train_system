@@ -19,10 +19,10 @@ def create_track_blocks(num_blocks):
             block.switch_options = [13]
         elif i == 12:  # Setting properties for the third block
             block.switch_options = [13]
-        elif i == 58:  # Setting properties for block 58
-            block.switch_options = ["go to yard",59]
+        elif i == 57:  # Setting properties for block 58
+            block.switch_options = [58, 151]
         elif i == 63:  # Setting properties for block 76
-            block.switch_options = ["stay in yard",63]
+            block.switch_options = [62, 63]
         elif i == 29:
             block.switch_options = [30, 150]
         elif i == 76:
@@ -30,9 +30,6 @@ def create_track_blocks(num_blocks):
         
         #simulating an emergency stop
         #elif i == 9:
-            #block._occupancy = True
-        elif i == 57: #simulate block 78 being occupied to make the switch go to 101
-            block._occupancy = False
         elif i == 60:#simulate block 125 being occupied.
             block._occupancy = True
         elif i == 125:
@@ -42,7 +39,7 @@ def create_track_blocks(num_blocks):
     return blocks
 
 def main():
-    num_blocks = 150
+    num_blocks = 154
 
     track_blocks1 = create_track_blocks(num_blocks)
     Wayside_1 = TrackController(track_blocks1)

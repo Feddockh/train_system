@@ -17,6 +17,152 @@ Returns:
 #switch 58 is going to look at the track occupancy of 63. If occupied it will go to yard
 #Determining switch position
 
+#updated wayside 2, July 24, 2024
+
+#Switch 58
+
+#Block 57 goes to 151(yard)
+if(track_blocks[58].occupancy or track_blocks[59].occupancy or track_blocks[60].occupancy or track_blocks[61].occupancy or track_blocks[62].occupancy):
+    #i want to use track switch here but am not sure how to implement it so
+    #track_switch[58] = 1
+
+    #set track switches to connect from 57 to 151
+    track_blocks[57]._switch_position = 1
+ 
+    #set lights
+    track_blocks[57]._light_signal = True #green at the beginning of switch
+    track_blocks[58]._light_signal = False #red at section J
+    track_blocks[151]._light_signal = True #green heading into yard
+
+#Emergency stop scenario
+elif((track_blocks[58].occupancy or track_blocks[59].occupancy or track_blocks[60].occupancy or track_blocks[61].occupancy or track_blocks[62].occupancy) and (track_blocks[151].occupancy)):
+    
+    #set initial switch authority to zero so the train stops before the switch
+    track_blocks[57].authority = 0
+    
+    #set light signals to red
+    track_blocks[57]._light_signal = False 
+    track_blocks[58]._light_signal = False
+    track_blocks[151]._light_signal = False
+
+#connect switch 57 to block 58
+elif(track_blocks[151].occupancy):
+    
+    #connect switch 57 -> 58
+    track_blocks[57]._switch_position = 0
+
+    #track block lights
+    track_blocks[57]._light_signal = True
+    track_blocks[58]._light_signal = True
+    track_blocks[151]._light_signal = False
+
+
+#if neither are occupied, continue onto the normal path
+else:
+    #set track switch
+    track_blocks[57]._switch_position = 0
+    
+    #set light signals to all green
+    track_blocks[57]._light_signal = True
+    track_blocks[58]._light_signal = True
+    track_blocks[151]._light_signal = True
+
+
+
+#Switch at BLOCK 63
+
+#Scenario: Train stays in yard. Block 63 connected to Block 62
+if(track_blocks[58].occupancy or track_blocks[59].occupancy or track_blocks[60].occupancy or track_blocks[61].occupancy or track_blocks[62].occupancy):
+
+    #set switch position so that 63 connects with 62
+    track_blocks[63]._switch_position = 0 #connects with block 62
+
+    #set light colors
+    track_blocks[62]._light_signal = True #light on the end of section J is green telling train to continue
+    #track_blocks[63]._light_signal = True #Switch block is Green
+    track_blocks[153]._light_signal = False #coming out of yard light is RED
+
+    #set authority of train coming out of yard
+    track_blocks[153].authority = 0 #set coming out to zero so they train stops coming
+
+#Scenario: Train comes out of yard. Block 63 connects to 153
+else:
+    track_blocks[63]._switch_position = 1
+    
+    #set light colors
+    track_blocks[62]._light_signal = False
+    track_blocks[153]._light_signal = True
+
+    #set authority at 62
+    track_blocks[62].authority = 0
+
+
+# Consolidated print statements for error checking
+
+#SWITCH AT BLOCK 57
+print("Switch  57:\n")
+# Block 57
+print("Block 57 (Switch) Information: ")
+print(f"Switch Position: {track_blocks[57]._switch_position}")
+print(f"Light Signal: {track_blocks[57]._light_signal}")
+print(f"Authority: {track_blocks[57].authority}\n")
+
+# Block 58
+print("Block 58 Information: ")
+print(f"Light Signal: {track_blocks[58]._light_signal}")
+print(f"Authority: {track_blocks[58].authority}\n")
+
+# Block 151
+print("Block 151 Information: ")
+print(f"Light Signal: {track_blocks[151]._light_signal}")
+print(f"Authority: {track_blocks[151].authority}\n")
+
+
+#Switch at BLOCK 63
+print("Switch 63: \n")
+print("Block 63 (Switch) Information: ")
+print(f"Switch Position: {track_blocks[63]._switch_position}")
+print(f"Light Signal: {track_blocks[63]._light_signal}")
+print(f"Authority: {track_blocks[63].authority}\n")
+
+# Block 62
+print("Block 62 Information: ")
+print(f"Light Signal: {track_blocks[62]._light_signal}")
+print(f"Authority: {track_blocks[62].authority}\n")
+
+# Block 151
+print("Block 153 Information: ")
+print(f"Light Signal: {track_blocks[153]._light_signal}")
+print(f"Authority: {track_blocks[153].authority}\n")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""
 print("Computations in Pi")
 print("Wayside 2: ")
 #switch from 58 to yard
@@ -185,7 +331,7 @@ else:
     
 
 
-
+"""
 """
 #switch from 76 - 77 and 76 to 101
 #looks at Block N if occupied, switches to 101
