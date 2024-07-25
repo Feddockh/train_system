@@ -2,7 +2,6 @@
 
 from PyQt6.QtCore import QObject, pyqtSignal, pyqtSlot
 from typing import List
-# from train_system.common.crossing_signal import CrossingSignal
 from train_system.common.track_failures import TrackFailure
 from train_system.track_model.beacon import Beacon
 from train_system.common.track_switch import TrackSwitch
