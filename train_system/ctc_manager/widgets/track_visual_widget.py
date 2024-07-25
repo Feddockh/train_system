@@ -147,7 +147,7 @@ class TrackVisualWidget(QWidget):
         self.setGeometry(100, 100, 800, 600)
         
         # Load in the line visual data
-        filename = os.path.join(os.path.dirname(__file__), f"lines\\{line.name.lower()}.json")
+        filename = os.path.join(os.path.dirname(__file__), f"line_visuals\\{line.name.lower()}_visual.json")
         with open(filename, "r") as file:
             self.block_visuals = json.load(file)
 
@@ -157,6 +157,7 @@ class TrackVisualWidget(QWidget):
         self.x_scale = self.width() // (self.max_x + 2)
         self.y_scale = self.height() // (self.max_y + 2)
         self.padding = self.x_scale // 10
+        self.line_width = 3
 
     def find_max_y(self):
         max_y = 0
@@ -197,58 +198,81 @@ class TrackVisualWidget(QWidget):
             x2, y2 = block["x2"] * self.x_scale, block["y2"] * self.y_scale
 
             # Set the pen color based on the status of the block
-            line_width = 2
             if self.line.get_track_block(block["block_number"]).occupancy:
-                pen = QPen(Qt.GlobalColor.red, line_width)
+                pen = QPen(Qt.GlobalColor.red, self.line_width)
             elif self.line.get_track_block(block["block_number"]).under_maintenance:
-                pen = QPen(Qt.GlobalColor.yellow, line_width)
+                pen = QPen(Qt.GlobalColor.yellow, self.line_width)
             else:
-                pen = QPen(Qt.GlobalColor.white, line_width)
+                pen = QPen(Qt.GlobalColor.white, self.line_width)
 
             # Check if the block is part of the yard
-            if block["yard"]:
-                pen = QPen(Qt.GlobalColor.white, line_width, Qt.PenStyle.DotLine)
+            if block["attribute"] == "Yard":
+                pen = QPen(Qt.GlobalColor.white, self.line_width, Qt.PenStyle.DotLine)
                 block_text = "Yard"
+            
+            # Check if the block is part of the station
+            if block["attribute"] != "":
+                block_text = block["attribute"]
             
             # Set the pen and draw the line
             painter.setPen(pen)
-            painter.drawLine(QPoint(x1 + self.padding, y1), QPoint(x2 - self.padding, y2))
+            painter.drawLine(QPoint(x1, y1), QPoint(x2, y2))
+            # painter.drawLine(QPoint(x1 + self.padding, y1), QPoint(x2 - self.padding, y2))
 
             # Compute text width and height
             text_width = font_metrics.horizontalAdvance(block_text)
             text_height = font_metrics.height()
-
-            # Compute the x position of the text
-            if block["y1"] < block["y2"]:
-                if block["branch"] < 0:
-                    text_x = x1 + (x2 - x1) // 2 - text_width
-                else:
-                    text_x = x1 + (x2 - x1) // 2
-            elif block["y1"] > block["y2"]:
-                if block["branch"] < 0:
-                    text_x = x1 + (x2 - x1) // 2
-                else:
-                    text_x = x1 + (x2 - x1) // 2 - text_width
+            
+            # Position the center of the text on the center of the line (default cursor is bottom left)
+            center_x = x1 + (x2 - x1) // 2 - text_width // 2
+            center_y = y1 + (y2 - y1) // 2 + text_height // 2
+            
+            # Compute the x and y position of the text based on the text position
+            # The text position is based on the following grid:
+            # 1 | 2 | 3
+            # 4 | 5 | 6
+            # 7 | 8 | 9
+            text_position = block["text_position"]
+            if text_position == 0:
+                continue
+            if text_position == 1:
+                text_x = center_x - text_width // 2 - self.padding
+                text_y = center_y - text_height // 2 - self.padding
+            elif text_position == 2:
+                text_x = center_x
+                text_y = center_y - text_height // 2 - self.padding
+            elif text_position == 3:
+                text_x = center_x + text_width // 2 + self.padding
+                text_y = center_y - text_height // 2 - self.padding
+            elif text_position == 4:
+                text_x = center_x - text_width // 2 - self.padding
+                text_y = center_y
+            elif text_position == 5:
+                text_x = center_x
+                text_y = center_y
+            elif text_position == 6:
+                text_x = center_x + text_width // 2 + self.padding
+                text_y = center_y
+            elif text_position == 7:
+                text_x = center_x - text_width // 2 - self.padding
+                text_y = center_y + text_height // 2 + self.padding
+            elif text_position == 8:
+                text_x = center_x
+                text_y = center_y + text_height // 2 + self.padding
+            elif text_position == 9:
+                text_x = center_x + text_width // 2 + self.padding
+                text_y = center_y + text_height // 2 + self.padding
             else:
-                text_x = x1 + (x2 - x1) // 2 - text_width // 2
-                
-            # Compute the y position of the text
-            if block["branch"] > 0:
-                text_y = max(y1, y2) - (abs(y1 - y2) // 2) - line_width - 1
-            elif block["branch"] < 0:
-                text_y = min(y1, y2) + (abs(y1 - y2) // 2) + text_height
-            else:
-                text_y = y1 + text_height
+                print("Invalid text position")
 
             painter.drawText(text_x, text_y, block_text)
-        
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
-    line = Line("Green")
-    file_path = os.path.abspath(os.path.join("system_data\\tracks", f"{line.name.lower()}_line.xlsx"))
-    line.load_track_blocks(file_path)
+    line = Line("Red")
+    line.load_defaults()
 
     widget = TrackVisualWidget(line)
     widget.show()
