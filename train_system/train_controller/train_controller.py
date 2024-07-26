@@ -1,24 +1,20 @@
-import time
 import paramiko
 import json
+from collections import deque as dq
 
 from PyQt6.QtCore import Qt, pyqtSlot, pyqtSignal, QObject
-from train_system.common.time_keeper import TimeKeeper
+
+from train_system.common.line import Line
+from train_system.common.track_block import TrackBlock
+from train_system.common.station import Station
+
+from train_system.train_model.train_model import TrainModel
 
 HOST= '192.168.0.114'
 PORT = 22
 USERNAME = 'danim'
 PASSWORD = 'danim'
 
-"""
-setStation
--uses beacon data to know and update upcoming station
--do we keep this station displayed after leaving?
-"""
-
-'''
-Storing previous beacon data: How are we going to do that and what will it look like
-'''
 
 '''
 # Functions with the word "update" in the name are updated from the Train Model and takes the Train Model as an argument
@@ -28,31 +24,49 @@ Storing previous beacon data: How are we going to do that and what will it look 
 
 class TrainController(QObject):
     setpoint_speed_updated = pyqtSignal(float)
+    position_updated = pyqtSignal(float)
     power_updated = pyqtSignal(float)
+    faults_fixed = pyqtSignal()
     #lights_updated = pyqtSignal(bool) -> in lights class
     #left_door_updated = pyqtSignal(bool) -> in doors class
     #right_door_updated = pyqtSignal(bool) -> in doors class
     #train_temp_updated = pyqtSignal(int) -> in ac class
     #service_brake_updated = pyqtSignal(bool) -> in brakes class
     #emergency_brake_updated = pyqtSignal(bool) -> in brakes class
+
     
-    def __init__(self, time_keeper: TimeKeeper, kp: float=25, ki: float=0.1, train_model=None, ssh=None) -> None:
-        self.time_keeper = time_keeper
+    
+    def __init__(self, kp: float=25, ki: float=0.5, train_model=None, line_name: str = "green", id: int = 0, ssh=None) -> None:
         super().__init__() ###### THIS LINE IS IMPORTANT #####
 
         self.hardware = True if ssh else False
         print(f"Hardware: {self.hardware}")
-        self.elapsed_time = 0
-        self.time_step = 0.05  # 0.05 second time step
+        self.time_step = 1  # 1 second time step
+        self.train_length = 32.2  # 32.2 meters
 
         ## Initialize objects
-        self.train_model = train_model if train_model else TrainModel()  # Used to store data received from Train Model. No computations done in the object
+        self.train_model = MockTrainModel()  # Used to store data received from Train Model. No computations done in the object
+        self.train_model.engine_fault_updated.connect(self.handle_fault_update)
+        self.train_model.brake_fault_updated.connect(self.handle_fault_update)
+        self.train_model.signal_fault_updated.connect(self.handle_fault_update)
+        self.train_model.comm_speed_updated.connect(self.handle_commanded_speed)
+        self.train_model.authority_updated.connect(self.update_authority)
+
         self.engineer = self.Engineer(kp, ki) # Engineer holds Kp and Ki and is the only one that can set them
+
         self.brake = self.Brake()       # Brake holds service and emergency brake status
+        self.brake.service_brake_updated.connect(self.train_model.handle_service_brake_update)
+        self.brake.emergency_brake_updated.connect(self.train_model.handle_emergency_brake_update)
+
         self.engine = self.Engine(ssh)     # Engine calculates power command and simulates train response
-        self.doors = self.Doors(self.train_model.get_exit_door)       # Doors holds left and right door status
-        self.lights = self.Lights(self.train_model.get_underground)     # Lights holds light status
-        self.ac = self.AC(self.train_model.get_train_temp())             # AC holds temperature status
+        self.doors = self.Doors()       # Doors holds left and right door status
+        self.doors.left_door_updated.connect(self.train_model.handle_left_door_update)
+        self.doors.right_door_updated.connect(self.train_model.handle_right_door_update)
+        self.lights = self.Lights()     # Lights holds light status
+        self.lights.lights_updated.connect(self.train_model.handle_lights_update)
+        self.ac = self.AC(self.train_model.get_train_temp())    # AC holds temperature status
+        self.ac.commanded_temp_updated.connect(self.train_model.handle_commanded_temp_update)
+        self.line = Line(line_name)
 
         # Driver variables
         self.driver_mode = "manual" # Driver mode can be "automatic" or "manual"
@@ -63,69 +77,127 @@ class TrainController(QObject):
         self.maintenance_mode = False     # Maintenance status of the train
         self.position = 0  # Distance traveled by the train. Calculated in the Train Controller
         
-        self.track_block: int = 0
-        self.block: int = 0
-        self.station: str = "station_name"
-        self.speed_limit: float = 19.44  #m/s
-        self.length: float = self.train_model.get_length()
-        self.polarity = self.train_model.get_length() # Polarity changes polarity < 0
-        self.exit_door: str = "L"
-        self.underground: bool = False
+        # Train Block Inputs
+        self.line.load_defaults()
+        self.route = dq(self.line.route.from_yard)  # Route queue
+        self.reset_route()  # Initialize track block, position, and polarity
 
-        # Train Model inputs (purely made for convenience)
-        # THESE VALUES WILL RECEIVE NO CALCULATIONS (except for current speed FOR NOW)
-        self.current_speed = None    # Current speed of the train
-        self.commanded_speed = None  # Commanded speed from the Train Model (CTC or MBO)
-        self.authority = None        # Authority from the Train Model (CTC or MBO)
-        self.faults = None           # Fault statuses from the Train Model (list of bools)
-
-    # Simulate a time step of the train controller
-    # Call this for ever press of the refresh button
-    def simulate_timestep(self, train_model=None):
-        # Update Mock Train Model
-        param = train_model if train_model else self.train_model
-        self.train_model.update_mock_train_model(param)
-        ## Perform calculations then output them
-        self.update_train_controller()    # This function will define all the "None" variables above
-        ## Transmit to Train Model 
-        self.transmit_to_train_model()  # Transmit via Serial communication (For now, also update current speed)
+        # Train Model inputs
+        self.current_speed = self.train_model.current_speed    # Current speed of the train
+        self.commanded_speed = self.train_model.commanded_speed  # Commanded speed from the Train Model (CTC or MBO)
+        self.update_authority(self.train_model.authority)        # Authority from the Train Model (CTC or MBO)
+        self.engine_fault = self.train_model.engine_fault           # Fault status from the Train Model
+        self.brake_fault = self.train_model.brake_fault           # Fault status from the Train Model
+        self.signal_fault = self.train_model.signal_fault           # Fault status from the Train Model
         
     # Update all variables with the train model input, calculate, then output to train model
     # Take train model outputs, update all variables, and transmit to train model the Train Controller's new values
     def update_train_controller(self):
-        # Update variables with train model input
-        self.current_speed = self.train_model.get_current_speed()
-        self.commanded_speed = self.train_model.get_commanded_speed()
-        self.authority = self.train_model.get_authority()
-        # Update all status variables
-        self.ac.update_current_temp(self.train_model, self.driver_mode)
-        self.update_fault_status(self.train_model)
-        
-        # Update all track block variables
-        self.engine.update_speed_limit(self.train_model)
-        self.doors.set_exit_door(self.train_model)
-        self.lights.update_lights(self.train_model, self.elapsed_time)
-        self.station = self.train_model.get_station_name()
+        self.brake.set_service_brake(False)
+        self.set_current_speed(self.train_model.get_current_speed())
 
-        ### CHANGE THESE TO POLARITY AND DISTANCE USING LENGTH
-        self.position += self.train_model.get_current_speed()*self.time_step
-        self.polarity -= self.train_model.get_current_speed()*self.time_step
-        if self.polarity <= 0:
-            self.train_model.increment_track_block()
-            self.polarity += self.train_model.get_length()
-        self.block = self.train_model.get_block()
+        # Update variables with train model input
+        # self.commanded_speed = self.train_model.get_commanded_speed()
+        # self.update_authority(self.train_model.get_authority())
         
+        # Update all status variables
+        # self.ac.update_current_temp(self.train_model.get_train_temp())
+        # self.update_fault_status(self.train_model.get_fault_statuses())
 
         ## Train Controller Calculations
-        # Run 1 more cycle of the simulation to update the current speed
-        self.simulate_power_command(self.get_desired_speed())
+        self.calculate_position()
+        self.calculate_power_command(self.get_desired_speed())
         
 
-    # Transmit necessary variables to Main Computer (Train Model), then mock Train Model will be updated
-    def transmit_to_train_model(self):
-        ##### THIS WILL BE TAKEN OUT #####
-        self.train_model.set_current_speed(self.current_speed)
-        pass
+    ## Track Block Functions
+    # Reset the route queue, exit door dictionary, and update the track block
+    def reset_route(self):
+        self.route.extend(self.line.route.default_route)
+        self.block = self.route[0]
+        self.track_block: TrackBlock = self.line.get_track_block(self.block)
+        print("Track block: ", self.track_block.number)
+
+        self.position = 0
+        self.polarity = 0
+        self.station = None
+        self.destination = None
+        self.finish = False
+        self.update_track_block()
+
+    # Update all Track Block variables
+    def update_track_block(self):
+        # Update all Track Block variables
+        self.engine.set_speed_limit(self.track_block.speed_limit / 3.6)
+        self.polarity += self.track_block.length
+        
+        self.station = self.track_block.station.name if self.track_block.station else None
+
+        if self.station:
+            exit_door = self.track_block.station.get_side(self.block, self.track_block.number)
+            self.doors.update_exit_door(exit_door)
+
+        self.block = self.track_block.number
+        self.lights.update_underground(self.track_block.underground)
+
+    def increment_track_block(self):
+        # Pop to get next track block
+        self.route.popleft()
+        print(f"Route Length: {len(self.route)}")
+
+        # If not next to finish, continue
+        if len(self.route) == 0 and not self.finish:
+            ## Look at authority to see whether to circle or to end route
+            if self.to_yard:
+                self.route.extend(self.line.route.to_yard)    ## If authority is negative, go back to yard
+                self.finish = True
+            else:
+                self.route.extend(self.line.route.past_yard, self.line.route.default_route) # Append past_yard and append default route again
+        elif self.finish:
+            pass
+            
+        # Increment track block
+        self.block = self.route[0]
+        self.track_block = self.line.get_track_block(self.block)
+        print("--------------------- Track block: ", self.track_block.number, "---------------------")
+        
+        # Update all Track Block variables
+        self.update_track_block()
+
+    ## Position Functions
+    # Input) float: position from the yard
+    def set_position(self, position: float):
+        print("------------- Setting Position ---------------")
+        if(position > self.position):
+            self.polarity -= position - self.position
+        else:
+            # Reset Route and position
+            self.route = dq(self.line.route.from_yard)
+            self.reset_route()
+            self.polarity -= position
+            print(f"Track Block: {self.track_block.number}")
+        
+        # Increment track block until position is reached
+        while(self.polarity <= 0):
+            self.increment_track_block()
+        # Update position
+        self.position = position
+        self.position_updated.emit(self.position)
+
+
+        print(f"----------- Position: {self.position}, Polarity: {self.polarity} -----------")
+            
+    def calculate_position(self):
+        distance = self.current_speed * self.time_step
+        self.position += distance
+        self.polarity -= distance
+
+        self.stop_for_authority()
+
+        if self.polarity <= 0:
+            self.increment_track_block()
+        print(f"Position: {self.position}, Polarity: {self.polarity}")
+        self.train_model.set_position(self.position)
+        self.position_updated.emit(self.position)
 
     ## Driver Mode Funtions
     # Output) string: "automatic" or "manual"
@@ -139,7 +211,16 @@ class TrainController(QObject):
     def toggle_driver_mode(self):
         self.driver_mode = "automatic" if self.driver_mode == "manual" else "manual"
 
-
+    def get_current_speed(self):
+        return self.current_speed
+    def set_current_speed(self, speed: float):
+        self.current_speed = speed
+        if(self.current_speed == 0):
+            # Emit that faults are fixed
+            self.faults_fixed.emit()
+            self.brake.set_emergency_brake(False)
+        
+        
     ## Setpoint and Commanded Speed Functions
     def set_setpoint_speed(self, speed: float):
         self.setpoint_speed = min(speed, self.MAX_SPEED)
@@ -151,6 +232,8 @@ class TrainController(QObject):
     
     def get_commanded_speed(self):
         return self.commanded_speed
+    def handle_commanded_speed(self, speed: float):
+        self.commanded_speed = speed
     
     ## Power Functions (assumes commanded speed has already been updated)
     # Input) TrainModel object
@@ -165,20 +248,21 @@ class TrainController(QObject):
 
     # Simulate the train's response to desired speeds
     ## Purely for debugging purposes
-    def simulate_power_command(self, speed: float):
+    def calculate_power_command(self, speed: float):
+        print(f"Current Speed from Train Model: {self.current_speed}")
         if(self.engine.ssh is None):
-            power_command = self.engine.compute_power_command_software(speed, self.current_speed, self.time_step, self.engineer, self.brake, self.maintenance_mode)
+            self.engine.calculate_power_command_software(speed, self.current_speed, self.time_step, self.engineer, self.brake)
         else:
-            power_command = self.engine.compute_power_command_hardware(speed, self.current_speed, self.time_step, self.engineer, self.brake, self.maintenance_mode)
-        power_command, self.current_speed = self.engine.calculate_current_speed(power_command, self.train_model.current_speed, self.time_step, self.brake)
-        self.elapsed_time += self.time_step
-        print(f"Power Command: {power_command}, Current Speed: {self.current_speed}")
-    
+            self.engine.calculate_power_command_hardware(speed, self.current_speed, self.time_step, self.engineer, self.brake)
+        self.train_model.set_power_command(self.engine.power_command)
+        self.power_updated.emit(self.engine.power_command)
+
+
     # Update the fault status of the train
     # Call maintenance if there is a fault
-    def update_fault_status(self, train_model):
-        self.faults = train_model.get_fault_statuses()
-        if(self.faults != [0, 0, 0]):
+    @pyqtSlot(bool)
+    def handle_fault_update(self, fault: bool):
+        if(fault):
             self.maintenance()
 
     ## Maintenance Mode Functions
@@ -193,6 +277,49 @@ class TrainController(QObject):
         done = (self.current_speed != 0)
         self.brake.set_emergency_brake(done)
         self.set_maintenance_mode(done)
+
+    def update_authority(self, authority: float):
+        self.to_yard = authority < 0
+
+        # self.padding = self.train_length / 2
+        self.authority = self.position + abs(authority)
+        
+        ### Authority shows it's a station
+        if self.authority >= 1_000_000:
+            self.at_station()
+            self.authority = self.position
+        else:
+            if self.destination:
+                self.leaving_station()
+
+    # Check if the train needs to stop because of authority
+    def stop_for_authority(self):
+        # Use kinematics equation v^2 = v0^2 + 2a(x-x0) to calculate the distance needed to stop
+        # If the distance needed to stop is greater than the authority, set the service brake
+        distance = (self.current_speed ** 2) / (2 * 1.2)  # 1.2 m/s^2 is the deceleration rate
+        print(f"Distance: {distance}, Authority: {self.authority}")
+
+        # Position you will be stopped by >= position you need to be stopped by
+        ## MIGHT NEED TO ADD PADDING
+        if self.position + distance >= self.authority: # Return True if the distance needed to stop is less than the authority
+            self.brake.set_service_brake(True)
+            print("Stopping for authority")
+
+    ## Functions for arriving and departing from stations
+    def set_station(self, station: str):
+        self.station = station
+    def get_station(self):
+        return self.station
+    def set_destination(self, destination: str):
+        self.destination = destination
+    def get_destination(self):
+        return self.destination
+    def at_station(self):
+        self.doors.open_door()
+        self.set_destination(self.station)
+    def leaving_station(self):
+        self.doors.close_door()
+        self.set_destination(None)
 
     @pyqtSlot(bool)
     def handle_toggle_driver_mode(self, check):
@@ -214,7 +341,6 @@ class TrainController(QObject):
     @pyqtSlot(bool)
     def handle_service_brake_toggled(self, check: bool) -> None:
         if check:
-            print("in tc handler")
             self.brake.set_service_brake(True)
         else:
             self.brake.set_service_brake(False)
@@ -227,7 +353,7 @@ class TrainController(QObject):
             self.brake.set_emergency_brake(False)
 
     @pyqtSlot(str)
-    def handle_comm_temp_changed(self, x: str) -> None:
+    def handle_commanded_temp_changed(self, x: str) -> None:
         if(x != ""):
             self.ac.set_commanded_temp(float(x))
 
@@ -245,27 +371,26 @@ class TrainController(QObject):
 
     @pyqtSlot(float)
     def handle_curr_speed_changed(self, speed: float) -> None:
-        self.train_model.set_current_speed(speed)
+        self.current_speed = speed
     
     @pyqtSlot(float)
     def handle_comm_speed_changed(self, speed: float) -> None:
-        self.train_model.set_commanded_speed(speed)
+        self.commanded_speed = speed
 
     @pyqtSlot(float)
-    def handle_authority_changed(self, a: float) -> None:
-        self.train_model.set_authority(a)
+    def handle_authority_changed(self, authority: float) -> None:
+        self.update_authority(authority)
 
     @pyqtSlot(bool)
     def handle_light_status_changed(self, light: bool) -> None:
         self.lights.set_lights(light)
 
     @pyqtSlot(bool)
-    def handle_right_door_changed(self, door: bool) -> None:
-        self.doors.set_right(door)
-
-    @pyqtSlot(bool)
     def handle_left_door_changed(self, door: bool) -> None:
         self.doors.set_left(door)
+    @pyqtSlot(bool)
+    def handle_right_door_changed(self, door: bool) -> None:
+        self.doors.set_right(door)
 
     @pyqtSlot(int)
     def handle_kp_changed(self, kp: int) -> None:
@@ -324,7 +449,6 @@ class TrainController(QObject):
         ## Mutator functions
         # Input) status: boolean
         def set_service_brake(self, status: bool):
-            print("in set service brake")
             self.service_brake = status
             self.service_brake_updated.emit(status)
         # Input) status: boolean
@@ -334,7 +458,7 @@ class TrainController(QObject):
         def set_user_service_brake(self, status: bool):
             self.user_service_brake = status
         def set_user_emergency_brake(self, status: bool):
-            self.user_emergency_brake
+            self.user_emergency_brake = status
 
         ## Toggle Functions
         def toggle_service_brake(self):
@@ -350,9 +474,9 @@ class TrainController(QObject):
 
         ## Accessor functions
         def get_service_brake(self):
-            return self.service_brake
+            return self.service_brake or self.user_service_brake
         def get_emergency_brake(self):
-            return self.emergency_brake
+            return self.emergency_brake or self.user_emergency_brake
         def get_user_service_brake(self):
             return self.user_service_brake
         def get_user_emergency_brake(self):
@@ -364,7 +488,9 @@ class TrainController(QObject):
        
     ## Engine class calculates power command and can simulate train response
     class Engine(QObject):
+
         def __init__(self, ssh):
+            super().__init__()
             self.speed_limit = None  # Speed limit of the train
             self.P_MAX = 120  # Maximum power (kW)
             self.power_command = 0 # Power command
@@ -411,40 +537,20 @@ class TrainController(QObject):
             except Exception as e:
                 print(f"An error occurred during communication: {e}")
                 return 0, self.u_k
-        
-        # Check if the train needs to stop because of authority
-        def stop_for_authority(self, authority: float, current_speed: float):
-            # Use kinematics equation v^2 = v0^2 + 2a(x-x0) to calculate the distance needed to stop
-            # If the distance needed to stop is greater than the authority, set the service brake
-            distance = (current_speed ** 2) / (2 * 1.2)  # 1.2 m/s^2 is the deceleration rate
-
-            # True = need to brake, False = don't need to brake
-            ## MIGHT NEED TO ADD A BIT OF PADDING IDK
-            return distance < authority # Return True if the distance needed to stop is less than the authority
 
         # PID controller to compute the power command
         # Input) desired_speed: float, current_speed: float, engineer: Engineer object
         # Return) the power command to be applied to the train
         ### If fault exists, return 0
         ### HOW DO WE HANDLE INTEGRAL OR U_K WHEN BRAKE IS ON
-        def compute_power_command_software(self, desired_speed: float, current_speed: float, time_step: float, engineer, brake, maintenance_mode: bool = False):
-            print("Software")
-            
-            if(maintenance_mode):
-                # Reset values
-                self.u_k = 0 # Power command
-                self.e_k_integral = 0 # Error integral
-                self.u_k_integral = 0 # Power integral
-                return 0
-            
-            brake.set_service_brake(False)
-
+        def calculate_power_command_software(self, desired_speed: float, current_speed: float, time_step: float, engineer, brake):
             # Get kp and ki from engineer
             kp, ki = engineer.get_engineer()
+            print(f"Kp: {kp}, Ki: {ki}")
 
             # Calculate the error
-            # Authority distance = 
             desired_speed = min(desired_speed, self.speed_limit)
+            print("Current Speed: ", current_speed, "Desired Speed: ", desired_speed)
             e_k = desired_speed - current_speed
             # Power command = Kp * error + Ki * integral of error
             self.power_command = kp * e_k + ki * self.u_k
@@ -461,32 +567,25 @@ class TrainController(QObject):
             self.u_k_integral = self.u_k
             self.power_command = min(self.power_command, self.P_MAX)
 
-            #### This will be used after integration
             if self.power_command < 0:
                 brake.set_service_brake(True)
+            
+            if brake.get_status():
                 #### THIS LINE IS FOR TESTING PURPOSES ONLY ####
                 self.power_command = max(self.power_command , -self.P_MAX)    # self.power_command = 0
 
-            return self.power_command 
-        
-        def compute_power_command_hardware(self, desired_speed: float, current_speed: float, time_step: float, engineer, brake, maintenance_mode: bool = False):
-            print("Hardware")
-            
-            if(maintenance_mode):
-                # Reset values
-                self.u_k = 0 # Power command
-                self.e_k_integral = 0 # Error integral
-                self.u_k_integral = 0 # Power integral
-                return 0
-            
-            brake.set_service_brake(False)
+            print(f"Power Command from Train Controller: {self.power_command}")
 
+        
+        def calculate_power_command_hardware(self, desired_speed: float, current_speed: float, time_step: float, engineer, brake):
             # Get kp and ki from engineer
             kp, ki = engineer.get_engineer()
+            print(f"Kp: {kp}, Ki: {ki}")
 
             # Calculate the error
             # Authority distance = 
             desired_speed = min(desired_speed, self.speed_limit)
+            print("Current Speed: ", current_speed, "Desired Speed: ", desired_speed)
             e_k = desired_speed - current_speed
             
             # Send the data to the Raspberry Pi for power command calculation
@@ -510,32 +609,26 @@ class TrainController(QObject):
             #### This will be used after integration
             if self.power_command < 0:
                 brake.set_service_brake(True)
-                #### THIS LINE IS FOR TESTING PURPOSES ONLY ####
-                self.power_command = max(self.power_command, -self.P_MAX)    # self.power_command = 0
-
-            return self.power_command
-        
-        def calculate_current_speed(self, power_command, current_speed, time_step: float, brake):
-            # If power command is greater than the maximum power, it's exceeded the physical limit so set it to the maximum power
-            if power_command > self.P_MAX:
-                power_command = self.P_MAX
-            # If power command magnitude is negative, we need to slow down so turn on the service brake
-            elif power_command < -self.P_MAX:
-                power_command = -self.P_MAX
                 
-            ##### JUST FOR TESTING #####
-            if brake.get_status():
-                power_command = -self.P_MAX
+            if self.brake.get_status():
+                self.power_command = 0
+                    
+        # def calculate_current_speed(self, current_speed, time_step: float, brake):
+        #     # If power command is greater than the maximum power, it's exceeded the physical limit so set it to the maximum power
             
-            self.power_command = power_command
+        #     # if brake.get_status():
+        #     #     self.power_command = -5
+            
+        #     # Calculate current speed based on power command            
+        #     current_speed += self.power_command * time_step
+        #     current_speed = min(current_speed, self.speed_limit)
+        #     current_speed = max(current_speed, 0)
 
-            current_speed += power_command * time_step
-            current_speed = min(current_speed, self.speed_limit)
-            
-            return power_command, current_speed
+        #     return current_speed
         
-        def update_speed_limit(self, train_model):
-            self.speed_limit = train_model.get_speed_limit()
+        def set_speed_limit(self, speed_limit: float):
+            self.speed_limit = speed_limit
+            print(f"Speed Limit: {self.speed_limit}")
         
     ## Door class to hold door status
     # Door status = bool
@@ -543,11 +636,11 @@ class TrainController(QObject):
     class Doors(QObject):
         left_door_updated = pyqtSignal(bool)
         right_door_updated = pyqtSignal(bool)
-        def __init__(self, exit_door="L"):
+        def __init__(self):
             super().__init__()
-            self.left = False
-            self.right = False
-            self.exit_door = exit_door   # False = "left", True = "right"
+            self.left: bool = False
+            self.right: bool = False
+            self.exit_door: str = None   # left = "left", True = "right"
 
         ## Mutator Functions
         # Input) status: boolean
@@ -577,9 +670,9 @@ class TrainController(QObject):
             return self.get_left(), self.get_right()
         
         # Update the exit door status
-        def set_exit_door(self, train_model):
-            right_door = train_model.get_exit_door()
-            self.exit_door = "right" if right_door else "left"
+        # Input) bool: False = first value, Trye = second value
+        def update_exit_door(self, exit_door: str):
+            self.exit_door = "right" if self.exit_door == "Right" else "left"
 
         def open_door(self):
             if self.exit_door == "left":
@@ -606,12 +699,12 @@ class TrainController(QObject):
     # False = off, True = on
     class Lights(QObject):
         lights_updated = pyqtSignal(bool)
-        def __init__(self, underground=False):
+        def __init__(self):
 
             super().__init__()
-            self.lights = False
-            self.underground = underground # List of blocks that are underground
-            self.night_time = 43200 # 12 hours in seconds
+            self.lights: bool = False
+            self.underground: bool = None # Boolean
+            self.night_time: int = 43200 # 12 hours in seconds
 
         ## Mutator Functions
         def lights_on(self):
@@ -640,15 +733,19 @@ class TrainController(QObject):
         ## Update Functions
         def update_underground(self, underground: bool):
             self.underground = underground
-        def update_lights(self, train_model, elapsed_time: float):
-            self.update_underground(train_model.get_underground())    # Update underground blocks
-            self.set_lights(self.underground or (elapsed_time % 86400) > 43200)   # Set external lights if current block is undreground
+        def update_lights(self, elapsed_time: float):
+            prev_lights = self.lights
+            self.set_lights(self.underground or (elapsed_time % 86400) > 43200)   # Set external lights if current block is underground
+            if prev_lights != self.lights:
+                print(f"Lights are now {'on' if self.lights else 'off'}")
 
     ## AC class to hold temperature status
     # Commanded temperature from driver (initialized to 69)
     # Current temperature from Train Model
     class AC(QObject):
-        train_temp_updated = pyqtSignal(int)
+        commanded_temp_updated = pyqtSignal(int)    # --> Train Model
+        train_temp_updated = pyqtSignal(int)    # --> UI
+
         def __init__(self, temp: int):
             super().__init__() 
             # Automatic temperature when in Automatic mode (69 degrees Fahrenheit)
@@ -664,6 +761,7 @@ class TrainController(QObject):
         def set_commanded_temp(self, temp: int):
             self.commanded_temp = min(round(temp), self.MAX_TEMP)
             self.commanded_temp = max(self.commanded_temp, self.MIN_TEMP)
+            self.commanded_temp_updated.emit(self.commanded_temp)
 
         ## Accessor Function
         def get_commanded_temp(self):
@@ -673,40 +771,48 @@ class TrainController(QObject):
         
         ## Update Function
         # Input) TrainModel object, string: "automatic" or "manual"
-        def update_current_temp(self, train_model, driver_mode: str):
-            self.current_temp = train_model.get_train_temp()
+        def update_current_temp(self, temp: int):
+            self.current_temp = temp
             self.train_temp_updated.emit(self.current_temp)
-            # If in automatic mode, set the commanded temperature to the automatic temperature
-            if(driver_mode == "automatic"):
-                self.set_commanded_temp(self.auto_temp)
 
 
 # Does beacon need to be encrypted
 # All information from MBO needs to be encrypted
-class TrainModel(QObject):
+class MockTrainModel(QObject):
     engine_fault_updated = pyqtSignal(bool)
     brake_fault_updated = pyqtSignal(bool)
     signal_fault_updated = pyqtSignal(bool)
-    curr_speed_updated = pyqtSignal(float)
     comm_speed_updated = pyqtSignal(float)
     authority_updated = pyqtSignal(float)
+
     def __init__(self):
         super().__init__() 
         # Train Model variables
         self.current_speed: float = 0
         self.commanded_speed: float = 0
-        self.authority: float = 1000
-        self.train_temp: int = 69
-        self.faults: bool[3] = [0, 0, 0]
+        self.authority: float = 0
 
-        # Track block variables
-        self.track_block: int = 0
-        self.block: int = 0
-        self.station: str = "station_name"
-        self.speed_limit: float = 19.44  #m/s
-        self.length: float = 0
-        self.exit_door: str = "L"
-        self.underground: bool = False
+        self.power_command = 0
+        self.position = 0
+        self.block = 0
+
+        self.commanded_temp = 69
+        self.train_temp: int = 69
+
+        self.engine_fault: bool = False
+        self.brake_fault: bool = False
+        self.signal_fault: bool = False
+        
+        self.service_brake: bool = False
+        self.emergency_brake: bool = False
+
+        self.left_door: bool = False
+        self.right_door: bool = False
+        self.lights: bool = False
+
+    def set_power_command(self, power: float):
+        self.power_command = power
+        self.calculate_current_speed(1)
 
     # Float
     def get_current_speed(self):
@@ -714,22 +820,16 @@ class TrainModel(QObject):
         return self.current_speed
     def set_current_speed(self, speed: float):
         self.current_speed = round(speed, 2)
-        self.curr_speed_updated.emit(self.current_speed)
-    
-    # Float
-    def get_speed_limit(self):
-        # Logic to get the speed limit of the train
-        return self.speed_limit
-    def set_speed_limit(self, speed: float):
-        self.speed_limit = speed
-
-    # 1 floats
-    # Length of the current block
-    def get_length(self):
-        # Logic to get current length of the train
-        return self.length
-    def set_length(self, length: float):
-        self.length = length
+    def calculate_current_speed(self, time_step: float):
+        # If power command is greater than the maximum power, it's exceeded the physical limit so set it to the maximum power
+        
+        # if brake.get_status():
+        #     self.power_command = -5
+        
+        # Calculate current speed based on power command            
+        self.current_speed += self.power_command * time_step
+        self.set_current_speed(max(self.current_speed, 0))
+        print("Current Speed: ", self.current_speed, "\n")
 
     # Iterative (float representing meters)? Absolute (position representing when to stop by)?
     def get_authority(self):
@@ -747,52 +847,28 @@ class TrainModel(QObject):
         self.commanded_speed = round(speed)
         self.comm_speed_updated.emit(self.commanded_speed)
 
+
+    def set_position(self, position: float):
+        self.position = position
+    @pyqtSlot(int)
+    def handle_block_update(self, block: int) -> None:
+        self.block = block
+
+
+    # Float
+    def get_commanded_temp(self):
+        # Logic to get commanded speed from the train model
+        return self.commanded_temp
+    def handle_commanded_temp_update(self, temp: int):
+        self.commanded_temp = temp
+
     # float
     def get_train_temp(self):
         # Logic to get the temperature inside the train
         return self.train_temp
     def set_train_temp(self, temp: int):
         self.train_temp = temp
-
-    def get_track_block(self):
-        return self.track_block
-    def increment_track_block(self):
-        self.track_block += 1
     
-    # String or station ID?
-    # Need to decrypt the information and figure it out from that
-    # Is the full name even needed
-    def get_station_name(self):
-        # Logic to get the name of the current station
-        return self.station
-    def set_station_name(self, station: str):
-        self.station = station
-    
-    # Char
-    # Used for underground logic
-    def get_block(self):
-        # Logic to get the block number
-        return self.block
-    def set_block(self, block: int):
-        if block < 0:
-            raise ValueError("Block number must be positive.")
-        self.block = block
-
-    # List of chars (list of blocks)
-    def get_underground(self):
-        # Logic to get the underground status of the train
-        return self.underground
-    def set_underground(self, underground: bool):
-        self.underground = underground
-
-    # Bool (left, right)
-    def get_exit_door(self):
-        # Logic to get the status of the exit door
-        return self.exit_door
-    def set_exit_door(self, door: str):
-        if door not in ["L", "R"]:
-            raise ValueError("Invalid door. Door must be 'L' or 'R'.")
-        self.exit_door = door
 
     # List of bools? Individual bools?
     # [engine, brake, signal]
@@ -814,37 +890,37 @@ class TrainModel(QObject):
     def set_signal_fault(self, status: bool):
         self.faults[2] = status
         self.signal_fault_updated.emit(status)
-    
-    
-    # This is used to update all train model variables with the real Train Model
-    # In hardware, this is done through parsing. In software, this is done through the object
-    def update_mock_train_model(self, train_model):
-        self.current_speed = train_model.get_current_speed()
-        self.speed_limit = train_model.get_speed_limit()
-        self.length = train_model.get_length()
-        self.authority = train_model.get_authority()
-        self.commanded_speed = train_model.get_commanded_speed()
-        self.train_temp = train_model.get_train_temp()
 
-        # self.exit_door = train_model.get_exit_door()
-        # self.station = train_model.get_station_name()
-        # self.distance_from_station = train_model.get_distance_from_station()
-        # self.exit_door = train_model.get_exit_door()
-        # self.block = train_model.get_block()
-        # self.underground_blocks = train_model.get_underground_blocks()
-        # self.faults = train_model.get_fault_statuses()
-        return True
+
+    @pyqtSlot(bool)
+    def handle_service_brake_update(self, status: bool) -> None:
+        self.service_brake = status
+    @pyqtSlot(bool)
+    def handle_emergency_brake_update(self, status: bool) -> None:
+        self.service_brake = status
+
+
+    @pyqtSlot(bool)
+    def handle_left_door_update(self, status: bool) -> None:
+        self.left_door = status
+
+    @pyqtSlot(bool)
+    def handle_right_door_update(self, status: bool) -> None:
+        self.right_door = status
+    @pyqtSlot(bool)
+    def handle_lights_update(self, status: bool) -> None:
+        self.lights = status
         
 
 
 class TrainSystem:
     def __init__(self, host=None, port=None, username=None, password=None):
-        self.train_model = TrainModel()
+        self.train_model = MockTrainModel()
         self.ssh_client = None
         if(host and port and username and password):
             self.ssh_client = self.create_ssh_connection(HOST, PORT, USERNAME, PASSWORD)
         # Hardware
-        #self.controller = TrainController(25, 0.1, self.train_model, self.ssh_client)
+        # self.controller = TrainController(25, 0.1, self.train_model, self.ssh_client)
         # Software
         self.controller = TrainController(25, 0.1, self.train_model)
 
@@ -866,22 +942,25 @@ class TrainSystem:
 
     def run(self):
         self.controller.set_setpoint_speed(30)
-        for _ in range(5):
-            self.controller.simulate_timestep()
-
-        self.controller.set_setpoint_speed(40)
-        for _ in range(5):
-            self.controller.simulate_timestep()
-        
-        self.controller.set_setpoint_speed(500)
         for _ in range(50):
-            self.controller.simulate_timestep()
+            self.controller.update_train_controller()
+
+        # self.controller.set_position(65)
+
+        self.controller.set_setpoint_speed(30)
+        for _ in range(50):
+            self.controller.update_train_controller()
         
-        self.controller.set_setpoint_speed(10)
-        for _ in range(5):
-            self.controller.simulate_timestep()
+        # self.controller.set_setpoint_speed(30)
+        # for _ in range(50):
+        #     self.controller.update_train_controller()
+        
+        # self.controller.set_setpoint_speed(10)
+        # for _ in range(50):
+        #     self.controller.update_train_controller()
             
 
 if __name__ == "__main__":
-    train_system = TrainSystem(HOST, PORT, USERNAME, PASSWORD)
+    # train_system = TrainSystem(HOST, PORT, USERNAME, PASSWORD)
+    train_system = TrainSystem()
     train_system.run()

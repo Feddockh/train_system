@@ -1135,7 +1135,6 @@ class DriverWindow(QMainWindow): ###DriverWindow
 
     @pyqtSlot(bool)
     def handle_service_brake_update(self, brake: bool) -> None:
-        print("in update handler")
         self.serv_brake_status = brake
 
         self.brake_on = self.serv_brake_status or self.emerg_brake_status

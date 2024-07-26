@@ -1,8 +1,13 @@
 import sys
-from train_system.train_controller.train_controller import TrainController, TrainModel
+from train_system.train_controller.train_controller import TrainController, TrainModel, TrainSystem
 from train_system.train_controller.tc_ui import *
 from train_system.common.time_keeper import TimeKeeper
 from PyQt6.QtWidgets import QApplication
+
+HOST= '192.168.0.114'
+PORT = 22
+USERNAME = 'danim'
+PASSWORD = 'danim'
 
 app = QApplication(sys.argv)
    
@@ -10,9 +15,14 @@ app = QApplication(sys.argv)
 time_keeper = TimeKeeper()
 time_keeper.start_timer()   
 
-tm = TrainModel()
-    
-tc = TrainController(time_keeper, train_model=tm)
+# Hardware
+# ts = TrainSystem(HOST, PORT, USERNAME, PASSWORD)
+# Software
+ts = TrainSystem()
+
+tm = ts.train_model
+        
+tc = ts.controller
 
 driver = DriverWindow(time_keeper)
 test = TestBenchWindow()
@@ -22,6 +32,7 @@ print("Test: " + str(test.ki_val))
 print("Engineer UI: " + str(engineer.data[0][2]))
 print("TC: " + str(tc.engineer.get_ki()))
 
+time_keeper.tick.connect(tc.lights.update_lights)
 
 #TRAIN CONTROLLER TO EXTERNAL
 
