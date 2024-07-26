@@ -968,10 +968,11 @@ class Maintenance(QtWidgets.QMainWindow):
         elif(item.column() == 3):
             row = item.row()
             self.check_crossing(row, waysideIndex)
+            print("here")
 
     def check_crossing(self, x, waysideIndex):
         #checking to see if there is a crossing at this block
-        if(self.track_controllers[waysideIndex].track_blocks[x]._crossing_signal != CrossingSignal.NA):
+        if(self.track_controllers[waysideIndex].track_blocks[x]._crossing_signal_bool != None):
             #Getting current signal
             curr_crossing = self.track_controllers[waysideIndex].track_blocks[x]._crossing_signal_bool
             print("Curr")
