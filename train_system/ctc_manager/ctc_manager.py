@@ -1,6 +1,6 @@
 # train_system/ctc_manager/ctc_manager.py
 
-from typing import List, Dict, Optional
+from typing import List, Dict, Tuple, Optional
 from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
 
 from train_system.common.time_keeper import TimeKeeper
@@ -12,53 +12,84 @@ from train_system.ctc_manager.ctc_train_dispatch import CTCTrainDispatch
 class CTCOffice(QObject):
     train_dispatch_updated = pyqtSignal(TrainRouteUpdate)
 
-    def __init__(self, time_keeper: TimeKeeper, line_name: str) -> None:
+    def __init__(self, time_keeper: TimeKeeper, line_names: List[str]) -> None:
 
         """
         Initialize the CTC Office.
 
         Args:
             time_keeper (TimeKeeper): The time keeper for managing time updates.
-            line_name (str): The name of the line.
+            line_name List(str): The name of the lines.
         """
 
         super().__init__()
         self.time_keeper = time_keeper
+
+        # Check that there are exactly two lines
+        if len(line_names) != 2:
+            raise ValueError("CTC manager requires exactly two lines.")
         
-        # Create the line object
-        self.line = Line(line_name)
-        self.line.load_defaults()
+        # Create the line objects
+        self.lines: List[Line] = []
+        for line_name in line_names:
 
-        # Connect the Line signals to the CTC Manager slots
-        self.line.track_block_occupancy_updated.connect(self.handle_occupancy_update)
-        self.line.track_block_crossing_signal_updated.connect(self.handle_crossing_signal_update)
-        self.line.switch_position_updated.connect(self.handle_switch_position_update)
+            # Create the line object
+            line = Line(line_name.lower())
 
-        # Create a list of train objects
-        self.trains: Dict[int, CTCTrainDispatch] = {}
-        self.last_train_dispatched = None
+            # Load the default track block configurations
+            line.load_defaults()
 
-        # Initialize the mode
-        self.test_bench_mode = False
-        self.maintenance_mode = False
-        self.mbo_mode = False
-        self.automatic_mode = False
+            # Connect the line signals to the CTC Manager slots
+            line.track_block_occupancy_updated.connect(self.handle_occupancy_update)
+            line.track_block_crossing_signal_updated.connect(self.handle_crossing_signal_update)
+            line.switch_position_updated.connect(self.handle_switch_position_update)
 
-    def train_exists(self, train_id: int) -> bool:
-        return train_id in self.trains
+            # Add the line object to the dictionary
+            self.lines.append(line)
 
-    def add_train(self, train_id: int, line: Line) -> CTCTrainDispatch:
-        train = CTCTrainDispatch(self.time_keeper, train_id, line)
-        self.trains[train_id] = train
+        # Create a list of train objects indexed by the train ID and the line name
+        self.trains: Dict[Tuple[int, str], CTCTrainDispatch] = {}
+
+        # Initialize the toggle switch states
+        self.test_bench_mode: bool = False
+        self.maintenance_mode: bool = False
+        self.mbo_mode: bool = False
+        self.automatic_mode: bool = False
+        self.dispatching_line_name: str = self.lines[0].name
+
+    def line_exists(self, line_name: str) -> bool:
+        for line in self.lines:
+            if line.name == line_name:
+                return True
+        return False
+    
+    def get_line(self, line_name: str) -> Line:
+        for line in self.lines:
+            if line.name == line_name:
+                return line
+        return None
+
+    def train_exists(self, train_id: int, line_name: str) -> bool:
+        return (train_id, line_name) in self.trains
+
+    def add_train(self, train_id: int, line_name: str) -> CTCTrainDispatch:
+        
+        # Check if the line is valid
+        if not self.line_exists(line_name):
+            raise ValueError(f"Line {line_name} does not exist.")
+        
+        # Create the train dispatch object and add to the dictionary
+        train = CTCTrainDispatch(self.time_keeper, train_id, self.get_line(line_name))
+        self.trains[(train_id, line_name)] = train
         return train
 
-    def remove_train(self, train_id: int) -> None:
-        if self.train_exists(train_id):
-            del self.trains[train_id]
+    def remove_train(self, train_id: int, line_name: str) -> None:
+        if self.train_exists(train_id, line_name):
+            del self.trains[(train_id, line_name)]
 
-    def get_train(self, train_id: int) -> CTCTrainDispatch:
-        if self.train_exists(train_id):
-            return self.trains[train_id]
+    def get_train(self, train_id: int, line_name: str) -> CTCTrainDispatch:
+        if self.train_exists(train_id, line_name):
+            return self.trains[(train_id, line_name)]
         return None
 
     def get_trains_ordered_by_lag(self, trains: Optional[List[CTCTrainDispatch]] = None) -> List[CTCTrainDispatch]:
@@ -72,20 +103,22 @@ class CTCOffice(QObject):
         ordered_trains = sorted(filtered_trains, key=lambda train: train.lag, reverse=True)
         return ordered_trains
 
-    def send_train_dispatch_update(self, train_id: int) -> None:
-        if self.train_exists(train_id):
-            train = self.get_train(train_id)
-            update = TrainDispatchUpdate(train_id, self.line.name, train.route, train.stop_priority_queue)
+    def send_train_dispatch_update(self, train_id: int, line_name: str) -> None:
+        if self.train_exists(train_id, line_name):
+            train = self.get_train(train_id, line_name)
+            line = self.get_line(line_name)
+            update = TrainRouteUpdate(train.train_id, line, train.route, train.stop_priority_queue)
             self.train_dispatch_updated.emit(update)
 
-    def compute_train_authority(self, train_id: int) -> float:
+    def compute_train_authority(self, train_id: int, line_name: str) -> float:
 
         # Check if the train exists
-        if not self.train_exists(train_id):
+        if not self.train_exists(train_id, line_name):
             return 0 
         
-        # Get the train object
-        train = self.get_train(train_id)
+        # Get the train and line objects
+        train = self.get_train(train_id, line_name)
+        line = self.get_line(line_name)
 
         # If the train is boarding, do not update the authority
         if not train.departed and train.departure_time > self.time_keeper.current_second:
@@ -96,45 +129,46 @@ class CTCOffice(QObject):
 
         # Get the unobstructed path to the next stop
         path = train.get_route_to_next_stop()
-        unobstructed_path = self.line.get_unobstructed_path(path)
+        unobstructed_path = line.get_unobstructed_path(path)
         
         # Compute the authority by summing the lengths of the blocks in the path and half the length of the stop block
-        authority = self.line.get_path_length(unobstructed_path)
-        authority += self.line.get_track_block(next_stop_id).length / 2
+        authority = line.get_path_length(unobstructed_path)
+        authority += line.get_track_block(next_stop_id).length / 2
 
         # If the next stop is the yard negate authority
-        if next_stop_id == self.line.yard:
+        if next_stop_id == line.yard:
             authority = -abs(authority)
         
         return authority
 
-    def compute_train_suggested_speed(self, train_id: int) -> int:
+    def compute_train_suggested_speed(self, train_id: int, line_name: str) -> int:
 
         # TODO: Consider lag in the computation
 
         # Check if the train exists
-        if not self.train_exists(train_id):
+        if not self.train_exists(train_id, line_name):
             return 0
         
-        # Get the train object
-        train = self.get_train(train_id)
+        # Get the train and line objects
+        train = self.get_train(train_id, line_name)
+        line = self.get_line(line_name)
 
         # If the train is boarding (has reached stop), suggested speed should be 5
         if not train.departed and train.departure_time > self.time_keeper.current_second:
             return 5
 
         # Return the speed limit of the block
-        return self.line.get_track_block(train.get_current_block_id()).speed_limit
+        return line.get_track_block(train.get_current_block_id()).speed_limit
 
-    def update_all_trains_speed_authority(self) -> None:
+    def update_all_trains_speed_authority(self, line_name: str) -> None:
 
-        # Update the authority and suggested speed of each train
-        for train_id, train in self.trains.items():
-            if train.dispatched:
+        # Update the authority and suggested speed of each train (on the line)
+        for (train_id, _line_name), train in self.trains.items():
+            if train.dispatched and _line_name == line_name:
 
                 # Compute the suggested speed and authority
-                suggested_speed = self.compute_train_suggested_speed(train_id)
-                authority = self.compute_train_authority(train_id)
+                suggested_speed = self.compute_train_suggested_speed(train_id, line_name)
+                authority = self.compute_train_authority(train_id, line_name)
 
                 # Update the train object
                 train.update_speed_authority(suggested_speed, authority)
@@ -151,13 +185,13 @@ class CTCOffice(QObject):
 
                 # Get the current and next block of the train
                 current_block_id = train.get_current_block_id()
-                current_block = self.line.get_track_block(current_block_id)
+                current_block = train.line.get_track_block(current_block_id)
                 next_block_id = train.get_next_block_id()
-                next_block = self.line.get_track_block(next_block_id)
+                next_block = train.line.get_track_block(next_block_id)
         
                 # Check if the train is dispatched and sitting at the yard
                 move_train = False
-                if current_block_id == self.line.yard:
+                if current_block_id == train.line.yard:
                     move_train = True
 
                 # Check if the train has exceeded the time per block
@@ -184,14 +218,14 @@ class CTCOffice(QObject):
         # Check if it is time to depart or dispatch any trains
         # Add trains to dispatch to a list because we can only dispatch one train at a time (from yard conflict)
         trains_to_dispatch = []
-        for train_id, train in self.trains.items():
+        for (train_id, line_name), train in self.trains.items():
 
             # Check for departing trains (must be dispatched, not departed, and the departure time has passed)
             if train.dispatched and not train.departed and self.time_keeper.current_second >= train.departure_time:
                 
                 # Update the speed and authority of the train
-                train.suggested_speed = self.compute_train_suggested_speed(train_id)
-                train.authority = self.compute_train_authority(train_id)
+                train.suggested_speed = self.compute_train_suggested_speed(train_id, line_name)
+                train.authority = self.compute_train_authority(train_id, line_name)
             
             # Check for dispatching trains (must be dispatched, have a stop, and the dispatch time has passed)
             if not train.dispatched and train.stop_priority_queue and self.time_keeper.current_second >= train.dispatch_time:
@@ -200,8 +234,8 @@ class CTCOffice(QObject):
         # Dispatch the train with the highest lag if there are trains to dispatch
         if trains_to_dispatch:
             train = self.get_trains_ordered_by_lag(trains_to_dispatch)[0]
-            suggested_speed = self.compute_train_suggested_speed(train_id)
-            authority = self.compute_train_authority(train_id)
+            suggested_speed = self.compute_train_suggested_speed(train_id, train.line.name)
+            authority = self.compute_train_authority(train_id, train.line.name)
             train.dispatch(suggested_speed, authority)
 
         # Run the test bench simulation if the test bench mode is enabled
@@ -236,35 +270,48 @@ class CTCOffice(QObject):
         else:
             self.automatic_mode = False
     
-    @pyqtSlot(int, bool)
-    def handle_occupancy_update(self, block_number: int, occupancy: bool) -> None:
+    @pyqtSlot(bool)
+    def handle_line_toggle(self, state: bool) -> None:
+        # TODO: Switch this to take the line name as an argument instead of bool
+        if state:
+            self.dispatching_line_name = self.lines[1].name
+        else:
+            self.dispatching_line_name = self.lines[0].name
+
+    @pyqtSlot(str, int, bool)
+    def handle_occupancy_update(self, line_name: str, block_number: int, occupancy: bool) -> None:
 
         # Check if it is CTC's responsibility to update the speed and authority of the trains
         if self.mbo_mode:
             return
+
+        # Get the line object
+        if not self.line_exists(line_name):
+            raise ValueError(f"Line {line_name} does not exist.")
+        line = self.get_line(line_name)
         
         # Update train position when incoming occupancy is true (this helps with multi-block occupancies)
         if occupancy:
 
             # Get the next block candidate of the train (newly occupied block)
-            candidate_block = self.line.get_track_block(block_number)
+            candidate_block = line.get_track_block(block_number)
 
             # If the candidate block is the yard, remove the train from the list of trains
-            if block_number == self.line.yard:
-                for train_id, train in self.trains.items():
-                    if train.get_next_block_id() == self.line.yard:
-                        self.remove_train(train_id)
+            if block_number == line.yard:
+                for (train_id, _), train in self.trains.items():
+                    if train.get_next_block_id() == line.yard:
+                        self.remove_train(train_id, line_name)
                         break
 
             # If the candidate block is not under maintenance, find the train that can move to that block
             elif not candidate_block.under_maintenance:
-                for train_id, train in self.trains.items():
+                for (train_id, _), train in self.trains.items():
 
                     # Check that the train was dispatched and train's next block was the candidate block
                     if train.dispatched and train.get_next_block_id() == candidate_block.number:
 
                         # Get the train's current block and check if the train can move to the candidate block
-                        current_block = self.line.get_track_block(train.get_current_block_id())
+                        current_block = line.get_track_block(train.get_current_block_id())
                         if (current_block.switch is None or 
                                 candidate_block.switch is None or
                                 current_block.switch.is_connected(current_block.number, candidate_block.number)):
@@ -272,37 +319,38 @@ class CTCOffice(QObject):
                             break
 
         # Update the speed and authority of the trains (this is done on positive and negative occupancy signals)
-        self.update_all_trains_speed_authority()
+        self.update_all_trains_speed_authority(line_name)
 
-    @pyqtSlot(int, int)
-    def handle_crossing_signal_update(self, block_number: int, new_signal: int) -> None:
-        print(f"Block {block_number} crossing signal updated to {new_signal}")
+    @pyqtSlot(str, int, int)
+    def handle_crossing_signal_update(self, line_name: str, block_number: int, new_signal: int) -> None:
+        # TODO: Implement crossing signal logic
+        print(f"Line {line_name} block {block_number} crossing signal updated to {new_signal}")
     
-    @pyqtSlot(int)
-    def handle_switch_position_update(self, switch_number: int) -> None:
-        self.update_all_trains_speed_authority()
+    @pyqtSlot(str, int)
+    def handle_switch_position_update(self, line_name: str, switch_number: int) -> None:
+        self.update_all_trains_speed_authority(line_name)
 
     @pyqtSlot(int, int, int)
     def handle_dispatcher_command(self, train_id: int, target_block: int, arrival_time: int) -> None:
 
         # If the train does not yet exist, add it and add the stop
-        if not self.train_exists(train_id):
-            train = self.add_train(train_id, self.line)
+        if not self.train_exists(train_id, self.dispatching_line_name):
+            train = self.add_train(train_id, self.dispatching_line_name)
             train.add_stop(arrival_time, target_block)
         
         # If the train exists, add the stop and update the authority and suggested speed
         else:
-            train = self.get_train(train_id)
+            train = self.get_train(train_id, self.dispatching_line_name)
             train.add_stop(arrival_time, target_block)
-            train.suggested_speed = self.compute_train_suggested_speed(train_id)
-            train.authority = self.compute_train_authority(train_id)
+            train.suggested_speed = self.compute_train_suggested_speed(train_id, self.dispatching_line_name)
+            train.authority = self.compute_train_authority(train_id, self.dispatching_line_name)
 
     @pyqtSlot(TrainRouteUpdate)
     def handle_train_route_update(self, update: TrainRouteUpdate):
         if self.mbo_mode:
-            if not self.train_exists(update.train_id):
-                self.add_train(update.train_id, self.line) # TODO: Change this to check for line
-            train_dispatch = self.get_train(update.train_id)
-            train_dispatch.handle_route_update(update)
+            if not self.train_exists(update.train_id, update.line_name):
+                self.add_train(update.train_id, update.line_name)
+            train = self.get_train(update.train_id, update.line_name)
+            train.handle_route_update(update)
 
             
