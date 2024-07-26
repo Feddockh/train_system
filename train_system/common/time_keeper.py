@@ -73,7 +73,7 @@ class TimeKeeperWidget(QWidget):
 
         self.slider = QSlider(Qt.Orientation.Horizontal)
         self.slider.setMinimum(0)
-        self.slider.setMaximum(50)
+        self.slider.setMaximum(20)
         self.slider.setValue(1)
         self.slider.setTickPosition(QSlider.TickPosition.TicksBelow)
         self.slider.setTickInterval(1)

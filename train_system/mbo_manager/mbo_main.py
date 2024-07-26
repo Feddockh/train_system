@@ -6,9 +6,11 @@ from PyQt6.QtCore import Qt, QObject, pyqtSlot, pyqtSignal
 from train_system.common.time_keeper import TimeKeeper
 from train_system.common.line import Line
 from train_system.common.track_block import TrackBlock
-
 from train_system.mbo_manager.mbo_manager import MBOOffice
 from train_system.mbo_manager.mbo_ui import MBOWindow
+from train_system.common.train_dispatch import TrainDispatchUpdate
+from train_system.common.train_dispatch import TrainDispatch
+from train_system.ctc_manager.ctc_manager import CTCOffice
 
 #for testing
 from train_system.mbo_manager.train_model import Train
@@ -25,10 +27,12 @@ time_keeper = TimeKeeper()
 time_keeper.start_timer()
 
 #instantiate MBOController
-mbo_office = MBOOffice()
+mbo_office = MBOOffice(time_keeper)
 schedules = MBOOffice.Schedules()
 satellite = MBOOffice.Satellite()
 satellite.mbo_mode = True
+
+#pass time_keeper.tick.connect(mbo_office.handle_time_update)
 
 #train example for testing? 
 train = Train()
@@ -62,16 +66,31 @@ mbo_main_ui.schedule_created.connect(schedules.create_schedules)
 
 if __name__ == "__main__":
     
-    #pass satellite.satellite_send()
+    """t_time_keeper = TimeKeeper()
+    t_time_keeper.start_timer()
     
-    #will want to add train_id? 
-    train.update_position(150.0, 20)
-    train.update_position(150.0, 45)
-    train.update_position(150.0, 72)
-    train.update_position(150.0, 120)
+    satellite = MBOOffice(t_time_keeper).Satellite()
+    ctc_office = CTCOffice(t_time_keeper, 'Green')
+    dispatched_trains = TrainDispatch('Train1', 'Green', time_keeper)
     
-    mbo_main_ui.show()
-    sys.exit(app.exec())
+    ctc_office.add_train('Train1', 'Green')
+    dispatched_trains.add_stop(50, 65)
+    
+    #train leaving yard
+    train.update_position('Train1', 0, "from_yard")
+    
+    #train in 1st block on way to Glenbury
+    train.update_position('Train1', 73.0, 63)
+    
+    #train in 2nd block on way to Glenbury
+    train.update_position('Train1', 200.00, 64)
+    
+    #train at station 
+    #@313m in middle of block 
+    train.update_position('Train1', 329.1, 65 ) """
+
+    #pass mbo_main_ui.show()
+    #pass sys.exit(app.exec())
 
 
 

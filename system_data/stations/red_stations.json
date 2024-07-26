@@ -1,0 +1,137 @@
+{
+    "stations": [
+        {
+            "name": "Shadyside",
+            "connected_blocks": [7],
+            "station_sides": [
+                {
+                    "previous_block": 6,
+                    "current_block": 7,
+                    "side": "left"
+                },
+                {
+                    "previous_block": 8,
+                    "current_block": 7,
+                    "side": "right"
+                }
+            ]
+        },
+        {
+            "name": "Herron Ave",
+            "connected_blocks": [16],
+            "station_sides": [
+                {
+                    "previous_block": 1,
+                    "current_block": 16,
+                    "side": "right"
+                },
+                {
+                    "previous_block": 15,
+                    "current_block": 16,
+                    "side": "right"
+                },
+                {
+                    "previous_block": 17,
+                    "current_block": 16,
+                    "side": "left"
+                }
+            ]
+        },
+        {
+            "name": "Swissville",
+            "connected_blocks": [21],
+            "station_sides": [
+                {
+                    "previous_block": 20,
+                    "current_block": 21,
+                    "side": "right"
+                },
+                {
+                    "previous_block": 22,
+                    "current_block": 21,
+                    "side": "left"
+                }
+            ]
+        },
+        {
+            "name": "Penn Station",
+            "connected_blocks": [25],
+            "station_sides": [
+                {
+                    "previous_block": 24,
+                    "current_block": 25,
+                    "side": "left"
+                },
+                {
+                    "previous_block": 26,
+                    "current_block": 25,
+                    "side": "right"
+                }
+            ]
+        },
+        {
+            "name": "Steel Plaza",
+            "connected_blocks": [35],
+            "station_sides": [
+                {
+                    "previous_block": 34,
+                    "current_block": 35,
+                    "side": "left"
+                },
+                {
+                    "previous_block": 36,
+                    "current_block": 35,
+                    "side": "right"
+                }
+            ]
+        },
+        {
+            "name": "First Ave",
+            "connected_blocks": [45],
+            "station_sides": [
+                {
+                    "previous_block": 44,
+                    "current_block": 45,
+                    "side": "left"
+                },
+                {
+                    "previous_block": 46,
+                    "current_block": 45,
+                    "side": "right"
+                }
+            ]
+        },
+        {
+            "name": "Station Square",
+            "connected_blocks": [48],
+            "station_sides": [
+                {
+                    "previous_block": 47,
+                    "current_block": 48,
+                    "side": "left"
+                },
+                {
+                    "previous_block": 49,
+                    "current_block": 48,
+                    "side": "right"
+                }
+            ]
+        },
+        {
+            "name": "South Hills",
+            "connected_blocks": [60],
+            "station_sides": [
+                {
+                    "previous_block": 59,
+                    "current_block": 60,
+                    "side": "left"
+                },
+                {
+                    "previous_block": 61,
+                    "current_block": 60,
+                    "side": "right"
+                }
+            ]
+        }
+    ]
+}
