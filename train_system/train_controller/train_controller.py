@@ -945,7 +945,7 @@ class TrainSystem:
         for _ in range(50):
             self.controller.update_train_controller()
 
-        self.controller.set_position(65)
+        # self.controller.set_position(65)
 
         self.controller.set_setpoint_speed(30)
         for _ in range(50):
