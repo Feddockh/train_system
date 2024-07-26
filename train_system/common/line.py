@@ -635,8 +635,6 @@ class Line(QObject):
                 )
                 self.add_station(station)
             
-            
-            
 
 if __name__ == "__main__":
     line = Line('Red')

@@ -19,7 +19,7 @@ time_keeper = TimeKeeper()
 time_keeper.start_timer()
 
 # Instatiate the CTCOffice object
-ctc_manager = CTCOffice(time_keeper, "Green")
+ctc_manager = CTCOffice(time_keeper, "Red")
 
 # Instantiate the DispatcherUI object
 dispatcher_ui = DispatcherUI(time_keeper, ctc_manager.line, ctc_manager.trains)

@@ -156,7 +156,7 @@ class TrackVisualWidget(QWidget):
         self.max_y = self.find_max_y()
         self.x_scale = self.width() // (self.max_x + 2)
         self.y_scale = self.height() // (self.max_y + 2)
-        self.padding = self.x_scale // 10
+
         self.line_width = 3
 
     def find_max_y(self):
@@ -178,7 +178,6 @@ class TrackVisualWidget(QWidget):
         # Update the scaling values
         self.x_scale = self.width() // (self.max_x + 2)
         self.y_scale = self.height() // (self.max_y + 2)
-        self.padding = self.x_scale // 10
 
         # Trigger repaint
         self.update()
@@ -217,7 +216,6 @@ class TrackVisualWidget(QWidget):
             # Set the pen and draw the line
             painter.setPen(pen)
             painter.drawLine(QPoint(x1, y1), QPoint(x2, y2))
-            # painter.drawLine(QPoint(x1 + self.padding, y1), QPoint(x2 - self.padding, y2))
 
             # Compute text width and height
             text_width = font_metrics.horizontalAdvance(block_text)
@@ -236,36 +234,56 @@ class TrackVisualWidget(QWidget):
             if text_position == 0:
                 continue
             if text_position == 1:
-                text_x = center_x - text_width // 2 - self.padding
-                text_y = center_y - text_height // 2 - self.padding
+                text_x = center_x - text_width // 2
+                text_y = center_y - text_height // 2 - self.line_width
             elif text_position == 2:
                 text_x = center_x
-                text_y = center_y - text_height // 2 - self.padding
+                text_y = center_y - text_height // 2 - self.line_width
             elif text_position == 3:
-                text_x = center_x + text_width // 2 + self.padding
-                text_y = center_y - text_height // 2 - self.padding
+                text_x = center_x + text_width // 2
+                text_y = center_y - text_height // 2 - self.line_width
             elif text_position == 4:
-                text_x = center_x - text_width // 2 - self.padding
+                text_x = center_x - text_width // 2
                 text_y = center_y
             elif text_position == 5:
                 text_x = center_x
                 text_y = center_y
             elif text_position == 6:
-                text_x = center_x + text_width // 2 + self.padding
+                text_x = center_x + text_width // 2
                 text_y = center_y
             elif text_position == 7:
-                text_x = center_x - text_width // 2 - self.padding
-                text_y = center_y + text_height // 2 + self.padding
+                text_x = center_x - text_width // 2
+                text_y = center_y + text_height // 2 - self.line_width
             elif text_position == 8:
                 text_x = center_x
-                text_y = center_y + text_height // 2 + self.padding
+                text_y = center_y + text_height // 2 - self.line_width
             elif text_position == 9:
-                text_x = center_x + text_width // 2 + self.padding
-                text_y = center_y + text_height // 2 + self.padding
+                text_x = center_x + text_width // 2
+                text_y = center_y + text_height // 2 - self.line_width
             else:
                 print("Invalid text position")
 
             painter.drawText(text_x, text_y, block_text)
+
+    def set_line(self, line: Line) -> None:
+
+        """
+        Sets the line for the visual.
+
+        Args:
+            line (Line): The line object.
+        """
+
+        self.line = line
+        filename = os.path.join(os.path.dirname(__file__), f"line_visuals\\{line.name.lower()}_visual.json")
+        with open(filename, "r") as file:
+            self.block_visuals = json.load(file)
+
+        self.max_x = self.find_max_x()
+        self.max_y = self.find_max_y()
+        self.x_scale = self.width() // (self.max_x + 2)
+        self.y_scale = self.height() // (self.max_y + 2)
+        self.update()
 
 
 if __name__ == '__main__':

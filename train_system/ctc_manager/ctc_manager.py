@@ -12,22 +12,27 @@ from train_system.ctc_manager.ctc_train_dispatch import CTCTrainDispatch
 class CTCOffice(QObject):
     train_dispatch_updated = pyqtSignal(TrainRouteUpdate)
 
-    def __init__(self, time_keeper: TimeKeeper, line_name: str) -> None:
+    def __init__(self, time_keeper: TimeKeeper, line_names: List[str]) -> None:
 
         """
         Initialize the CTC Office.
 
         Args:
             time_keeper (TimeKeeper): The time keeper for managing time updates.
-            line_name (str): The name of the line.
+            line_name List(str): The name of the lines.
         """
 
         super().__init__()
         self.time_keeper = time_keeper
+
+        # Check that there are exactly two lines
+        if len(line_names) != 2:
+            raise ValueError("CTC manager requires exactly two lines.")
         
-        # Create the line object
-        self.line = Line(line_name)
-        self.line.load_defaults()
+        # Create the line objects
+        self.lines = [Line(line_name) for line_name in line_names]
+        for line in self.lines:
+            line.load_defaults()
 
         # Connect the Line signals to the CTC Manager slots
         self.line.track_block_occupancy_updated.connect(self.handle_occupancy_update)

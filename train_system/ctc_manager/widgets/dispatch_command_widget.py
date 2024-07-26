@@ -18,7 +18,7 @@ class DispatchCommandWidget(QWidget):
         self.line = line
         self.rows = 0
         self.cols = 3
-        self.headers = ["Train ID", "Set Block (Station)", "Arrival Time"]
+        self.headers = ["Train ID", "Block", "Arrival Time"]
         self.init_ui()
 
     def init_ui(self) -> None:
@@ -86,6 +86,11 @@ class DispatchCommandWidget(QWidget):
         self.add_entry_button = QPushButton("Add Entry")
         self.add_entry_button.clicked.connect(self.add_table_entry)
         button_layout.addWidget(self.add_entry_button)
+
+        # Add a clear button
+        self.clear_button = QPushButton("Clear")
+        self.clear_button.clicked.connect(self.clear_table)
+        button_layout.addWidget(self.clear_button)
 
         # Add dispatch button
         self.dispatch_button = QPushButton("Dispatch")
@@ -166,6 +171,15 @@ class DispatchCommandWidget(QWidget):
                 times.append(f"{hour:02d}:{minute:02d}")
         return times
 
+    def clear_table(self) -> None:
+            
+        """
+        Clears the table of all entries.
+        """
+
+        self.rows = 0
+        self.table.setRowCount(self.rows)
+
     def dispatch_trains(self) -> None:
 
         """
@@ -181,9 +195,21 @@ class DispatchCommandWidget(QWidget):
 
             self.dispatched_train.emit(train_id, target_block, arrival_time)
 
-        self.rows = 0
-        self.table.setRowCount(self.rows)
-            
+        self.clear_table()
+
+    def set_line(self, line: Line) -> None:
+
+        """
+        Sets the line for the DispatchCommandWidget.
+
+        Args:
+            line (Line): The line object.
+        """
+
+        self.line = line
+        self.clear_table()
+
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 

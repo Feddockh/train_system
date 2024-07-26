@@ -26,7 +26,7 @@ class TrainInfoWidget(QWidget):
         self.time_keeper = time_keeper
         self.line = line
         self.trains = trains
-        self.rows = len(line.track_blocks)
+        self.rows = 0
         self.cols = 6
         self.headers = ["ID", "Block", "Destination", "Arrival",
                         "Speed", "Authority"]
@@ -143,6 +143,16 @@ class TrainInfoWidget(QWidget):
         item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
         item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
         self.table.setItem(row, col, item)
+
+    def set_line(self, line: Line) -> None:
+        """
+        Sets the line for the TrainInfoWidget.
+
+        Args:
+            line (Line): The line object.
+        """
+        self.line = line
+        self.update_table_data()
 
     @pyqtSlot()
     def handle_time_update(self) -> None:
