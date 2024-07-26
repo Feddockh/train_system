@@ -15,7 +15,10 @@ app = QApplication(sys.argv)
 time_keeper = TimeKeeper()
 time_keeper.start_timer()   
 
-ts = TrainSystem(HOST, PORT, USERNAME, PASSWORD)
+# Hardware
+# ts = TrainSystem(HOST, PORT, USERNAME, PASSWORD)
+# Software
+ts = TrainSystem()
 
 tm = ts.train_model
         
