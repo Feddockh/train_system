@@ -1,7 +1,7 @@
 # train_system/ctc_manager/dispatcher_ui.py
 
 import sys
-from typing import List, Dict
+from typing import List, Dict, Tuple
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, 
                              QVBoxLayout, QLabel, QHBoxLayout,
                              QStackedWidget, QSizePolicy)
@@ -23,7 +23,7 @@ from train_system.ctc_manager.widgets.maintenance_widget import MaintenanceWidge
 
 
 class DispatcherUI(QMainWindow):
-    def __init__(self, time_keeper: TimeKeeper, lines: List[Line], trains: Dict[int, CTCTrainDispatch]):
+    def __init__(self, time_keeper: TimeKeeper, lines: List[Line], trains: Dict[Tuple[int, str], CTCTrainDispatch]):
         super().__init__()
 
         """
@@ -33,7 +33,8 @@ class DispatcherUI(QMainWindow):
         Args:
             time_keeper (TimeKeeper): The time keeper object.
             lines (List[Line]): A dictionary of the Line objects.
-            trains (Dict[int, CTCTrainDispatch]): A dictionary of train ID's to CTCTrainDispatch objects.
+            trains (Dict[Tuple[int, str], CTCTrainDispatch]): A dictionary mapping the train IDs 
+                and line names to CTCTrainDispatch objects.
         """
 
         # Check that there are exactly two lines
@@ -183,7 +184,7 @@ class DispatcherUI(QMainWindow):
 
         # Train Information Widget
         self.trains = trains
-        self.train_info_widget = TrainInfoWidget(self.time_keeper, self.line, self.trains)
+        self.train_info_widget = TrainInfoWidget(self.time_keeper, self.trains)
         self.bottom_layout.addWidget(self.train_info_widget, stretch=3)
         self.time_keeper.tick.connect(self.train_info_widget.handle_time_update)
 
@@ -254,12 +255,11 @@ class DispatcherUI(QMainWindow):
         self.throughput_widget.set_line(self.line)
         self.dispatch_command_widget.set_line(self.line)
         self.schedule_selection_widget.set_line(self.line)
-        self.train_info_widget.set_line(self.line)
         self.track_switch_widget.set_line(self.line)
         self.maintenance_widget.set_line(self.line)
 
-    @pyqtSlot(int, bool)
-    def handle_occupancy_update(self, block_number: int, occupancy: bool) -> None:
+    @pyqtSlot(str, int, bool)
+    def handle_occupancy_update(self, line_name: str, block_number: int, occupancy: bool) -> None:
         self.track_visual_widget.update()
 
     # @pyqtSlot(int)
@@ -270,8 +270,8 @@ class DispatcherUI(QMainWindow):
     # def handle_crossing_signal_update(self, block_number: int, signal: int) -> None:
     #     print(f"Block {block_number} crossing signal updated: {signal}")
 
-    @pyqtSlot(int, bool)
-    def handle_maintenance_update(self, block_number: int, maintenance: bool) -> None:
+    @pyqtSlot(str, int, bool)
+    def handle_maintenance_update(self, line_name: str, block_number: int, maintenance: bool) -> None:
         self.track_visual_widget.update()
 
 
