@@ -5,7 +5,7 @@ POST INDEX CHANGE
 if(track_blocks[0].occupancy and track_blocks[12].occupancy == False and (track_blocks[13].occupancy == False and track_blocks[14].occupancy == False and track_blocks[15].occupancy == False and track_blocks[16].occupancy == False and track_blocks[17].occupancy == False and track_blocks[18].occupancy == False and track_blocks[19].occupancy == False and track_blocks[20].occupancy == False and track_blocks[21].occupancy == False and track_blocks[22].occupancy == False and track_blocks[23].occupancy == False and track_blocks[24].occupancy == False and track_blocks[25].occupancy == False and track_blocks[26].occupancy == False and track_blocks[27].occupancy == False and track_blocks[28].occupancy == False)):
     
     #set switch position
-    track_blocks[12].switch_position = 0
+    #track_blocks[12].switch_position = 0
 
     #set lights
     track_blocks[0]._light_signal = True
@@ -16,7 +16,7 @@ if(track_blocks[0].occupancy and track_blocks[12].occupancy == False and (track_
 if(track_blocks[12].occupancy and track_blocks[0].occupancy == False and track_blocks[11].occupancy == False):
 
     #set switch position
-    track_blocks[12].switch_position = 1
+   # track_blocks[12].switch_position = 1
 
     #set lights
     track_blocks[0]._light_signal = False
@@ -30,7 +30,7 @@ if(track_blocks[12].occupancy and track_blocks[0].occupancy and track_blocks[11]
     track_blocks[0].authority = 0
 
     #set switch position
-    track_blocks[12].switch_position = 1
+    #track_blocks[12].switch_position = 1
 
     #set ligths
     track_blocks[0]._light_signal = False
@@ -43,7 +43,7 @@ if(track_blocks[12].occupancy and track_blocks[0].occupancy and track_blocks[11]
 if(track_blocks[28].occupancy and track_blocks[32].occupancy == False and track_blocks[29].occupancy == False):
     
     #set switch position
-    track_blocks[28].switch_position = 0
+    #track_blocks[28].switch_position = 0
 
     #set lights
     track_blocks[28]._light_signal = True
