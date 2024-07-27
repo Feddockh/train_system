@@ -20,7 +20,6 @@ class Station:
         """
 
         self.line = line
-<<<<<<< HEAD
         self.name = name
         self.blocks = blocks
         self.sides = sides
@@ -28,24 +27,6 @@ class Station:
     def __repr__(self):
         return (f"Station(line={self.line}, name={self.name}, blocks={self.blocks}, "
                 f"sides={self.sides})")
-=======
-        self.connected_blocks = []
-
-    def __repr__(self) -> str:
-
-        """
-        Returns a string representation of the Station object.
-
-        Returns:
-            str: String representation of the Station object.
-        """
-
-        return (
-            f"Station {self.name}\n"
-            f"Line: {self.line}\n"
-            f"Block Number: {self.block_number}\n"
-        )
->>>>>>> 5642103 (New and improved implementation of switches)
 
     def __eq__(self, other: object) -> bool:
         
@@ -66,7 +47,6 @@ class Station:
             raise TypeError(
                 f"Expected a Station object, but got {type(other).__name__}"
             )
-<<<<<<< HEAD
         return (self.line, self.name) == (other.line, other.name)
     
     def get_side(self, prev_block: int, current_block: int) -> str:
@@ -86,9 +66,3 @@ class Station:
             if side[0] == prev_block and side[1] == current_block:
                 return side[2]
         return None
-=======
-        return (self.name, self.line) == (
-            other.name, other.line
-        )
-    
->>>>>>> 5642103 (New and improved implementation of switches)

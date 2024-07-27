@@ -5,10 +5,7 @@ from typing import List
 from train_system.common.track_failures import TrackFailure
 from train_system.track_model.beacon import Beacon
 from train_system.common.track_switch import TrackSwitch
-<<<<<<< HEAD
 from train_system.common.station import Station
-=======
->>>>>>> 5642103 (New and improved implementation of switches)
 
 
 class TrackBlock(QObject):
@@ -17,30 +14,18 @@ class TrackBlock(QObject):
     suggested_speed_updated = pyqtSignal(int)
     authority_updated = pyqtSignal(int)
     occupancy_updated = pyqtSignal(bool)
-<<<<<<< HEAD
     crossing_signal_updated = pyqtSignal(bool)
     light_signal_updated = pyqtSignal(bool)
-=======
-    switch_position_updated = pyqtSignal(int) # TODO: Remove this
-    crossing_signal_updated = pyqtSignal(CrossingSignal)
->>>>>>> 5642103 (New and improved implementation of switches)
     under_maintenance_updated = pyqtSignal(bool)
     track_failure_updated = pyqtSignal(TrackFailure)
 
     def __init__(self, line: str, section: str, number: int, length: int,
                  grade: float, speed_limit: int, elevation: float, 
-<<<<<<< HEAD
                  cumulative_elevation: float, underground: bool, 
                  crossing_signal: bool, light_signal: bool,
                  connecting_blocks: List[int],
                  station: Station = None, switch: TrackSwitch = None,
                  beacon: Beacon = None) -> None:
-=======
-                 cumulative_elevation: float, connecting_blocks: List[int],
-                 next_blocks: List[int] = None, station: str = None,
-                 station_side: str = None, switch_options: List[int] = None,
-                 switch: TrackSwitch = None, beacon: Beacon = None) -> None:
->>>>>>> 5642103 (New and improved implementation of switches)
 
         super().__init__()
 
@@ -55,14 +40,7 @@ class TrackBlock(QObject):
         self.cumulative_elevation = cumulative_elevation # meters
         self.underground = underground
         self.connecting_blocks = connecting_blocks
-<<<<<<< HEAD
         self.station = station
-=======
-        self.next_blocks = next_blocks # TODO: Remove this
-        self.station = station
-        self.station_side = station_side
-        self.switch_options = switch_options # TODO: Remove this
->>>>>>> 5642103 (New and improved implementation of switches)
         self.switch = switch
         self.beacon = beacon
 
@@ -164,22 +142,7 @@ class TrackBlock(QObject):
 
     # TODO: Remove this
     @property
-<<<<<<< HEAD
     def crossing_signal(self) -> bool:
-=======
-    def switch_position(self) -> int:
-        return self._switch_position
-
-    # TODO: Remove this
-    @switch_position.setter
-    def switch_position(self, value: int) -> None:
-        if self._switch_position != value:
-            self._switch_position = value
-            self.switch_position_updated.emit(value)
-
-    @property
-    def crossing_signal(self) -> CrossingSignal:
->>>>>>> 5642103 (New and improved implementation of switches)
         return self._crossing_signal
 
     @crossing_signal.setter

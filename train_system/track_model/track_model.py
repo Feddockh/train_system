@@ -11,6 +11,7 @@ class Train:
     id: int
     line: str
     block: int
+    prev_block: int
     pos: int = 0
     passengers: int = 0
 
@@ -112,11 +113,15 @@ class TrackModel:
             line (str): The name of the line the train was dispatched onto.
         """
 
-        self.trains.append(Train(id, line, self.dispatch_blocks[line]))
+        l: Line
+
         for l in self.lines:
             if l.name == line:
                 l.get_track_block(self.dispatch_blocks[line]).occupancy = True
                 break
+
+        self.trains.append(Train(id, line, self.dispatch_blocks[line], l.yard))
+        
 
     def move_train(self, id: int, distance: float) -> None:
 
@@ -144,13 +149,12 @@ class TrackModel:
         if new_pos > curr_block.length:
 
             #Determine which block train moves into
-            if len(curr_block.next_blocks) < 2:
-                new_block = curr_block.next_blocks[0]
-            else:
-                new_block = curr_block.switch_position
+            new_block = curr_line.get_next_block(moving_train.prev_block, moving_train.block)
 
-            curr_line.get_track_block(new_block).occupancy = True
-            moving_train.block = new_block
+            new_block.occupancy = True
+            
+            moving_train.prev_block = moving_train.block
+            moving_train.block = new_block.number
             moving_train.pos = new_pos - curr_block.length
 
             #Update occupancy of departed block
@@ -161,13 +165,11 @@ class TrackModel:
                     break
             curr_block.occupancy = curr_block_occ
 
-            
-
         else:
             moving_train.pos = new_pos
 
-            #Determine if train is boarding from a station (stopped within 15 meters of center of station block)
-            if distance == 0 and curr_block.station.isascii() and (abs(moving_train.pos - curr_block.length/2) < 32.2):
+            #Determine if train is boarding from a station (stopped within 32.5 meters of center of station block)
+            if distance == 0 and curr_block.station != None and (abs(moving_train.pos - curr_block.length/2) < 32.2):
                 self.board_at_station(curr_block.station, moving_train)
 
 
