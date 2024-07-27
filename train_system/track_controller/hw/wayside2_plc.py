@@ -21,81 +21,45 @@ Returns:
 
 #Switch 58
 
-#Block 57 goes to 151(yard)
-if(track_blocks[58].occupancy or track_blocks[59].occupancy or track_blocks[60].occupancy or track_blocks[61].occupancy or track_blocks[62].occupancy):
-    #i want to use track switch here but am not sure how to implement it so
-    #track_switch[58] = 1
 
-    #set track switches to connect from 57 to 151
-    track_blocks[57]._switch_position = 1
- 
-    #set lights
-    track_blocks[57]._light_signal = True #green at the beginning of switch
-    track_blocks[58]._light_signal = False #red at section J
-    track_blocks[151]._light_signal = True #green heading into yard
+#Scenario 1: 57-->151, check if 58 is occupied, if so, go to yard
+if(track_blocks[57].occupancy and track_blocks[151].occupancy == False and track_blocks[58].occupancy):
 
-#Emergency stop scenario
-elif((track_blocks[58].occupancy or track_blocks[59].occupancy or track_blocks[60].occupancy or track_blocks[61].occupancy or track_blocks[62].occupancy) and (track_blocks[151].occupancy)):
+    #set switch position
+    track_blocks[57].switch_position = 1
+
+    #set light colors
+    track_blocks[57]._light_signal = True
+    track_blocks[58]._light_signal = False
+    track_blocks[151]._light_signal = True
+
+#Scenario 2: 57-->58, check if 151 is occupied, if so and 58 is not, go to 58, and continue on J
+if(track_blocks[57].occupancy and track_blocks[58].occupancy == False and track_blocks[151].occupancy):
     
-    #set initial switch authority to zero so the train stops before the switch
+    #set switch position
+    track_blocks[57].switch_position = 0
+
+    #set light colors
+    track_blocks[57]._light_signal = True
+    track_blocks[58]._light_signal = True
+    track_blocks[151]._light_signal = False
+
+#Scenario 3: 57 58 and 151 are occupied, temporary stop
+if(track_blocks[57].occupancy and track_blocks[58].occupancy and track_blocks[151].occupancy):
+
+    #set authority at 57 to zero, and wait for those blocks to become unoccupied
     track_blocks[57].authority = 0
-    
-    #set light signals to red
-    track_blocks[57]._light_signal = False 
+
+    #set light signals 
+    track_blocks[57]._light_signal = False
     track_blocks[58]._light_signal = False
     track_blocks[151]._light_signal = False
 
-#connect switch 57 to block 58
-elif(track_blocks[151].occupancy):
-    
-    #connect switch 57 -> 58
-    track_blocks[57]._switch_position = 0
+#SWITCH AT BLOCK 63
 
-    #track block lights
-    track_blocks[57]._light_signal = True
-    track_blocks[58]._light_signal = True
-    track_blocks[151]._light_signal = False
+#Scenario 1: 62 to 63, if block 62 is unoccupied, 
 
-
-#if neither are occupied, continue onto the normal path
-else:
-    #set track switch
-    track_blocks[57]._switch_position = 0
-    
-    #set light signals to all green
-    track_blocks[57]._light_signal = True
-    track_blocks[58]._light_signal = True
-    track_blocks[151]._light_signal = True
-
-
-
-#Switch at BLOCK 63
-
-#Scenario: Train stays in yard. Block 63 connected to Block 62
-if(track_blocks[58].occupancy or track_blocks[59].occupancy or track_blocks[60].occupancy or track_blocks[61].occupancy or track_blocks[62].occupancy):
-
-    #set switch position so that 63 connects with 62
-    track_blocks[63]._switch_position = 0 #connects with block 62
-
-    #set light colors
-    track_blocks[62]._light_signal = True #light on the end of section J is green telling train to continue
-    #track_blocks[63]._light_signal = True #Switch block is Green
-    track_blocks[153]._light_signal = False #coming out of yard light is RED
-
-    #set authority of train coming out of yard
-    track_blocks[153].authority = 0 #set coming out to zero so they train stops coming
-
-#Scenario: Train comes out of yard. Block 63 connects to 153
-else:
-    track_blocks[63]._switch_position = 1
-    
-    #set light colors
-    track_blocks[62]._light_signal = False
-    track_blocks[153]._light_signal = True
-
-    #set authority at 62
-    track_blocks[62].authority = 0
-
+#Sc
 
 # Consolidated print statements for error checking
 
@@ -156,345 +120,3 @@ print(f"Authority: {track_blocks[153].authority}\n")
 
 
 
-
-
-
-
-
-
-"""
-print("Computations in Pi")
-print("Wayside 2: ")
-#switch from 58 to yard
-#checks if any of J and K are occupied, if so, it switches to  yard
-if (track_blocks[62].occupancy 
-    or track_blocks[63].occupancy 
-    or track_blocks[64].occupancy
-    or track_blocks[65].occupancy
-    or track_blocks[66].occupancy
-    or track_blocks[58].occupancy
-    or track_blocks[59].occupancy
-    or track_blocks[60].occupancy
-    or track_blocks[61].occupancy
-    or (track_blocks[57].authority < 0)): #checks if authority from ctc is negative then makes decision on train 
-
-    
-    #setting switch position
-    track_blocks[57]._switch_position = 0
-
-    #setting light signals
-    track_blocks[56]._light_signal = True  # Light is Green leading up to the switch
-    track_blocks[57]._light_signal = True  # Light is GREEN light on block 58, is green. Showing that the switch to the yard is connected
-    track_blocks[58]._light_signal = False # Light at the beginning of section J is RED showing that the train will not continue on the green line
-    
-    #checking if authority was zero /manually changing if not
-    if(track_blocks[57].authority > 0):
-        track_blocks[57].authority = -track_blocks[57].authority
-        
-    #print to terminal/ for error checking
-    
-    print("Switch 58 Information:\n")
-    #block 1
-    print("Block 57 Information: ")
-    print(f"Light Signal: {track_blocks[56]._light_signal}")
-    print(f"Authority: {track_blocks[56].authority}")
-
-    #Block 12
-    print("Block 58 (Switch) Information: ")
-    print(f"Light Signal: {track_blocks[57]._light_signal}")
-    print(f"Switch Position: {track_blocks[57]._switch_position}")
-    print(f"Authority: {track_blocks[57].authority}\n")
-
-    print("Block 59 Information: ")
-    print(f"Light Signal: {track_blocks[58]._light_signal}")
-    print(f"Authority: {track_blocks[58].authority}\n")
-
-#emergency stop instance
-#checks if 
-elif ((track_blocks[62].occupancy 
-       or track_blocks[63].occupancy 
-       or track_blocks[64].occupancy
-       or track_blocks[65].occupancy
-       or track_blocks[66].occupancy  #checks if anything from section J till K is occupied, if so authority set to zero
-       or track_blocks[58].occupancy
-       or track_blocks[59].occupancy
-       or track_blocks[60].occupancy
-       or track_blocks[61].occupancy)
-      and track_blocks[57].occupancy): # checks if the switch at 58 is occupied
-
-    #set authority to zero because it's an emergency
-    track_blocks[57].authority = 0 
-
-    #setting light colors
-    track_blocks[56]._light_signal = False # RED because all paths are occupied
-    track_blocks[57]._light_signal = False # RED because all paths are occupied
-    track_blocks[58]._light_signal = False # RED because all paths are occupied
-
-    #print to terminal to error check
-    
-    
-   
-    print("Switch 58 Information:\n")
-    #block 1
-
-    print(f"EMERGENCY STOP TRAINS AT BLOCK 57\nAuthority:\n")
-
-    print("Block 57 Information: ")
-    print(f"Light Signal: {track_blocks[56]._light_signal}")
-    print(f"Authority: {track_blocks[56].authority}")
-
-    #Block 12
-    print("Block 58 (Switch) Information: ")
-    print(f"Light Signal: {track_blocks[57]._light_signal}")
-    print(f"Switch Position: {track_blocks[57]._switch_position}")
-    print(f"Authority: {track_blocks[57].authority}\n")
-
-    print("Block 59 Information: ")
-    print(f"Light Signal: {track_blocks[58]._light_signal}")
-    print(f"Authority: {track_blocks[58].authority}\n")
-else:
-    #setting switch positions
-    track_blocks[57]._switch_position = 1
-
-    #setting light colors
-    track_blocks[56]._light_signal = True  # This light will typically be green unless a collision on J
-    track_blocks[57]._light_signal = False # Light is RED because 58 is the path to yard and is not going to yard
-    track_blocks[58]._light_signal = True  # Light is Green and headed towards section J
-
-    #print to terminal to error check
-
-    print("Switch 58 Information:\n")
-    #block 1
-    print("Block 57 Information: ")
-    print(f"Light Signal: {track_blocks[56]._light_signal}")
-    print(f"Authority: {track_blocks[56].authority}")
-
-    #Block 12
-    print("Block 58 (Switch) Information: ")
-    print(f"Light Signal: {track_blocks[57]._light_signal}")
-    print(f"Switch Position: {track_blocks[57]._switch_position}")
-    print(f"Authority: {track_blocks[57].authority}\n")
-
-    print("Block 59 Information: ")
-    print(f"Light Signal: {track_blocks[58]._light_signal}")
-    print(f"Authority: {track_blocks[58].authority}\n")
-
-
-#switch from yard to 63 checks J K L M and J to amake sure that there aren't any occupancies. If all are clear, then the switch from yard will connect
-if (track_blocks[58].occupancy 
-    or track_blocks[59].occupancy 
-    or track_blocks[60].occupancy # checks the block occupancies of block J,K,L, and M 
-    or track_blocks[61].occupancy # which are the pieces of track that connects right to block 63
-    or track_blocks[62].occupancy # 62 block indices block 63
-    or track_blocks[63].occupancy
-    or track_blocks[64].occupancy
-    or track_blocks[65].occupancy
-    or track_blocks[66].occupancy
-    or track_blocks[67].occupancy
-    or track_blocks[68].occupancy
-    or track_blocks[69].occupancy
-    or track_blocks[70].occupancy
-    or track_blocks[71].occupancy
-    or track_blocks[72].occupancy
-    or track_blocks[73].occupancy
-    or track_blocks[74].occupancy):
-
-    #setting switch position
-
-    track_blocks[62]._switch_position = 0 # zero if section J is occupied, trains must stay in the yard
-
-    track_blocks[62].authority = 0
-    
-    #setting light color
-    track_blocks[61]._light_signal = True
-    track_blocks[62]._light_signal = False # switch is not connected, so light is RED
-
-    #print to terminal to error check
-    print("Switch 63 Information: ")
-    print("Switch from yard is open, Trains cannot leave yard, Trains must wait for section J to be unoccupied")
-    print(f"Authority: {track_blocks[62].authority}")
-    print(f"Light Color: {track_blocks[62]._light_signal}\n")
-
-else:
-    #setting switch position
-    track_blocks[62]._switch_position = 1 # Trains can leave the yard
-
-    #setting light color
-    track_blocks[62]._light_signal = True # Light is Green
-    track_blocks[61]._light_signal = False
-
-    #print to terminal to error check
-    print("Switch 63 Information: ")
-    print("Switch from yard to Block 63 is open, Trains can leave the yard")
-    print(f"Authority: {track_blocks[62].authority}")
-    print(f"Light Color: {track_block[62]._light_signal}\n")
-    
-
-
-"""
-"""
-#switch from 76 - 77 and 76 to 101
-#looks at Block N if occupied, switches to 101
-if (track_blocks[76].occupancy 
-    or track_blocks[77].occupancy 
-    or track_blocks[78].occupancy 
-    or track_blocks[79].occupancy
-    or track_blocks[80].occupancy
-    or track_blocks[81].occupancy
-    or track_blocks[82].occupancy
-    or track_blocks[83].occupancy
-    or track_blocks[84].occupancy): # I want to add an AND here to AND it will 101 and make sure it and other blocks are unoccupied
-    
-    #set switch_position
-    track_blocks[75]._switch_position = 0
-
-    #set track block 77 authority to 0 so that if occupied on that train, it will stop, and therefore won't drive into an open track, if coming from that direction
-    track_block[76].authority = 0
-
-    #set the light signals
-    track_blocks[75]._light_signal = True  # Signal at 75 is Green because it is still safe to enter the switch block
-    track_blocks[76]._light_signal = False # Signal at 77 is Red because the switch is not connected to 77
-    track_blocks[100]._light_signal = True # Signal at 101 is Green because the switch is safely connected to 101 
-
-    #Print to terminal to error check and make sure 
-    print("Switch from 76 to 101 is connected")
-
-#else that checks T, U, V, W, X, Y, Z. 
-#if there are any occupancies int hese sections, the train connects to block 76
-elif (track_blocks[100].occupancy or
-      track_blocks[101].occupancy or
-      track_blocks[102].occupancy or
-      track_blocks[103].occupancy or
-      track_blocks[104].occupancy or
-      track_blocks[105].occupancy or
-      track_blocks[106].occupancy or
-      track_blocks[107].occupancy or
-      track_blocks[108].occupancy or
-      track_blocks[109].occupancy or
-      track_blocks[110].occupancy or
-      track_blocks[111].occupancy or
-      track_blocks[112].occupancy or
-      track_blocks[113].occupancy or
-      track_blocks[114].occupancy or
-      track_blocks[115].occupancy or
-      track_blocks[116].occupancy or
-      track_blocks[117].occupancy or
-      track_blocks[118].occupancy or
-      track_blocks[119].occupancy or
-      track_blocks[120].occupancy or
-      track_blocks[121].occupancy or
-      track_blocks[122].occupancy or
-      track_blocks[123].occupancy or
-      track_blocks[124].occupancy or
-      track_blocks[125].occupancy or
-      track_blocks[126].occupancy or
-      track_blocks[127].occupancy or
-      track_blocks[128].occupancy or
-      track_blocks[129].occupancy or
-      track_blocks[130].occupancy or
-      track_blocks[131].occupancy or
-      track_blocks[132].occupancy or
-      track_blocks[133].occupancy or
-      track_blocks[134].occupancy or
-      track_blocks[135].occupancy or
-      track_blocks[136].occupancy or
-      track_blocks[137].occupancy or
-      track_blocks[138].occupancy or
-      track_blocks[139].occupancy or
-      track_blocks[140].occupancy or
-      track_blocks[141].occupancy or
-      track_blocks[142].occupancy or
-      track_blocks[143].occupancy or
-      track_blocks[144].occupancy or
-      track_blocks[145].occupancy or
-      track_blocks[146].occupancy or
-      track_blocks[147].occupancy or  
-      track_blocks[148].occupancy or
-      track_blocks[149].occupancy):
-
-    #set switch position
-    track_blocks[75]._switch_position = 1
-
-    #set block authority for 101 so that if there is a train at 101 it'll stop until the track connects.
-    track_blocks[100].authority = 0
-
-    #set light colors
-    track_blocks[76]._light_signal = True  # Light signal is Green, Train will continue straight
-    track_blocks[75]._light_signal = True  # Light Signal is Green, train can continue straight
-    track_blocks[100]._light_signal = False # Light to blue 101 is RED
-    print("Switch from 76 to 77 is connected")
-
-#if sections N R S T U V W X Y Z have any occupancies a the same time, the trains must emergency stop
-elif ((track_blocks[76].occupancy 
-       or track_blocks[77].occupancy 
-       or track_blocks[78].occupancy 
-       or track_blocks[79].occupancy
-       or track_blocks[80].occupancy
-       or track_blocks[81].occupancy
-       or track_blocks[82].occupancy
-       or track_blocks[83].occupancy
-       or track_blocks[84].occupancy)
-      and (track_blocks[100].occupancy or
-           track_blocks[101].occupancy or
-           track_blocks[102].occupancy or
-           track_blocks[103].occupancy or
-           track_blocks[104].occupancy or
-           track_blocks[105].occupancy or
-           track_blocks[106].occupancy or
-           track_blocks[107].occupancy or
-           track_blocks[108].occupancy or
-           track_blocks[109].occupancy or
-           track_blocks[110].occupancy or
-           track_blocks[111].occupancy or
-           track_blocks[112].occupancy or
-           track_blocks[113].occupancy or
-           track_blocks[114].occupancy or
-           track_blocks[115].occupancy or
-           track_blocks[116].occupancy or
-           track_blocks[117].occupancy or
-           track_blocks[118].occupancy or
-           track_blocks[119].occupancy or
-           track_blocks[120].occupancy or
-           track_blocks[121].occupancy or
-           track_blocks[122].occupancy or
-           track_blocks[123].occupancy or
-           track_blocks[124].occupancy or
-           track_blocks[125].occupancy or
-           track_blocks[126].occupancy or
-           track_blocks[127].occupancy or
-           track_blocks[128].occupancy or
-           track_blocks[129].occupancy or
-           track_blocks[130].occupancy or
-           track_blocks[131].occupancy or
-           track_blocks[132].occupancy or
-           track_blocks[133].occupancy or
-           track_blocks[134].occupancy or
-           track_blocks[135].occupancy or
-           track_blocks[136].occupancy or
-           track_blocks[137].occupancy or
-           track_blocks[138].occupancy or
-           track_blocks[139].occupancy or
-           track_blocks[140].occupancy or
-           track_blocks[141].occupancy or
-           track_blocks[142].occupancy or
-           track_blocks[143].occupancy or
-           track_blocks[144].occupancy or
-           track_blocks[145].occupancy or
-           track_blocks[146].occupancy or
-           track_blocks[147].occupancy or  
-           track_blocks[148].occupancy or
-           track_blocks[149].occupancy)):
-
-    track_blocks[76]._light_signal = False #Red emergency
-    track_blocks[75]._light_signal = False #Red emergency
-    track_blocks[100]._light_signal = False #Red emergency
-
-    #make all authorities around the switch 0, so the train doesn't continue driving in a 3 way occupied intersection of track
-    #EMERGENCY
-    track_blocks[75].authority = 0 
-    track_blocks[76].authority = 0
-    track_blocks[100].authority = 0
-    
-    #Print to terminal to error check
-    print("EMERGENCY STOP, TRAIN HAS NO WHERE TO GO AT BLOCK 76")
-"""
