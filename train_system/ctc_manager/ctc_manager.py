@@ -1,12 +1,15 @@
 # train_system/ctc_manager/ctc_manager.py
 
+import sys
 from typing import List, Dict, Tuple, Optional
 from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
+from PyQt6.QtWidgets import QApplication
 
 from train_system.common.time_keeper import TimeKeeper
 from train_system.common.line import Line
 from train_system.common.train_dispatch import TrainRouteUpdate
 from train_system.ctc_manager.ctc_train_dispatch import CTCTrainDispatch
+from train_system.ctc_manager.dispatcher_ui import DispatcherUI
 
 
 class CTCOffice(QObject):
@@ -212,6 +215,40 @@ class CTCOffice(QObject):
                     current_block.occupancy = False
                     next_block.occupancy = True
 
+    def connect_dispatcher_ui(self, dispatcher_ui: DispatcherUI):
+
+        """
+        Connect the signals from the GUI to the CTC Manager slots.
+        This method should be called after the GUI has been initialized.
+        This does not make the ctc_manager object dependent on the
+        dispatcher_ui object or vice versa. The dispatcher_ui object is
+        passed as an argument to the method and is not stored into the 
+        ctc_manager object.
+        
+        Args:
+            dispatcher_ui (DispatcherUI): The dispatcher UI object.
+        """
+
+        # Connect the time keeper signal to the CTC Manager slot
+        self.time_keeper.tick.connect(self.handle_time_update)
+
+        # Connect the GUI switch signals to the CTC Manager slots
+        dispatcher_ui.test_bench_toggle_switch.toggled.connect(self.handle_test_bench_toggle)
+        dispatcher_ui.maintenance_toggle_switch.toggled.connect(self.handle_maintenance_toggle)
+        dispatcher_ui.mbo_toggle_switch.toggled.connect(self.handle_mbo_toggle)
+        dispatcher_ui.automatic_toggle_switch.toggled.connect(self.handle_automatic_toggle)
+        dispatcher_ui.line_toggle_switch.toggled.connect(self.handle_line_toggle)
+
+        # Connect the GUI dispatch signals to the CTC Manager slots
+        dispatcher_ui.dispatch_command_widget.dispatched_train.connect(self.handle_dispatcher_command)
+        dispatcher_ui.schedule_selection_widget.dispatched_train.connect(self.handle_dispatcher_command)
+
+        # Connect the Line signals to the DispatcherUI slots
+        self.lines[0].track_block_occupancy_updated.connect(dispatcher_ui.handle_occupancy_update)
+        self.lines[1].track_block_occupancy_updated.connect(dispatcher_ui.handle_occupancy_update)
+        self.lines[0].track_block_under_maintenance_updated.connect(dispatcher_ui.handle_maintenance_update)
+        self.lines[1].track_block_under_maintenance_updated.connect(dispatcher_ui.handle_maintenance_update)
+
     @pyqtSlot(int)
     def handle_time_update(self, tick: int) -> None:
         
@@ -353,4 +390,18 @@ class CTCOffice(QObject):
             train = self.get_train(update.train_id, update.line_name)
             train.handle_route_update(update)
 
-            
+
+if __name__ == "__main__":
+
+    app = QApplication(sys.argv)
+
+    time_keeper = TimeKeeper()
+    time_keeper.start_timer()
+
+    line_names = ["green", "red"]
+    ctc_manager = CTCOffice(time_keeper, line_names)
+    dispatcher_ui = DispatcherUI(time_keeper, ctc_manager.lines, ctc_manager.trains)
+    ctc_manager.connect_dispatcher_ui(dispatcher_ui)
+
+    dispatcher_ui.show()
+    sys.exit(app.exec())
