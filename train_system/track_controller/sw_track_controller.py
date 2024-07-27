@@ -4,14 +4,8 @@ import copy
 from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
 from train_system.common.track_block import TrackBlock
 from train_system.common.line import Line
-from train_system.common.crossing_signal import CrossingSignal
 import sys
 
-crossing_signal_map = {
-    CrossingSignal.ON: True,
-    CrossingSignal.OFF: False,
-    CrossingSignal.NA: False
-}
 
 class TrackController(QObject):
     def __init__(self, track_blocks: list):
@@ -97,7 +91,7 @@ class TrackController(QObject):
                 block.signal_updates_enabled = False
 
             test_track_blocks = self.track_blocks
-            self.track_blocks[x].switch_position = new_pos
+            test_track_blocks[x].switch.position = self.track_blocks[x].switch.child_blocks[new_pos]
 
             old_Auth = self.track_blocks[x]._authority
 
@@ -116,12 +110,12 @@ class TrackController(QObject):
 
             #Emergency brake enabled - not safe
             if(test_track_blocks[x].authority == 0):
-                self.track_blocks[x].switch_position = old_pos
+                self.track_blocks[x].switch.position = self.track_blocks[x].switch.child_blocks[old_pos]
                 print("Unsafe Decision")
             #Emergency brake not enabled - safe
             else:
                 print(new_pos)
-                self.track_blocks[x].switch_position = new_pos
+                self.track_blocks[x].switch_position = self.track_blocks[x].switch.child_blocks[new_pos]
                 print("Safe Decision")
 
             self.track_blocks[x]._authority = old_Auth
@@ -134,7 +128,7 @@ class TrackController(QObject):
                 block.signal_updates_enabled = False
 
             test_track_blocks = self.track_blocks
-            self.track_blocks[x]._light_signal = new_signal
+            test_track_blocks[x]._light_signal = new_signal
 
             old_Auth = self.track_blocks[x]._authority
 
@@ -172,7 +166,7 @@ class TrackController(QObject):
                 block.signal_updates_enabled = False
 
             test_track_blocks = self.track_blocks
-            test_track_blocks[x]._crossing_signal_bool = new_crossing
+            test_track_blocks[x]._crossing_signal = new_crossing
 
             old_Auth = self.track_blocks[x]._authority
 
@@ -191,12 +185,12 @@ class TrackController(QObject):
             
             #Emergency brake enabled - not safe
             if(test_track_blocks[x].authority == 0):
-                self.track_blocks[x]._crossing_signal_bool = curr_crossing
+                self.track_blocks[x]._crossing_signal = curr_crossing
                 print("Unsafe Decision")
             #Emergency brake not enabled - safe
             else:
                 print(new_crossing)
-                self.track_blocks[x]._crossing_signal_bool = new_crossing
+                self.track_blocks[x]._crossing_signal = new_crossing
                 print("Safe Decision")
 
             self.track_blocks[x]._authority = old_Auth
