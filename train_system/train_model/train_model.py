@@ -1,27 +1,34 @@
 import math
 
-from PyQt6.QtWidgets import QWidget
+from PyQt6.QtCore import Qt, pyqtSlot, pyqtSignal, QObject
 from train_system.common.time_keeper import TimeKeeper
 
 
 #from train_system.train_controller.train_controller import TrainController
 #from train_system.track_model.track_model import TrackModel 
 
-class TrainModel(QWidget) :
+class TrainModel(QObject) :
 
+    time_keeper = TimeKeeper()
+    time_keeper.start_timer()
+
+    satellite_received = pyqtSignal(str)    # String holds authority and commanded speed
+
+    engine_fault_updated = pyqtSignal()
+    brake_fault_updated = pyqtSignal()
+    signal_fault_updated = pyqtSignal()
+    commanded_speed_updated = pyqtSignal(float) #
+    authority_updated = pyqtSignal(float)   #
     # this function constructs and set default values for a new train model instance
     #   parameters: self, train id number, and global time_keeper for time connection
     def __init__(self, train_id, time_keeper: TimeKeeper) :
 
         # connect to TimeKeeper
         super().__init__()
-        self.time_keeper = time_keeper
-        self.time_keeper.start_timer()
-        self.time_keeper.tick.connect(self.physics_update)
-        self.time_keeper.tick.connect(self.temperature_control)
 
         # testing
         self.testing = False
+        self.train_id = 0
 
         # physics variables  
         self.current_speed = 0 # m/s
@@ -51,39 +58,47 @@ class TrainModel(QWidget) :
         self.failures = [False, False, False]
 
         # train status variables
-        self.train_id = train_id
+        # self.train_id = train_id
         self.right_side_doors = False
         self.left_side_doors = False
         self.interior_lights = False
         self.exterior_lights = False
         self.ac = False
         self.heater = False
-        self.train_temp = 72
+        self.commanded_temp = 69
+        self.train_temp = 69        
+        time_keeper.tick.connect(self.temperature_control)
 
         # intermediate variables
         self.satellite_data = ""
         self.mbo_status = False # mbo infomation trumps all
         self.commanded_speed = 0
         self.authority = 0
-        self.track_polarity = False
-        # beacon intermediate variables
-        self.beacon_data = ""
-        self.station_name = ""
-        self.block = ""
-        self.under_ground = ""
-        self.speed_limit = ""
+        # self.track_polarity = False
+
+        # # beacon intermediate variables
+        # self.beacon_data = ""
+        # self.station_name = ""
+        # self.block = ""
+        # self.under_ground = ""
+        # self.speed_limit = ""
 
 ###########################
 #### vvvv Setters vvvv ####
 ###########################
         
     # this function sets the commanded speed
+    @pyqtSlot(float)
     def set_commanded_speed(self, commanded_speed) :
         self.commanded_speed = commanded_speed
+        self.commanded_speed_updated.emit(commanded_speed)
 
     # this function sets the authority
+    @pyqtSlot(float)
     def set_authority(self, authority) :
         self.authority = authority
+        self.authority_updated.emit(authority)
+
 
     # this function sets the engine power as commanded by the train controller, unless
     #   there is an engine failure. also limits to max engine characteristics
@@ -196,6 +211,7 @@ class TrainModel(QWidget) :
         print(self.heater)
 
     # this function toggles the engine failure boolean variable
+    @pyqtSlot()
     def toggle_engine_failure(self) :
         if self.failures[0] :
             self.failures[0] = False
@@ -203,8 +219,10 @@ class TrainModel(QWidget) :
             self.failures[0] = True
         print("engine failure toggled:")
         print(self.failures[0])
+        self.engine_fault_updated.emit(self.failures[0])
 
     # this function toggles the brake failure boolean variable
+    @pyqtSlot()
     def toggle_brake_failure(self) :
         if self.failures[1] :
             self.failures[1] = False
@@ -212,8 +230,10 @@ class TrainModel(QWidget) :
             self.failures[1] = True
         print("brake failure toggled:")
         print(self.failures[1])
+        self.brake_fault_updated.emit(self.failures[1])
 
     # this function toggles the signal failure boolean variable
+    @pyqtSlot()
     def toggle_signal_failure(self) :
         if self.failures[2] :
             self.failures[2] = False
@@ -221,6 +241,7 @@ class TrainModel(QWidget) :
             self.failures[2] = True
         print("signal failure toggled:")
         print(self.failures[2])
+        self.signal_fault_updated.emit(self.failures[2])
 
 ###########################
 #### ^^^^ Toggles ^^^^ ####
@@ -245,10 +266,14 @@ class TrainModel(QWidget) :
     # this function returns the status of the service brake
     def get_service_brake(self) :
         return self.service_brake
+    def set_service_brake(self, service_brake) :
+        self.service_brake = service_brake
     
     # this function returns the status of the emergency brake
     def get_emergency_brake(self) :
         return self.emergency_brake
+    def set_emergency_brake(self, emergency_brake) :
+        self.emergency_brake = emergency_brake
     
     # this function returns the number of on board passengers
     def get_passengers(self) :

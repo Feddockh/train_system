@@ -9,7 +9,6 @@ from train_system.common.station import Station
 
 
 class TrackBlock(QObject):
-
     # Signals to notify updates
     suggested_speed_updated = pyqtSignal(int)
     authority_updated = pyqtSignal(int)
@@ -140,7 +139,6 @@ class TrackBlock(QObject):
         self._occupancy = value
         self.occupancy_updated.emit(value)
 
-    # TODO: Remove this
     @property
     def crossing_signal(self) -> bool:
         return self._crossing_signal
