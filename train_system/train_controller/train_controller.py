@@ -29,13 +29,13 @@ class TrainController(QObject):
     faults_fixed = pyqtSignal()
     authority_updated = pyqtSignal(float)
     destination_updated = pyqtSignal(str)
+
     #lights_updated = pyqtSignal(bool) -> in lights class
     #left_door_updated = pyqtSignal(bool) -> in doors class
     #right_door_updated = pyqtSignal(bool) -> in doors class
     #train_temp_updated = pyqtSignal(int) -> in ac class
     #service_brake_updated = pyqtSignal(bool) -> in brakes class
     #emergency_brake_updated = pyqtSignal(bool) -> in brakes class
-
     
     
     def __init__(self, kp: float=25, ki: float=0.5, train_model=None, line_name: str = "green", id: int = 0, ssh=None) -> None:
@@ -272,7 +272,6 @@ class TrainController(QObject):
         self.train_model.set_power_command(self.engine.power_command, self.engine.speed_limit)
         self.power_updated.emit(self.engine.power_command)
 
-
     # Update the fault status of the train
     # Call maintenance if there is a fault
     @pyqtSlot(bool)
@@ -412,11 +411,25 @@ class TrainController(QObject):
 
     @pyqtSlot(int)
     def handle_kp_changed(self, kp: int) -> None:
-        self.engineer.set_kp(kp)
+        #do this to keep from being recursive
+        self.kp = kp
 
     @pyqtSlot(int)
     def handle_ki_changed(self, ki: int) -> None:
-        self.engineer.set_ki(ki)
+        #do this to keep from being recursive
+        self.ki = ki
+
+    @pyqtSlot(int)
+    def handle_position_changed(self, loc: int) -> None:
+        self.set_position(loc)
+
+    @pyqtSlot(str)
+    def handle_destination_changed(self, des: str) -> None:
+        self.set_station(des)
+
+    @pyqtSlot()
+    def handle_tick(self) -> None:
+        self.update_train_controller()
 
     ## Engineer class to hold Kp and Ki
     class Engineer(QObject):
@@ -430,15 +443,15 @@ class TrainController(QObject):
 
         ## Mutator functions
         def set_kp(self, kp: float):
-            if kp > 0:
+            if kp >= 0:
                 self.kp = kp
                 self.kp_updated.emit(self.kp)
-            else: raise ValueError("kp must be positive")
+            else: raise ValueError("kp must be non-negative")
         def set_ki(self, ki: float):
-            if ki > 0:
+            if ki >= 0:
                 self.ki = ki
                 self.ki_updated.emit(self.ki)
-            else: raise ValueError("ki must be positive")
+            else: raise ValueError("ki must be non-negative")
         def set_engineer(self, kp: float, ki: float):
             self.set_kp(kp)
             self.set_ki(ki)
@@ -506,7 +519,6 @@ class TrainController(QObject):
        
     ## Engine class calculates power command and can simulate train response
     class Engine(QObject):
-
         def __init__(self, ssh):
             super().__init__()
             self.speed_limit = None  # Speed limit of the train
@@ -590,7 +602,7 @@ class TrainController(QObject):
             
             if brake.get_status():
                 #### THIS LINE IS FOR TESTING PURPOSES ONLY ####
-                self.power_command = max(self.power_command , -self.P_MAX)    # self.power_command = 0
+                # self.power_command = max(self.power_command , -self.P_MAX)    # self.power_command = 0
 
             print(f"Power Command from Train Controller: {self.power_command}")
 
