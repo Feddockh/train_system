@@ -142,7 +142,7 @@ class DispatcherUI(QMainWindow):
         self.automatic_toggle_switch.toggled.connect(self.handle_automatic_toggle)
 
         # Line toggle label
-        self.line_toggle_label = QLabel(f"{lines[0].name}    {lines[1].name}") 
+        self.line_toggle_label = QLabel(f"{lines[0].name.capitalize()}      {lines[1].name.capitalize()}") 
         self.line_toggle_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.line_toggle_layout.addWidget(self.line_toggle_label)
 
