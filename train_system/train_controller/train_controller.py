@@ -23,6 +23,7 @@ PASSWORD = 'danim'
 '''
 
 class TrainController(QObject):
+
     setpoint_speed_updated = pyqtSignal(float)  # --> UI
     position_updated = pyqtSignal(float)    # --> UI
     power_updated = pyqtSignal(float)   # --> UI
@@ -35,7 +36,6 @@ class TrainController(QObject):
     #train_temp_updated = pyqtSignal(int) -> in ac class --> UI
     #service_brake_updated = pyqtSignal(bool) -> in brakes class --> UI
     #emergency_brake_updated = pyqtSignal(bool) -> in brakes class --> UI
-
     
     
     def __init__(self, kp: float=25, ki: float=0.5, train_model=None, line_name: str = "green", id: int = 0, ssh=None) -> None:
@@ -613,8 +613,13 @@ class TrainController(QObject):
                 brake.set_service_brake(True)
             
             if brake.get_status():
-                #### THIS LINE IS FOR TESTING PURPOSES ONLY ####
+<<<<<<< HEAD
+                #### THIS LINE IS FOR TESTING PURPOSES ONLY
                 self.power_command = max(self.power_command , -self.P_MAX)    # self.power_command = 0
+=======
+                #### THIS LINE IS FOR TESTING PURPOSES ONLY ####
+                # self.power_command = max(self.power_command , -self.P_MAX)    # self.power_command = 0
+>>>>>>> 1d8147e625288636674deaaf7f79076177d32ed2
 
             print(f"Power Command from Train Controller: {self.power_command}")
 

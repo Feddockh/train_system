@@ -40,7 +40,7 @@ class TestBenchWindow(QMainWindow):
     left_door_updated = pyqtSignal(bool)
     kp_updated = pyqtSignal(int)
     ki_updated = pyqtSignal(int)
-    position_updated = pyqtSignal(int) #may change depending on how we represent location
+    location_updated = pyqtSignal(int) #may change depending on how we represent location
     destination_updated = pyqtSignal(str)
 
     def __init__(self):
@@ -618,7 +618,7 @@ class TestBenchWindow(QMainWindow):
             self.location = int(x)
             #self.train.train_model.set_position(float(x))
             #self.train.position = float(x)
-            self.position_updated.emit(self.location)
+            self.location_updated.emit(self.location)
 
     def destination_changed(self, x):
         if(x != ""):
@@ -650,10 +650,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.left_door = False
         self.temp = 0
 
-        self.setpoint_speed = 0
-
-        self.position = 0
-        self.destination = ""
+        self.setpoint_speed = 5
         
         self.faults = [False, False, False]
         self.curr_speed = 0
@@ -880,11 +877,11 @@ class DriverWindow(QMainWindow): ###DriverWindow
         #create status labels at bottom-center
         if self.brake_on == True:
             self.brake_status_label = QLabel("Brake Status: On")
-            self.brake_status_label.setFixedSize(150, 50)
+            self.brake_status_label.setFixedSize(100, 50)
             self.brake_status_label.setStyleSheet("background-color: #FF4444; color: white;") #brake on, box red
         else:
             self.brake_status_label = QLabel("Brake Status: Off")
-            self.brake_status_label.setFixedSize(150, 50)
+            self.brake_status_label.setFixedSize(100, 50)
             self.brake_status_label.setStyleSheet("background-color: #29C84C; color: white;") #brake off, box green
 
         self.light_staus_label = QLabel("Lights Off")
@@ -1079,10 +1076,19 @@ class DriverWindow(QMainWindow): ###DriverWindow
             self.tm.set_train_temp(int(x))
             #self.train.ac.set_commanded_temp(int(x))
 
+    @pyqtSlot(TrainModel)
+    def handle_mock_train_update(self, train_model: TrainModel) -> None:
+        self.tm = train_model
+
+        
+        self.loc_label.setText("Location: " + str(self.tm.get_position()))
+        self.des_label.setText(str(self.tm.get_station_name()))
+
+
+
     ###??? and commanded temp
     @pyqtSlot(float)
     def handle_setpoint_speed_update(self, speed: float) -> None:
-
         self.setpoint_speed = self.convert_to_mph(speed)
         
 
@@ -1212,18 +1218,6 @@ class DriverWindow(QMainWindow): ###DriverWindow
         
         self.curr_authority_stat.setText(str(self.authority) + " ft")
 
-    @pyqtSlot(int)
-    def handle_position_update(self, pos: int) -> None:
-        self.position = pos
-
-        self.loc_label.setText("Location: " + str(self.position))
-
-    @pyqtSlot(str)
-    def handle_destination_update(self, des: str):
-        self.destination = des
-
-        self.des_label.setText(self.destination)
-
 
     """
     @pyqtSlot(str)
@@ -1263,13 +1257,8 @@ class DriverWindow(QMainWindow): ###DriverWindow
 
 
 class EngineerWindow(QMainWindow):
-    kp_updated = pyqtSignal(int)
-    ki_updated = pyqtSignal(int)
-
     def __init__(self):
         super().__init__()
-
-        self.setWindowTitle("Engineer")
 
         headers = ["Train", "Kp", "Ki"]
         self.data = []
@@ -1298,13 +1287,12 @@ class EngineerWindow(QMainWindow):
         
         if(col == 1):
             self.data[row][col] = new_item
-            if(new_item != "-"):
-                self.kp_updated.emit(int(new_item))
+            #self.train.engineer.set_kp(int(new_item))
         if(col == 2):
             self.data[row][col] = new_item
-            if(new_item != "-"):
-                self.ki_updated.emit(int(new_item))
-        
+            #self.train.engineer.set_kp(int(new_item))
+            
+        print(self.data)
 
     def handle_kp_update(self, kp: int):
         self.data[0][1] = str(kp)
