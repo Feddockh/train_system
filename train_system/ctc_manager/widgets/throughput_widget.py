@@ -1,10 +1,14 @@
 from PyQt6.QtCore import Qt, pyqtSlot
 from PyQt6.QtWidgets import QWidget, QLabel, QHBoxLayout
 
+from train_system.common.line import Line
+
 class ThroughputWidget(QWidget):
 
-    def __init__(self):
+    def __init__(self, line: Line):
         super().__init__()
+
+        self.line = line
 
         self.throughput_label = QLabel()
         self.throughput_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -18,3 +22,8 @@ class ThroughputWidget(QWidget):
     @pyqtSlot(int)
     def update_throughput(self, throughput: int):
         self.throughput_label.setText(f"Throughput: {throughput} tickets/hr")
+
+    def set_line(self, line: Line):
+        self.line = line
+
+    # TODO: Connect to line throughput signal

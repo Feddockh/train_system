@@ -34,7 +34,10 @@ print("TC: " + str(tc.engineer.get_ki()))
 
 time_keeper.tick.connect(tc.lights.update_lights)
 
+time_keeper.tick.connect(tc.handle_tick)
+
 #TRAIN CONTROLLER TO EXTERNAL
+
 
 #TEST BENCH TO TRAIN CONTROLLER
 test.setpoint_updated.connect(tc.handle_setpoint_edit_changed) 
@@ -52,6 +55,8 @@ test.right_door_updated.connect(tc.handle_right_door_changed)###checked
 test.left_door_updated.connect(tc.handle_left_door_changed)###checked
 test.kp_updated.connect(tc.handle_kp_changed) ###checked but needs to update table
 test.ki_updated.connect(tc.handle_ki_changed) ###checked but needs to update table
+test.position_updated.connect(tc.handle_position_changed) ###checked
+test.destination_updated.connect(tc.handle_destination_changed) ###checked
 
 #DRIVER TO TRAIN CONTROLLER
 driver.mode_button.toggled.connect(tc.handle_toggle_driver_mode) ###checked
@@ -62,7 +67,7 @@ driver.comm_temp_input.textChanged.connect(tc.handle_comm_temp_changed) ###check
 
 #TRAIN CONTROLLER TO DRIVER
 tc.setpoint_speed_updated.connect(driver.handle_setpoint_speed_update) ###checked
-tc.power_updated.connect(driver.handle_power_update)
+tc.engine.power_updated.connect(driver.handle_power_update)
 tc.lights.lights_updated.connect(driver.handle_light_status_update) ###checked but does not change ui
 tc.doors.left_door_updated.connect(driver.handle_left_door_update)
 tc.doors.right_door_updated.connect(driver.handle_right_door_update)
@@ -75,10 +80,18 @@ tc.train_model.signal_fault_updated.connect(driver.handle_signal_fault_update)
 tc.train_model.curr_speed_updated.connect(driver.handle_curr_speed_update)
 tc.train_model.comm_speed_updated.connect(driver.handle_comm_speed_update)
 tc.train_model.authority_updated.connect(driver.handle_authority_update)
+tc.position_updated.connect(driver.handle_position_update)
+tc.destination_updated.connect(driver.handle_destination_update)
 
 #TRAIN CONTROLLER TO ENGINEER
 tc.engineer.kp_updated.connect(engineer.handle_kp_update)
 tc.engineer.ki_updated.connect(engineer.handle_ki_update)
+
+#str to int between engineer/train controller/test bench
+
+#ENGINEER TO TRAIN CONTROLLER
+engineer.kp_updated.connect(tc.handle_kp_changed)
+engineer.ki_updated.connect(tc.handle_ki_changed)
 
 driver_window = driver
 driver_window.show()
@@ -97,4 +110,6 @@ app.exec()
 print("Test: " + str(test.ki_val))
 print("Engineer UI: " + str(engineer.data[0][2]))
 print("TC: " + str(tc.engineer.get_ki()))
+
+
 
