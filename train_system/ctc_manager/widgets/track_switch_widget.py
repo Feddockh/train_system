@@ -127,3 +127,16 @@ class TrackSwitchWidget(QWidget):
 
         switch.toggle()
         self.update_table_data()
+
+    def set_line(self, line: Line) -> None:
+
+        """
+        Sets the line object for the widget.
+
+        Args:
+            line (Line): The line object.
+        """
+
+        self.line = line
+        self.rows = len(line.switches)
+        self.update_table_data()

@@ -47,3 +47,9 @@ class TrackSwitch(QObject):
             return self.parent_block
         else:
             return None
+        
+    def get_child_index(self) -> bool:
+        if (self.position == self.child_blocks[0]):
+            return False
+        else:
+            return True
