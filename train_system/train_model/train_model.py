@@ -28,6 +28,7 @@ class TrainModel(QObject) :
 
         # testing
         self.testing = False
+        self.train_id = 0
 
         # physics variables  
         self.current_speed = 0 # m/s
