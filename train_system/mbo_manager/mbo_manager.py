@@ -2,60 +2,39 @@ import csv
 from csv import writer
 import datetime
 from datetime import timedelta
-from train_system.common.dispatch_mode import DispatchMode
+from typing import List, Dict, Optional
+from cryptography.fernet import Fernet
+import json
+from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
 
+from train_system.common.time_keeper import TimeKeeper
+from train_system.common.line import Line
+from train_system.common.track_block import TrackBlock
+from train_system.common.train_dispatch import TrainDispatchUpdate
 
-class MBOController:
-    def __init__(self):
+class MBOOffice(QObject):
+    train_dispatch_updated = pyqtSignal(TrainDispatchUpdate)
+    
+    def __init__(self, time_keeper: TimeKeeper):
+        super().__init__()
         """
-        Initialize the MBO Controller
+        Initialize the MBO Office
         """
-        self.dispatch_mode = DispatchMode.AUTOMATIC_MBO_OVERLAY
+        self.time_keeper = time_keeper
+        self.green_line = Line('Green')
+        self.green_line.load_track_blocks()
         
-        self.enable_s_and_a = 1
+        # Create a list of train objects
+        self.trains: Dict[int, TrainDispatchUpdate] = {}
+        self.last_train_dispatched = None
+                
+        self.route_authority_green = {'Glenbury Down' : 400 , 'Dormont Down' : 950, 'Mt Lebanon Down' : 500, 'Poplar' : 2786.6, 'Castle Shannon' : 612.5, 
+                      'Mt Lebanon Up' : 2887.5 , 'Dormont Up' : 515, 'Glenbury Up' : 921, 'Overbrook Up' : 546, 'Inglewood' : 450, 
+                      'Central Up' : 450, 'Edgebrook' : 3684, 'Pioneer' : 700, 'Station' : 675, 'Whited' : 1125, 'South Bank' : 1275,
+                      'Central Down' : 400, 'Overbrook Down' : 900, 'Yard' : -125}
         
-        self.lines = ["Green", "Red"]
-        self.blue_speed_limit = 50.0 #km/hr, convert to m/s
-        
-        self.blocks = {'1' : 0 , "2" : 50, "3" : 100, "4" :150, "5" :200, "6" : 250, "7" : 300, "8" : 350, "9" : 400, "10": 450, "11": 250, "12" : 300, "13" : 350, "14" : 400, "15" : 450}
-   
-        self.drivers = ["Alejandro", "Bob", "Charlie", "David", "Eve", "Frank", "Grace", "Hannah", "Ivy", "Jack"]
-        self.crew = ["Alice", "Barbra", "Cole", "Dan", "Earl", "Fern", "George", "Hank", "Ian", "Jack",
-                "Karen", "Leo", "Morgan", "Niel", "Ophelia", "Paul", "Quinn", "Roger", "Stacy", "Terry"]
-        
-        self.low_trains = ["Train1"]
-        self.med_trains = ["Train1", "Train2"]
-        self.high_trains = ["Train1", "Train2", "Train3"]
-        
-        self.train_ids = list(range(1,11))
-        
-        self.shift_length = timedelta(hours= 8, minutes= 30)
-        self.drive_length = timedelta(hours=4)
-        self.break_length = timedelta(minutes=30)
-        
-        self.route_schedule_green = {"Glenbury Down" : timedelta(seconds=20) , "Dormont Down" : timedelta(minutes=1, seconds=13), "Mt Lebanon Down" : timedelta(seconds=39), 
-                               "Poplar" : timedelta(minutes=2, seconds=45), "Castle Shannon" : timedelta(minutes=1, seconds=28), "Mt Lebanon Up" : timedelta(minutes=2, seconds=59), 
-                               "Dormont Up" : timedelta(seconds= 17), "Glenbury Up" : timedelta(minutes=1, seconds=54), "Overbrook Up" : timedelta(minutes= 1, seconds=35), 
-                               "Inglewood" : timedelta(minutes=1, seconds=21), "Central Up" : timedelta(minutes=1, seconds=21), "Edgebrook" : timedelta(minutes=4, seconds=50), 
-                               "Pioneer" : timedelta(minutes=1, seconds=4), "Station" : timedelta(seconds=39), "Whited" : timedelta(minutes=1, seconds=1), 
-                               "South Bank" : timedelta(minutes=1, seconds=21),"Central Down" : timedelta(seconds=48), "Overbrook Down" : timedelta(minutes= 1, seconds=48), 
-                               "Yard" : timedelta(seconds=15)}
-        
-        self.route_authority_green = {"Glenbury Down" : 400 , "Dormont Down" : 950, "Mt Lebanon Down" : 500, "Poplar" : 2786.6, "Castle Shannon" : 612.5, 
-                      "Mt Lebanon Up" : 2887.5 , "Dormont Up" : 515, "Glenbury Up" : 921, "Overbrook Up" : 546, "Inglewood" : 450, 
-                      "Central Up" : 450, "Edgebrook" : 3684, "Pioneer" : 700, "Station" : 675, "Whited" : 1125, "South Bank" : 1275,
-                      "Central Down" : 400, "Overbrook Down" : 900, "Yard" : -125}
-        
-        #testin for MBO Mode View 
-        self.testing_positions_1 = {'Train1': 100, 'Train2': 300, 'Train3': 310}
-        self.testing_positions_2 = {'Train1': 100, 'Train2': 335, 'Train3': 350, 'Train4': 420}
-        
-        self.destinations_1 = {'Train1': 'Yard', 'Train2': 'Station B', 'Train3': 'Station C'}
-        self.destinations_2 = {'Train1': 'Station B', 'Train2': 'Station B', 'Train3': 'Station B', 'Train4': 'Station B'}
-        
-        self.block_maint_1 = {}
-        self.block_maint_2 = {'4': 150,'9': 400 }
-       
+        self.previous_position = {}
+              
     def kmhr_to_ms(self, km_hr):
         """convert km/hr to m/s
 
@@ -82,168 +61,235 @@ class MBOController:
     
     def service_breaking_distance(self):
      """
-     distance the train will travel after emergency break is pulled
-        (+ some wiggle room? )
+     distance the train will travel after service break is pulled - using for if two trains are to close together 
      """ 
      service_brake_acceleration = 1.2
      v = self.kmhr_to_ms(70)
      breaking_distance = -1* (1/2)*(v)*(-1 * service_brake_acceleration)
     
      return (breaking_distance)
-    
-    def enable_mbo_mode(self, dispatch_mode, enable_s_and_a):
+            
+    def compute_commanded_speed(self, train_id, block):
         """
-        If dispatcher selects MBO mode, enable sending speed and authority 
-        """  
-        #print in command prompt for test bench purposes? 
-        
-        if self.dispatch_mode == 'MBO': 
-            self.enable_s_and_a = 1  
-        
-        else:
-            self.enable_s_and_a = 0
-    
-        
-    def commanded_speed(self):
-        """
-        Calculate trains commanded speed
+        Calculate trains commanded speed based on current block 
         
         return commanded_speed, equal to the speed limit 
         """ 
-        # set equal to speed limit of block 
-        self.speed = self.kmhr_to_ms(self.blue_speed_limit)
+        
+        """block_num = position.get("block")
+        block = self.green_line.get_track_block(block_num)
+        
+        print(f"calculating commanded speed for {train_id} in block ", block_num)
+
+        if block: 
+            self.block_speed = self.kmhr_to_ms(block.speed_limit)
+            """
+        
+        current_block = block
+        block_info = self.green_line.get_track_block(current_block)
+        
+        if current_block:
+            self.block_speed = self.kmhr_to_ms(block.speed_limit) 
             
-        return(self.speed)
+        return(self.block_speed)
     
-    
-    def authority(self, trains_positions, destinations, block_maint):
+    def compute_authority(self, train_id, position, block):
         """
         Calculate trains authority such that more than one train can be in a block 
+        each train stops at it's desitnation and opens the doors, and stops before any block maintenance 
         """
-        trains = list(trains_positions.keys())
-        number_of_trains = len(trains)
+        self.authority = 0
+        current_block = self.green_line.get_track_block(block)
+        next_blocks = current_block.next_blocks()
+        train_to_close = False
+        if not self.train_exists(train_id):
+            return 0
+        train = self.get_train(train_id)
+        next_stop_block = train.get_next_stop()
         
-        number_of_block_maint = len(block_maint)
+        print(f"calculating authority for {train_id} at position {position} at block {current_block} and going to {next_stop_block} ")
         
-        authorities = {}
+        #list of blocks to next stop, including start and end 
+        path = train.get_route_to_next_stop()
         
-        for i in range(number_of_trains):
-            train_1 = trains[i]
-            position_1 = trains_positions[train_1]
-            destination_1 = self.stations[destinations[train_1]]
-            
-            authorities[train_1] = abs(position_1-destination_1)
-            
-            
-            for j in range(i+1, number_of_trains):
-                train_2 = trains[j]
-                position_2 = trains_positions[train_2]
-                distance_from_train = abs(position_1 - position_2)
+        #if next stop block has not changed 
+        path_length = 0
+        
+        for blocks in path:
+            path_length_m += blocks.length 
+        
+        #set authority to next station stop 
+        
+        #TODO 
+        self.authority = path_length - ((next_stop_block.length / 2) + (32.2/2)) ##NEED TO FIX TO TAKE INTO ACCOUNT TRAINS CURRENT POSITION AND ASSUMPTION THAT THE TRAIN POSITION IS FROM THE FRONT OF THE TRAIN AND WANT MIDDLE OF TRAIN TO STOP AT THE MIDDLE OF THE BLOCK 
+        
+        #change authority to service break distance if... 
+        
+        #TODO
+        #Should check if trains are gonna crash first 
+        #for ids in self.trains:
+            #distance_between = ids.get_position() -  position
+        
+        #if (distance_between < self.service_breaking_distance) and (distance_between > 0) #if negative train behind is to close
+        
+        #if next block is under maint or switch is not in right position 
+        if (path[1].under_maintenance) or (path[1] not in next_blocks):
+            self.authority = self.service_breaking_distance()
+        
+        #going to yard
+        elif next_stop_block == self.green_line.yard:
+            self.authority = -(self.authority)
+        
+        #resetting authority to next station
+        elif (self.time_keeper.current_second >= train.departure_time):
+            #pop next stop 
+            #then authority = path_length to new next station 
+            self.authority = 1
+        
+        #checking if train is at full stop at station, signalling to open doors with authority 
+        elif (current_block == next_stop_block):
+            #should keep authority big while only resetting departure time once
+            if (position == self.previous_position[{train_id}]):
+                self.authority = 1,000,000 
+                if(train.departure_time < self.time_keeper.current_second):
+                    #train to stop for 1 minute at station
+                    train.departure_time = self.time_keeper.current_second + 60
+                #pop next stop?
                 
-                if(distance_from_train <= float(self.service_breaking_distance())):
-                    authorities[train_1] = round(self.service_breaking_distance())
-                
-                else: 
-                    if(number_of_block_maint > 0 ):
-                        for x in range(number_of_block_maint):
-                            block_position = self.blocks[block_maint]
-                            to_block = abs(position_1 - block_position)
-                            if (to_block <= 50):
-                                authorities[train_1] = round(self.service_breaking_distance())
-                              
+        #conditions to change authority 
+            #to close to next train on path
+            # XX next block is under maint (next_block.under_mainenance = True)
+            # XX switch is not in the right position (next_block != next_block_path)
+            # XX going to yard (next_stop_block = self.line.yard then authority is negative)
+            #1Mil to show open doors, for a minute while at stop 
+                #train is within 1 trains length of middle of block AND has been at the same position for two ticks in a row
+                #train_dispatch compute_departure_time
+                #pop next stop??
+            #if minute has passed, start authority to next stop 
+                #if time_keeper = departure time 
+                    #authority = path to next station 
         
-        return (authorities)
+        return (self.authority)
+               
+    #incorporate time keeper here, every tick call load in posotions, calculate speed and authority, check if can send, if so encypt and emit data   
+    class Satellite(QObject):
+        
+        send_data_signal = pyqtSignal(str, float, float)
+        
+        #want way to connect train positions to send
+        
+        def __init__(self):
+            super().__init__()
+            self.mbo_mode = True
+            #pass self.mbo_office = MBOOffice()
+            
+            self.train_positions = {}
+            self.train_id = ''
+        
+        @pyqtSlot(str, float, int)
+        def satellite_recieve(self, train_id: str, position: float, block: int) -> None:
+            """
+            Recieve train position
+            
+            Args:
+                train_id (str): _description_
+                position (float): _description_
+                blcok (int): _description_
+            """
+            self.train_positions[train_id] = {'position' : position, 'block' : block}
+            self.satellite_send(train_id)
+        
+        def satellite_send(self, train_id: str):
+            """
+            gathering info to send over satellite, authority and speed
+            
+            """
+            self.train_info = self.train_positions[train_id]
+            self.authority = self.compute_authority(self.train_info)
+            self.commanded_speed = self.compute_commanded_speed(self.train_info)
+             
+            if (self.mbo_mode == True):
+                """
+                send speed and authority 
+                """ 
+                print('mbo mode is true')
+                #pass encrypted_data = self.encrypty(data)
+                
+                #will emit encrypt
+                self.send_data_signal.emit(self.train_id, self.authority, self.commanded_speed)
+                  
+            else: 
+                """
+                do not send information, information will be sent to train through CTC office
+                """ 
+                self.update_satellite({})
+        
+        def encrypty(self):
+            """
+            encryption to send vital information
+            """
+            
+        
+        def decrypt(self):
+            """
+            decryption to recieve position(s)
+            """
+                
+    #create schedules from planners selected date and time on UI
+    class Schedules:
+        def __init__(self):
+            super().__init__()
+            """
+            Initialize the MBO Controller
+            """
+            #create set of drivers and crew
+            self.drivers = ["Alejandro", "Bob", "Charlie", "David", "Eve", "Frank", "Grace", "Hannah", "Ivy", "Jack"]
+            self.crew = ["Alice", "Barbra", "Cole", "Dan", "Earl", "Fern", "George", "Hank", "Ian", "Jack",
+                    "Karen", "Leo", "Morgan", "Niel", "Ophelia", "Paul", "Quinn", "Roger", "Stacy", "Terry"]
+            
+            #info about shifts
+            self.shift_length = timedelta(hours= 8, minutes= 30)
+            self.drive_length = timedelta(hours=4)
+            self.break_length = timedelta(minutes=30)
+            
+            self.green_line = Line('Green')
+            self.green_line.load_track_blocks()
+            
+            #time to travel from one station to another 
+            self.route_schedule_green = {'Glenbury Down' : timedelta(seconds=20) , 'Dormont Down' : timedelta(minutes=1, seconds=13), 'Mt Lebanon Down' : timedelta(seconds=39), 
+                                'Poplar' : timedelta(minutes=2, seconds=45), 'Castle Shannon' : timedelta(minutes=1, seconds=28), 'Mt Lebanon Up' : timedelta(minutes=2, seconds=59), 
+                                'Dormont Up' : timedelta(seconds= 17), 'Glenbury Up' : timedelta(minutes=1, seconds=54), 'Overbrook Up' : timedelta(minutes= 1, seconds=35), 
+                                'Inglewood' : timedelta(minutes=1, seconds=21), 'Central Up' : timedelta(minutes=1, seconds=21), 'Edgebrook' : timedelta(minutes=4, seconds=50), 
+                                'Pioneer' : timedelta(minutes=1, seconds=4), 'Station' : timedelta(seconds=39), 'Whited' : timedelta(minutes=1, seconds=1), 
+                                'South Bank' : timedelta(minutes=1, seconds=21),'Central Down' : timedelta(seconds=48), 'Overbrook Down' : timedelta(minutes= 1, seconds=48), 
+                                'Yard' : timedelta(seconds=15)}
+        
+        
+        def create_schedules(self, date_time, train_throughput):
+            """_summary_
+
+            Args:
+                date_time (_type_): _description_
+            """
+            i = 65
+            block = self.green_line.get_track_block(i)
+            station = block.station
+            print(station)
+            print("in create schedules")
+            
+            print(f"making schedule for: {date_time}, with a {train_throughput} throughput")
+            
+            
+    
        
-
-    def create_schedules(self, selected_day, selected_start_time):
-        """
-        Create schedule options 
-        """
-        
-        print('making schedule for: ', selected_day)
-        print('starting schedule at ', selected_start_time)
-        
-        start_time = datetime.datetime.strptime(selected_day + ' ' + selected_start_time, '%m-%d-%Y %H:%M:%S')
-        
-        current_time = start_time
-        end_time = start_time + timedelta(hours= 24)
-        number_low_trains = len(self.low_trains)
-        crew_index = 0
-        driver_index = 0
-        schedule = []
-        current_time = start_time
-        
-        for train_id in self.train_ids:
-            driver = self.drivers[driver_index]
-            crew1 = self.crew[crew_index]
-            crew2 = self.crew[crew_index + 1]
-            crew_index += 2
-            driver_index += 1
             
-            shift_end_time = current_time + self.shift_length
-            shift_start = current_time
             
-            while current_time < shift_end_time and current_time < end_time:
-
-                for i in self.route_schedule:
-                    travel_time = self.route_schedule[i]
-                    arrival_time = current_time + travel_time
-                    if arrival_time > shift_end_time:
-                        break
-                    
-                    schedule.append([f"Train{train_id}", f"{i}", self.lines[0] ,arrival_time, driver, crew1, crew2])
-                    
-                    #adding time to stop at station for 1 minute
-                    current_time = arrival_time + timedelta(minutes=1)
-                
-                if (current_time - shift_start) >= self.drive_length:
-                    current_time += self.break_length
-                    if current_time >= shift_end_time or current_time >= end_time:
-                        break
-                    
-            current_time = shift_end_time
-            if current_time >= end_time:
-                break
-    
-        low_throughput_file = selected_day + '_green_low.csv'
-        with open(low_throughput_file, 'w', newline='') as csvfile:
-            schedule_writer = csv.writer(csvfile)
-            schedule_writer.writerow(["Train", "Line", "Station", "Arrival Time", "Driver", "Crew 1", "Crew 2"])
+                  
             
-            for t in schedule:
-                schedule_writer.writerow(t)
-                
+# pass if __name__ == "__main__":
     
-    def enable_speed_authority(self):
-        """
-        Enable or Disable sending Speed and Authority through satellite
-        Enable when in MBO Manual or MBO Automatice, Disable otherwise 
-        Enable = 1, Disable = 0
-        """
-        if (self.dispatch_mode == DispatchMode.AUTOMATIC_MBO_OVERLAY or self.dispatch_mode == DispatchMode.MANUAL_MBO_OVERLAY):
-            self.enable_s_and_a = 1
-        else:
-            self.enable_s_and_a = 0 
     
-    def satellite_send():
-        """
-        gathering info to send over satellite, authority and speed
-        
-        """
-        #call authories and sat for each train, send info for each train 
-        
-                           
 
-if __name__ == "__main__":
-    MBO = MBOController()
-      
-    time1 = timedelta(minutes = 1, seconds= 48)
-    time2 = timedelta(minutes = 2, seconds= 12)
-    print(time1 + time2)
-    
-    for x in MBO.route:
-        print(x)
-        print(MBO.route[x])
     
     
     
