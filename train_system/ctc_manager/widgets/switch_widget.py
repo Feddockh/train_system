@@ -147,7 +147,7 @@ if __name__ == "__main__":
     central_widget = QWidget()
     layout = QVBoxLayout(central_widget)
 
-    switch = SwitchWidget()
+    switch = SwitchWidget(bg_color="green", active_color="red")
     switch.toggled.connect(lambda checked: print(f"Switch toggled: {checked}"))
 
     layout.addWidget(switch)

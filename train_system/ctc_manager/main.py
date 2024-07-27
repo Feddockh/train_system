@@ -19,10 +19,11 @@ time_keeper = TimeKeeper()
 time_keeper.start_timer()
 
 # Instatiate the CTCOffice object
-ctc_manager = CTCOffice(time_keeper, "Green")
+line_names = ["green", "red"]
+ctc_manager = CTCOffice(time_keeper, line_names)
 
 # Instantiate the DispatcherUI object
-dispatcher_ui = DispatcherUI(time_keeper, ctc_manager.line, ctc_manager.trains)
+dispatcher_ui = DispatcherUI(time_keeper, ctc_manager.lines, ctc_manager.trains)
 
 # Connect the time keeper signal to the CTC Manager slot
 time_keeper.tick.connect(ctc_manager.handle_time_update)
@@ -32,15 +33,17 @@ dispatcher_ui.test_bench_toggle_switch.toggled.connect(ctc_manager.handle_test_b
 dispatcher_ui.maintenance_toggle_switch.toggled.connect(ctc_manager.handle_maintenance_toggle)
 dispatcher_ui.mbo_toggle_switch.toggled.connect(ctc_manager.handle_mbo_toggle)
 dispatcher_ui.automatic_toggle_switch.toggled.connect(ctc_manager.handle_automatic_toggle)
+dispatcher_ui.line_toggle_switch.toggled.connect(ctc_manager.handle_line_toggle)
 
 # Connect the GUI dispatch signals to the CTC Manager slots
 dispatcher_ui.dispatch_command_widget.dispatched_train.connect(ctc_manager.handle_dispatcher_command)
 dispatcher_ui.schedule_selection_widget.dispatched_train.connect(ctc_manager.handle_dispatcher_command)
 
 # Connect the Line signals to the DispatcherUI slots
-ctc_manager.line.track_block_occupancy_updated.connect(dispatcher_ui.handle_occupancy_update)
-ctc_manager.line.track_block_crossing_signal_updated.connect(dispatcher_ui.handle_crossing_signal_update)
-ctc_manager.line.track_block_under_maintenance_updated.connect(dispatcher_ui.handle_maintenance_update)
+ctc_manager.lines[0].track_block_occupancy_updated.connect(dispatcher_ui.handle_occupancy_update)
+ctc_manager.lines[1].track_block_occupancy_updated.connect(dispatcher_ui.handle_occupancy_update)
+ctc_manager.lines[0].track_block_under_maintenance_updated.connect(dispatcher_ui.handle_maintenance_update)
+ctc_manager.lines[1].track_block_under_maintenance_updated.connect(dispatcher_ui.handle_maintenance_update)
 
 # Connect the CTC Manager signals to the DispatcherUI slots
 

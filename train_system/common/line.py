@@ -162,16 +162,16 @@ class Route:
 
 class Line(QObject):
 
-    # Signals to notify track block updates (block number, attribute value)
-    track_block_suggested_speed_updated = pyqtSignal(int, int)
-    track_block_authority_updated = pyqtSignal(int, int)
-    track_block_occupancy_updated = pyqtSignal(int, bool)
-    track_block_crossing_signal_updated = pyqtSignal(int, int)
-    track_block_under_maintenance_updated = pyqtSignal(int, bool)
-    track_block_track_failure_updated = pyqtSignal(int, int)
+    # Signals to notify track block updates (line name, block number, attribute value)
+    track_block_suggested_speed_updated = pyqtSignal(str, int, int)
+    track_block_authority_updated = pyqtSignal(str, int, int)
+    track_block_occupancy_updated = pyqtSignal(str, int, bool)
+    track_block_crossing_signal_updated = pyqtSignal(str, int, int)
+    track_block_under_maintenance_updated = pyqtSignal(str, int, bool)
+    track_block_track_failure_updated = pyqtSignal(str, int, int)
 
-    # Signals to notify switch updates
-    switch_position_updated = pyqtSignal(int)
+    # Signals to notify switch updates (line name, switch number)
+    switch_position_updated = pyqtSignal(str, int)
 
     def __init__(self, name: str) -> None:
         super().__init__()
@@ -286,11 +286,24 @@ class Line(QObject):
             track_block (TrackBlock): The track block to connect signals for.
         """
 
-        track_block.suggested_speed_updated.connect(lambda new_speed, blk=track_block: self.track_block_suggested_speed_updated.emit(blk.number, new_speed))
-        track_block.authority_updated.connect(lambda new_authority, blk=track_block: self.track_block_authority_updated.emit(blk.number, new_authority))
-        track_block.occupancy_updated.connect(lambda new_occupancy, blk=track_block: self.track_block_occupancy_updated.emit(blk.number, new_occupancy))
-        track_block.crossing_signal_updated.connect(lambda new_signal, blk=track_block: self.track_block_crossing_signal_updated.emit(blk.number, new_signal))
-        track_block.under_maintenance_updated.connect(lambda new_maintenance, blk=track_block: self.track_block_under_maintenance_updated.emit(blk.number, new_maintenance))
+        track_block.suggested_speed_updated.connect(
+            lambda new_speed, blk=track_block: self.track_block_suggested_speed_updated.emit(self.name, blk.number, new_speed)
+        )
+        track_block.authority_updated.connect(
+            lambda new_authority, blk=track_block: self.track_block_authority_updated.emit(self.name, blk.number, new_authority)
+        )
+        track_block.occupancy_updated.connect(
+            lambda new_occupancy, blk=track_block: self.track_block_occupancy_updated.emit(self.name, blk.number, new_occupancy)
+        )
+        track_block.crossing_signal_updated.connect(
+            lambda new_signal, blk=track_block: self.track_block_crossing_signal_updated.emit(self.name, blk.number, new_signal)
+        )
+        track_block.under_maintenance_updated.connect(
+            lambda new_maintenance, blk=track_block: self.track_block_under_maintenance_updated.emit(self.name, blk.number, new_maintenance)
+        )
+        track_block.track_failure_updated.connect(
+            lambda new_failure, blk=track_block: self.track_block_track_failure_updated.emit(self.name, blk.number, new_failure)
+        )
 
     def add_switch(self, track_switch: TrackSwitch) -> None:
         
@@ -634,8 +647,6 @@ class Line(QObject):
                     sides=sides
                 )
                 self.add_station(station)
-            
-            
             
 
 if __name__ == "__main__":

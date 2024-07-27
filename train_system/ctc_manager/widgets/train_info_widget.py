@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple, List
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QTableWidget,
                              QTableWidgetItem, QHeaderView)
 from PyQt6.QtGui import QColor, QPalette
@@ -9,24 +9,26 @@ from train_system.common.line import Line
 from train_system.ctc_manager.ctc_train_dispatch import CTCTrainDispatch
 from train_system.common.conversions import seconds_to_time, meters_to_miles, kph_to_mph
 
+
 class TrainInfoWidget(QWidget):
-    def __init__(self, time_keeper: TimeKeeper, line: Line, trains: Dict[int, CTCTrainDispatch], 
+    def __init__(self, time_keeper: TimeKeeper,
+                 trains: Dict[Tuple[int, str], CTCTrainDispatch], 
                  parent: Optional[QWidget] = None) -> None:
+        
         """
         Initializes the TrainInfoWidget.
 
         Args:
             time_keeper (TimeKeeper): The time keeper object to track time.
-            line (Line): The line object containing track blocks.
-            trains (Dict[int, CTCTrainDispatch]): Dictionary of train dispatch objects keyed by train ID.
+            trains (Dict[Tuple[int, str], CTCTrainDispatch]): Dictionary of train dispatch objects keyed by train ID and line name.
             parent (Optional[QWidget]): The parent widget.
         """
+
         super().__init__(parent)
         self.title = "Train Information"
         self.time_keeper = time_keeper
-        self.line = line
         self.trains = trains
-        self.rows = len(line.track_blocks)
+        self.rows = 0
         self.cols = 6
         self.headers = ["ID", "Block", "Destination", "Arrival",
                         "Speed", "Authority"]
@@ -89,19 +91,21 @@ class TrainInfoWidget(QWidget):
         self.setLayout(layout)
 
     def update_table_data(self) -> None:
+
         """
         Updates the table data based on the current state of trains.
         """
+
         self.rows = len(self.trains)
         self.table.setRowCount(self.rows)
 
-        for row, (train_id, train) in enumerate(self.trains.items()):
+        for row, ((train_id, line_name), train) in enumerate(self.trains.items()):
             self.set_table_item(row, 0, str(train_id))
 
             if train.dispatched:
                 block_id = train.get_current_block_id()
                 block_name = str(block_id)
-                station_name = self.line.get_track_block(block_id).station
+                station_name = train.line.get_track_block(block_id).station
                 if station_name is not None:
                     block_name += f" ({station_name})"
                 self.set_table_item(row, 1, block_name)
@@ -111,7 +115,7 @@ class TrainInfoWidget(QWidget):
             arrival_time, next_stop_id = train.get_next_stop()
             if next_stop_id is not None:
                 block_name = str(next_stop_id)
-                station_name = self.line.get_track_block(next_stop_id).station
+                station_name = train.line.get_track_block(next_stop_id).station
                 if station_name is not None:
                     block_name += f" ({station_name})"
                 self.set_table_item(row, 2, block_name)
@@ -131,6 +135,7 @@ class TrainInfoWidget(QWidget):
             self.set_table_item(row, 5, f"{authority_miles} miles")
 
     def set_table_item(self, row: int, col: int, text: str) -> None:
+
         """
         Helper method to create a non-editable, center-aligned table item.
 
@@ -139,6 +144,7 @@ class TrainInfoWidget(QWidget):
             col (int): The column in which to place the item.
             text (str): The text for the table item.
         """
+
         item = QTableWidgetItem(text)
         item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
         item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
