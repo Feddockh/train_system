@@ -82,12 +82,12 @@ def main():
     Wayside_3.wayside_name = "Wayside 3"
     
     Wayside_5 = TrackController(track_blocks5)
-    Wayside_5.numBlocks = 1
+    Wayside_5.numBlocks = 30
     Wayside_5.wayside_name = "Wayside 5"
 
     
     Wayside_6 = TrackController(track_blocks6)
-    Wayside_6.numBlocks = 1
+    Wayside_6.numBlocks = 45
     Wayside_6.wayside_name = "Wayside 6"
 
     #Add waysides to be sent to UI

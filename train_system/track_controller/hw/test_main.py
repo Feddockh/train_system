@@ -2,7 +2,7 @@ import sys
 from PyQt6.QtWidgets import QApplication
 from train_system.track_controller.hw.hw_track_controller import TrackController
 from train_system.common.track_block import TrackBlock
-from train_system.common.crossing_signal import CrossingSignal
+#from train_system.common.crossing_signal import CrossingSignal
 from train_system.track_controller.hw.hwtrack_ui import ProgrammerUI
 
 def create_track_blocks(num_blocks):
