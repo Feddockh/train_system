@@ -63,7 +63,7 @@ driver.mode_button.toggled.connect(tc.handle_toggle_driver_mode) ###checked
 driver.em_brake_button.toggled.connect(tc.handle_emergency_brake_toggled) ###checked
 driver.service_brake_button.toggled.connect(tc.handle_service_brake_toggled) ###checked
 driver.speed_input.textChanged.connect(tc.handle_setpoint_edit_changed) ###checked but conversions need fixed
-#driver.comm_temp_input.textChanged.connect(tc.handle_comm_temp_changed) ###checked
+driver.comm_temp_input.textChanged.connect(tc.handle_commanded_temp_changed) ###checked
 driver.setpoint_updated.connect(tc.handle_setpoint_edit_changed)
 
 #TRAIN CONTROLLER TO DRIVER

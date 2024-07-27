@@ -710,7 +710,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
 
 
         #create the engine fault signal
-        self.engine_circle = CircleWidget(10, 75)
+        self.engine_circle = CircleWidget(10, 20)
         if(self.faults[0] == False):
             self.engine_circle.setColor(GREEN)
         else:
@@ -719,7 +719,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         engine_label.setFixedSize(100, 50)
 
         #create the brake fault signal
-        self.brake_circle = CircleWidget(20, 75)
+        self.brake_circle = CircleWidget(20, 20)
         if(self.faults[1] == False):
             self.brake_circle.setColor(GREEN)
         else:
@@ -728,7 +728,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         brake_label.setFixedSize(100, 50)
 
         #create the signal fault signal
-        self.signal_circle = CircleWidget(30, 75)
+        self.signal_circle = CircleWidget(30, 20)
         if(self.faults[2] == False):
             self.signal_circle.setColor(GREEN)
         else:
@@ -737,12 +737,12 @@ class DriverWindow(QMainWindow): ###DriverWindow
         signal_label.setFixedSize(100, 50)
 
         #add fault circles and labels to their layout
-        fault_layout.addWidget(self.engine_circle, 0, 0)
-        fault_layout.addWidget(engine_label, 1, 0)
-        fault_layout.addWidget(self.brake_circle, 0, 1)
-        fault_layout.addWidget(brake_label, 1, 1)
-        fault_layout.addWidget(self.signal_circle, 0, 2)
-        fault_layout.addWidget(signal_label, 1, 2)
+        fault_layout.addWidget(self.engine_circle, 1, 0)
+        fault_layout.addWidget(engine_label, 0, 0)
+        fault_layout.addWidget(self.brake_circle, 1, 1)
+        fault_layout.addWidget(brake_label, 0, 1)
+        fault_layout.addWidget(self.signal_circle, 1, 2)
+        fault_layout.addWidget(signal_label, 0, 2)
 
         #create label and stat line for current speed
         curr_speed_label = QLabel("Current Speed")
