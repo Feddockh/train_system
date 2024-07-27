@@ -28,6 +28,7 @@ class TrainController(QObject):
     power_updated = pyqtSignal(float)
     faults_fixed = pyqtSignal()
     authority_updated = pyqtSignal(float)
+    destination_updated = pyqtSignal(str)
     #lights_updated = pyqtSignal(bool) -> in lights class
     #left_door_updated = pyqtSignal(bool) -> in doors class
     #right_door_updated = pyqtSignal(bool) -> in doors class
@@ -85,7 +86,8 @@ class TrainController(QObject):
         # Train Model inputs
         self.current_speed = self.train_model.current_speed    # Current speed of the train
         self.commanded_speed = self.train_model.commanded_speed  # Commanded speed from the Train Model (CTC or MBO)
-        self.update_authority(self.train_model.authority)        # Authority from the Train Model (CTC or MBO)
+        self.authority, self.destination = None, None
+        self.update_authority(self.train_model.authority)        # Authority and destination from the Train Model (CTC or MBO)
         self.engine_fault = self.train_model.engine_fault           # Fault status from the Train Model
         self.brake_fault = self.train_model.brake_fault           # Fault status from the Train Model
         self.signal_fault = self.train_model.signal_fault           # Fault status from the Train Model
@@ -119,8 +121,8 @@ class TrainController(QObject):
 
         self.position = 0
         self.polarity = 0
+        self.block_number = None
         self.station = None
-        self.destination = None
         self.finished = False
         self.update_track_block()
 
@@ -131,11 +133,12 @@ class TrainController(QObject):
         self.polarity += self.track_block.length
         
         self.station = self.track_block.station.name if self.track_block.station else None
+        print(f"Station: {self.station}")
 
         if self.station:
-            exit_door = self.track_block.station.get_side(self.block, self.track_block.number)
+            exit_door = self.track_block.station.get_side(self.block_number, self.track_block.number)
             self.doors.update_exit_door(exit_door)
-            print(f"Exit Door: {exit_door}")
+            print(f"------------ Track Block: {self.track_block.number}, Exit Door: {exit_door} ------------")
 
         self.block_number = self.track_block.number
         self.lights.update_underground(self.track_block.underground)
@@ -148,7 +151,7 @@ class TrainController(QObject):
         # If not next to finish, continue
         if len(self.route) == 0 and not self.finished:
             ## Look at authority to see whether to circle or to end route
-            if self.to_yard:
+            if self.destination == 152:
                 self.route.extend(self.line.route.to_yard)    ## If authority is negative, go back to yard
                 self.finished = True
             else:
@@ -217,18 +220,20 @@ class TrainController(QObject):
     def update_current_speed(self, speed: float):
         self.current_speed = speed
         
+        # If we're at a full stop
         if(self.current_speed == 0):
             # Emit that faults are fixed
             self.faults_fixed.emit()
             self.brake.set_emergency_brake(False)
 
-            ### If the destination is the current block number and we're in the center of the block
-            if self.destination == self.block_number and abs(self.track_block.length / 2 - self.polarity) >= 0.25*self.track_block.length:
-                self.at_station()
-                self.authority = self.position
-            else:
-                if self.destination:
-                    self.leaving_station()
+            ### If the destination is the current block number
+            if self.destination == self.block_number:
+                # we're in the center of the block, open doors
+                if abs(self.track_block.length / 2 - self.polarity) >= 0.25*self.track_block.length:
+                    self.doors.open_door()
+                    self.authority = self.position
+        elif self.doors.get_status():
+            self.doors.close_door()
         
         
     ## Setpoint and Commanded Speed Functions
@@ -296,6 +301,7 @@ class TrainController(QObject):
         self.authority = authority
         self.authority_updated.emit(self.authority)
     def parse_authority(self, authority: str):
+        print(f"Authority: {authority}")
         try:
             authority_str, destination_block_str = authority.split(":")
             self.authority = float(authority_str)
@@ -326,16 +332,12 @@ class TrainController(QObject):
         self.station = station
     def get_station(self):
         return self.station
+    @pyqtSlot(str)
     def set_destination(self, destination: str):
         self.destination = destination
+        self.destination_updated.emit(self.destination)
     def get_destination(self):
         return self.destination
-    def at_station(self):
-        self.doors.open_door()
-        self.set_destination(self.station)
-    def leaving_station(self):
-        self.doors.close_door()
-        self.set_destination(None)
 
     @pyqtSlot(bool)
     def handle_toggle_driver_mode(self, check):
@@ -394,7 +396,7 @@ class TrainController(QObject):
         self.commanded_speed = speed
 
     @pyqtSlot(float)
-    def handle_authority_changed(self, authority: float) -> None:
+    def handle_authority_changed(self, authority: str) -> None:
         self.update_authority(authority)
 
     @pyqtSlot(bool)
@@ -662,10 +664,12 @@ class TrainController(QObject):
         # Input) status: boolean
         def set_left(self, status: bool):
             self.left = status
+            print(f"Left Door: {self.left}")
             self.left_door_updated.emit(self.left)
         # Input) status: boolean
         def set_right(self, status: bool):
             self.right = status
+            print(f"Right Door: {self.right}")
             self.right_door_updated.emit(self.right)
 
         ## Toggle Functions
@@ -683,14 +687,15 @@ class TrainController(QObject):
             return self.right
         # Output) tuple: (bool: left door status, bool: right door status)
         def get_status(self):
-            return self.get_left(), self.get_right()
+            return self.get_left() or self.get_right()
         
         # Update the exit door status
         # Input) bool: False = first value, Trye = second value
         def update_exit_door(self, exit_door: str):
-            self.exit_door = "right" if self.exit_door == "Right" else "left"
+            self.exit_door = "right" if exit_door == "Right" else "left"
 
         def open_door(self):
+            print("Opening door: ", self.exit_door)
             if self.exit_door == "left":
                 self.set_left(True)
                 self.left_door_updated.emit(self.left)
@@ -701,6 +706,7 @@ class TrainController(QObject):
                 raise ValueError("Exit door not set")
             
         def close_door(self):
+            print("Closing doors")
             if self.exit_door == "left":
                 self.set_left(False)
                 self.left_door_updated.emit(self.left)
@@ -731,6 +737,10 @@ class TrainController(QObject):
             self.lights_updated.emit(self.lights)
         def set_lights(self, status: bool):
             self.lights = status
+            if self.lights:
+                print(f"Lights are on. Underground: {self.underground}")
+            else:
+                print(f"Lights are off. Underground: {self.underground}")
             self.lights_updated.emit(self.lights)
 
         ## Toggle Function
@@ -749,6 +759,8 @@ class TrainController(QObject):
         ## Update Functions
         def update_underground(self, underground: bool):
             self.underground = underground
+            self.set_lights(underground)
+            
         def update_lights(self, elapsed_time: float):
             prev_lights = self.lights
             self.set_lights(self.underground or (elapsed_time % 86400) > 43200)   # Set external lights if current block is underground
@@ -799,14 +811,14 @@ class MockTrainModel(QObject):
     brake_fault_updated = pyqtSignal(bool)
     signal_fault_updated = pyqtSignal(bool)
     comm_speed_updated = pyqtSignal(float)
-    authority_updated = pyqtSignal(float)
+    authority_updated = pyqtSignal(str)
 
     def __init__(self):
         super().__init__() 
         # Train Model variables
         self.current_speed: float = 0
         self.commanded_speed: float = 0
-        self.authority: float = 100
+        self.authority: str = "100000:65" # Authority and desination block number
 
         self.power_command = 0
         self.position = 0
@@ -854,7 +866,7 @@ class MockTrainModel(QObject):
         # Calculate current speed based on power command            
         self.current_speed += self.power_command * time_step
         self.current_speed = min(self.current_speed, speed_limit)
-        self.set_current_speed(max(self.current_speed, 0))
+        self.current_speed = (max(self.current_speed, 0))
         print("Current Speed: ", self.current_speed, "\n")
 
     # Iterative (float representing meters)? Absolute (position representing when to stop by)?
@@ -968,14 +980,12 @@ class TrainSystem:
 
     def run(self):
         self.controller.set_setpoint_speed(10)
-        for _ in range(5):
+        for _ in range(5000):
             self.controller.update_train_controller()
 
-        # self.controller.set_position(65)
-
-        # self.controller.set_setpoint_speed(20)
-        # for _ in range(50):
-        #     self.controller.update_train_controller()
+        self.controller.set_setpoint_speed(20)
+        for _ in range(50):
+            self.controller.update_train_controller()
         
         # self.controller.set_setpoint_speed(30)
         # for _ in range(50):
