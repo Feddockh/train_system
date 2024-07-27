@@ -37,8 +37,6 @@ class TrainController(QObject):
 
     curr_speed_updated = pyqtSignal(float)
     destination_updated = pyqtSignal(str)
-
-    kp_updated_for_eng = pyqtSignal(int)
     
     
     def __init__(self, kp: float=25, ki: float=0.5, train_model=None, line_name: str = "green", id: int = 0, ssh=None) -> None:
@@ -344,16 +342,16 @@ class TrainController(QObject):
     @pyqtSlot(bool)
     def handle_service_brake_toggled(self, check: bool) -> None:
         if check:
-            self.brake.set_service_brake(True)
+            self.brake.set_user_service_brake(True)
         else:
-            self.brake.set_service_brake(False)
+            self.brake.set_user_service_brake(False)
 
     @pyqtSlot(bool)
     def handle_emergency_brake_toggled(self, check: bool) -> None:
         if check:
-            self.brake.set_emergency_brake(True)
+            self.brake.set_user_emergency_brake(True)
         else:
-            self.brake.set_emergency_brake(False)
+            self.brake.set_user_emergency_brake(False)
 
     @pyqtSlot(str)
     def handle_commanded_temp_changed(self, x: str) -> None:
@@ -400,7 +398,6 @@ class TrainController(QObject):
         #do this to keep from being recursive
         #self.engineer.kp = kp
         self.engineer.kp = kp
-        self.kp_updated_for_eng.emit(kp)
 
     @pyqtSlot(int)
     def handle_ki_changed(self, ki: int) -> None:
@@ -413,7 +410,7 @@ class TrainController(QObject):
 
     @pyqtSlot(str)
     def handle_destination_changed(self, des: str) -> None:
-        self.set_station(des)
+        self.set_destination(des)
 
     @pyqtSlot()
     def handle_tick(self) -> None:
@@ -454,8 +451,10 @@ class TrainController(QObject):
 
     ## Brake class to hold brake status
     class Brake(QObject):
-        service_brake_updated = pyqtSignal(bool)
+        user_service_brake_updated = pyqtSignal(bool)
+        user_emergency_brake_updated = pyqtSignal(bool)
         emergency_brake_updated = pyqtSignal(bool)
+        service_brake_updated = pyqtSignal(bool)
         def __init__(self):
             super().__init__()
             # These are for outputting to the Train Model and for UI status
@@ -475,9 +474,12 @@ class TrainController(QObject):
             self.emergency_brake = status
             self.emergency_brake_updated.emit(status)
         def set_user_service_brake(self, status: bool):
+            print("set brake")
             self.user_service_brake = status
+            self.user_service_brake_updated.emit(status)
         def set_user_emergency_brake(self, status: bool):
             self.user_emergency_brake = status
+            self.user_emergency_brake_updated.emit(status)
 
         ## Toggle Functions
         def toggle_service_brake(self):
@@ -488,8 +490,10 @@ class TrainController(QObject):
             self.emergency_brake_updated.emit(self.emergency_brake)
         def toggle_user_service_brake(self):
             self.user_service_brake = not self.user_service_brake
+            self.user_service_brake_updated.emit(self.user_service_brake)
         def toggle_user_emergency_brake(self):
             self.user_emergency_brake = not self.user_emergency_brake
+            self.user_emergency_brake_updated.emit(self.user_emergency_brake)
 
         ## Accessor functions
         def get_service_brake(self):
@@ -590,6 +594,7 @@ class TrainController(QObject):
             
             if brake.get_status():
                 #### THIS LINE IS FOR TESTING PURPOSES ONLY ####
+                print("Brakes " + str(brake.get_status()))
                 self.power_command = max(self.power_command , -self.P_MAX)    # self.power_command = 0
 
                 #print(f"Power Command from Train Controller: {self.power_command}")

@@ -641,6 +641,8 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.manual_window = None
 
         self.driver_mode = "manual"
+        self.user_emerg_brake_status = False
+        self.user_serv_brake_status = False
         self.serv_brake_status = False
         self.emerg_brake_status = False
         self.power = 0
@@ -1127,12 +1129,14 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.curr_temp.setText("Train Temperature: " + str(self.temp) + " F")
 
     @pyqtSlot(bool)
-    def handle_service_brake_update(self, brake: bool) -> None:
-        self.serv_brake_status = brake
+    def handle_user_service_brake_update(self, brake: bool) -> None:
+        self.user_serv_brake_status = brake
 
-        self.brake_on = self.serv_brake_status or self.emerg_brake_status
+        print("brake handled")
 
-        if self.serv_brake_status == True:
+        self.brake_on = self.serv_brake_status or self.emerg_brake_status or self.user_emerg_brake_status or self.user_serv_brake_status
+
+        if self.user_serv_brake_status == True:
             self.service_brake_button.setChecked(True)
 
         if self.brake_on == True:
@@ -1145,13 +1149,13 @@ class DriverWindow(QMainWindow): ###DriverWindow
             self.brake_status_label.setStyleSheet("background-color: #29C84C; color: white;")
 
     @pyqtSlot(bool)
-    def handle_emerg_brake_update(self, brake: bool) -> None:
+    def handle_user_emerg_brake_update(self, brake: bool) -> None:
         
-        self.emerg_brake_status = brake
+        self.user_emerg_brake_status = brake
 
-        self.brake_on = self.serv_brake_status or self.emerg_brake_status
+        self.brake_on = self.serv_brake_status or self.emerg_brake_status or self.user_emerg_brake_status or self.user_serv_brake_status
 
-        if self.emerg_brake_status == True:
+        if self.user_emerg_brake_status == True:
             self.em_brake_button.setChecked(True)
 
         if self.brake_on == True:
@@ -1162,8 +1166,39 @@ class DriverWindow(QMainWindow): ###DriverWindow
             self.brake_status_label.setText("Brake Status: Off")
             self.brake_status_label.setFixedSize(75, 50)
             self.brake_status_label.setStyleSheet("background-color: #29C84C; color: white;")
-
     
+    @pyqtSlot(bool)
+    def handle_service_brake_update(self, brake: bool) -> None:
+
+        self.serv_brake_status = brake
+
+        self.brake_on = self.serv_brake_status or self.emerg_brake_status or self.user_emerg_brake_status or self.user_serv_brake_status
+    
+        if self.brake_on == True:
+            self.brake_status_label.setText("Brake Status: On")
+            self.brake_status_label.setFixedSize(75, 50)
+            self.brake_status_label.setStyleSheet("background-color: #FF4444; color: white;")
+        else:
+            self.brake_status_label.setText("Brake Status: Off")
+            self.brake_status_label.setFixedSize(75, 50)
+            self.brake_status_label.setStyleSheet("background-color: #29C84C; color: white;")
+
+    @pyqtSlot(bool)
+    def handle_emerg_brake_update(self, brake: bool) -> None:
+
+        self.emerg_brake_status = brake
+
+        self.brake_on = self.serv_brake_status or self.emerg_brake_status or self.user_emerg_brake_status or self.user_serv_brake_status
+
+        if self.brake_on == True:
+            self.brake_status_label.setText("Brake Status: On")
+            self.brake_status_label.setFixedSize(75, 50)
+            self.brake_status_label.setStyleSheet("background-color: #FF4444; color: white;")
+        else:
+            self.brake_status_label.setText("Brake Status: Off")
+            self.brake_status_label.setFixedSize(75, 50)
+            self.brake_status_label.setStyleSheet("background-color: #29C84C; color: white;")
+
     @pyqtSlot(bool)
     def handle_engine_fault_update(self, status: bool) -> None:
         self.faults[0] = status

@@ -72,8 +72,10 @@ tc.lights.lights_updated.connect(driver.handle_light_status_update) ###checked b
 tc.doors.left_door_updated.connect(driver.handle_left_door_update)
 tc.doors.right_door_updated.connect(driver.handle_right_door_update)
 tc.ac.train_temp_updated.connect(driver.handle_train_temp_update)
+tc.brake.user_service_brake_updated.connect(driver.handle_user_service_brake_update)
+tc.brake.user_emergency_brake_updated.connect(driver.handle_user_emerg_brake_update) ###checked but does not change ui
 tc.brake.service_brake_updated.connect(driver.handle_service_brake_update)
-tc.brake.emergency_brake_updated.connect(driver.handle_emerg_brake_update) ###checked but does not change ui
+tc.brake.emergency_brake_updated.connect(driver.handle_emerg_brake_update)
 tc.train_model.engine_fault_updated.connect(driver.handle_engine_fault_update)
 tc.train_model.brake_fault_updated.connect(driver.handle_brake_fault_update)
 tc.train_model.signal_fault_updated.connect(driver.handle_signal_fault_update)
@@ -104,12 +106,9 @@ engineer_window.show()
 
 app.exec()
 
-#tc.set_setpoint_speed(20)
-#tc.lights.set_lights(True)
 
-print("Test: " + str(test.kp_val))
-print("Engineer UI: " + str(engineer.data[0][1]))
-print("TC: " + str(tc.engineer.kp))
+print("Driver UI: " + str(driver.user_serv_brake_status))
+print("TC: " + str(tc.brake.user_service_brake))
 
 
 
