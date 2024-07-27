@@ -39,6 +39,8 @@ class TrainController(QObject):
     curr_speed_updated = pyqtSignal(float)
     destination_updated = pyqtSignal(str)
     
+    authority_updated = pyqtSignal(float)
+    
     
     def __init__(self, kp: float=25, ki: float=0.5, train_model=None, line_name: str = "green", id: int = 0, ssh=None) -> None:
         super().__init__()
@@ -307,7 +309,7 @@ class TrainController(QObject):
     @pyqtSlot(float)
     def set_authority(self, authority: float):
         self.authority = authority
-        self.authority_updated.emit(self.authority)
+        self.authority_updated.emit(authority)
     def parse_authority(self, authority: str):
         print(f"Authority: {authority}")
         try:

@@ -5,6 +5,7 @@ from train_system.train_controller.tc_widgets import CircleWidget, EngineerTable
 from train_system.common.time_keeper import TimeKeeper, TimeKeeperWidget
 from train_system.common.gui_features import CustomTable
 from train_system.train_controller.train_controller import MockTrainModel
+from train_system.train_model.train_model import TrainModel
 
 GREEN = "#29C84C"
 RED = "#FF4444"
@@ -40,7 +41,7 @@ class TestBenchWindow(QMainWindow):
     left_door_updated = pyqtSignal(bool)
     kp_updated = pyqtSignal(int)
     ki_updated = pyqtSignal(int)
-    location_updated = pyqtSignal(int) #may change depending on how we represent location
+    position_updated = pyqtSignal(int) #may change depending on how we represent location
     destination_updated = pyqtSignal(str)
 
     def __init__(self):
@@ -618,7 +619,7 @@ class TestBenchWindow(QMainWindow):
             self.location = int(x)
             #self.train.train_model.set_position(float(x))
             #self.train.position = float(x)
-            self.location_updated.emit(self.location)
+            self.position_updated.emit(self.location)
 
     def destination_changed(self, x):
         if(x != ""):
@@ -630,6 +631,8 @@ class TestBenchWindow(QMainWindow):
 
 
 class DriverWindow(QMainWindow): ###DriverWindow
+    setpoint_updated = pyqtSignal(str)
+    
     def __init__(self, time_keeper: TimeKeeper):
         super().__init__()
 
@@ -658,6 +661,9 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.curr_speed = 0
         self.comm_speed = 0
         self.authority  = 0
+
+        self.position = 0
+        self.destination = 0
 
 
         #the left outputs will use a vertical layout
@@ -920,9 +926,9 @@ class DriverWindow(QMainWindow): ###DriverWindow
         center_layout.addLayout(status_layout)
 
         #create a button to navigate to test bench
-        test_button = QPushButton("Test Bench")
-        test_button.setFixedSize(75, 75)
-        test_button.clicked.connect(self.navigate_test_page)
+        #test_button = QPushButton("Test Bench")
+        #test_button.setFixedSize(75, 75)
+        #test_button.clicked.connect(self.navigate_test_page)
 
         #display current temp
         self.curr_temp = QLabel("Train Temperature: " + str(self.temp) + " F")
@@ -979,7 +985,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         loc_and_brake_layout.addWidget(self.em_brake_button)
 
         #add all right side components to the same layout
-        right_layout.addWidget(test_button)
+        #right_layout.addWidget(test_button)
         right_layout.addWidget(self.curr_temp)
         right_layout.addLayout(comm_temp_layout)
         right_layout.addLayout(loc_and_brake_layout)
@@ -1078,14 +1084,17 @@ class DriverWindow(QMainWindow): ###DriverWindow
             self.tm.set_train_temp(int(x))
             #self.train.ac.set_commanded_temp(int(x))
 
+    """
     @pyqtSlot(TrainModel)
     def handle_mock_train_update(self, train_model: TrainModel) -> None:
         self.tm = train_model
 
+        self.position = self.tm.get_position()
+        self.destination = self.tm.get_station_name()
         
         self.loc_label.setText("Location: " + str(self.tm.get_position()))
         self.des_label.setText(str(self.tm.get_station_name()))
-
+    """
 
 
     ###??? and commanded temp
@@ -1144,6 +1153,11 @@ class DriverWindow(QMainWindow): ###DriverWindow
 
         if self.user_serv_brake_status == True:
             self.service_brake_button.setChecked(True)
+            self.speed_input.setEnabled(False)
+            self.setpoint_speed = 0
+            self.setpoint_updated.emit("0")
+        else:
+            self.speed_input.setEnabled(True)
 
         if self.brake_on == True:
             self.brake_status_label.setText("Brake Status: On")
@@ -1163,6 +1177,11 @@ class DriverWindow(QMainWindow): ###DriverWindow
 
         if self.user_emerg_brake_status == True:
             self.em_brake_button.setChecked(True)
+            self.speed_input.setEnabled(False)
+            self.setpoint_speed = 0
+            self.setpoint_updated.emit("0")
+        else:
+            self.speed_input.setEnabled(True)
 
         if self.brake_on == True:
             self.brake_status_label.setText("Brake Status: On")
@@ -1249,8 +1268,11 @@ class DriverWindow(QMainWindow): ###DriverWindow
 
     @pyqtSlot(float)
     def handle_authority_update(self, a: float) -> None:
-        self.authority = round(self.convert_to_ft(a))
-        
+        #self.authority = round(self.convert_to_ft(a))
+        self.authority = a
+
+        print("in authority handler")
+
         self.curr_authority_stat.setText(str(self.authority) + " ft")
 
     @pyqtSlot(float)
@@ -1304,6 +1326,9 @@ class DriverWindow(QMainWindow): ###DriverWindow
 
 
 class EngineerWindow(QMainWindow):
+    kp_updated = pyqtSignal(int)
+    ki_updated = pyqtSignal(int)
+    
     def __init__(self):
         super().__init__()
 
@@ -1339,9 +1364,9 @@ class EngineerWindow(QMainWindow):
                 self.kp_updated.emit(int(new_item))
         if(col == 2):
             self.data[row][col] = new_item
-            #self.train.engineer.set_kp(int(new_item))
-            
-        print(self.data)
+            if(new_item != "-"):
+                print("item changed and signal emits")
+                self.ki_updated.emit(int(new_item))
 
     def handle_kp_update(self, kp: int):
         print("in kp handler")

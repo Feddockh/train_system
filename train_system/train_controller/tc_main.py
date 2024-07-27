@@ -64,6 +64,7 @@ driver.em_brake_button.toggled.connect(tc.handle_emergency_brake_toggled) ###che
 driver.service_brake_button.toggled.connect(tc.handle_service_brake_toggled) ###checked
 driver.speed_input.textChanged.connect(tc.handle_setpoint_edit_changed) ###checked but conversions need fixed
 #driver.comm_temp_input.textChanged.connect(tc.handle_comm_temp_changed) ###checked
+driver.setpoint_updated.connect(tc.handle_setpoint_edit_changed)
 
 #TRAIN CONTROLLER TO DRIVER
 tc.setpoint_speed_updated.connect(driver.handle_setpoint_speed_update) ###checked
@@ -80,8 +81,8 @@ tc.train_model.engine_fault_updated.connect(driver.handle_engine_fault_update)
 tc.train_model.brake_fault_updated.connect(driver.handle_brake_fault_update)
 tc.train_model.signal_fault_updated.connect(driver.handle_signal_fault_update)
 tc.curr_speed_updated.connect(driver.handle_curr_speed_update)
-tc.train_model.comm_speed_updated.connect(driver.handle_comm_speed_update)
-tc.train_model.authority_updated.connect(driver.handle_authority_update)
+tc.train_model.comm_speed_received.connect(driver.handle_comm_speed_update)
+tc.authority_updated.connect(driver.handle_authority_update)
 tc.position_updated.connect(driver.handle_position_update)
 tc.destination_updated.connect(driver.handle_destination_update)
 
