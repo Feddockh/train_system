@@ -613,13 +613,8 @@ class TrainController(QObject):
                 brake.set_service_brake(True)
             
             if brake.get_status():
-<<<<<<< HEAD
                 #### THIS LINE IS FOR TESTING PURPOSES ONLY
                 self.power_command = max(self.power_command , -self.P_MAX)    # self.power_command = 0
-=======
-                #### THIS LINE IS FOR TESTING PURPOSES ONLY ####
-                # self.power_command = max(self.power_command , -self.P_MAX)    # self.power_command = 0
->>>>>>> 1d8147e625288636674deaaf7f79076177d32ed2
 
             print(f"Power Command from Train Controller: {self.power_command}")
 
