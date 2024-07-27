@@ -12,6 +12,8 @@ RED = "#FF4444"
 DARK_GREY = "#C8C8C8"
 YELLOW = "FFB800"
 
+BRAKE_STATUS_SIZE = 125
+
 KP_MIN = 0
 KP_MAX = 50
 
@@ -855,8 +857,8 @@ class DriverWindow(QMainWindow): ###DriverWindow
 
         #add widgets to the setpoint layout
         setpoint_layout.addWidget(setpoint_label, 0, 0)
-        setpoint_layout.addWidget(self.speed_input, 1, 1)
-        setpoint_layout.addWidget(setpoint_mph_label, 1, 2)
+        setpoint_layout.addWidget(self.speed_input, 1, 0)
+        setpoint_layout.addWidget(setpoint_mph_label, 1, 1)
 
         #create the label and output for power
         power_label = QLabel("Power")
@@ -885,11 +887,11 @@ class DriverWindow(QMainWindow): ###DriverWindow
         #create status labels at bottom-center
         if self.brake_on == True:
             self.brake_status_label = QLabel("Brake Status: On")
-            self.brake_status_label.setFixedSize(100, 50)
+            self.brake_status_label.setFixedSize(BRAKE_STATUS_SIZE, 50)
             self.brake_status_label.setStyleSheet("background-color: #FF4444; color: white;") #brake on, box red
         else:
             self.brake_status_label = QLabel("Brake Status: Off")
-            self.brake_status_label.setFixedSize(100, 50)
+            self.brake_status_label.setFixedSize(BRAKE_STATUS_SIZE, 50)
             self.brake_status_label.setStyleSheet("background-color: #29C84C; color: white;") #brake off, box green
 
         self.light_staus_label = QLabel("Lights Off")
@@ -1161,11 +1163,11 @@ class DriverWindow(QMainWindow): ###DriverWindow
 
         if self.brake_on == True:
             self.brake_status_label.setText("Brake Status: On")
-            self.brake_status_label.setFixedSize(75, 50)
+            self.brake_status_label.setFixedSize(BRAKE_STATUS_SIZE, 50)
             self.brake_status_label.setStyleSheet("background-color: #FF4444; color: white;")
         else:
             self.brake_status_label.setText("Brake Status: Off")
-            self.brake_status_label.setFixedSize(75, 50)
+            self.brake_status_label.setFixedSize(BRAKE_STATUS_SIZE, 50)
             self.brake_status_label.setStyleSheet("background-color: #29C84C; color: white;")
 
     @pyqtSlot(bool)
@@ -1185,11 +1187,11 @@ class DriverWindow(QMainWindow): ###DriverWindow
 
         if self.brake_on == True:
             self.brake_status_label.setText("Brake Status: On")
-            self.brake_status_label.setFixedSize(75, 50)
+            self.brake_status_label.setFixedSize(BRAKE_STATUS_SIZE, 50)
             self.brake_status_label.setStyleSheet("background-color: #FF4444; color: white;")
         else:
             self.brake_status_label.setText("Brake Status: Off")
-            self.brake_status_label.setFixedSize(75, 50)
+            self.brake_status_label.setFixedSize(BRAKE_STATUS_SIZE, 50)
             self.brake_status_label.setStyleSheet("background-color: #29C84C; color: white;")
     
     @pyqtSlot(bool)
@@ -1201,11 +1203,11 @@ class DriverWindow(QMainWindow): ###DriverWindow
     
         if self.brake_on == True:
             self.brake_status_label.setText("Brake Status: On")
-            self.brake_status_label.setFixedSize(75, 50)
+            self.brake_status_label.setFixedSize(BRAKE_STATUS_SIZE, 50)
             self.brake_status_label.setStyleSheet("background-color: #FF4444; color: white;")
         else:
             self.brake_status_label.setText("Brake Status: Off")
-            self.brake_status_label.setFixedSize(75, 50)
+            self.brake_status_label.setFixedSize(BRAKE_STATUS_SIZE, 50)
             self.brake_status_label.setStyleSheet("background-color: #29C84C; color: white;")
 
     @pyqtSlot(bool)
@@ -1217,11 +1219,11 @@ class DriverWindow(QMainWindow): ###DriverWindow
 
         if self.brake_on == True:
             self.brake_status_label.setText("Brake Status: On")
-            self.brake_status_label.setFixedSize(75, 50)
+            self.brake_status_label.setFixedSize(BRAKE_STATUS_SIZE, 50)
             self.brake_status_label.setStyleSheet("background-color: #FF4444; color: white;")
         else:
             self.brake_status_label.setText("Brake Status: Off")
-            self.brake_status_label.setFixedSize(75, 50)
+            self.brake_status_label.setFixedSize(BRAKE_STATUS_SIZE, 50)
             self.brake_status_label.setStyleSheet("background-color: #29C84C; color: white;")
 
     @pyqtSlot(bool)

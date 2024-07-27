@@ -342,6 +342,7 @@ class TrainController(QObject):
         self.station = station
     def get_station(self):
         return self.station
+    #SHOULDNT NEED TO BE A SLOT
     @pyqtSlot(str)
     def set_destination(self, destination: str):
         self.destination = destination
