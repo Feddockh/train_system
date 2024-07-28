@@ -56,42 +56,41 @@ def main():
     track_blocks2 = line.track_blocks[28:85] + line.track_blocks[100:153]
 
     track_blocks3 = line.track_blocks[73:101]
+    track_blocks3[2]._light_signal = True
+    track_blocks3[11]._light_signal = True
+    print(track_blocks3[26].number)
 
     #Creating Red Line
     line2 = Line("Red")
     line2.load_track_blocks()
+    line2.load_switches()
+
+    track_blocks4 = line2.track_blocks[0:23] + line2.track_blocks[72:76]
 
     track_blocks5 = line2.track_blocks[23:45] + line2.track_blocks[67:75]
 
-    track_blocks6 = line2.track_blocks[23:68]
+    track_blocks6 = line2.track_blocks[39:68]
 
 
     #Creating Waysides
-    Wayside_1 = TrackController(track_blocks1)
-    Wayside_1.numBlocks = 33
-    Wayside_1.wayside_name = "Wayside 1"
+    Wayside_1 = TrackController(track_blocks1, "Wayside 1", 33)
 
-    
-    Wayside_2 = TrackController(track_blocks2)
-    Wayside_2.numBlocks = 110
-    Wayside_2.wayside_name = "Wayside 2"
+    Wayside_2 = TrackController(track_blocks2, "Wayside 2", 110)
 
+    Wayside_3 = TrackController(track_blocks3, "Wayside 3", 28)
     
-    Wayside_3 = TrackController(track_blocks3)
-    Wayside_3.numBlocks = 28
-    Wayside_3.wayside_name = "Wayside 3"
-    
-    Wayside_5 = TrackController(track_blocks5)
-    Wayside_5.numBlocks = 30
-    Wayside_5.wayside_name = "Wayside 5"
 
+    Wayside_4 = TrackController(track_blocks4, "Wayside 4", 27)
     
-    Wayside_6 = TrackController(track_blocks6)
-    Wayside_6.numBlocks = 45
-    Wayside_6.wayside_name = "Wayside 6"
+
+    Wayside_5 = TrackController(track_blocks5, "Wayside 5", 30)
+    
+    Wayside_6 = TrackController(track_blocks6, "Wayside 6", 29)
+
+
 
     #Add waysides to be sent to UI
-    waysides = [Wayside_1, Wayside_2, Wayside_3, Wayside_5, Wayside_6]
+    waysides = [Wayside_1, Wayside_2, Wayside_3,Wayside_4, Wayside_5, Wayside_6]
 
     #Create application
     app = QApplication(sys.argv)
