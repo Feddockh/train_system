@@ -376,7 +376,7 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         if (lineIndex == 0):
             data = [
                 ['Wayside 1', '1 - 32, 150'],
-                ['Wayside 2', '29 - 85, 101 - 150'],
+                ['Wayside 2', '29 - 85, 101 - 153'],
                 ['Wayside 3', '74 - 101']
             ]
         elif (lineIndex == 1):
@@ -615,7 +615,7 @@ class TestBench(QtWidgets.QMainWindow):
         if (lineIndex == 0):
             data = [
                 ['Wayside 1', '1 - 32, 150'],
-                ['Wayside 2', '29 - 85, 101 - 150'],
+                ['Wayside 2', '29 - 85, 101 - 153'],
                 ['Wayside 3', '74 - 101']
             ]
         elif (lineIndex == 1):
@@ -906,7 +906,7 @@ class Maintenance(QtWidgets.QMainWindow):
         if (lineIndex == 0):
             data = [
                 ['Wayside 1', '1 - 32, 150'],
-                ['Wayside 2', '29 - 85, 101 - 150'],
+                ['Wayside 2', '29 - 85, 101 - 153'],
                 ['Wayside 3', '74 - 101']
             ]
         elif (lineIndex == 1):
