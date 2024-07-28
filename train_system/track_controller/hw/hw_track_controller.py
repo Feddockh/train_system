@@ -233,6 +233,42 @@ class TrackController(QObject):
         )
 
     def send_to_pi(self):
+        if self.wayside_name == "Wayside 4":
+            ssh = paramiko.SSHClient()
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+            try:
+                ssh.connect(self.hostname, port=self.port, username=self.username, password=self.password)
+
+                # Once the pi is connected, converts all outputs to strings, then displays them in pi
+                self.convert_to_strings()
+
+                command = [
+                    "echo 'RUNNING PLC ON PI' > /home/garrett/pi_monitor.log",
+                    "echo 'TESTING' >> /home/garrett/pi_monitor.log",
+                    f"echo '{self.wayside_name}' >> /home/garrett/pi_monitor.log",
+                    f"echo '{self.message_switch9}' >> /home/garrett/pi_monitor.log",
+                    f"echo '{self.message_switch16}' >> /home/garrett/pi_monitor.log",
+                    f"echo '{self.message_switch29}' >> /home/garrett/pi_monitor.log"
+                ]
+
+                for cmd in command:
+                    stdin, stdout, stderr = ssh.exec_command(cmd)
+                    stdout.channel.recv_exit_status()  # Ensure the command completes
+                    error = stderr.read().decode('utf-8').strip()
+                    if error:
+                        print(f"Error: {error}")
+
+            except Exception as e:
+                print(f"Exception: {str(e)}")
+            
+            finally:
+                ssh.close()
+
+                
+#Original Pi Code   
+"""
+    def send_to_pi(self):
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
@@ -264,3 +300,4 @@ class TrackController(QObject):
             ssh.close()
 
         return response
+"""
