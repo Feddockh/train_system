@@ -33,9 +33,12 @@ class BuilderUI(QWidget):
         self.upload_button.clicked.connect(self.open_file)
 
     def open_file(self):
-        filename = QFileDialog.getOpenFileName(self, 'Select Track Model', './system_data/lines')
+        filename = QFileDialog.getOpenFileName(self, caption='Select Track Model', directory='./system_data/lines')
+
         self.line = Line('Green')
         self.line.load_track_blocks(filename[0])
+        self.line.load_stations(filename[0])
+        self.line.load_switches(filename[0])
 
         self.live_map.set_line(self.line)
 

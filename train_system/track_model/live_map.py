@@ -33,25 +33,28 @@ class LiveMap(QWidget):
     def set_line(self, line: Line):
 
         self.line = line
+        self.switches = [switch.child_blocks for switch in self.line.switches]
 
-        #self.nodes = []
-        self.edges = []
-        self.labels = {}
+        self.edges = list()
+        self.labels = dict()
 
+        #Label station blocks
+        for station in self.line.stations:
+            for block in station.blocks:
+                self.labels[block] = station.name
+
+        #Label yard
+        self.labels[self.line.yard] = 'Yard'
+
+        #Create edges between blocks
         for block in self.line.track_blocks:
-            #self.nodes.append(block.number)
-            if block.station.isascii():
-                self.labels[str(block.number)] = block.station
-            elif len(block.section) > 1:
-                self.labels[str(block.number)] = 'Yard'
-
             for num in block.connecting_blocks:
-                #Filter out duplicates
-                if ([str(block.number), str(num)] in self.edges) or ([str(num), str(block.number)] in self.edges):
+                #Filter out duplicate edges (makes shape of graph more consistent)
+                if [num, block.number] in self.edges:
                     continue
-                #Do not create edges between two blocks on the "out" side of a switch
-                if not (len(block.connecting_blocks) > 2 and len(block.switch_options) < 2 and len(self.line.get_track_block(num).switch_options) < 2):
-                    self.edges.append([str(block.number), str(num)] if num > block.number else [str(num), str(block.number)])
+                #Do not create edges between two blocks that are children of the same switch
+                if not (([num, block.number] or [block.number, num]) in self.switches):
+                    self.edges.append([block.number, num])
 
         self.graph.add_edges_from(self.edges)
         self.map = nx.kamada_kawai_layout(self.graph)
@@ -73,7 +76,7 @@ class LiveMap(QWidget):
                 color_map.append('yellow')
             elif block.occupancy:
                 color_map.append('red')
-            elif len(block.station):
+            elif block.station != None:
                 color_map.append('#00e1ff')
             else:
                 color_map.append('black')
