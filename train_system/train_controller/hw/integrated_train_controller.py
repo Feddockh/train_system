@@ -44,7 +44,7 @@ class TrainController(QObject):
     def __init__(self, ssh=None, line_name: str = "green", id: int = 0, kp: float = 25, ki: float = 0.1):
         super().__init__()
         self.hardware = True if ssh else False
-        print(f"Hardware: {self.hardware}")
+        #print(f"Hardware: {self.hardware}")
         self.time_step = 1
         self.train_length = 32.2  # 32.2 meters
 
