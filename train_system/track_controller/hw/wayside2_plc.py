@@ -105,44 +105,44 @@ if (track_blocks[32].occupancy and  # block 62
 # Consolidated print statements for error checking
 
 #SWITCH AT BLOCK 57
-"""
+
 print("Switch  57:\n")
 # Block 57
 print("Block 57 (Switch) Information: ")
-print(f"Switch Position: {track_blocks[57]._switch_position}")
-print(f"Light Signal: {track_blocks[57]._light_signal}")
-print(f"Authority: {track_blocks[57].authority}\n")
+print(f"Switch Position: {track_blocks[28]._switch_position}")
+print(f"Light Signal: {track_blocks[28]._light_signal}")
+print(f"Authority: {track_blocks[28].authority}\n")
 
 # Block 58
 print("Block 58 Information: ")
-print(f"Light Signal: {track_blocks[58]._light_signal}")
-print(f"Authority: {track_blocks[58].authority}\n")
+print(f"Light Signal: {track_blocks[29]._light_signal}")
+print(f"Authority: {track_blocks[29].authority}\n")
 
 # Block 151
 print("Block 151 Information: ")
-print(f"Light Signal: {track_blocks[151]._light_signal}")
-print(f"Authority: {track_blocks[151].authority}\n")
+print(f"Light Signal: {track_blocks[55]._light_signal}")
+print(f"Authority: {track_blocks[55].authority}\n")
 
 
 #Switch at BLOCK 63
 print("Switch 63: \n")
 print("Block 63 (Switch) Information: ")
-print(f"Switch Position: {track_blocks[63]._switch_position}")
-print(f"Light Signal: {track_blocks[63]._light_signal}")
-print(f"Authority: {track_blocks[63].authority}\n")
+print(f"Switch Position: {track_blocks[33]._switch_position}")
+print(f"Light Signal: {track_blocks[33]._light_signal}")
+print(f"Authority: {track_blocks[33].authority}\n")
 
 # Block 62
 print("Block 62 Information: ")
-print(f"Light Signal: {track_blocks[62]._light_signal}")
-print(f"Authority: {track_blocks[62].authority}\n")
+print(f"Light Signal: {track_blocks[32]._light_signal}")
+print(f"Authority: {track_blocks[32].authority}\n")
 
-# Block 151
+# Block 153
 print("Block 153 Information: ")
-print(f"Light Signal: {track_blocks[153]._light_signal}")
-print(f"Authority: {track_blocks[153].authority}\n")
+print(f"Light Signal: {track_blocks[57]._light_signal}")
+print(f"Authority: {track_blocks[57].authority}\n")
 
 
-"""
+
 
 
 """

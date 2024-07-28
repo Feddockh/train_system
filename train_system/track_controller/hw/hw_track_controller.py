@@ -335,7 +335,7 @@ class TrackController(QObject):
             command += f"echo '{self.message_switch63}' >>/home/garrett/pi_monitor.log\n"
            # command += f"echo '{self.message_switch76}' >> /home/garrett/pi_monitor.log\n"
             
-        
+            
             # Execute the command
             stdin, stdout, stderr = ssh.exec_command(command)
 

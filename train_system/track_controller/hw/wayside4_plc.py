@@ -4,6 +4,9 @@
 """
 POST INDEX CHANGE
 """
+
+#SWITCH AT BLOCK 9
+
 # Scenario 1: C to yard, 9 to block 77
 if(track_blocks[8].occupancy and track_blocks[9].occupancy and track_blocks[38].occupancy == False):
     
@@ -77,10 +80,10 @@ if(track_blocks[8].occupancy and track_blocks[9].occupancy and track_blocks[38].
     track_blocks[9]._light_signal = False
     track_blocks[38]._light_signal = False
 
-# Scenario 6:
 
 
-# Switch at block 16
+#SWITCH AT BLOCK 16
+
 # Scenario 1: A to F
 if(track_blocks[0].occupancy and 
    (track_blocks[15].occupancy == False and track_blocks[16].occupancy == False and track_blocks[17].occupancy == False and 
