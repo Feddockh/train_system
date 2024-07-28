@@ -376,14 +376,14 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         if (lineIndex == 0):
             data = [
                 ['Wayside 1', '1 - 32, 150'],
-                ['Wayside 2', '29 - 85, 101 - 150'],
+                ['Wayside 2', '29 - 85, 101 - 153'],
                 ['Wayside 3', '74 - 101']
             ]
         elif (lineIndex == 1):
             data = [
                 ['Wayside 4', '1 - 23, 73 - 76'], 
                 ['Wayside 5', '24 - 45, 68 - 75'],
-                ['Wayside 6', '24 - 68']
+                ['Wayside 6', '40 - 68']
             ]
 
         self.waysideBlkTable.clearContents()
@@ -615,14 +615,14 @@ class TestBench(QtWidgets.QMainWindow):
         if (lineIndex == 0):
             data = [
                 ['Wayside 1', '1 - 32, 150'],
-                ['Wayside 2', '29 - 85, 101 - 150'],
+                ['Wayside 2', '29 - 85, 101 - 153'],
                 ['Wayside 3', '74 - 101']
             ]
         elif (lineIndex == 1):
             data = [
                 ['Wayside 4', '1 - 23, 73 - 76'], 
                 ['Wayside 5', '24 - 45, 68 - 75'],
-                ['Wayside 6', '24 - 68']
+                ['Wayside 6', '40 - 68']
             ]
 
         self.waysideBlkTable.clearContents()
@@ -906,14 +906,14 @@ class Maintenance(QtWidgets.QMainWindow):
         if (lineIndex == 0):
             data = [
                 ['Wayside 1', '1 - 32, 150'],
-                ['Wayside 2', '29 - 85, 101 - 150'],
+                ['Wayside 2', '29 - 85, 101 - 153'],
                 ['Wayside 3', '74 - 101']
             ]
         elif (lineIndex == 1):
             data = [
                 ['Wayside 4', '1 - 23, 73 - 76'], 
                 ['Wayside 5', '24 - 45, 68 - 75'],
-                ['Wayside 6', '24 - 68']
+                ['Wayside 6', '40 - 68']
             ]
 
         self.waysideBlkTable.clearContents()

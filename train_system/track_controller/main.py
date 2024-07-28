@@ -63,12 +63,13 @@ def main():
     #Creating Red Line
     line2 = Line("Red")
     line2.load_track_blocks()
+    line2.load_switches()
 
     track_blocks4 = line2.track_blocks[0:23] + line2.track_blocks[72:76]
 
     track_blocks5 = line2.track_blocks[23:45] + line2.track_blocks[67:75]
 
-    track_blocks6 = line2.track_blocks[23:68]
+    track_blocks6 = line2.track_blocks[39:68]
 
 
     #Creating Waysides
@@ -82,7 +83,7 @@ def main():
 
     Wayside_5 = TrackController(track_blocks5, "Wayside 5", 30)
     
-    Wayside_6 = TrackController(track_blocks6, "Wayside 6", 45)
+    Wayside_6 = TrackController(track_blocks6, "Wayside 6", 29)
 
 
     #Add waysides to be sent to UI
