@@ -14,7 +14,7 @@ if(track_blocks[8].occupancy and track_blocks[9].occupancy and track_blocks[38].
     track_blocks[9].authority = 0
 
     # set switch pos
-    track_blocks[8]._switch_position = 1
+    track_blocks[8].switch.child_blocks[38]
 
     # set light signals
     track_blocks[9]._light_signal = False
@@ -30,7 +30,7 @@ if(track_blocks[38].occupancy and
     track_blocks[9].authority = 0
 
     # set switch pos
-    track_blocks[8]._switch_position = 1
+    track_blocks[8].switch.child_blocks[38]
 
     # set light signals
     #track_blocks[8]._light_signal = True
@@ -46,7 +46,7 @@ if(track_blocks[8].occupancy and track_blocks[38].occupancy and
     track_blocks[38].authority = 0
 
     # set switch pos
-    track_blocks[8]._switch_position = 0
+    track_blocks[8].switch.child_blocks[9]
 
     # set light signals
     #track_blocks[8]._light_signal = True
@@ -60,7 +60,7 @@ if(track_blocks[9].occupancy and
     track_blocks[6].occupancy == False and track_blocks[7].occupancy == False and track_blocks[8].occupancy == False)):
 
     # set switch pos
-    track_blocks[8]._switch_position = 0
+    track_blocks[8].switch.child_blocks[9]
 
     # set light signals
     #track_blocks[8]._light_signal = True
@@ -95,7 +95,7 @@ if(track_blocks[0].occupancy and
     (track_blocks[13].occupancy or track_blocks[12].occupancy or track_blocks[11].occupancy or track_blocks[10].occupancy))):
     
     # set switch position A->F
-    track_blocks[15]._switch_position = 0
+    track_blocks[15].switch.child_blocks[0]
 
     # set light signals
     track_blocks[0]._light_signal = True
@@ -113,7 +113,7 @@ if(track_blocks[14].occupancy and
     track_blocks[27].occupancy == False and track_blocks[28].occupancy == False)):
     
     # set switch position
-    track_blocks[15]._switch_position = 1
+    track_blocks[15].switch.child_blocks[14]
 
     # set light signals
     track_blocks[0]._light_signal = False
@@ -140,7 +140,7 @@ if(track_blocks[15].occupancy and
    (track_blocks[14].occupancy or track_blocks[13].occupancy or track_blocks[12].occupancy or track_blocks[11].occupancy or track_blocks[10].occupancy)):
 
     # set switch pos
-    track_blocks[15]._switch_position = 0
+    track_blocks[15].switch.child_blocks[0]
 
     # set lights
     track_blocks[0]._light_signal = True
@@ -155,7 +155,7 @@ if(track_blocks[15].occupancy and
     track_blocks[11].occupancy == False and track_blocks[10].occupancy == False)):
 
     # set switch pos
-    track_blocks[15]._switch_position = 1
+    track_blocks[15].switch.child_blocks[14]
 
     # set lights
     track_blocks[0]._light_signal = False
@@ -172,7 +172,7 @@ if(track_blocks[26].occupancy and
     track_blocks[37].authority = 0
 
     # set switch position
-    track_blocks[26]._switch_position = 0
+    track_blocks[26].switch.child_blocks[27]
 
     # set light position 
     #track_blocks[26]._light_signal = True
@@ -188,7 +188,7 @@ if(track_blocks[26].occupancy and
     track_blocks[27].authority = 0
 
     # set switch position
-    track_blocks[26]._switch_position = 1
+    track_blocks[26].switch.child_blocks[27]
 
     # set light signal
     #track_blocks[26]._light_signal = True
@@ -211,7 +211,7 @@ if(track_blocks[37].occupancy and
     track_blocks[27].authority = 0
 
     # set switch position
-    track_blocks[26]._switch_position = 0
+    track_blocks[26].switch.child_blocks[37]
 
     # set light signal
     #track_blocks[26]._light_signal = True
