@@ -12,7 +12,7 @@ from train_system.mbo_manager.gui_features import CustomTable
 from train_system.common.time_keeper import TimeKeeper
 from train_system.common.time_keeper import TimeKeeperWidget
 
-from train_system.common.train_dispatch import TrainDispatchUpdate
+
 from train_system.common.train_dispatch import TrainDispatch
 from train_system.ctc_manager.ctc_manager import CTCOffice
 from train_system.ctc_manager.ctc_train_dispatch import CTCTrainDispatch
@@ -53,7 +53,7 @@ class MBOWindow(QMainWindow):
         self.throughput_label = QLabel('Select the train throughput for the given day.')
         self.throughput_label.setFont(QFont('Times', 15))
         self.throughput_label.setFixedHeight(50)
-        self.througput_options = ["Low", "High"]
+        self.througput_options = ["Low", "Medium", "High"]
         self.train_throughput_selection = QComboBox()
         self.train_throughput_selection.setFixedSize(100,50)
         self.train_throughput_selection.setFont(QFont('Times', 12))
