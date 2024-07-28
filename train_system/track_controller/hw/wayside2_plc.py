@@ -26,8 +26,8 @@ if (track_blocks[28].occupancy and  # block 57
     track_blocks[29].occupancy):  # block 58
 
     # set switch position
-    #track_blocks[28].switch.position = track_blocks[28].switch.child_blocks[55]
-    track_blocks[28].switch.child_blocks[55]
+    track_blocks[28].switch.position = track_blocks[28].switch.child_blocks[55]
+    #track_blocks[28].switch.child_blocks[55]
     
     # set light colors
     #track_blocks[28]._light_signal = True
@@ -40,8 +40,8 @@ if (track_blocks[28].occupancy and  # block 57
     track_blocks[55].occupancy):  # block 151
 
     # set switch position
-    #track_blocks[28].switch.position = track_blocks[28].switch.child_blocks[29]
-    track_blocks[28].switch.child_blocks[29]
+    track_blocks[28].switch.position = track_blocks[28].switch.child_blocks[29]
+    #track_blocks[28].switch.child_blocks[29]
 
     # set light colors
     #track_blocks[28]._light_signal = True
@@ -69,8 +69,8 @@ if (track_blocks[32].occupancy and  # block 62
     track_blocks[57].occupancy == False):  # block 153
 
     # set switch position
-    #track_blocks[33].switch.position = track_blocks[33].switch.child_blocks[32]
-    track_blocks[33].switch.child_blocks[32]
+    track_blocks[33].switch.position = track_blocks[33].switch.child_blocks[32]
+    #track_blocks[33].switch.child_blocks[32]
 
     # set lights
     track_blocks[32]._light_signal = True
@@ -83,8 +83,8 @@ if (track_blocks[32].occupancy == False and  # block 62
     track_blocks[57].occupancy):  # block 153
 
     # set switch position
-    #track_blocks[33].switch.position = track_blocks[33].switch.child_blocks[57]
-    track_blocks[33].switch.child_blocks[57]
+    track_blocks[33].switch.position = track_blocks[33].switch.child_blocks[57]
+    #track_blocks[33].switch.child_blocks[57]
 
     # set light signals
     track_blocks[32]._light_signal = False
