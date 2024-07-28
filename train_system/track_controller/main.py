@@ -72,31 +72,18 @@ def main():
 
 
     #Creating Waysides
-    Wayside_1 = TrackController(track_blocks1)
-    Wayside_1.numBlocks = 33
-    Wayside_1.wayside_name = "Wayside 1"
+    Wayside_1 = TrackController(track_blocks1, "Wayside 1", 33)
 
-    
-    Wayside_2 = TrackController(track_blocks2)
-    Wayside_2.numBlocks = 110
-    Wayside_2.wayside_name = "Wayside 2"
+    Wayside_2 = TrackController(track_blocks2, "Wayside 2", 110)
 
+    Wayside_3 = TrackController(track_blocks3, "Wayside 3", 28)
     
-    Wayside_3 = TrackController(track_blocks3)
-    Wayside_3.numBlocks = 28
-    Wayside_3.wayside_name = "Wayside 3"
-    
-    Wayside_4 = TrackController(track_blocks4)
-    Wayside_4.numBlocks = 27
-    Wayside_4.wayside_name = "Wayside 4"
+    Wayside_4 = TrackController(track_blocks4, "Wayside 4", 27)
 
-    Wayside_5 = TrackController(track_blocks5)
-    Wayside_5.numBlocks = 30
-    Wayside_5.wayside_name = "Wayside 5"
+    Wayside_5 = TrackController(track_blocks5, "Wayside 5", 30)
     
-    Wayside_6 = TrackController(track_blocks6)
-    Wayside_6.numBlocks = 45
-    Wayside_6.wayside_name = "Wayside 6"
+    Wayside_6 = TrackController(track_blocks6, "Wayside 6", 45)
+
 
     #Add waysides to be sent to UI
     waysides = [Wayside_1, Wayside_2, Wayside_3,Wayside_4, Wayside_5, Wayside_6]

@@ -8,7 +8,7 @@ import sys
 
 
 class TrackController(QObject):
-    def __init__(self, track_blocks: list):
+    def __init__(self, track_blocks: list, wayside_name, num_blocks):
         """
         Initialize variables of the Track Controller.
         """
@@ -17,8 +17,8 @@ class TrackController(QObject):
         self.track_blocks = track_blocks
         self.plc_program_uploaded = False
         self.plc_program = ""
-        self.wayside_name = ""
-        self.numBlocks = 0
+        self.wayside_name = wayside_name
+        self.numBlocks = num_blocks
        
         for block in self.track_blocks:
                 block.authority_updated.connect(self.handle_authority_update)
