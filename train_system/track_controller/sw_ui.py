@@ -383,7 +383,7 @@ class ProgrammerUI(QtWidgets.QMainWindow):
             data = [
                 ['Wayside 4', '1 - 23, 73 - 76'], 
                 ['Wayside 5', '24 - 45, 68 - 75'],
-                ['Wayside 6', '24 - 68']
+                ['Wayside 6', '40 - 68']
             ]
 
         self.waysideBlkTable.clearContents()
@@ -622,7 +622,7 @@ class TestBench(QtWidgets.QMainWindow):
             data = [
                 ['Wayside 4', '1 - 23, 73 - 76'], 
                 ['Wayside 5', '24 - 45, 68 - 75'],
-                ['Wayside 6', '24 - 68']
+                ['Wayside 6', '40 - 68']
             ]
 
         self.waysideBlkTable.clearContents()
@@ -913,7 +913,7 @@ class Maintenance(QtWidgets.QMainWindow):
             data = [
                 ['Wayside 4', '1 - 23, 73 - 76'], 
                 ['Wayside 5', '24 - 45, 68 - 75'],
-                ['Wayside 6', '24 - 68']
+                ['Wayside 6', '40 - 68']
             ]
 
         self.waysideBlkTable.clearContents()
