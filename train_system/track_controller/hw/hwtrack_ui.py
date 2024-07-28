@@ -4,8 +4,7 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtGui import QPainter, QColor
 from PyQt6.QtCore import Qt, QRect, QTimer
 from PyQt6 import QtCore, QtGui, QtWidgets, uic, QtWidgets
-from train_system.track_controller.hw.hw_track_controller import TrackController
-from train_system.common.crossing_signal import CrossingSignal
+from train_system.track_controller.sw_track_controller import TrackController
 
 #Colors
 DARK_GREY = "#C8C8C8"
@@ -14,11 +13,6 @@ RED = "#FF0000"
 GREEN = "#00FF00"
 LIGHT_GREY = "#D5DBE3"
 
-crossing_signal_map = {
-    CrossingSignal.ON: True,
-    CrossingSignal.OFF: False,
-    CrossingSignal.NA: False
-}
 
 class CenterDelegate(QtWidgets.QStyledItemDelegate):
     def initStyleOption(self, option, index):
@@ -322,35 +316,37 @@ class ProgrammerUI(QtWidgets.QMainWindow):
     def display_switch_pos(self, x, waysideIndex):
         
         #if there is a switch that exists at this block
-        if(self.track_controllers[waysideIndex].track_blocks[x]._switch_position != None):
-            pos = self.track_controllers[waysideIndex].track_blocks[x]._switch_position
-            item = self.track_controllers[waysideIndex].track_blocks[x].switch_options[pos]
+        if((self.track_controllers[waysideIndex].track_blocks[x].switch != None) and (self.track_controllers[waysideIndex].track_blocks[x].switch.parent_block == self.track_controllers[waysideIndex].track_blocks[x].number)):
+            pos = self.track_controllers[waysideIndex].track_blocks[x].switch.get_child_index()
+            item = self.track_controllers[waysideIndex].track_blocks[x].switch.position
 
             #for other block not connected to switch
-            if(pos == 0):
+            if(pos == False):
                 otherPos = 1
             else:
                 otherPos = 0
-            otherItem = self.track_controllers[waysideIndex].track_blocks[x].switch_options[otherPos]
-
+            otherItem = self.track_controllers[waysideIndex].track_blocks[x].switch.child_blocks[otherPos]
+            
             #updating block connected to switch
-            for i in range(self.track_controllers[waysideIndex].numBlocks):
+            for i in range(len(self.track_controllers[waysideIndex].track_blocks)):
                 if(self.track_controllers[waysideIndex].track_blocks[i].number == item):
-                    block = QTableWidgetItem(str(self.track_controllers[waysideIndex].track_blocks[x].number))
-                    block.setFlags(block.flags() & ~Qt.ItemFlag.ItemIsEditable)
-                    self.blockInfoTable.setItem(i, 4, block)
-                if(self.track_controllers[waysideIndex].track_blocks[i].number == otherItem):
-                    block = QTableWidgetItem("-")
-                    block.setFlags(block.flags() & ~Qt.ItemFlag.ItemIsEditable)
-                    self.blockInfoTable.setItem(i, 4, block)
+                    Itemblock = QTableWidgetItem(str(self.track_controllers[waysideIndex].track_blocks[x].number))
+                    Itemblock.setFlags(Itemblock.flags() & ~Qt.ItemFlag.ItemIsEditable)
+                    self.blockInfoTable.setItem(i, 4, Itemblock)
+                elif(self.track_controllers[waysideIndex].track_blocks[i].number == otherItem):
+                    Otherblock = QTableWidgetItem("-")
+                    Otherblock.setFlags(Otherblock.flags() & ~Qt.ItemFlag.ItemIsEditable)
+                    self.blockInfoTable.setItem(i, 4, Otherblock)
             block = QTableWidgetItem(str(item))
             block.setBackground(QtGui.QColor(LIGHT_GREY))
             block.setFlags(block.flags() & ~Qt.ItemFlag.ItemIsEditable)
             self.blockInfoTable.setItem(x, 4, block)
-        elif(self.track_controllers[waysideIndex].track_blocks[x].switch_options == None):
+        """
+        elif(self.track_controllers[waysideIndex].track_blocks[x].switch == None):
             block = QTableWidgetItem("-")
             block.setFlags(block.flags() & ~Qt.ItemFlag.ItemIsEditable)
             self.blockInfoTable.setItem(x, 4, block)
+        """
 
         self.blockInfoTable.viewport().update()
     
@@ -732,6 +728,7 @@ class Maintenance(QtWidgets.QMainWindow):
         font = QtGui.QFont()
         font.setPointSize(15)
 
+        """
         #FileUpload button
         self.fileUploadPushButton = QtWidgets.QPushButton(parent=self.centralwidget)
         self.fileUploadPushButton.setGeometry(QtCore.QRect(720, 100, 135, 40))
@@ -744,6 +741,7 @@ class Maintenance(QtWidgets.QMainWindow):
         self.label.setGeometry(QtCore.QRect(530, 100, 180, 40))
         self.label.setObjectName("label")
         self.label.setFont(font)
+        """
 
         #Combobox for wayside selection
         self.comboBox = QtWidgets.QComboBox(parent=self.centralwidget)
@@ -865,8 +863,8 @@ class Maintenance(QtWidgets.QMainWindow):
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
         self.setWindowTitle(_translate("Maintenance", "Maintenance"))
-        self.fileUploadPushButton.setText(_translate("Maintenance", "Upload File"))
-        self.label.setText(_translate("Maintenance", "Select PLC Program:"))
+        #self.fileUploadPushButton.setText(_translate("Maintenance", "Upload File"))
+        #self.label.setText(_translate("Maintenance", "Select PLC Program:"))
         #self.plcUploadedLabel.setText(_translate("Maintenance", "PLC program uploaded."))
 
     #Updates UI values to reflect backend changes
@@ -959,17 +957,18 @@ class Maintenance(QtWidgets.QMainWindow):
             self.check_switch(row, waysideIndex)
         #If light signal column
         elif(item.column() == 2):
-            #getting block #
+            #getting block 
             row = item.row()
             self.check_signal(row, waysideIndex)
         #If crossing signal column
         elif(item.column() == 3):
             row = item.row()
             self.check_crossing(row, waysideIndex)
+            print("here")
 
     def check_crossing(self, x, waysideIndex):
         #checking to see if there is a crossing at this block
-        if(self.track_controllers[waysideIndex].track_blocks[x]._crossing_signal != CrossingSignal.NA):
+        if(self.track_controllers[waysideIndex].track_blocks[x]._crossing_signal != None):
             #Getting current signal
             curr_crossing = self.track_controllers[waysideIndex].track_blocks[x]._crossing_signal
             print("Curr")
@@ -1012,19 +1011,22 @@ class Maintenance(QtWidgets.QMainWindow):
     def check_switch(self, x, waysideIndex):
 
         #if this block has a switch
-        if(self.track_controllers[waysideIndex].track_blocks[x]._switch_position != None):
+        if(self.track_controllers[waysideIndex].track_blocks[x].switch != None):
             #Getting current position & block switch is connected to
-            pos = self.track_controllers[waysideIndex].track_blocks[x]._switch_position
-            item = self.track_controllers[waysideIndex].track_blocks[x].switch_options[pos]
+            pos = self.track_controllers[waysideIndex].track_blocks[x].switch.get_child_index()
+            #item = self.track_controllers[waysideIndex].track_blocks[x].switch_options[pos]
+            print(pos)
 
-            if(pos == 0):
+            if(pos == False):
                 otherPos = 1
             else:
                 otherPos = 0
+            
+            int_pos = int(pos)
 
             self.track_controllers[waysideIndex].check_PLC_program_switch(x, pos, otherPos)
         #this block has nothing to do with switches
-        elif(self.track_controllers[waysideIndex].track_blocks[x].switch_options == None):
+        elif(self.track_controllers[waysideIndex].track_blocks[x].switch == None):
             block = QTableWidgetItem("-")
             block.setFlags(block.flags() & Qt.ItemFlag.ItemIsEditable)
             self.blockInfoTable.setItem(x, 1, block)
@@ -1038,16 +1040,16 @@ class Maintenance(QtWidgets.QMainWindow):
     def display_switch_pos(self, x, waysideIndex):
         
         #if there is a switch that exists at this block
-        if(self.track_controllers[waysideIndex].track_blocks[x]._switch_position != None):
-            pos = self.track_controllers[waysideIndex].track_blocks[x]._switch_position
-            item = self.track_controllers[waysideIndex].track_blocks[x].switch_options[pos]
+        if((self.track_controllers[waysideIndex].track_blocks[x].switch != None) and (self.track_controllers[waysideIndex].track_blocks[x].switch.parent_block == self.track_controllers[waysideIndex].track_blocks[x].number)):
+            pos = self.track_controllers[waysideIndex].track_blocks[x].switch.get_child_index()
+            item = self.track_controllers[waysideIndex].track_blocks[x].switch.position
 
             #for other block not connected to switch
-            if(pos == 0):
+            if(pos == False):
                 otherPos = 1
             else:
                 otherPos = 0
-            otherItem = self.track_controllers[waysideIndex].track_blocks[x].switch_options[otherPos]
+            otherItem = self.track_controllers[waysideIndex].track_blocks[x].switch.child_blocks[otherPos]
 
             #updating block connected to switch
             for i in range(self.track_controllers[waysideIndex].numBlocks):
@@ -1055,7 +1057,7 @@ class Maintenance(QtWidgets.QMainWindow):
                     block = QTableWidgetItem(str(self.track_controllers[waysideIndex].track_blocks[x].number))
                     block.setFlags(block.flags() | Qt.ItemFlag.ItemIsEditable)
                     self.blockInfoTable.setItem(i, 1, block)
-                if(self.track_controllers[waysideIndex].track_blocks[i].number == otherItem):
+                elif(self.track_controllers[waysideIndex].track_blocks[i].number == otherItem):
                     block = QTableWidgetItem("-")
                     block.setFlags(block.flags() | Qt.ItemFlag.ItemIsEditable)
                     self.blockInfoTable.setItem(i, 1, block)
@@ -1063,10 +1065,12 @@ class Maintenance(QtWidgets.QMainWindow):
             block.setBackground(QtGui.QColor(LIGHT_GREY))
             block.setFlags(block.flags() | Qt.ItemFlag.ItemIsEditable)
             self.blockInfoTable.setItem(x, 1, block)
-        elif(self.track_controllers[waysideIndex].track_blocks[x].switch_options == None):
+        """
+        elif(self.track_controllers[waysideIndex].track_blocks[x].switch == None):
             block = QTableWidgetItem("-")
             block.setFlags(block.flags() & Qt.ItemFlag.ItemIsEditable)
             self.blockInfoTable.setItem(x, 1, block)
+        """
 
         self.blockInfoTable.viewport().update()
     

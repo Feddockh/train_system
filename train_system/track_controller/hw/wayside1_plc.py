@@ -117,13 +117,13 @@ print(f"Authority: {track_blocks[11].authority}\n")
 
 # Block 13 (Switch)
 print("Block 13 (Switch) Information: ")
-print(f"Switch Position: {track_blocks[12]._switch_position}")
+print(f"Switch Position: {track_blocks[12].switch_position}")
 print(f"Light Signal: {track_blocks[12]._light_signal}")
 print(f"Authority: {track_blocks[12].authority}\n")
 
 # Block 29 (Switch)
 print("Block 29 (Switch) Information: ")
-print(f"Switch Position: {track_blocks[28]._switch_position}")
+print(f"Switch Position: {track_blocks[28].switch_position}")
 print(f"Light Signal: {track_blocks[28]._light_signal}")
 print(f"Authority: {track_blocks[28].authority}\n")
 
