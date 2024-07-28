@@ -84,8 +84,8 @@ class ProgrammerUI(QtWidgets.QMainWindow):
             self.timer.start(3000)
 
         #Used in multiple widgets
-        #waysides = [track_controllers[0].wayside_name, track_controllers[1].wayside_name, track_controllers[2].wayside_name,track_controllers[3].wayside_name, track_controllers[4].wayside_name]
-        waysides = [track_controllers[0].wayside_name, track_controllers[1].wayside_name, track_controllers[2].wayside_name]
+        waysides = [track_controllers[0].wayside_name, track_controllers[1].wayside_name, track_controllers[2].wayside_name,track_controllers[3].wayside_name, track_controllers[4].wayside_name, track_controllers[5].wayside_name]
+        #waysides = [track_controllers[0].wayside_name, track_controllers[1].wayside_name, track_controllers[2].wayside_name]
         lines = ['Green Line', 'Red Line']
         
         #Creating universal font
@@ -376,14 +376,14 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         if (lineIndex == 0):
             data = [
                 ['Wayside 1', '1 - 32, 150'],
-                ['Wayside 2', '29 - 85, 101 - 150'],
+                ['Wayside 2', '29 - 85, 101 - 153'],
                 ['Wayside 3', '74 - 101']
             ]
         elif (lineIndex == 1):
             data = [
                 ['Wayside 4', '1 - 23, 73 - 76'], 
                 ['Wayside 5', '24 - 45, 68 - 75'],
-                ['Wayside 6', '24 - 68']
+                ['Wayside 6', '40 - 68']
             ]
 
         self.waysideBlkTable.clearContents()
@@ -430,8 +430,8 @@ class TestBench(QtWidgets.QMainWindow):
         self.setCentralWidget(self.centralwidget)
 
         #Used in multiple widgets
-        #waysides = [track_controllers[0].wayside_name, track_controllers[1].wayside_name, track_controllers[2].wayside_name,track_controllers[3].wayside_name, track_controllers[4].wayside_name]
-        waysides = [self.track_controllers[0].wayside_name, self.track_controllers[1].wayside_name, self.track_controllers[2].wayside_name]
+        waysides = [track_controllers[0].wayside_name, track_controllers[1].wayside_name, track_controllers[2].wayside_name,track_controllers[3].wayside_name, track_controllers[4].wayside_name, track_controllers[5].wayside_name]
+        #waysides = [self.track_controllers[0].wayside_name, self.track_controllers[1].wayside_name, self.track_controllers[2].wayside_name]
         lines = ['Green Line', 'Red Line']
 
         #Creating universal font
@@ -615,14 +615,14 @@ class TestBench(QtWidgets.QMainWindow):
         if (lineIndex == 0):
             data = [
                 ['Wayside 1', '1 - 32, 150'],
-                ['Wayside 2', '29 - 85, 101 - 150'],
+                ['Wayside 2', '29 - 85, 101 - 153'],
                 ['Wayside 3', '74 - 101']
             ]
         elif (lineIndex == 1):
             data = [
                 ['Wayside 4', '1 - 23, 73 - 76'], 
                 ['Wayside 5', '24 - 45, 68 - 75'],
-                ['Wayside 6', '24 - 68']
+                ['Wayside 6', '40 - 68']
             ]
 
         self.waysideBlkTable.clearContents()
@@ -720,8 +720,8 @@ class Maintenance(QtWidgets.QMainWindow):
         self.setCentralWidget(self.centralwidget)
 
         #Used in multiple widgets
-        #waysides = [track_controllers[0].wayside_name, track_controllers[1].wayside_name, track_controllers[2].wayside_name,track_controllers[3].wayside_name, track_controllers[4].wayside_name]
-        waysides = [self.track_controllers[0].wayside_name, self.track_controllers[1].wayside_name, self.track_controllers[2].wayside_name]
+        waysides = [track_controllers[0].wayside_name, track_controllers[1].wayside_name, track_controllers[2].wayside_name,track_controllers[3].wayside_name, track_controllers[4].wayside_name, track_controllers[5].wayside_name]
+        #waysides = [self.track_controllers[0].wayside_name, self.track_controllers[1].wayside_name, self.track_controllers[2].wayside_name]
         lines = ['Green Line', 'Red Line']
 
         #Creating universal font
@@ -906,14 +906,14 @@ class Maintenance(QtWidgets.QMainWindow):
         if (lineIndex == 0):
             data = [
                 ['Wayside 1', '1 - 32, 150'],
-                ['Wayside 2', '29 - 85, 101 - 150'],
+                ['Wayside 2', '29 - 85, 101 - 153'],
                 ['Wayside 3', '74 - 101']
             ]
         elif (lineIndex == 1):
             data = [
                 ['Wayside 4', '1 - 23, 73 - 76'], 
                 ['Wayside 5', '24 - 45, 68 - 75'],
-                ['Wayside 6', '24 - 68']
+                ['Wayside 6', '40 - 68']
             ]
 
         self.waysideBlkTable.clearContents()

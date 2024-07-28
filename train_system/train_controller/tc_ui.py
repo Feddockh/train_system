@@ -4,7 +4,7 @@ from PyQt6.QtCore import Qt, pyqtSlot, pyqtSignal
 from train_system.train_controller.tc_widgets import CircleWidget, EngineerTable
 from train_system.common.time_keeper import TimeKeeper, TimeKeeperWidget
 from train_system.common.gui_features import CustomTable
-from train_system.train_controller.train_controller import TrainModel
+from train_system.train_controller.train_controller import MockTrainModel
 
 GREEN = "#29C84C"
 RED = "#FF4444"
@@ -635,7 +635,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
 
         self.setWindowTitle("Driver") #Driver
 
-        self.tm = TrainModel()
+        self.tm = MockTrainModel()
 
         self.test_window = None
         self.manual_window = None
@@ -950,10 +950,10 @@ class DriverWindow(QMainWindow): ###DriverWindow
         loc_and_des_label.setFixedSize(250, 50)
         loc_and_des_label.setFont(header_font)
 
-        self.loc_label = QLabel("Location: " + str(self.tm.get_track_block())) 
+        self.loc_label = QLabel("Location: " + str(self.position)) 
         self.loc_label.setFixedSize(100, 50)
 
-        self.des_label = QLabel(str(self.tm.get_station_name()))
+        self.des_label = QLabel(str(self.destination))
         self.des_label.setFixedSize(100, 50)
 
         #create emergency brake
@@ -1218,6 +1218,18 @@ class DriverWindow(QMainWindow): ###DriverWindow
         
         self.curr_authority_stat.setText(str(self.authority) + " ft")
 
+    @pyqtSlot(float)
+    def handle_position_update(self, pos: float) -> None:
+        self.position = pos
+
+        self.loc_label.setText("Location: " + str(self.position))
+
+    @pyqtSlot(str)
+    def handle_destination_update(self, des: str):
+        self.destination = des
+
+        self.des_label.setText(self.destination)
+
 
     """
     @pyqtSlot(str)
@@ -1287,7 +1299,9 @@ class EngineerWindow(QMainWindow):
         
         if(col == 1):
             self.data[row][col] = new_item
-            #self.train.engineer.set_kp(int(new_item))
+            if(new_item != "-"):
+                print("item changed and signal emits")
+                self.kp_updated.emit(int(new_item))
         if(col == 2):
             self.data[row][col] = new_item
             #self.train.engineer.set_kp(int(new_item))
@@ -1295,6 +1309,7 @@ class EngineerWindow(QMainWindow):
         print(self.data)
 
     def handle_kp_update(self, kp: int):
+        print("in kp handler")
         self.data[0][1] = str(kp)
         self.table.update_table_data(self.data)
 
