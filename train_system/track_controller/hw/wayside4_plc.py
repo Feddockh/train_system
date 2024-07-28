@@ -30,8 +30,9 @@ if(track_blocks[38].occupancy and
     track_blocks[8]._switch_position = 1
 
     # set light signals
-    track_blocks[8]._light_signal = True
+    #track_blocks[8]._light_signal = True
     track_blocks[9]._light_signal = False
+    tracK_blocks[38]._light_signal = True
 
 # Scenario 3: Block 9 to 10
 if(track_blocks[8].occupancy and track_blocks[38].occupancy and 
@@ -45,7 +46,7 @@ if(track_blocks[8].occupancy and track_blocks[38].occupancy and
     track_blocks[8]._switch_position = 0
 
     # set light signals
-    track_blocks[8]._light_signal = True
+    #track_blocks[8]._light_signal = True
     track_blocks[9]._light_signal = True
     track_blocks[38]._light_signal = False
 
@@ -59,7 +60,7 @@ if(track_blocks[9].occupancy and
     track_blocks[8]._switch_position = 0
 
     # set light signals
-    track_blocks[8]._light_signal = True
+    #track_blocks[8]._light_signal = True
     track_blocks[9]._light_signal = True
     track_blocks[38]._light_signal = False
 
@@ -155,7 +156,8 @@ if(track_blocks[15].occupancy and
 
     # set lights
     track_blocks[0]._light_signal = False
-    track_blocks[1]._light_signal = False
+    #track_blocks[1]._light_signal = False
+    track_blocks[14]._light_signal = True
 
 # Switch 27
 # Scenario 1: connect 27 to 28
@@ -170,7 +172,7 @@ if(track_blocks[26].occupancy and
     track_blocks[26]._switch_position = 0
 
     # set light position 
-    track_blocks[26]._light_signal = True
+    #track_blocks[26]._light_signal = True
     track_blocks[27]._light_signal = True
     track_blocks[37]._light_signal = False
 
@@ -186,9 +188,9 @@ if(track_blocks[26].occupancy and
     track_blocks[26]._switch_position = 1
 
     # set light signal
-    track_blocks[26]._light_signal = True
-    track_blocks[28]._light_signal = True
-    track_blocks[37]._light_signal = False
+    #track_blocks[26]._light_signal = True
+    track_blocks[27]._light_signal = False
+    track_blocks[37]._light_signal = True
 
 # Scenario 3: T to 27
 if(track_blocks[37].occupancy and 
@@ -209,10 +211,11 @@ if(track_blocks[37].occupancy and
     track_blocks[26]._switch_position = 0
 
     # set light signal
-    track_blocks[26]._light_signal = True
-    track_blocks[27]._light_signal = True
-    track_blocks[37]._light_signal = False
+    #track_blocks[26]._light_signal = True
+    track_blocks[27]._light_signal = False
+    track_blocks[37]._light_signal = True
 
+"""
 # Scenario 4: T to 28
 if(track_blocks[37].occupancy and 
    (track_blocks[0].occupancy == False and track_blocks[1].occupancy == False and track_blocks[2].occupancy == False and 
@@ -235,7 +238,7 @@ if(track_blocks[37].occupancy and
     track_blocks[26]._light_signal = True
     track_blocks[28]._light_signal = True
     track_blocks[37]._light_signal = False
-
+"""
 # Scenario 5: 27, 28, and T are all occupied
 if(track_blocks[26].occupancy and track_blocks[27].occupancy and track_blocks[37].occupancy):
 

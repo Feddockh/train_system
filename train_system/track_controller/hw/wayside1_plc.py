@@ -2,6 +2,7 @@ print("Wayside 1: ")
 """
 POST INDEX CHANGE
 """
+#Scenario 1: 1-->13, block 1 = OCCUPIED, D through F are unoccupied
 if(track_blocks[0].occupancy and track_blocks[12].occupancy == False and (track_blocks[13].occupancy == False and track_blocks[14].occupancy == False and track_blocks[15].occupancy == False and track_blocks[16].occupancy == False and track_blocks[17].occupancy == False and track_blocks[18].occupancy == False and track_blocks[19].occupancy == False and track_blocks[20].occupancy == False and track_blocks[21].occupancy == False and track_blocks[22].occupancy == False and track_blocks[23].occupancy == False and track_blocks[24].occupancy == False and track_blocks[25].occupancy == False and track_blocks[26].occupancy == False and track_blocks[27].occupancy == False and track_blocks[28].occupancy == False)):
     
     #set switch position
@@ -10,7 +11,7 @@ if(track_blocks[0].occupancy and track_blocks[12].occupancy == False and (track_
     #set lights
     track_blocks[0]._light_signal = True
     track_blocks[11]._light_signal = False
-    track_blocks[12]._light_signal = True
+    track_blocks[12]._light_signal = False
 
 #Scenario 2: 13-->12, block 13 is occupied, A is unoccupied
 if(track_blocks[12].occupancy and track_blocks[0].occupancy == False and track_blocks[11].occupancy == False):
@@ -21,7 +22,7 @@ if(track_blocks[12].occupancy and track_blocks[0].occupancy == False and track_b
     #set lights
     track_blocks[0]._light_signal = False
     track_blocks[11]._light_signal = True
-    track_blocks[12]._light_signal = True
+    #track_blocks[12]._light_signal = False
 
 #Scenario 3: 13-->12, block 13 is occupied, 1 is occupied, load loop, until D through F is unoccupied, then send through train
 if(track_blocks[12].occupancy and track_blocks[0].occupancy and track_blocks[11].occupancy == False):
@@ -35,7 +36,7 @@ if(track_blocks[12].occupancy and track_blocks[0].occupancy and track_blocks[11]
     #set ligths
     track_blocks[0]._light_signal = False
     track_blocks[11]._light_signal = True
-    track_blocks[12]._light_signal = True
+    #track_blocks[12]._light_signal = True
 
 #SWITCH AT BLOCK 29
 
@@ -46,7 +47,7 @@ if(track_blocks[28].occupancy and track_blocks[32].occupancy == False and track_
     #track_blocks[28].switch_position = 0
 
     #set lights
-    track_blocks[28]._light_signal = True
+    #track_blocks[28]._light_signal = True
     track_blocks[29]._light_signal = True
     track_blocks[32]._light_signal = False
 
@@ -60,7 +61,7 @@ if(track_blocks[28].occupancy and track_blocks[32].occupancy and track_blocks[29
     track_blocks[28].switch_position = 0
 
     #set lights
-    track_blocks[28]._light_signal = True
+    #track_blocks[28]._light_signal = True
     track_blocks[29]._light_signal = True
     track_blocks[32]._light_signal = False
 
@@ -72,9 +73,9 @@ if(track_blocks[32].occupancy and (track_blocks[12].occupancy == False and track
     track_blocks[28].switch_position = 1
 
     #set lights
-    track_blocks[28]._light_signal = True
+    track_blocks[28]._light_signal = False
     track_blocks[32]._light_signal = True
-    track_blocks[29]._light_signal = False
+    #track_blocks[29]._light_signal = False
 
 
 

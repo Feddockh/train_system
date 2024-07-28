@@ -29,7 +29,7 @@ if (track_blocks[28].occupancy and  # block 57
     track_blocks[28].switch_position = 1
 
     # set light colors
-    track_blocks[28]._light_signal = True
+    #track_blocks[28]._light_signal = True
     track_blocks[29]._light_signal = False
     track_blocks[55]._light_signal = True
 
@@ -42,7 +42,7 @@ if (track_blocks[28].occupancy and  # block 57
     track_blocks[28].switch_position = 0
 
     # set light colors
-    track_blocks[28]._light_signal = True
+    #track_blocks[28]._light_signal = True
     track_blocks[29]._light_signal = True
     track_blocks[55]._light_signal = False
 
@@ -55,7 +55,7 @@ if (track_blocks[28].occupancy and  # block 57
     track_blocks[28].authority = 0
 
     # set light signals 
-    track_blocks[28]._light_signal = False
+    #track_blocks[28]._light_signal = False
     track_blocks[29]._light_signal = False
     track_blocks[55]._light_signal = False
 
@@ -71,7 +71,7 @@ if (track_blocks[32].occupancy and  # block 62
 
     # set lights
     track_blocks[32]._light_signal = True
-    track_blocks[33]._light_signal = True
+    #track_blocks[33]._light_signal = True
     track_blocks[57]._light_signal = False
 
 # Scenario 2: 153 to 63, as long as none of block 62 is occupied and 63 is unoccupied
@@ -84,7 +84,7 @@ if (track_blocks[32].occupancy == False and  # block 62
 
     # set light signals
     track_blocks[32]._light_signal = False
-    track_blocks[33]._light_signal = True
+    #track_blocks[33]._light_signal = True
     track_blocks[57]._light_signal = True
 
 # Scenario 3: 62, 63, 153 are all occupied, authority for 62 and 153 must turn red, then keep 63 green to allow
@@ -98,7 +98,7 @@ if (track_blocks[32].occupancy and  # block 62
 
     # set lights to red
     track_blocks[32]._light_signal = False
-    track_blocks[33]._light_signal = True
+    #track_blocks[33]._light_signal = True
     track_blocks[57]._light_signal = False
 
 
