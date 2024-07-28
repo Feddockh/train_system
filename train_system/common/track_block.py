@@ -9,7 +9,6 @@ from train_system.common.station import Station
 
 
 class TrackBlock(QObject):
-
     # Signals to notify updates
     suggested_speed_updated = pyqtSignal(int)
     authority_updated = pyqtSignal(int)

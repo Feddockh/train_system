@@ -165,10 +165,6 @@ class EngineerTable(QWidget):
         # Add data to the table
         self.update_table_data(self.data)
         
-        """
-        for i in range(20):
-            self.table.setCellWidget(i, 1, self.trains_list[i].edit_kp)
-            self.table.setCellWidget(i, 2, self.trains_list[i].edit_ki)"""
 
         layout.addWidget(self.table)
         self.setLayout(layout)
@@ -190,6 +186,12 @@ class EngineerTable(QWidget):
             for col_idx, item in enumerate(row_data):
                 table_item = QTableWidgetItem(item)
                 table_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+
+                #train number cannot be edited
+                if(col_idx == 0):
+                    table_item.setFlags(
+                        table_item.flags() & ~Qt.ItemFlag.ItemIsEditable # Remove to make editable
+                    )
 
                 self.table.setItem(row_idx, col_idx, table_item)
 

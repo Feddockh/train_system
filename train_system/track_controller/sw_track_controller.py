@@ -4,17 +4,11 @@ import copy
 from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
 from train_system.common.track_block import TrackBlock
 from train_system.common.line import Line
-from train_system.common.crossing_signal import CrossingSignal
 import sys
 
-crossing_signal_map = {
-    CrossingSignal.ON: True,
-    CrossingSignal.OFF: False,
-    CrossingSignal.NA: False
-}
 
 class TrackController(QObject):
-    def __init__(self, track_blocks: list):
+    def __init__(self, track_blocks: list, wayside_name, num_blocks):
         """
         Initialize variables of the Track Controller.
         """
@@ -23,8 +17,8 @@ class TrackController(QObject):
         self.track_blocks = track_blocks
         self.plc_program_uploaded = False
         self.plc_program = ""
-        self.wayside_name = ""
-        self.numBlocks = 0
+        self.wayside_name = wayside_name
+        self.numBlocks = num_blocks
        
         for block in self.track_blocks:
                 block.authority_updated.connect(self.handle_authority_update)
@@ -97,9 +91,9 @@ class TrackController(QObject):
                 block.signal_updates_enabled = False
 
             test_track_blocks = self.track_blocks
-            self.track_blocks[x].switch_position = new_pos
+            test_track_blocks[x].switch.position = self.track_blocks[x].switch.child_blocks[new_pos]
 
-            old_Auth = self.track_blocks[x]._authority
+            old_authority = [track_block._authority for track_block in self.track_blocks]
 
             #Opening & running PLC code
             with open (self.plc_program, mode = "r", encoding="utf-8") as plc_code:
@@ -114,17 +108,18 @@ class TrackController(QObject):
             for block in self.track_blocks:
                 block.signal_updates_enabled = True
 
-            self.track_blocks[x]._authority = old_Auth
-
             #Emergency brake enabled - not safe
-            if(test_track_blocks[x].authority == 0):
-                self.track_blocks[x].switch_position = old_pos
+            if(test_track_blocks[x]._authority == 10000):
+                self.track_blocks[x].switch.position = self.track_blocks[x].switch.child_blocks[old_pos]
                 print("Unsafe Decision")
             #Emergency brake not enabled - safe
             else:
                 print(new_pos)
-                self.track_blocks[x].switch_position = new_pos
+                self.track_blocks[x].switch_position = self.track_blocks[x].switch.child_blocks[new_pos]
                 print("Safe Decision")
+
+            for i, track_block in enumerate(self.track_blocks):
+                track_block._authority = old_authority[i]
     
     def check_PLC_program_signal(self, x, curr_signal, new_signal):
         #Will only run if PLC program has been uploaded
@@ -134,9 +129,9 @@ class TrackController(QObject):
                 block.signal_updates_enabled = False
 
             test_track_blocks = self.track_blocks
-            self.track_blocks[x]._light_signal = new_signal
+            test_track_blocks[x]._light_signal = new_signal
 
-            old_Auth = self.track_blocks[x]._authority
+            old_authority = [track_block._authority for track_block in self.track_blocks]
 
             #Opening & running PLC code
             with open (self.plc_program, mode = "r", encoding="utf-8") as plc_code:
@@ -151,10 +146,8 @@ class TrackController(QObject):
             for block in self.track_blocks:
                 block.signal_updates_enabled = True
 
-            self.track_blocks[x]._authority = old_Auth
-
             #Emergency brake enabled - not safe
-            if(test_track_blocks[x].authority == 0):
+            if(test_track_blocks[x]._authority == 10000):
                 self.track_blocks[x]._light_signal = curr_signal
                 print("Unsafe Decision")
             #Emergency brake not enabled - safe
@@ -162,6 +155,10 @@ class TrackController(QObject):
                 print(new_signal)
                 self.track_blocks[x]._light_signal = new_signal
                 print("Safe Decision")
+
+            for i, track_block in enumerate(self.track_blocks):
+                track_block._authority = old_authority[i]
+
 
     def check_PLC_program_crossing(self, x, curr_crossing, new_crossing):
         #Will only run if PLC program has been uploaded
@@ -171,9 +168,9 @@ class TrackController(QObject):
                 block.signal_updates_enabled = False
 
             test_track_blocks = self.track_blocks
-            test_track_blocks[x]._crossing_signal_bool = new_crossing
+            test_track_blocks[x]._crossing_signal = new_crossing
 
-            old_Auth = self.track_blocks[x]._authority
+            old_authority = [track_block._authority for track_block in self.track_blocks]
 
             #Opening & running PLC code
             with open (self.plc_program, mode = "r", encoding="utf-8") as plc_code:
@@ -188,15 +185,16 @@ class TrackController(QObject):
             for block in self.track_blocks:
                 block.signal_updates_enabled = True
             
-            self.track_blocks[x]._authority = old_Auth
-            
             #Emergency brake enabled - not safe
-            if(test_track_blocks[x].authority == 0):
-                self.track_blocks[x]._crossing_signal_bool = curr_crossing
+            if(test_track_blocks[x]._authority == 10000):
+                self.track_blocks[x]._crossing_signal = curr_crossing
                 print("Unsafe Decision")
             #Emergency brake not enabled - safe
             else:
                 print(new_crossing)
-                self.track_blocks[x]._crossing_signal_bool = new_crossing
+                self.track_blocks[x]._crossing_signal = new_crossing
                 print("Safe Decision")
+
+            for i, track_block in enumerate(self.track_blocks):
+                track_block._authority = old_authority[i]
     
