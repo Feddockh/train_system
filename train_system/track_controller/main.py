@@ -79,10 +79,8 @@ def main():
 
     Wayside_3 = TrackController(track_blocks3, "Wayside 3", 28)
     
-
     Wayside_4 = TrackController(track_blocks4, "Wayside 4", 27)
     
-
     Wayside_5 = TrackController(track_blocks5, "Wayside 5", 30)
     
     Wayside_6 = TrackController(track_blocks6, "Wayside 6", 29)

@@ -18,7 +18,7 @@ if(track_blocks[0].occupancy and track_blocks[12].occupancy == False and (track_
 if(track_blocks[12].occupancy and track_blocks[0].occupancy == False and track_blocks[11].occupancy == False):
 
     #set switch position
-    track_blocks[12].switch.position = track_blocks[12].switch.child_blocks[11]
+    track_blocks[12].switch.position = track_blocks[12].switch.child_blocks[1]
     #track_blocks[12].switch.child_blocks[11]
 
     #set lights
@@ -33,7 +33,7 @@ if(track_blocks[12].occupancy and track_blocks[0].occupancy and track_blocks[11]
     track_blocks[0].authority = 0
 
     #set switch position
-    track_blocks[12].switch.position = track_blocks[12].switch.child_blocks[11]
+    track_blocks[12].switch.position = track_blocks[12].switch.child_blocks[1]
     #track_blocks[12].switch.child_blocks[11]
 
     #set ligths
@@ -45,16 +45,16 @@ if(track_blocks[12].occupancy and track_blocks[0].occupancy and track_blocks[11]
 if(track_blocks[19].occupancy or track_blocks[18].occupancy or track_blocks[17].occupancy):
 
     #set crossing signal 
-    track_blocks[18]._crossing_signal = False
+    track_blocks[18]._crossing_signal = True
 
-    print("Crossing Signal: Down")
+    print("Crossing Signal: Down\n")
 
 if(track_blocks[19].occupancy == False and track_blocks[18].occupancy == False and track_blocks[17].occupancy == False):
 
     #set crossing signal
-    track_blocks[18]._crossing_signal = True
+    track_blocks[18]._crossing_signal = False
 
-    print("Crossing Signal: Up\nPedestrians May Cross")
+    print("Crossing Signal: Up\nPedestrians May Cross\n")
 
 
 
@@ -65,7 +65,7 @@ if(track_blocks[19].occupancy == False and track_blocks[18].occupancy == False a
 if(track_blocks[28].occupancy and track_blocks[32].occupancy == False and track_blocks[29].occupancy == False):
     
     #set switch position
-    track_blocks[28].switch.position = track_blocks[28].switch.child_blocks[29]
+    track_blocks[28].switch.position = track_blocks[28].switch.child_blocks[0]
     #track_blocks[28].switch.child_blocks[29]
 
     #set lights
@@ -80,7 +80,7 @@ if(track_blocks[28].occupancy and track_blocks[32].occupancy and track_blocks[29
     track_blocks[32].authority = 0
 
     #set switch position
-    track_blocks[28].switch.position = track_blocks[28].switch.child_blocks[29]
+    track_blocks[28].switch.position = track_blocks[28].switch.child_blocks[0]
     #track_blocks[28].switch.child_blocks[29]
 
     #set lights
@@ -93,7 +93,7 @@ if(track_blocks[32].occupancy and (track_blocks[12].occupancy == False and track
                                     and track_blocks[22].occupancy == False and track_blocks[23].occupancy == False and track_blocks[24].occupancy == False and track_blocks[25].occupancy == False and track_blocks[26].occupancy == False and track_blocks[27].occupancy == False and track_blocks[28].occupancy == False)):
     
     #set switch pos
-    track_blocks[28].switch.position = track_blocks[28].switch.child_blocks[32]
+    track_blocks[28].switch.position = track_blocks[28].switch.child_blocks[1]
     #track_blocks[28].switch.child_blocks[32]
 
     #set lights
@@ -117,13 +117,13 @@ print(f"Authority: {track_blocks[11].authority}\n")
 
 # Block 13 (Switch)
 print("Block 13 (Switch) Information: ")
-print(f"Switch Position: {track_blocks[12]._switch_position}")
+print(f"Switch Position: {track_blocks[12].switch.position}")
 print(f"Light Signal: {track_blocks[12]._light_signal}")
 print(f"Authority: {track_blocks[12].authority}\n")
 
 # Block 29 (Switch)
 print("Block 29 (Switch) Information: ")
-print(f"Switch Position: {track_blocks[28]._switch_position}")
+print(f"Switch Position: {track_blocks[28].switch.position}")
 print(f"Light Signal: {track_blocks[28]._light_signal}")
 print(f"Authority: {track_blocks[28].authority}\n")
 

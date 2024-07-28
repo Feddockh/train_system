@@ -47,8 +47,8 @@ class TrackBlock(QObject):
         self.traversal_time = self.length / (self.speed_limit / 3.6) # seconds
 
         # Dynamic parameters
-        self._suggested_speed = 0
-        self._authority = 0
+        self._suggested_speed = 35
+        self._authority = 10000
         self._occupancy = False
         self._crossing_signal = None if crossing_signal is False else False
         self._light_signal = None if light_signal is False else False

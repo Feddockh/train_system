@@ -1,10 +1,5 @@
 #train_system/track_controller/wayside4_plc.py
 
-
-"""
-POST INDEX CHANGE
-"""
-
 #SWITCH AT BLOCK 9
 
 # Scenario 1: C to yard, 9 to block 77
@@ -14,7 +9,7 @@ if(track_blocks[8].occupancy and track_blocks[9].occupancy and track_blocks[38].
     track_blocks[9].authority = 0
 
     # set switch pos
-    track_blocks[8].switch.child_blocks[38]
+    track_blocks[8].switch.position = track_blocks[8].switch.child_blocks[0]
 
     # set light signals
     track_blocks[9]._light_signal = False
@@ -30,7 +25,7 @@ if(track_blocks[38].occupancy and
     track_blocks[9].authority = 0
 
     # set switch pos
-    track_blocks[8].switch.child_blocks[38]
+    track_blocks[8].switch.position = track_blocks[8].switch.child_blocks[1]
 
     # set light signals
     #track_blocks[8]._light_signal = True
@@ -46,7 +41,7 @@ if(track_blocks[8].occupancy and track_blocks[38].occupancy and
     track_blocks[38].authority = 0
 
     # set switch pos
-    track_blocks[8].switch.child_blocks[9]
+    track_blocks[8].switch.position = track_blocks[8].switch.child_blocks[0]
 
     # set light signals
     #track_blocks[8]._light_signal = True
@@ -60,7 +55,7 @@ if(track_blocks[9].occupancy and
     track_blocks[6].occupancy == False and track_blocks[7].occupancy == False and track_blocks[8].occupancy == False)):
 
     # set switch pos
-    track_blocks[8].switch.child_blocks[9]
+    track_blocks[8].switch.position = track_blocks[8].switch.child_blocks[0]
 
     # set light signals
     #track_blocks[8]._light_signal = True
@@ -113,7 +108,7 @@ if(track_blocks[14].occupancy and
     track_blocks[27].occupancy == False and track_blocks[28].occupancy == False)):
     
     # set switch position
-    track_blocks[15].switch.child_blocks[14]
+    track_blocks[15].switch.child_blocks[1]
 
     # set light signals
     track_blocks[0]._light_signal = False
@@ -155,7 +150,7 @@ if(track_blocks[15].occupancy and
     track_blocks[11].occupancy == False and track_blocks[10].occupancy == False)):
 
     # set switch pos
-    track_blocks[15].switch.child_blocks[14]
+    track_blocks[15].switch.position = track_blocks[15].switch.child_blocks[1]
 
     # set lights
     track_blocks[0]._light_signal = False
@@ -172,7 +167,7 @@ if(track_blocks[26].occupancy and
     track_blocks[37].authority = 0
 
     # set switch position
-    track_blocks[26].switch.child_blocks[27]
+    track_blocks[26].switch.position = [26].switch.child_blocks[0]
 
     # set light position 
     #track_blocks[26]._light_signal = True
@@ -188,7 +183,7 @@ if(track_blocks[26].occupancy and
     track_blocks[27].authority = 0
 
     # set switch position
-    track_blocks[26].switch.child_blocks[27]
+    track_blocks[26].switch.position = track_blocks[26].switch.child_blocks[1]
 
     # set light signal
     #track_blocks[26]._light_signal = True
@@ -211,7 +206,7 @@ if(track_blocks[37].occupancy and
     track_blocks[27].authority = 0
 
     # set switch position
-    track_blocks[26].switch.child_blocks[37]
+    track_blocks[26].switch.position = track_blocks[26].switch.child_blocks[1]
 
     # set light signal
     #track_blocks[26]._light_signal = True
@@ -254,6 +249,62 @@ if(track_blocks[26].occupancy and track_blocks[27].occupancy and track_blocks[37
     track_blocks[26]._light_signal = False
     track_blocks[27]._light_signal = False
     track_blocks[37]._light_signal = False
+
+
+print("Wayside 4\n")
+#Switch at Block 9
+# Block 9
+print("Switch 9: ")
+print(f"Switch Position: {track_blocks[8].switch.position}")
+print(f"Light Signal: {track_blocks[8]._light_signal}")
+print(f"Authority: {track_blocks[8].authority}\n")
+
+# Block 10
+print("Block 16 Information: ")
+print(f"Light Signal: {track_blocks[9]._light_signal}")
+print(f"Authority: {track_blocks[9].authority}\n")
+
+# Block 27
+print("Block 77 Information: ")
+print(f"Light Signal: {track_blocks[38]._light_signal}")
+print(f"Authority: {track_blocks[38].authority}\n")
+
+
+#Switch at BLOCK 16
+
+print("Switch 16 Information: ")
+print(f"Switch Position: {track_blocks[15].switch.position}")
+print(f"Light Signal: {track_blocks[15]._light_signal}")
+print(f"Authority: {track_blocks[15].authority}\n")
+
+# Block 1
+print("Block 1 Information: ")
+print(f"Light Signal: {track_blocks[0]._light_signal}")
+print(f"Authority: {track_blocks[0].authority}\n")
+
+# Block 15
+print("Block 15 Information: ")
+print(f"Light Signal: {track_blocks[14]._light_signal}")
+print(f"Authority: {track_blocks[14].authority}\n")
+
+
+#Switch at Block 29
+
+print("Switch 27 Information: ")
+print(f"Switch Position: {track_blocks[26].swich.position}")
+print(f"Light Signal: {track_blocks[26]._light_signal}")
+print(f"Authority: {track_blocks[26].authority}\n")
+
+#block 28 information
+print("Block 28 Information: ")
+print(f"Light Signal: {track_blocks[27]._light_signal}")
+print(f"Authority: {track_blocks[27].authority}\n")
+
+#block 76 information
+print("Block 76 Information: ")
+print(f"Light Signal: {track_blocks[37]._light_signal}")
+print(f"Authority: {track_blocks[37].authority}\n")
+
 
 
 
