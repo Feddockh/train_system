@@ -2,6 +2,7 @@ import copy
 import os
 from dataclasses import dataclass
 from random import randint
+from train_system.common.station import Station
 from train_system.common.track_block import TrackBlock
 from train_system.common.line import Line
 from train_system.common.track_failures import TrackFailure
@@ -12,7 +13,8 @@ class Train:
     line: str
     block: int
     prev_block: int
-    pos: int = 0
+    pos: int
+    pos_in_block: int = 0
     passengers: int = 0
 
 class TrackModel:
@@ -21,20 +23,18 @@ class TrackModel:
 
         self.lines = lines
         self.trains: list[Train] = []
-        self.dispatch_blocks: dict[str, int] = {}   #line, block num
         self._temperature: int = 85
         self.heaters: bool = False
-        self.stations_by_line: dict[str, object] = {}
+        self.tickets_by_station: dict[str, int] = {}
 
+        # Prepare lines
         for line in self.lines:
-            stations: dict[str, int] = {}
-            for block in line.track_blocks:
-                if block.section == 'Yard':
-                    self.dispatch_blocks[line.name] = block.next_blocks[0]
-                elif block.station.isascii():
-                    stations[block.station] = randint(0, 50)
-            self.stations_by_line[line.name] = stations
+            line.load_defaults()
 
+        # Sell tickets at stations
+        for line in self.lines:
+            for station in line.stations:
+                self.tickets_by_station[station.name] = randint(0, 50)
 
     def create_failure(self, block: TrackBlock, failure: TrackFailure) -> None:
 
@@ -46,7 +46,7 @@ class TrackModel:
             failure (TrackFailure): The type of failure to create on the track block.
         """
 
-        block.track_failure(failure)
+        block.track_failure = failure
 
 
     def fix_failure(self, block: TrackBlock) -> None:
@@ -58,39 +58,20 @@ class TrackModel:
             block (TrackBlock): The block to remove a failure from.
         """
 
-        block.track_failure(TrackFailure.NONE)
+        block.track_failure = TrackFailure.NONE
 
 
-    def sell_tickets(self, line: str, station: str, num: int) -> None:
+    def sell_tickets(self, station: str, num: int) -> None:
 
         """
         Sell tickets at a station.
 
         Args:
-            line (str): The name of the line that contains the station.
             station (str): The name of the station to sell tickets from.
             num (int): The number of tickets to sell.
         """
 
-        if station in self.stations_by_line[line]:
-            self.stations_by_line[line][station] += num
-
-    def get_tickets(self, line: str) -> dict[str, int]:
-
-        """
-        Get tickets sold at stations and reset sales to 0.
-        
-        Args:
-            line (str): The name of the line.
-        Returns:
-            dict[str, int]: Number of tickets sold by stations on line.
-        """
-
-        temp = copy.copy(self.stations_by_line[line])
-        for st in self.stations_by_line[line]:
-            self.stations_by_line[line][st] = 0
-
-        return temp
+        self.tickets_by_station[station]
     
     def update_heaters(self) -> None:
 
@@ -113,24 +94,23 @@ class TrackModel:
             line (str): The name of the line the train was dispatched onto.
         """
 
-        l: Line
-
         for l in self.lines:
             if l.name == line:
-                l.get_track_block(self.dispatch_blocks[line]).occupancy = True
+                from_yard_block = l.get_track_block(l.route.from_yard[0])
+                from_yard_block.occupancy = True
                 break
 
-        self.trains.append(Train(id, line, self.dispatch_blocks[line], l.yard))
+        self.trains.append(Train(id, line, from_yard_block.number, l.yard, from_yard_block.length * -1))
         
 
-    def move_train(self, id: int, distance: float) -> None:
+    def move_train(self, id: int, position: float) -> None:
 
         """
-        Update a train's position on the track based on a traveled distance.
+        Update a train's position on the track.
         
         Args:
             id (int): The train's ID.
-            distance (float): Distance the train has traveled since last call of this function.
+            position (float): Position of the train on the line.
         """
 
         for train in self.trains:
@@ -138,7 +118,9 @@ class TrackModel:
                 moving_train = train
                 break
 
-        new_pos = distance + train.pos
+        # TODO Account for position resetting to 0 when train loops
+        distance_delta = abs(position - moving_train.pos)
+        moving_train.pos = position
         
         for l in self.lines:
             if l.name == train.line:
@@ -146,18 +128,19 @@ class TrackModel:
                 curr_line = l
                 break
 
-        if new_pos > curr_block.length:
+        # When train moves into next block
+        if distance_delta + moving_train.pos_in_block > curr_block.length:
 
-            #Determine which block train moves into
+            # Determine which block train moves into
             new_block = curr_line.get_next_block(moving_train.prev_block, moving_train.block)
 
             new_block.occupancy = True
             
             moving_train.prev_block = moving_train.block
             moving_train.block = new_block.number
-            moving_train.pos = new_pos - curr_block.length
+            moving_train.pos_in_block -= curr_block.length
 
-            #Update occupancy of departed block
+            # Update occupancy of departed block
             curr_block_occ = False
             for train in self.trains:
                 if train.block == curr_block.number:
@@ -166,14 +149,14 @@ class TrackModel:
             curr_block.occupancy = curr_block_occ
 
         else:
-            moving_train.pos = new_pos
+            moving_train.pos_in_block += distance_delta
 
-            #Determine if train is boarding from a station (stopped within 32.5 meters of center of station block)
-            if distance == 0 and curr_block.station != None and (abs(moving_train.pos - curr_block.length/2) < 32.2):
-                self.board_at_station(curr_block.station, moving_train)
+            # Determine if train is boarding from a station (stopped within 32.5 meters of center of station block)
+            if distance_delta == 0 and curr_block.station != None and (abs(moving_train.pos_in_block - curr_block.length/2) < 32.5):
+                self.board_at_station(curr_block.station.name, moving_train)
 
 
-    def board_at_station(self, station: str, train: Train) -> None:
+    def board_at_station(self, station: str, train: Train) -> tuple[int, int]:
 
         """
         Board passengers from a station.
@@ -181,12 +164,17 @@ class TrackModel:
         Args:
             station (str): Name of the station to board at.
             train (Train): The train being boarded.
+        Returns:
+            tuple[int, int]: Number of passengers disembarked and boarded, respectively.
         """
 
-        train.passengers -= randint(0, train.passengers)
-        num_boarding = randint(0, self.stations_by_line[train.line][station])
-        self.stations_by_line[train.line][station] -= num_boarding
+        num_disembarked = randint(0, train.passengers)
+        train.passengers -= num_disembarked
+        num_boarding = randint(0, self.tickets_by_station[station])
+        self.tickets_by_station[station] -= num_boarding
         train.passengers += num_boarding
+
+        return num_disembarked, num_boarding
     
 
     @property
@@ -201,13 +189,12 @@ class TrackModel:
 
 if __name__ == "__main__":
     
-    line = Line('Green')
+    line = Line('green')
     file_path = os.path.abspath(os.path.join("system_data/lines", "green_line.xlsx"))
     line.load_track_blocks(file_path)
 
     model = TrackModel([line])
-    print(model.get_tickets('Green'))
-    print(model.dispatch_blocks)
+    print(model.tickets_by_station)
 
     model.create_train(1, 'Green')
     model.create_train(2, 'Green')

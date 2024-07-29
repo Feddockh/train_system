@@ -21,7 +21,7 @@ class TrackModelUI(QMainWindow):
         self.views.addWidget(self.murphy)
         self.views.addWidget(self.builder)
 
-        self.views.setCurrentWidget(self.builder)
+        self.views.setCurrentWidget(self.murphy)
         self.setCentralWidget(self.views)
 
 

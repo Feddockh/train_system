@@ -33,6 +33,7 @@ class LiveMap(QWidget):
     def set_line(self, line: Line):
 
         self.line = line
+        self.line.load_defaults()
         self.switches = [switch.child_blocks for switch in self.line.switches]
 
         self.edges = list()
@@ -68,7 +69,7 @@ class LiveMap(QWidget):
 
         self.fig.add_axes((0, 0, 1, 1))
 
-        color_map = []
+        color_map = list()
         for block in self.line.track_blocks:
             if block.track_failure != TrackFailure.NONE:
                 color_map.append('orange')
