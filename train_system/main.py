@@ -7,6 +7,8 @@ from train_system.common.time_keeper import TimeKeeper
 from train_system.ctc_manager.ctc_manager import CTCOffice
 from train_system.ctc_manager.dispatcher_ui import DispatcherUI
 
+from train_system.train_controller.train_controller import TrainSystem
+
 def main():
 
     # Create the application
@@ -26,18 +28,25 @@ def main():
     ### Instantiate the TrackController object and the programmer's UI ###
 
 
-    ### Instantiate the TrainModel object and the track's UI ###
-
-
-    ### Instantiate the TrainModel object and the train's UI ###
+    ### Instantiate the TrackModel object and the track's UI ###
 
 
     ### Instantiate the TrainController object and the driver's UI ###
+    # Connect to the Train Controller Raspberry Pi
+    # Connect the CTC's dispatch signal to the Train's dispatch handler
+    
 
+
+    ### Instantiate the TrainModel object and the train's UI ###
+    # Connect Train Model to Track Model
+    # Connect Track Model to Train Model
 
     ### Instantiate the MBOController object and the operator's UI ###
+    # Connect MBO to Train Model
+    # Connect Train Model to MBO
 
 
+    
 
 
 

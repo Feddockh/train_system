@@ -14,7 +14,7 @@ class Train(QObject):
         #need to add destination
         self.destination = 65 #Glenbury that has glenbury
 
-    def update_position(self, new_position, new_block):
+    def update_position(self, train_id ,new_position, new_block):
         
         self.position = new_position
         self.block = new_block
