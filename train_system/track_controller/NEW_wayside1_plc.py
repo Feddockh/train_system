@@ -24,7 +24,7 @@ if(track_blocks[12].occupancy and track_blocks[0].occupancy == False and track_b
     #set lights
     track_blocks[0]._light_signal = False
     track_blocks[11]._light_signal = True
-    #track_blocks[12]._light_signal = False
+    track_blocks[12]._light_signal = True
 
 #Scenario 3: 13-->12, block 13 is occupied, 1 is occupied, load loop, until D through F is unoccupied, then send through train
 if(track_blocks[12].occupancy and track_blocks[0].occupancy and track_blocks[11].occupancy == False):
@@ -39,7 +39,7 @@ if(track_blocks[12].occupancy and track_blocks[0].occupancy and track_blocks[11]
     #set ligths
     track_blocks[0]._light_signal = False
     track_blocks[11]._light_signal = True
-    #track_blocks[12]._light_signal = True
+    track_blocks[12]._light_signal = True
 
 #CROSSING SIGNAL
 if(track_blocks[19].occupancy or track_blocks[18].occupancy or track_blocks[17].occupancy):
@@ -69,7 +69,7 @@ if(track_blocks[28].occupancy and track_blocks[32].occupancy == False and track_
     #track_blocks[28].switch.child_blocks[29]
 
     #set lights
-    #track_blocks[28]._light_signal = True
+    track_blocks[28]._light_signal = True
     track_blocks[29]._light_signal = True
     track_blocks[32]._light_signal = False
 
@@ -84,7 +84,7 @@ if(track_blocks[28].occupancy and track_blocks[32].occupancy and track_blocks[29
     #track_blocks[28].switch.child_blocks[29]
 
     #set lights
-    #track_blocks[28]._light_signal = True
+    track_blocks[28]._light_signal = True
     track_blocks[29]._light_signal = True
     track_blocks[32]._light_signal = False
 
