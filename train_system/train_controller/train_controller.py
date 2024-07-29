@@ -191,7 +191,7 @@ class TrainController(QObject):
     # Input) float: position from the yard
     def set_position(self, position: float):
         # print("------------- Setting Position ---------------")
-        if(position > self.position):
+        if(position >= self.position):
             self.polarity -= position - self.position
         else:
             # Reset Route and position
