@@ -56,6 +56,7 @@ class TrainController(QObject):
         self.train_model.engine_fault_updated.connect(self.handle_fault_update)
         self.train_model.brake_fault_updated.connect(self.handle_fault_update)
         self.train_model.signal_fault_updated.connect(self.handle_fault_update)
+        self.faults_fixed.connect(self.train_model.handle_faults_fixed)
         # self.train_model.comm_speed_received.connect(self.handle_comm_speed_changed)
         self.train_model.authority_received.connect(self.update_authority)
 
@@ -72,6 +73,7 @@ class TrainController(QObject):
         self.doors.right_door_updated.connect(self.train_model.handle_right_door_update)
         self.lights = self.Lights()     # Lights holds light status
         self.lights.lights_updated.connect(self.train_model.handle_lights_update)
+        ##### self.time_keeper.tick.connect(self.lights.update_lights)
         self.ac = self.AC(self.train_model.get_train_temp())    # AC holds temperature status
         self.ac.commanded_temp_updated.connect(self.train_model.handle_commanded_temp_update)
         self.train_model.train_temp_updated.connect(self.ac.update_current_temp)
@@ -124,6 +126,8 @@ class TrainController(QObject):
     # Reset the route queue, exit door dictionary, and update the track block
     def reset_route(self):
         self.route.extend(self.line.route.default_route)
+        self.loop_length = self.line.get_path_length(self.line.route.default_route + self.line.route.past_yard)
+        print("========= Route Loop Length: ", self.loop_length, "===========")
         self.block = self.route[0]
         self.track_block: TrackBlock = self.line.get_track_block(self.block)
         print("Track block: ", self.track_block.number)
@@ -132,6 +136,7 @@ class TrainController(QObject):
         self.polarity = 0
         self.block_number = None
         self.station = None
+        self.yard_block = 152
         self.finished = False
         self.update_track_block()
 
@@ -160,13 +165,16 @@ class TrainController(QObject):
         # If not next to finish, continue
         if len(self.route) == 0 and not self.finished:
             ## Look at authority to see whether to circle or to end route
-            if self.destination == 152:
+            if self.destination == self.yard_block:
                 self.route.extend(self.line.route.to_yard)    ## If authority is negative, go back to yard
                 self.finished = True
             else:
+                print("------------------------------ Finished Route --------------------------------")
                 # Append past_yard and append default route again
                 self.route.extend(self.line.route.past_yard)
                 self.route.extend(self.line.route.default_route)
+                self.position -= self.loop_length
+                self.set_position(self.position)
         elif self.finished:
             #### DELETE TRAIN CONTROLLER ####
             pass
@@ -276,7 +284,7 @@ class TrainController(QObject):
     # Simulate the train's response to desired speeds
     ## Purely for debugging purposes
     def calculate_power_command(self, speed: float):
-        print(f"Current Speed from Train Model: {self.current_speed}")
+        # print(f"Current Speed from Train Model: {self.current_speed}")
         if(self.engine.ssh is None):
             self.engine.calculate_power_command_software(speed, self.current_speed, self.time_step, self.engineer, self.brake)
         else:
@@ -300,19 +308,16 @@ class TrainController(QObject):
         if(fault):
             print("!!!! Fault detected !!!!")
             self.set_maintenance_mode(True)
-        else:
-            print("Fault fixed")
-            self.set_maintenance_mode(False)
 
     ## Maintenance Mode Functions
     # Maintenance mode = set emergency brake and make full stop to fix faults
     def get_maintenance_mode(self):
         return self.maintenance_mode
     def set_maintenance_mode(self, status: bool):
-        if status != self.maintenance_mode:
-            self.maintenance_mode = status
-            self.faults_fixed.emit()
+        self.maintenance_mode = status
         self.brake.set_emergency_brake(status)
+        if status == False:
+            self.faults_fixed.emit()
 
 
     def get_authority(self):
@@ -326,7 +331,7 @@ class TrainController(QObject):
         print(f"String authority: {authority}")
         try:
             authority_str, destination_block_str = authority.split(":")
-            self.authority = float(authority_str)
+            self.authority = abs(float(authority_str))
             self.destination = int(destination_block_str)
         except ValueError:
             raise ValueError("Input string is not in the correct format 'authority:destination_block' or contains invalid values.")
@@ -341,7 +346,7 @@ class TrainController(QObject):
         # Use kinematics equation v^2 = v0^2 + 2a(x-x0) to calculate the distance needed to stop
         # If the distance needed to stop is greater than the authority, set the service brake
         distance = (self.current_speed ** 2) / (2 * 1.2)  # 1.2 m/s^2 is the deceleration rate
-        print(f"Position + Distance: {self.position + distance}, Authority: {self.authority}")
+        # print(f"Position + Distance: {self.position + distance}, Authority: {self.authority}")
 
         # Position you will be stopped by >= position you need to be stopped by
         ## MIGHT NEED TO ADD PADDING
@@ -621,7 +626,7 @@ class TrainController(QObject):
             if self.power_command < 0:
                 brake.set_service_brake(True)
             
-            print(f"Power Command from Train Controller: {self.power_command}")
+            # print(f"Power Command from Train Controller: {self.power_command}")
 
             if brake.get_status():
                 #### THIS LINE IS FOR TESTING PURPOSES ONLY
@@ -838,7 +843,7 @@ class MockTrainModel(QObject):
         # Train Model variables
         self.current_speed: float = 0
         self.commanded_speed: float = 10
-        self.authority: str = "1000:65" # Authority and desination block number
+        self.authority: str = "10000000:65" # Authority and desination block number
 
         self.power_command = 0
         self.position = 0
@@ -847,6 +852,7 @@ class MockTrainModel(QObject):
         self.commanded_temp = 69
         self.train_temp: float = 69
 
+        self.faults: list[bool] = [False, False, False]
         self.engine_fault: bool = False
         self.brake_fault: bool = False
         self.signal_fault: bool = False
@@ -937,18 +943,25 @@ class MockTrainModel(QObject):
         # Logic to get the fault status of the train
         return self.faults
     def set_fault_statuses(self, faults: list[bool]):
-        self.faults = faults[0:3]   # Only take the first 3 elements
+        self.set_engine_fault(faults[0])
+        self.set_brake_fault(faults[1])
+        self.set_signal_fault(faults[2])
+    @pyqtSlot()
+    def handle_faults_fixed(self) -> None:
+        self.set_engine_fault(False)
+        self.set_brake_fault(False)
+        self.set_signal_fault(False)
 
     def set_engine_fault(self, status: bool):
-        self.engine_fault = status
+        self.faults[0] = status
         self.engine_fault_updated.emit(status)
 
     def set_brake_fault(self, status: bool):
-        self.brake_fault = status
+        self.faults[1] = status
         self.brake_fault_updated.emit(status)
     
     def set_signal_fault(self, status: bool):
-        self.signal_fault = status
+        self.faults[2] = status
         self.signal_fault_updated.emit(status)
 
 
@@ -1007,6 +1020,7 @@ class TrainSystem:
         self.controller.set_setpoint_speed(10)
         for _ in range(5):
             self.controller.update_train_controller()
+            print(f"Power Command: {self.controller.engine.power_command}, Current Speed: {self.controller.current_speed}, Position: {self.controller.position}")
 
     # Multiple laps around
     def long_run(self):
@@ -1015,18 +1029,32 @@ class TrainSystem:
             self.controller.update_train_controller()
             print(f"Position: {self.controller.position}, Authority: {self.controller.authority}")
 
+    def full_loop_run(self):
+        self.controller.set_setpoint_speed(20)
+        self.controller.set_position(19900)
+        for _ in range(20):
+            self.controller.update_train_controller()
+            print(f"Position: {self.controller.position}, Loop Length: {self.controller.loop_length}")
+
     def destination_run(self):
         self.controller.train_model.set_authority("300:65")
         self.controller.set_setpoint_speed(20)
         for _ in range(30):
             self.controller.update_train_controller()
-            print(f"Position: {self.controller.position}, Authority: {self.controller.authority}, Destination: {self.controller.destination}")
+            if self.controller.doors.get_status():
+                print(f"Position: {self.controller.position}, Authority: {self.controller.authority}, Destination: {self.controller.destination}")
+                print("Doors are open. Exit Door: ", self.controller.doors.exit_door, "Left: ", self.controller.doors.get_left(), ", Right: ", self.controller.doors.get_right())
+                print("Current Track Block: ", self.controller.track_block.number, ", Destination: ", self.controller.destination)
+                print(f"Track Block Start: {self.controller.position + self.controller.polarity - self.controller.track_block.length}, Track Block End: {self.controller.position + self.controller.polarity}")
+         
     # Can't move with emergency brake on
     def service_run(self):
-        self.controller.brake.set_user_emergency_brake(True)
+        self.controller.brake.set_user_service_brake(True)
         self.controller.train_model.current_speed = 10
         self.controller.set_setpoint_speed(10)
         for _ in range(5):
+            print(f"Train Model Brake: Service: {self.controller.train_model.service_brake}, Emergency: {self.controller.train_model.emergency_brake}")
+            print(f"Train Model Current Speed: {self.controller.train_model.current_speed}")
             self.controller.update_train_controller()
 
     # Can't move with emergency brake on
@@ -1035,6 +1063,8 @@ class TrainSystem:
         self.controller.train_model.current_speed = 10
         self.controller.set_setpoint_speed(10)
         for _ in range(5):
+            print(f"Train Model Brake: Service: {self.controller.train_model.service_brake}, Emergency: {self.controller.train_model.emergency_brake}")
+            print(f"Train Model Current Speed: {self.controller.train_model.current_speed}")
             self.controller.update_train_controller()
 
     # Desired speed follows the commanded speed and commanded speed updates
@@ -1043,6 +1073,8 @@ class TrainSystem:
         for i in range(10):
             self.controller.train_model.set_commanded_speed(i)
             self.controller.update_train_controller()
+            print(f"Commanded Speed: {self.controller.train_model.commanded_speed}, Setpoint Speed: {self.controller.setpoint_speed}, Desired Speed: {self.controller.get_desired_speed()}")
+            print(f"Train Model Current Speed: {self.controller.train_model.current_speed}")
 
     def switch_modes_run(self):
         self.controller.set_setpoint_speed(7)
@@ -1050,17 +1082,21 @@ class TrainSystem:
 
         for i in range(10):
             self.controller.driver_mode = "automatic" if i%2 == 0 else "manual"
+            print(f"Driver Mode: {self.controller.driver_mode}, Desired Speed: {self.controller.get_desired_speed()}")
             self.controller.update_train_controller()
+            print(f"Train Model Current Speed: {self.controller.train_model.current_speed}")
 
     # Train should slow to 0 then continue after full stop
     def fault_run(self):
-        self.controller.train_model.set_engine_fault(True)
+        self.controller.train_model.set_fault_statuses([True, True, True])
         self.controller.train_model.current_speed = 10
         self.controller.set_setpoint_speed(10)
         print()
         for _ in range(5):
-            print(f"Maintenance mode: {self.controller.maintenance_mode}, Emergency brake: {self.controller.brake.get_emergency_brake()}")
             self.controller.update_train_controller()
+            print(f"Maintenance mode: {self.controller.maintenance_mode}, Emergency brake: {self.controller.brake.get_emergency_brake()}")
+            print(f"Current Speed: {self.controller.current_speed}")
+            print(f"Train Model Faults: Engine: {self.controller.train_model.faults[0]}, Brake: {self.controller.train_model.faults[1]}, Signal: {self.controller.train_model.faults[2]}")
             
 
     def ac_run(self):
@@ -1080,11 +1116,12 @@ if __name__ == "__main__":
     train_system = TrainSystem()
     # train_system.small_run()
     # train_system.long_run()
+    train_system.full_loop_run()
     # train_system.destination_run()
     # train_system.service_run()
     # train_system.emergency_run()
     # train_system.commanded_speed_run()
     # train_system.switch_modes_run()
     # train_system.fault_run()
-    train_system.ac_run()
+    # train_system.ac_run()
 
