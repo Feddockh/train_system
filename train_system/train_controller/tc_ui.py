@@ -1086,9 +1086,9 @@ class DriverWindow(QMainWindow): ###DriverWindow
             self.tm.set_train_temp(int(x))
             #self.train.ac.set_commanded_temp(int(x))
 
-    """
-    @pyqtSlot(TrainModel)
-    def handle_mock_train_update(self, train_model: TrainModel) -> None:
+    @pyqtSlot(MockTrainModel)
+    def handle_mock_train_update(self, train_model: MockTrainModel) -> None:
+
         self.tm = train_model
 
         self.position = self.tm.get_position()
@@ -1096,7 +1096,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         
         self.loc_label.setText("Location: " + str(self.tm.get_position()))
         self.des_label.setText(str(self.tm.get_station_name()))
-    """
+    
 
 
     ###??? and commanded temp
