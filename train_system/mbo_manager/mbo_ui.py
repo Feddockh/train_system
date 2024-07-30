@@ -11,11 +11,6 @@ from PyQt6.QtWidgets import QWidget
 from train_system.mbo_manager.gui_features import CustomTable
 from train_system.common.time_keeper import TimeKeeper
 from train_system.common.time_keeper import TimeKeeperWidget
-
-
-from train_system.common.train_dispatch import TrainDispatch
-from train_system.ctc_manager.ctc_manager import CTCOffice
-from train_system.ctc_manager.ctc_train_dispatch import CTCTrainDispatch
 from train_system.common.line import Line
 
 
