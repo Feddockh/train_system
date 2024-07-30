@@ -1,0 +1,1523 @@
+Train,Station,Prev Block,Start Block,End Block,Arrival Time,Driver,Crew 1,Crew 2
+Train1,Mt. Lebanon 1,152,152,77,2024-07-27 00:02:14.417143,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 00:05:14.716114,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 00:06:14.716114,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 00:09:15.015085,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 00:10:15.015085,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 00:13:15.314056,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 00:14:15.314056,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 00:17:15.613027,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 00:18:15.613027,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 00:21:15.911998,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 00:22:15.911998,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 00:25:16.210969,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 00:26:16.210969,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 00:29:16.509940,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 00:30:16.509940,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 00:33:16.808911,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 00:34:16.808911,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 00:37:17.107882,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 00:38:17.107882,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 00:41:17.406853,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 00:42:17.406853,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 00:45:17.705824,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 00:46:17.705824,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 00:49:18.004795,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 00:50:18.004795,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 00:53:18.303766,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 00:54:18.303766,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 00:57:18.602737,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 00:58:18.602737,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 01:01:18.901708,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 01:02:18.901708,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 01:05:19.200679,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 01:06:19.200679,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 01:09:19.499650,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 01:10:19.499650,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 01:13:19.798621,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 01:14:19.798621,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 01:17:20.097592,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 01:18:20.097592,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 01:21:20.396563,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 01:22:20.396563,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 01:25:20.695534,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 01:26:20.695534,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 01:29:20.994505,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 01:30:20.994505,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 01:33:21.293476,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 01:34:21.293476,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 01:37:21.592447,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 01:38:21.592447,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 01:41:21.891418,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 01:42:21.891418,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 01:45:22.190389,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 01:46:22.190389,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 01:49:22.489360,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 01:50:22.489360,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 01:53:22.788331,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 01:54:22.788331,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 01:57:23.087302,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 01:58:23.087302,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 02:01:23.386273,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 02:02:23.386273,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 02:05:23.685244,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 02:06:23.685244,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 02:09:23.984215,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 02:10:23.984215,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 02:13:24.283186,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 02:14:24.283186,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 02:17:24.582157,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 02:18:24.582157,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 02:21:24.881128,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 02:22:24.881128,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 02:25:25.180099,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 02:26:25.180099,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 02:29:25.479070,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 02:30:25.479070,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 02:33:25.778041,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 02:34:25.778041,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 02:37:26.077012,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 02:38:26.077012,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 02:41:26.375983,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 02:42:26.375983,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 02:45:26.674954,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 02:46:26.674954,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 02:49:26.973925,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 02:50:26.973925,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 02:53:27.272896,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 02:54:27.272896,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 02:57:27.571867,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 02:58:27.571867,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 03:01:27.870838,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 03:02:27.870838,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 03:05:28.169809,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 03:06:28.169809,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 03:09:28.468780,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 03:10:28.468780,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 03:13:28.767751,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 03:14:28.767751,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 03:17:29.066722,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 03:18:29.066722,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 03:21:29.365693,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 03:22:29.365693,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 03:25:29.664664,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 03:26:29.664664,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 03:29:29.963635,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 03:30:29.963635,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 03:33:30.262606,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 03:34:30.262606,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 03:37:30.561577,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 03:38:30.561577,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 03:41:30.860548,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 03:42:30.860548,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 03:45:31.159519,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 03:46:31.159519,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 03:49:31.458490,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 03:50:31.458490,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 03:53:31.757461,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 03:54:31.757461,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 03:57:32.056432,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 03:58:32.056432,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 04:01:32.355403,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 04:32:32.355403,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 05:05:32.654374,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 05:36:32.654374,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 06:09:32.953345,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 06:40:32.953345,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 07:13:33.252316,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 07:44:33.252316,Alejandro,Alice,Barbra
+Train1,Poplar,76,77,88,2024-07-27 08:17:33.551287,Alejandro,Alice,Barbra
+Train1,Mt. Lebanon 1,152,152,77,2024-07-27 08:32:14.417143,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 08:35:14.716114,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 08:36:14.716114,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 08:39:15.015085,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 08:40:15.015085,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 08:43:15.314056,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 08:44:15.314056,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 08:47:15.613027,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 08:48:15.613027,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 08:51:15.911998,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 08:52:15.911998,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 08:55:16.210969,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 08:56:16.210969,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 08:59:16.509940,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 09:00:16.509940,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 09:03:16.808911,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 09:04:16.808911,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 09:07:17.107882,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 09:08:17.107882,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 09:11:17.406853,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 09:12:17.406853,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 09:15:17.705824,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 09:16:17.705824,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 09:19:18.004795,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 09:20:18.004795,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 09:23:18.303766,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 09:24:18.303766,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 09:27:18.602737,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 09:28:18.602737,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 09:31:18.901708,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 09:32:18.901708,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 09:35:19.200679,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 09:36:19.200679,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 09:39:19.499650,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 09:40:19.499650,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 09:43:19.798621,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 09:44:19.798621,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 09:47:20.097592,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 09:48:20.097592,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 09:51:20.396563,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 09:52:20.396563,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 09:55:20.695534,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 09:56:20.695534,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 09:59:20.994505,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 10:00:20.994505,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 10:03:21.293476,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 10:04:21.293476,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 10:07:21.592447,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 10:08:21.592447,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 10:11:21.891418,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 10:12:21.891418,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 10:15:22.190389,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 10:16:22.190389,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 10:19:22.489360,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 10:20:22.489360,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 10:23:22.788331,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 10:24:22.788331,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 10:27:23.087302,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 10:28:23.087302,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 10:31:23.386273,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 10:32:23.386273,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 10:35:23.685244,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 10:36:23.685244,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 10:39:23.984215,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 10:40:23.984215,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 10:43:24.283186,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 10:44:24.283186,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 10:47:24.582157,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 10:48:24.582157,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 10:51:24.881128,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 10:52:24.881128,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 10:55:25.180099,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 10:56:25.180099,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 10:59:25.479070,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 11:00:25.479070,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 11:03:25.778041,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 11:04:25.778041,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 11:07:26.077012,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 11:08:26.077012,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 11:11:26.375983,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 11:12:26.375983,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 11:15:26.674954,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 11:16:26.674954,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 11:19:26.973925,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 11:20:26.973925,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 11:23:27.272896,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 11:24:27.272896,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 11:27:27.571867,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 11:28:27.571867,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 11:31:27.870838,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 11:32:27.870838,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 11:35:28.169809,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 11:36:28.169809,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 11:39:28.468780,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 11:40:28.468780,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 11:43:28.767751,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 11:44:28.767751,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 11:47:29.066722,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 11:48:29.066722,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 11:51:29.365693,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 11:52:29.365693,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 11:55:29.664664,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 11:56:29.664664,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 11:59:29.963635,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 12:00:29.963635,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 12:03:30.262606,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 12:04:30.262606,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 12:07:30.561577,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 12:08:30.561577,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 12:11:30.860548,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 12:12:30.860548,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 12:15:31.159519,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 12:16:31.159519,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 12:19:31.458490,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 12:20:31.458490,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 12:23:31.757461,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 12:24:31.757461,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 12:27:32.056432,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 12:28:32.056432,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 12:31:32.355403,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 13:02:32.355403,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 13:35:32.654374,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 14:06:32.654374,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 14:39:32.953345,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 15:10:32.953345,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 15:43:33.252316,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 16:14:33.252316,Bob,Cole,Dan
+Train1,Poplar,76,77,88,2024-07-27 16:47:33.551287,Bob,Cole,Dan
+Train1,Mt. Lebanon 1,152,152,77,2024-07-27 17:02:14.417143,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 17:05:14.716114,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 17:06:14.716114,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 17:09:15.015085,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 17:10:15.015085,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 17:13:15.314056,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 17:14:15.314056,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 17:17:15.613027,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 17:18:15.613027,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 17:21:15.911998,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 17:22:15.911998,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 17:25:16.210969,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 17:26:16.210969,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 17:29:16.509940,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 17:30:16.509940,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 17:33:16.808911,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 17:34:16.808911,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 17:37:17.107882,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 17:38:17.107882,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 17:41:17.406853,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 17:42:17.406853,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 17:45:17.705824,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 17:46:17.705824,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 17:49:18.004795,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 17:50:18.004795,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 17:53:18.303766,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 17:54:18.303766,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 17:57:18.602737,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 17:58:18.602737,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 18:01:18.901708,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 18:02:18.901708,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 18:05:19.200679,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 18:06:19.200679,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 18:09:19.499650,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 18:10:19.499650,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 18:13:19.798621,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 18:14:19.798621,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 18:17:20.097592,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 18:18:20.097592,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 18:21:20.396563,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 18:22:20.396563,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 18:25:20.695534,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 18:26:20.695534,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 18:29:20.994505,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 18:30:20.994505,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 18:33:21.293476,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 18:34:21.293476,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 18:37:21.592447,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 18:38:21.592447,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 18:41:21.891418,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 18:42:21.891418,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 18:45:22.190389,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 18:46:22.190389,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 18:49:22.489360,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 18:50:22.489360,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 18:53:22.788331,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 18:54:22.788331,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 18:57:23.087302,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 18:58:23.087302,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 19:01:23.386273,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 19:02:23.386273,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 19:05:23.685244,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 19:06:23.685244,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 19:09:23.984215,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 19:10:23.984215,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 19:13:24.283186,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 19:14:24.283186,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 19:17:24.582157,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 19:18:24.582157,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 19:21:24.881128,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 19:22:24.881128,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 19:25:25.180099,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 19:26:25.180099,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 19:29:25.479070,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 19:30:25.479070,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 19:33:25.778041,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 19:34:25.778041,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 19:37:26.077012,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 19:38:26.077012,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 19:41:26.375983,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 19:42:26.375983,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 19:45:26.674954,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 19:46:26.674954,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 19:49:26.973925,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 19:50:26.973925,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 19:53:27.272896,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 19:54:27.272896,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 19:57:27.571867,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 19:58:27.571867,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 20:01:27.870838,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 20:02:27.870838,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 20:05:28.169809,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 20:06:28.169809,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 20:09:28.468780,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 20:10:28.468780,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 20:13:28.767751,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 20:14:28.767751,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 20:17:29.066722,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 20:18:29.066722,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 20:21:29.365693,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 20:22:29.365693,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 20:25:29.664664,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 20:26:29.664664,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 20:29:29.963635,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 20:30:29.963635,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 20:33:30.262606,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 20:34:30.262606,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 20:37:30.561577,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 20:38:30.561577,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 20:41:30.860548,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 20:42:30.860548,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 20:45:31.159519,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 20:46:31.159519,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 20:49:31.458490,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 20:50:31.458490,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 20:53:31.757461,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 20:54:31.757461,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 20:57:32.056432,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 20:58:32.056432,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 21:01:32.355403,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 21:32:32.355403,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 22:05:32.654374,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 22:36:32.654374,Charlie,Earl,Fern
+Train1,Poplar,76,77,88,2024-07-27 23:09:32.953345,Charlie,Earl,Fern
+Train1,Mt. Lebanon 1,152,88,77,2024-07-27 23:40:32.953345,Charlie,Earl,Fern
+Train2,Mt. Lebanon 1,152,152,77,2024-07-27 00:17:14.417143,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 00:20:14.716114,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 00:21:14.716114,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 00:24:15.015085,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 00:25:15.015085,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 00:28:15.314056,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 00:29:15.314056,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 00:32:15.613027,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 00:33:15.613027,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 00:36:15.911998,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 00:37:15.911998,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 00:40:16.210969,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 00:41:16.210969,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 00:44:16.509940,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 00:45:16.509940,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 00:48:16.808911,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 00:49:16.808911,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 00:52:17.107882,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 00:53:17.107882,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 00:56:17.406853,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 00:57:17.406853,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 01:00:17.705824,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 01:01:17.705824,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 01:04:18.004795,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 01:05:18.004795,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 01:08:18.303766,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 01:09:18.303766,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 01:12:18.602737,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 01:13:18.602737,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 01:16:18.901708,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 01:17:18.901708,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 01:20:19.200679,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 01:21:19.200679,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 01:24:19.499650,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 01:25:19.499650,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 01:28:19.798621,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 01:29:19.798621,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 01:32:20.097592,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 01:33:20.097592,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 01:36:20.396563,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 01:37:20.396563,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 01:40:20.695534,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 01:41:20.695534,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 01:44:20.994505,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 01:45:20.994505,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 01:48:21.293476,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 01:49:21.293476,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 01:52:21.592447,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 01:53:21.592447,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 01:56:21.891418,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 01:57:21.891418,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 02:00:22.190389,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 02:01:22.190389,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 02:04:22.489360,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 02:05:22.489360,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 02:08:22.788331,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 02:09:22.788331,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 02:12:23.087302,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 02:13:23.087302,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 02:16:23.386273,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 02:17:23.386273,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 02:20:23.685244,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 02:21:23.685244,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 02:24:23.984215,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 02:25:23.984215,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 02:28:24.283186,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 02:29:24.283186,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 02:32:24.582157,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 02:33:24.582157,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 02:36:24.881128,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 02:37:24.881128,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 02:40:25.180099,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 02:41:25.180099,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 02:44:25.479070,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 02:45:25.479070,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 02:48:25.778041,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 02:49:25.778041,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 02:52:26.077012,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 02:53:26.077012,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 02:56:26.375983,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 02:57:26.375983,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 03:00:26.674954,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 03:01:26.674954,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 03:04:26.973925,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 03:05:26.973925,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 03:08:27.272896,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 03:09:27.272896,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 03:12:27.571867,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 03:13:27.571867,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 03:16:27.870838,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 03:17:27.870838,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 03:20:28.169809,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 03:21:28.169809,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 03:24:28.468780,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 03:25:28.468780,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 03:28:28.767751,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 03:29:28.767751,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 03:32:29.066722,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 03:33:29.066722,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 03:36:29.365693,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 03:37:29.365693,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 03:40:29.664664,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 03:41:29.664664,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 03:44:29.963635,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 03:45:29.963635,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 03:48:30.262606,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 03:49:30.262606,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 03:52:30.561577,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 03:53:30.561577,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 03:56:30.860548,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 03:57:30.860548,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 04:00:31.159519,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 04:01:31.159519,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 04:04:31.458490,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 04:05:31.458490,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 04:08:31.757461,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 04:09:31.757461,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 04:12:32.056432,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 04:13:32.056432,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 04:16:32.355403,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 04:47:32.355403,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 05:20:32.654374,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 05:51:32.654374,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 06:24:32.953345,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 06:55:32.953345,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 07:28:33.252316,David,George,Hank
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 07:59:33.252316,David,George,Hank
+Train2,Poplar,76,77,88,2024-07-27 08:32:33.551287,David,George,Hank
+Train2,Mt. Lebanon 1,152,152,77,2024-07-27 08:47:14.417143,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 08:50:14.716114,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 08:51:14.716114,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 08:54:15.015085,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 08:55:15.015085,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 08:58:15.314056,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 08:59:15.314056,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 09:02:15.613027,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 09:03:15.613027,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 09:06:15.911998,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 09:07:15.911998,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 09:10:16.210969,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 09:11:16.210969,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 09:14:16.509940,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 09:15:16.509940,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 09:18:16.808911,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 09:19:16.808911,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 09:22:17.107882,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 09:23:17.107882,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 09:26:17.406853,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 09:27:17.406853,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 09:30:17.705824,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 09:31:17.705824,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 09:34:18.004795,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 09:35:18.004795,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 09:38:18.303766,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 09:39:18.303766,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 09:42:18.602737,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 09:43:18.602737,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 09:46:18.901708,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 09:47:18.901708,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 09:50:19.200679,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 09:51:19.200679,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 09:54:19.499650,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 09:55:19.499650,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 09:58:19.798621,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 09:59:19.798621,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 10:02:20.097592,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 10:03:20.097592,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 10:06:20.396563,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 10:07:20.396563,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 10:10:20.695534,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 10:11:20.695534,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 10:14:20.994505,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 10:15:20.994505,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 10:18:21.293476,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 10:19:21.293476,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 10:22:21.592447,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 10:23:21.592447,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 10:26:21.891418,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 10:27:21.891418,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 10:30:22.190389,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 10:31:22.190389,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 10:34:22.489360,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 10:35:22.489360,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 10:38:22.788331,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 10:39:22.788331,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 10:42:23.087302,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 10:43:23.087302,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 10:46:23.386273,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 10:47:23.386273,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 10:50:23.685244,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 10:51:23.685244,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 10:54:23.984215,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 10:55:23.984215,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 10:58:24.283186,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 10:59:24.283186,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 11:02:24.582157,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 11:03:24.582157,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 11:06:24.881128,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 11:07:24.881128,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 11:10:25.180099,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 11:11:25.180099,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 11:14:25.479070,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 11:15:25.479070,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 11:18:25.778041,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 11:19:25.778041,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 11:22:26.077012,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 11:23:26.077012,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 11:26:26.375983,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 11:27:26.375983,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 11:30:26.674954,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 11:31:26.674954,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 11:34:26.973925,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 11:35:26.973925,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 11:38:27.272896,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 11:39:27.272896,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 11:42:27.571867,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 11:43:27.571867,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 11:46:27.870838,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 11:47:27.870838,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 11:50:28.169809,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 11:51:28.169809,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 11:54:28.468780,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 11:55:28.468780,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 11:58:28.767751,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 11:59:28.767751,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 12:02:29.066722,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 12:03:29.066722,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 12:06:29.365693,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 12:07:29.365693,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 12:10:29.664664,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 12:11:29.664664,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 12:14:29.963635,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 12:15:29.963635,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 12:18:30.262606,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 12:19:30.262606,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 12:22:30.561577,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 12:23:30.561577,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 12:26:30.860548,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 12:27:30.860548,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 12:30:31.159519,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 12:31:31.159519,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 12:34:31.458490,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 12:35:31.458490,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 12:38:31.757461,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 12:39:31.757461,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 12:42:32.056432,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 12:43:32.056432,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 12:46:32.355403,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 13:17:32.355403,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 13:50:32.654374,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 14:21:32.654374,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 14:54:32.953345,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 15:25:32.953345,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 15:58:33.252316,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 16:29:33.252316,Eve,Ian,Jack
+Train2,Poplar,76,77,88,2024-07-27 17:02:33.551287,Eve,Ian,Jack
+Train2,Mt. Lebanon 1,152,152,77,2024-07-27 17:17:14.417143,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 17:20:14.716114,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 17:21:14.716114,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 17:24:15.015085,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 17:25:15.015085,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 17:28:15.314056,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 17:29:15.314056,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 17:32:15.613027,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 17:33:15.613027,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 17:36:15.911998,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 17:37:15.911998,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 17:40:16.210969,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 17:41:16.210969,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 17:44:16.509940,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 17:45:16.509940,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 17:48:16.808911,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 17:49:16.808911,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 17:52:17.107882,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 17:53:17.107882,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 17:56:17.406853,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 17:57:17.406853,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 18:00:17.705824,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 18:01:17.705824,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 18:04:18.004795,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 18:05:18.004795,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 18:08:18.303766,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 18:09:18.303766,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 18:12:18.602737,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 18:13:18.602737,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 18:16:18.901708,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 18:17:18.901708,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 18:20:19.200679,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 18:21:19.200679,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 18:24:19.499650,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 18:25:19.499650,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 18:28:19.798621,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 18:29:19.798621,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 18:32:20.097592,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 18:33:20.097592,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 18:36:20.396563,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 18:37:20.396563,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 18:40:20.695534,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 18:41:20.695534,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 18:44:20.994505,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 18:45:20.994505,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 18:48:21.293476,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 18:49:21.293476,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 18:52:21.592447,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 18:53:21.592447,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 18:56:21.891418,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 18:57:21.891418,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 19:00:22.190389,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 19:01:22.190389,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 19:04:22.489360,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 19:05:22.489360,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 19:08:22.788331,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 19:09:22.788331,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 19:12:23.087302,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 19:13:23.087302,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 19:16:23.386273,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 19:17:23.386273,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 19:20:23.685244,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 19:21:23.685244,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 19:24:23.984215,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 19:25:23.984215,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 19:28:24.283186,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 19:29:24.283186,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 19:32:24.582157,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 19:33:24.582157,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 19:36:24.881128,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 19:37:24.881128,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 19:40:25.180099,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 19:41:25.180099,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 19:44:25.479070,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 19:45:25.479070,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 19:48:25.778041,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 19:49:25.778041,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 19:52:26.077012,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 19:53:26.077012,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 19:56:26.375983,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 19:57:26.375983,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 20:00:26.674954,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 20:01:26.674954,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 20:04:26.973925,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 20:05:26.973925,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 20:08:27.272896,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 20:09:27.272896,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 20:12:27.571867,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 20:13:27.571867,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 20:16:27.870838,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 20:17:27.870838,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 20:20:28.169809,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 20:21:28.169809,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 20:24:28.468780,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 20:25:28.468780,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 20:28:28.767751,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 20:29:28.767751,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 20:32:29.066722,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 20:33:29.066722,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 20:36:29.365693,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 20:37:29.365693,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 20:40:29.664664,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 20:41:29.664664,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 20:44:29.963635,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 20:45:29.963635,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 20:48:30.262606,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 20:49:30.262606,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 20:52:30.561577,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 20:53:30.561577,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 20:56:30.860548,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 20:57:30.860548,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 21:00:31.159519,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 21:01:31.159519,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 21:04:31.458490,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 21:05:31.458490,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 21:08:31.757461,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 21:09:31.757461,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 21:12:32.056432,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 21:13:32.056432,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 21:16:32.355403,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 21:47:32.355403,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 22:20:32.654374,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 22:51:32.654374,Frank,Karen,Leo
+Train2,Poplar,76,77,88,2024-07-27 23:24:32.953345,Frank,Karen,Leo
+Train2,Mt. Lebanon 1,152,88,77,2024-07-27 23:55:32.953345,Frank,Karen,Leo
+Train3,Mt. Lebanon 1,152,152,77,2024-07-27 00:32:14.417143,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 00:35:14.716114,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 00:36:14.716114,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 00:39:15.015085,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 00:40:15.015085,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 00:43:15.314056,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 00:44:15.314056,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 00:47:15.613027,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 00:48:15.613027,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 00:51:15.911998,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 00:52:15.911998,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 00:55:16.210969,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 00:56:16.210969,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 00:59:16.509940,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 01:00:16.509940,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 01:03:16.808911,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 01:04:16.808911,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 01:07:17.107882,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 01:08:17.107882,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 01:11:17.406853,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 01:12:17.406853,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 01:15:17.705824,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 01:16:17.705824,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 01:19:18.004795,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 01:20:18.004795,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 01:23:18.303766,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 01:24:18.303766,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 01:27:18.602737,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 01:28:18.602737,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 01:31:18.901708,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 01:32:18.901708,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 01:35:19.200679,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 01:36:19.200679,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 01:39:19.499650,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 01:40:19.499650,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 01:43:19.798621,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 01:44:19.798621,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 01:47:20.097592,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 01:48:20.097592,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 01:51:20.396563,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 01:52:20.396563,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 01:55:20.695534,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 01:56:20.695534,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 01:59:20.994505,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 02:00:20.994505,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 02:03:21.293476,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 02:04:21.293476,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 02:07:21.592447,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 02:08:21.592447,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 02:11:21.891418,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 02:12:21.891418,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 02:15:22.190389,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 02:16:22.190389,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 02:19:22.489360,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 02:20:22.489360,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 02:23:22.788331,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 02:24:22.788331,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 02:27:23.087302,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 02:28:23.087302,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 02:31:23.386273,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 02:32:23.386273,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 02:35:23.685244,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 02:36:23.685244,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 02:39:23.984215,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 02:40:23.984215,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 02:43:24.283186,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 02:44:24.283186,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 02:47:24.582157,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 02:48:24.582157,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 02:51:24.881128,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 02:52:24.881128,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 02:55:25.180099,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 02:56:25.180099,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 02:59:25.479070,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 03:00:25.479070,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 03:03:25.778041,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 03:04:25.778041,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 03:07:26.077012,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 03:08:26.077012,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 03:11:26.375983,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 03:12:26.375983,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 03:15:26.674954,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 03:16:26.674954,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 03:19:26.973925,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 03:20:26.973925,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 03:23:27.272896,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 03:24:27.272896,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 03:27:27.571867,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 03:28:27.571867,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 03:31:27.870838,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 03:32:27.870838,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 03:35:28.169809,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 03:36:28.169809,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 03:39:28.468780,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 03:40:28.468780,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 03:43:28.767751,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 03:44:28.767751,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 03:47:29.066722,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 03:48:29.066722,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 03:51:29.365693,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 03:52:29.365693,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 03:55:29.664664,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 03:56:29.664664,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 03:59:29.963635,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 04:00:29.963635,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 04:03:30.262606,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 04:04:30.262606,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 04:07:30.561577,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 04:08:30.561577,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 04:11:30.860548,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 04:12:30.860548,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 04:15:31.159519,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 04:16:31.159519,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 04:19:31.458490,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 04:20:31.458490,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 04:23:31.757461,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 04:24:31.757461,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 04:27:32.056432,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 04:28:32.056432,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 04:31:32.355403,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 05:02:32.355403,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 05:35:32.654374,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 06:06:32.654374,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 06:39:32.953345,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 07:10:32.953345,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 07:43:33.252316,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 08:14:33.252316,Grace,Morgan,Niel
+Train3,Poplar,76,77,88,2024-07-27 08:47:33.551287,Grace,Morgan,Niel
+Train3,Mt. Lebanon 1,152,152,77,2024-07-27 09:02:14.417143,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 09:05:14.716114,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 09:06:14.716114,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 09:09:15.015085,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 09:10:15.015085,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 09:13:15.314056,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 09:14:15.314056,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 09:17:15.613027,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 09:18:15.613027,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 09:21:15.911998,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 09:22:15.911998,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 09:25:16.210969,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 09:26:16.210969,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 09:29:16.509940,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 09:30:16.509940,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 09:33:16.808911,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 09:34:16.808911,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 09:37:17.107882,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 09:38:17.107882,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 09:41:17.406853,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 09:42:17.406853,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 09:45:17.705824,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 09:46:17.705824,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 09:49:18.004795,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 09:50:18.004795,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 09:53:18.303766,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 09:54:18.303766,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 09:57:18.602737,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 09:58:18.602737,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 10:01:18.901708,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 10:02:18.901708,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 10:05:19.200679,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 10:06:19.200679,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 10:09:19.499650,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 10:10:19.499650,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 10:13:19.798621,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 10:14:19.798621,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 10:17:20.097592,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 10:18:20.097592,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 10:21:20.396563,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 10:22:20.396563,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 10:25:20.695534,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 10:26:20.695534,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 10:29:20.994505,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 10:30:20.994505,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 10:33:21.293476,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 10:34:21.293476,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 10:37:21.592447,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 10:38:21.592447,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 10:41:21.891418,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 10:42:21.891418,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 10:45:22.190389,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 10:46:22.190389,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 10:49:22.489360,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 10:50:22.489360,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 10:53:22.788331,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 10:54:22.788331,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 10:57:23.087302,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 10:58:23.087302,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 11:01:23.386273,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 11:02:23.386273,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 11:05:23.685244,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 11:06:23.685244,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 11:09:23.984215,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 11:10:23.984215,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 11:13:24.283186,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 11:14:24.283186,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 11:17:24.582157,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 11:18:24.582157,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 11:21:24.881128,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 11:22:24.881128,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 11:25:25.180099,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 11:26:25.180099,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 11:29:25.479070,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 11:30:25.479070,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 11:33:25.778041,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 11:34:25.778041,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 11:37:26.077012,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 11:38:26.077012,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 11:41:26.375983,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 11:42:26.375983,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 11:45:26.674954,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 11:46:26.674954,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 11:49:26.973925,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 11:50:26.973925,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 11:53:27.272896,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 11:54:27.272896,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 11:57:27.571867,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 11:58:27.571867,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 12:01:27.870838,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 12:02:27.870838,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 12:05:28.169809,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 12:06:28.169809,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 12:09:28.468780,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 12:10:28.468780,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 12:13:28.767751,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 12:14:28.767751,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 12:17:29.066722,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 12:18:29.066722,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 12:21:29.365693,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 12:22:29.365693,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 12:25:29.664664,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 12:26:29.664664,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 12:29:29.963635,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 12:30:29.963635,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 12:33:30.262606,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 12:34:30.262606,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 12:37:30.561577,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 12:38:30.561577,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 12:41:30.860548,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 12:42:30.860548,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 12:45:31.159519,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 12:46:31.159519,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 12:49:31.458490,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 12:50:31.458490,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 12:53:31.757461,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 12:54:31.757461,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 12:57:32.056432,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 12:58:32.056432,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 13:01:32.355403,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 13:32:32.355403,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 14:05:32.654374,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 14:36:32.654374,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 15:09:32.953345,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 15:40:32.953345,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 16:13:33.252316,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 16:44:33.252316,Hannah,Ophelia,Paul
+Train3,Poplar,76,77,88,2024-07-27 17:17:33.551287,Hannah,Ophelia,Paul
+Train3,Mt. Lebanon 1,152,152,77,2024-07-27 17:32:14.417143,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 17:35:14.716114,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 17:36:14.716114,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 17:39:15.015085,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 17:40:15.015085,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 17:43:15.314056,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 17:44:15.314056,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 17:47:15.613027,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 17:48:15.613027,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 17:51:15.911998,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 17:52:15.911998,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 17:55:16.210969,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 17:56:16.210969,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 17:59:16.509940,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 18:00:16.509940,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 18:03:16.808911,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 18:04:16.808911,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 18:07:17.107882,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 18:08:17.107882,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 18:11:17.406853,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 18:12:17.406853,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 18:15:17.705824,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 18:16:17.705824,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 18:19:18.004795,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 18:20:18.004795,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 18:23:18.303766,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 18:24:18.303766,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 18:27:18.602737,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 18:28:18.602737,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 18:31:18.901708,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 18:32:18.901708,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 18:35:19.200679,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 18:36:19.200679,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 18:39:19.499650,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 18:40:19.499650,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 18:43:19.798621,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 18:44:19.798621,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 18:47:20.097592,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 18:48:20.097592,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 18:51:20.396563,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 18:52:20.396563,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 18:55:20.695534,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 18:56:20.695534,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 18:59:20.994505,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 19:00:20.994505,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 19:03:21.293476,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 19:04:21.293476,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 19:07:21.592447,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 19:08:21.592447,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 19:11:21.891418,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 19:12:21.891418,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 19:15:22.190389,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 19:16:22.190389,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 19:19:22.489360,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 19:20:22.489360,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 19:23:22.788331,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 19:24:22.788331,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 19:27:23.087302,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 19:28:23.087302,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 19:31:23.386273,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 19:32:23.386273,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 19:35:23.685244,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 19:36:23.685244,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 19:39:23.984215,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 19:40:23.984215,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 19:43:24.283186,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 19:44:24.283186,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 19:47:24.582157,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 19:48:24.582157,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 19:51:24.881128,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 19:52:24.881128,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 19:55:25.180099,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 19:56:25.180099,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 19:59:25.479070,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 20:00:25.479070,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 20:03:25.778041,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 20:04:25.778041,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 20:07:26.077012,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 20:08:26.077012,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 20:11:26.375983,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 20:12:26.375983,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 20:15:26.674954,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 20:16:26.674954,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 20:19:26.973925,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 20:20:26.973925,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 20:23:27.272896,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 20:24:27.272896,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 20:27:27.571867,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 20:28:27.571867,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 20:31:27.870838,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 20:32:27.870838,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 20:35:28.169809,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 20:36:28.169809,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 20:39:28.468780,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 20:40:28.468780,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 20:43:28.767751,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 20:44:28.767751,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 20:47:29.066722,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 20:48:29.066722,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 20:51:29.365693,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 20:52:29.365693,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 20:55:29.664664,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 20:56:29.664664,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 20:59:29.963635,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 21:00:29.963635,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 21:03:30.262606,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 21:04:30.262606,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 21:07:30.561577,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 21:08:30.561577,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 21:11:30.860548,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 21:12:30.860548,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 21:15:31.159519,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 21:16:31.159519,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 21:19:31.458490,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 21:20:31.458490,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 21:23:31.757461,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 21:24:31.757461,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 21:27:32.056432,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 21:28:32.056432,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 21:31:32.355403,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 22:02:32.355403,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 22:35:32.654374,Ivy,Quinn,Roger
+Train3,Mt. Lebanon 1,152,88,77,2024-07-27 23:06:32.654374,Ivy,Quinn,Roger
+Train3,Poplar,76,77,88,2024-07-27 23:39:32.953345,Ivy,Quinn,Roger
+Train4,Mt. Lebanon 1,152,152,77,2024-07-27 00:47:14.417143,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 00:50:14.716114,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 00:51:14.716114,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 00:54:15.015085,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 00:55:15.015085,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 00:58:15.314056,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 00:59:15.314056,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 01:02:15.613027,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 01:03:15.613027,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 01:06:15.911998,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 01:07:15.911998,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 01:10:16.210969,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 01:11:16.210969,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 01:14:16.509940,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 01:15:16.509940,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 01:18:16.808911,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 01:19:16.808911,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 01:22:17.107882,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 01:23:17.107882,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 01:26:17.406853,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 01:27:17.406853,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 01:30:17.705824,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 01:31:17.705824,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 01:34:18.004795,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 01:35:18.004795,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 01:38:18.303766,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 01:39:18.303766,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 01:42:18.602737,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 01:43:18.602737,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 01:46:18.901708,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 01:47:18.901708,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 01:50:19.200679,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 01:51:19.200679,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 01:54:19.499650,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 01:55:19.499650,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 01:58:19.798621,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 01:59:19.798621,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 02:02:20.097592,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 02:03:20.097592,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 02:06:20.396563,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 02:07:20.396563,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 02:10:20.695534,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 02:11:20.695534,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 02:14:20.994505,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 02:15:20.994505,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 02:18:21.293476,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 02:19:21.293476,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 02:22:21.592447,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 02:23:21.592447,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 02:26:21.891418,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 02:27:21.891418,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 02:30:22.190389,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 02:31:22.190389,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 02:34:22.489360,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 02:35:22.489360,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 02:38:22.788331,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 02:39:22.788331,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 02:42:23.087302,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 02:43:23.087302,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 02:46:23.386273,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 02:47:23.386273,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 02:50:23.685244,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 02:51:23.685244,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 02:54:23.984215,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 02:55:23.984215,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 02:58:24.283186,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 02:59:24.283186,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 03:02:24.582157,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 03:03:24.582157,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 03:06:24.881128,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 03:07:24.881128,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 03:10:25.180099,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 03:11:25.180099,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 03:14:25.479070,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 03:15:25.479070,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 03:18:25.778041,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 03:19:25.778041,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 03:22:26.077012,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 03:23:26.077012,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 03:26:26.375983,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 03:27:26.375983,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 03:30:26.674954,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 03:31:26.674954,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 03:34:26.973925,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 03:35:26.973925,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 03:38:27.272896,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 03:39:27.272896,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 03:42:27.571867,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 03:43:27.571867,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 03:46:27.870838,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 03:47:27.870838,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 03:50:28.169809,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 03:51:28.169809,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 03:54:28.468780,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 03:55:28.468780,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 03:58:28.767751,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 03:59:28.767751,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 04:02:29.066722,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 04:03:29.066722,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 04:06:29.365693,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 04:07:29.365693,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 04:10:29.664664,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 04:11:29.664664,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 04:14:29.963635,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 04:15:29.963635,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 04:18:30.262606,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 04:19:30.262606,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 04:22:30.561577,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 04:23:30.561577,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 04:26:30.860548,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 04:27:30.860548,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 04:30:31.159519,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 04:31:31.159519,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 04:34:31.458490,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 04:35:31.458490,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 04:38:31.757461,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 04:39:31.757461,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 04:42:32.056432,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 04:43:32.056432,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 04:46:32.355403,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 05:17:32.355403,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 05:50:32.654374,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 06:21:32.654374,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 06:54:32.953345,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 07:25:32.953345,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 07:58:33.252316,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 08:29:33.252316,Jack,Stacy,Terry
+Train4,Poplar,76,77,88,2024-07-27 09:02:33.551287,Jack,Stacy,Terry
+Train4,Mt. Lebanon 1,152,152,77,2024-07-27 09:17:14.417143,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 09:20:14.716114,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 09:21:14.716114,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 09:24:15.015085,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 09:25:15.015085,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 09:28:15.314056,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 09:29:15.314056,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 09:32:15.613027,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 09:33:15.613027,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 09:36:15.911998,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 09:37:15.911998,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 09:40:16.210969,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 09:41:16.210969,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 09:44:16.509940,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 09:45:16.509940,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 09:48:16.808911,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 09:49:16.808911,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 09:52:17.107882,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 09:53:17.107882,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 09:56:17.406853,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 09:57:17.406853,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 10:00:17.705824,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 10:01:17.705824,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 10:04:18.004795,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 10:05:18.004795,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 10:08:18.303766,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 10:09:18.303766,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 10:12:18.602737,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 10:13:18.602737,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 10:16:18.901708,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 10:17:18.901708,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 10:20:19.200679,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 10:21:19.200679,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 10:24:19.499650,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 10:25:19.499650,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 10:28:19.798621,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 10:29:19.798621,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 10:32:20.097592,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 10:33:20.097592,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 10:36:20.396563,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 10:37:20.396563,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 10:40:20.695534,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 10:41:20.695534,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 10:44:20.994505,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 10:45:20.994505,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 10:48:21.293476,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 10:49:21.293476,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 10:52:21.592447,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 10:53:21.592447,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 10:56:21.891418,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 10:57:21.891418,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 11:00:22.190389,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 11:01:22.190389,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 11:04:22.489360,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 11:05:22.489360,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 11:08:22.788331,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 11:09:22.788331,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 11:12:23.087302,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 11:13:23.087302,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 11:16:23.386273,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 11:17:23.386273,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 11:20:23.685244,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 11:21:23.685244,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 11:24:23.984215,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 11:25:23.984215,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 11:28:24.283186,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 11:29:24.283186,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 11:32:24.582157,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 11:33:24.582157,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 11:36:24.881128,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 11:37:24.881128,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 11:40:25.180099,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 11:41:25.180099,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 11:44:25.479070,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 11:45:25.479070,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 11:48:25.778041,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 11:49:25.778041,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 11:52:26.077012,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 11:53:26.077012,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 11:56:26.375983,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 11:57:26.375983,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 12:00:26.674954,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 12:01:26.674954,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 12:04:26.973925,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 12:05:26.973925,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 12:08:27.272896,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 12:09:27.272896,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 12:12:27.571867,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 12:13:27.571867,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 12:16:27.870838,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 12:17:27.870838,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 12:20:28.169809,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 12:21:28.169809,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 12:24:28.468780,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 12:25:28.468780,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 12:28:28.767751,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 12:29:28.767751,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 12:32:29.066722,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 12:33:29.066722,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 12:36:29.365693,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 12:37:29.365693,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 12:40:29.664664,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 12:41:29.664664,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 12:44:29.963635,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 12:45:29.963635,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 12:48:30.262606,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 12:49:30.262606,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 12:52:30.561577,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 12:53:30.561577,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 12:56:30.860548,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 12:57:30.860548,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 13:00:31.159519,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 13:01:31.159519,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 13:04:31.458490,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 13:05:31.458490,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 13:08:31.757461,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 13:09:31.757461,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 13:12:32.056432,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 13:13:32.056432,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 13:16:32.355403,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 13:47:32.355403,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 14:20:32.654374,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 14:51:32.654374,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 15:24:32.953345,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 15:55:32.953345,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 16:28:33.252316,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 16:59:33.252316,Alejandro,Alice,Barbra
+Train4,Poplar,76,77,88,2024-07-27 17:32:33.551287,Alejandro,Alice,Barbra
+Train4,Mt. Lebanon 1,152,152,77,2024-07-27 17:47:14.417143,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 17:50:14.716114,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 17:51:14.716114,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 17:54:15.015085,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 17:55:15.015085,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 17:58:15.314056,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 17:59:15.314056,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 18:02:15.613027,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 18:03:15.613027,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 18:06:15.911998,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 18:07:15.911998,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 18:10:16.210969,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 18:11:16.210969,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 18:14:16.509940,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 18:15:16.509940,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 18:18:16.808911,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 18:19:16.808911,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 18:22:17.107882,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 18:23:17.107882,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 18:26:17.406853,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 18:27:17.406853,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 18:30:17.705824,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 18:31:17.705824,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 18:34:18.004795,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 18:35:18.004795,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 18:38:18.303766,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 18:39:18.303766,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 18:42:18.602737,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 18:43:18.602737,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 18:46:18.901708,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 18:47:18.901708,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 18:50:19.200679,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 18:51:19.200679,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 18:54:19.499650,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 18:55:19.499650,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 18:58:19.798621,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 18:59:19.798621,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 19:02:20.097592,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 19:03:20.097592,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 19:06:20.396563,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 19:07:20.396563,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 19:10:20.695534,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 19:11:20.695534,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 19:14:20.994505,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 19:15:20.994505,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 19:18:21.293476,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 19:19:21.293476,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 19:22:21.592447,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 19:23:21.592447,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 19:26:21.891418,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 19:27:21.891418,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 19:30:22.190389,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 19:31:22.190389,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 19:34:22.489360,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 19:35:22.489360,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 19:38:22.788331,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 19:39:22.788331,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 19:42:23.087302,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 19:43:23.087302,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 19:46:23.386273,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 19:47:23.386273,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 19:50:23.685244,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 19:51:23.685244,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 19:54:23.984215,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 19:55:23.984215,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 19:58:24.283186,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 19:59:24.283186,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 20:02:24.582157,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 20:03:24.582157,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 20:06:24.881128,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 20:07:24.881128,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 20:10:25.180099,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 20:11:25.180099,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 20:14:25.479070,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 20:15:25.479070,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 20:18:25.778041,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 20:19:25.778041,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 20:22:26.077012,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 20:23:26.077012,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 20:26:26.375983,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 20:27:26.375983,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 20:30:26.674954,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 20:31:26.674954,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 20:34:26.973925,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 20:35:26.973925,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 20:38:27.272896,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 20:39:27.272896,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 20:42:27.571867,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 20:43:27.571867,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 20:46:27.870838,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 20:47:27.870838,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 20:50:28.169809,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 20:51:28.169809,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 20:54:28.468780,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 20:55:28.468780,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 20:58:28.767751,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 20:59:28.767751,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 21:02:29.066722,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 21:03:29.066722,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 21:06:29.365693,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 21:07:29.365693,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 21:10:29.664664,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 21:11:29.664664,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 21:14:29.963635,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 21:15:29.963635,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 21:18:30.262606,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 21:19:30.262606,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 21:22:30.561577,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 21:23:30.561577,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 21:26:30.860548,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 21:27:30.860548,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 21:30:31.159519,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 21:31:31.159519,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 21:34:31.458490,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 21:35:31.458490,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 21:38:31.757461,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 21:39:31.757461,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 21:42:32.056432,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 21:43:32.056432,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 21:46:32.355403,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 22:17:32.355403,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 22:50:32.654374,Bob,Cole,Dan
+Train4,Mt. Lebanon 1,152,88,77,2024-07-27 23:21:32.654374,Bob,Cole,Dan
+Train4,Poplar,76,77,88,2024-07-27 23:54:32.953345,Bob,Cole,Dan
