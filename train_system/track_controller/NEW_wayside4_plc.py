@@ -172,12 +172,12 @@ if(track_blocks[26].occupancy and
     # set light position 
     #track_blocks[26]._light_signal = True
     track_blocks[27]._light_signal = True
-    track_blocks[37]._light_signal = False
+    #track_blocks[37]._light_signal = False
 
 #  Scenario 2: connect 27 to 77
 if(track_blocks[26].occupancy and 
    (track_blocks[28].occupancy == False and track_blocks[29].occupancy == False and track_blocks[30].occupancy == False and 
-    track_blocks[31].occupancy == False and track_blocks[32].occupancy == False and track_blocks[37].occupancy == False)):
+    track_blocks[31].occupancy == False and track_blocks[32].occupancy == False)):
 
     # set authority at T to zero
     track_blocks[27].authority = 0
@@ -188,10 +188,10 @@ if(track_blocks[26].occupancy and
     # set light signal
     #track_blocks[26]._light_signal = True
     track_blocks[27]._light_signal = False
-    track_blocks[37]._light_signal = True
+    #track_blocks[37]._light_signal = True
 
 # Scenario 3: T to 27
-if(track_blocks[37].occupancy and 
+if(
    (track_blocks[0].occupancy == False and track_blocks[1].occupancy == False and track_blocks[2].occupancy == False and 
     track_blocks[3].occupancy == False and track_blocks[4].occupancy == False and track_blocks[5].occupancy == False and 
     track_blocks[6].occupancy == False and track_blocks[7].occupancy == False and track_blocks[8].occupancy == False and 
@@ -211,7 +211,7 @@ if(track_blocks[37].occupancy and
     # set light signal
     #track_blocks[26]._light_signal = True
     track_blocks[27]._light_signal = False
-    track_blocks[37]._light_signal = True
+    #track_blocks[36]._light_signal = True
 
 """
 # Scenario 4: T to 28
@@ -238,17 +238,17 @@ if(track_blocks[37].occupancy and
     track_blocks[37]._light_signal = False
 """
 # Scenario 5: 27, 28, and T are all occupied
-if(track_blocks[26].occupancy and track_blocks[27].occupancy and track_blocks[37].occupancy):
+if(track_blocks[26].occupancy and track_blocks[27].occupancy):
 
     # set authority at T to zero
     track_blocks[26].authority = 0
     track_blocks[27].authority = 0
-    track_blocks[37].authority = 0
+    #track_blocks[37].authority = 0
 
     # set light signal
     track_blocks[26]._light_signal = False
     track_blocks[27]._light_signal = False
-    track_blocks[37]._light_signal = False
+    #track_blocks[37]._light_signal = False
 
 
 print("Wayside 4\n")
@@ -301,9 +301,9 @@ print(f"Light Signal: {track_blocks[27]._light_signal}")
 print(f"Authority: {track_blocks[27].authority}\n")
 
 #block 76 information
-print("Block 76 Information: ")
-print(f"Light Signal: {track_blocks[37]._light_signal}")
-print(f"Authority: {track_blocks[37].authority}\n")
+#print("Block 76 Information: ")
+#print(f"Light Signal: {track_blocks[36]._light_signal}")
+#print(f"Authority: {track_blocks[36].authority}\n")
 
 
 
