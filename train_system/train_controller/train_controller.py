@@ -45,7 +45,7 @@ class TrainController(QObject):
     kp_updated_for_eng = pyqtSignal(int)
     
     
-    def __init__(self, engineer: Engineer, train_model=None, line_name: str = "green", id: int = 0, ssh=None) -> None:
+    def __init__(self, engineer: Engineer = None, train_model=None, line_name: str = "green", id: int = 0, ssh=None) -> None:
         super().__init__()
         self.line = line_name
         self.id = id
@@ -64,7 +64,7 @@ class TrainController(QObject):
         # self.train_model.comm_speed_received.connect(self.handle_comm_speed_changed)
         self.train_model.authority_received.connect(self.update_authority)
 
-        self.engineer = engineer # Engineer holds Kp and Ki and is the only one that can set them
+        self.engineer = engineer if engineer else None # Engineer holds Kp and Ki and is the only one that can set them
 
         self.brake = self.Brake()       # Brake holds service and emergency brake status
         self.brake.service_brake_updated.connect(self.train_model.handle_service_brake_update)
