@@ -6,6 +6,7 @@ from PyQt6.QtWidgets import QApplication
 from train_system.common.time_keeper import TimeKeeper
 from train_system.ctc_manager.ctc_manager import CTCOffice
 from train_system.ctc_manager.dispatcher_ui import DispatcherUI
+from train_system.train_controller.tc_manager import TrainManager
 
 from train_system.train_controller.train_controller import TrainSystem
 
@@ -32,8 +33,8 @@ def main():
 
 
     ### Instantiate the TrainController object and the driver's UI ###
-    # Connect to the Train Controller Raspberry Pi
-    # Connect the CTC's dispatch signal to the Train's dispatch handler
+    train_manager = TrainManager()
+    # Connect the CTC's dispatch signal to the Train Manager's dispatch handler
     
 
 

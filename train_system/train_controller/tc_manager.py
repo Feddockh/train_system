@@ -1,6 +1,7 @@
+import paramiko
+
 from PyQt6.QtCore import Qt, pyqtSlot, pyqtSignal, QObject
-from train_system.train_controller.train_controller import TrainController
-from train_system.train_model.train_model import TrainModel
+from train_system.train_controller.train_controller import TrainSystem
 from train_system.train_controller.engineer import Engineer
 
 HOST= '192.168.0.114'
@@ -8,20 +9,13 @@ PORT = 22
 USERNAME = 'danim'
 PASSWORD = 'danim'
 
-def handle_train_dispatched(self, train_id, line):
-    if train_id % 2:
-        Train(train_id, line, HOST, PORT, USERNAME, PASSWORD)
-
-class Train:
-    def __init__(self, host=None, port=None, username=None, password=None):
-        self.train_model = TrainModel()
+class TrainManager:
+    def __init__(self):
         self.ssh_client = None
-        if(host and port and username and password):
+        self.engineer_table: list[Engineer] = [Engineer()] * 100
+        self.train_list: list[TrainSystem] = []
+        if(HOST and PORT and USERNAME and PASSWORD):
             self.ssh_client = self.create_ssh_connection(HOST, PORT, USERNAME, PASSWORD)
-        # Hardware
-        # self.controller = TrainController(25, 0.1, self.train_model, self.ssh_client)
-        # Software
-        self.controller = TrainController(25, 0.1, self.train_model)
 
     # Example usage
     def create_ssh_connection(self, host, port=22, username='danim', password='danim'):
@@ -38,28 +32,29 @@ class Train:
             print(f"An error occurred while connecting: {e}")
             return None
 
+    #### Might need to be engineer_table[id-1] ####
+    @pyqtSlot(int, str)
+    def handle_dispatch(self, train_id: int = "1", line: str = "green"):
+        if train_id % 2:
+            # Add hardware train to the train list
+            self.train_list.append(TrainSystem(self.engineer_table[train_id], line, train_id, self.ssh_client))
+            ##### ADD CONNECTIONS TO THE TRAIN SYSTEM #####
+        else:
+            # Add software train to the train list
+            self.train_list.append(TrainSystem(self.engineer_table[train_id], line, train_id))
+            ##### ADD CONNECTIONS TO THE TRAIN SYSTEM #####
 
-    def run(self):
-        self.controller.set_setpoint_speed(30)
-        for _ in range(50):
-            self.controller.update_train_controller()
-
-        self.controller.set_position(65)
-
-        self.controller.set_setpoint_speed(30)
-        for _ in range(50):
-            self.controller.update_train_controller()
-        
-        # self.controller.set_setpoint_speed(30)
-        # for _ in range(50):
-        #     self.controller.update_train_controller()
-        
-        # self.controller.set_setpoint_speed(10)
-        # for _ in range(50):
-        #     self.controller.update_train_controller()
-            
+    def handle_train_removed(self, train_id: int):
+        for train in self.train_list:
+            if train.id == train_id:
+                #### DO WHATEVER NECESSARY BEFORE REMOVING TRAIN ####
+                self.train_list.remove(train)
+                return
+        print("No Train found with ID: " + str(train_id))
 
 if __name__ == "__main__":
     # train_system = TrainSystem(HOST, PORT, USERNAME, PASSWORD)
-    train_system = TrainSystem()
-    train_system.run()
+    manager = TrainManager()
+    manager.engineer_table[0].set_engineer(5000, 1)
+    manager.handle_dispatch(0, "green")
+    manager.train_list[0].small_run()

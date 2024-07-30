@@ -9,6 +9,7 @@ from train_system.common.track_block import TrackBlock
 from train_system.common.station import Station
 
 from train_system.train_model.train_model import TrainModel
+from train_system.train_controller.engineer import Engineer
 
 HOST= '192.168.0.114'
 PORT = 22
@@ -43,8 +44,10 @@ class TrainController(QObject):
     kp_updated_for_eng = pyqtSignal(int)
     
     
-    def __init__(self, kp: float=25, ki: float=0.5, train_model=None, line_name: str = "green", id: int = 0, ssh=None) -> None:
+    def __init__(self, engineer: Engineer, train_model=None, line_name: str = "green", id: int = 0, ssh=None) -> None:
         super().__init__()
+        self.line = line_name
+        self.id = id
 
         self.hardware = True if ssh else False
         print(f"Hardware: {self.hardware}")
@@ -60,7 +63,7 @@ class TrainController(QObject):
         # self.train_model.comm_speed_received.connect(self.handle_comm_speed_changed)
         self.train_model.authority_received.connect(self.update_authority)
 
-        self.engineer = self.Engineer(kp, ki) # Engineer holds Kp and Ki and is the only one that can set them
+        self.engineer = engineer # Engineer holds Kp and Ki and is the only one that can set them
 
         self.brake = self.Brake()       # Brake holds service and emergency brake status
         self.brake.service_brake_updated.connect(self.train_model.handle_service_brake_update)
@@ -460,37 +463,37 @@ class TrainController(QObject):
         self.update_train_controller()
 
     ## Engineer class to hold Kp and Ki
-    class Engineer(QObject):
-        kp_updated = pyqtSignal(int)
-        ki_updated = pyqtSignal(int)
+    # class Engineer(QObject):
+    #     kp_updated = pyqtSignal(int)
+    #     ki_updated = pyqtSignal(int)
         
-        def __init__(self, kp=400, ki=20):
-            super().__init__()
-            self.kp = kp
-            self.ki = ki
+    #     def __init__(self, kp=400, ki=20):
+    #         super().__init__()
+    #         self.kp = kp
+    #         self.ki = ki
 
-        ## Mutator functions
-        def set_kp(self, kp: float):
-            if kp >= 0:
-                self.kp = kp
-                self.kp_updated.emit(self.kp)
-            else: raise ValueError("kp must be non-negative")
-        def set_ki(self, ki: float):
-            if ki >= 0:
-                self.ki = ki
-                self.ki_updated.emit(self.ki)
-            else: raise ValueError("ki must be non-negative")
-        def set_engineer(self, kp: float, ki: float):
-            self.set_kp(kp)
-            self.set_ki(ki)
+    #     ## Mutator functions
+    #     def set_kp(self, kp: float):
+    #         if kp >= 0:
+    #             self.kp = kp
+    #             self.kp_updated.emit(self.kp)
+    #         else: raise ValueError("kp must be non-negative")
+    #     def set_ki(self, ki: float):
+    #         if ki >= 0:
+    #             self.ki = ki
+    #             self.ki_updated.emit(self.ki)
+    #         else: raise ValueError("ki must be non-negative")
+    #     def set_engineer(self, kp: float, ki: float):
+    #         self.set_kp(kp)
+    #         self.set_ki(ki)
 
-        ## Accessor functions
-        def get_kp(self):
-            return self.kp
-        def get_ki(self):
-            return self.ki
-        def get_engineer(self):
-            return self.get_kp(), self.get_ki()
+    #     ## Accessor functions
+    #     def get_kp(self):
+    #         return self.kp
+    #     def get_ki(self):
+    #         return self.ki
+    #     def get_engineer(self):
+    #         return self.get_kp(), self.get_ki()
 
     ## Brake class to hold brake status
     class Brake(QObject):
@@ -989,17 +992,19 @@ class MockTrainModel(QObject):
 
 
 class TrainSystem:
-    def __init__(self, host=None, port=None, username=None, password=None):
+    def __init__(self, engineer: Engineer = None, line_name: str = "green", id: int = 0, ssh=None):
+        self.line = line_name
+        self.id = id
         self.train_model = MockTrainModel()
-        self.ssh_client = None
-        if(host and port and username and password):
-            self.ssh_client = self.create_ssh_connection(HOST, PORT, USERNAME, PASSWORD)
+        self.engineer = engineer if engineer else Engineer()
+        print(f"Engineer: {self.engineer.kp}, {self.engineer.ki}")
+        self.ssh = ssh
         # Hardware
-        # self.controller = TrainController(25, 0.1, self.train_model, self.ssh_client)
+        # self.controller = TrainController(kp, ki, self.train_model, line_name, id)
         # Software
-        self.controller = TrainController(20, 0.1, self.train_model)
+        self.controller = TrainController(self.engineer, self.train_model, line_name, id, self.ssh)
 
-    # Example usage
+
     def create_ssh_connection(self, host, port=22, username='danim', password='danim'):
         """Establish an SSH connection to the Raspberry Pi and return the SSH client."""
         ssh = paramiko.SSHClient()
@@ -1114,9 +1119,9 @@ class TrainSystem:
 if __name__ == "__main__":
     # train_system = TrainSystem(HOST, PORT, USERNAME, PASSWORD)
     train_system = TrainSystem()
-    # train_system.small_run()
+    train_system.small_run()
     # train_system.long_run()
-    train_system.full_loop_run()
+    # train_system.full_loop_run()
     # train_system.destination_run()
     # train_system.service_run()
     # train_system.emergency_run()
