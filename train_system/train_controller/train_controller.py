@@ -999,9 +999,7 @@ class TrainSystem:
         self.engineer = engineer if engineer else Engineer()
         print(f"Engineer: {self.engineer.kp}, {self.engineer.ki}")
         self.ssh = ssh
-        # Hardware
-        # self.controller = TrainController(kp, ki, self.train_model, line_name, id)
-        # Software
+        # Software if ssh, hardware if ssh=None
         self.controller = TrainController(self.engineer, self.train_model, line_name, id, self.ssh)
 
 
@@ -1119,7 +1117,7 @@ class TrainSystem:
 if __name__ == "__main__":
     # train_system = TrainSystem(HOST, PORT, USERNAME, PASSWORD)
     train_system = TrainSystem()
-    train_system.small_run()
+    # train_system.small_run()
     # train_system.long_run()
     # train_system.full_loop_run()
     # train_system.destination_run()

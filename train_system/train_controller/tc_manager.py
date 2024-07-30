@@ -4,7 +4,7 @@ from PyQt6.QtCore import Qt, pyqtSlot, pyqtSignal, QObject
 from train_system.train_controller.train_controller import TrainSystem
 from train_system.train_controller.engineer import Engineer
 
-HOST= '192.168.0.114'
+HOST= None  #'192.168.0.114'
 PORT = 22
 USERNAME = 'danim'
 PASSWORD = 'danim'
@@ -34,13 +34,15 @@ class TrainManager:
 
     #### Might need to be engineer_table[id-1] ####
     @pyqtSlot(int, str)
-    def handle_dispatch(self, train_id: int = "1", line: str = "green"):
+    def handle_dispatch(self, train_id: int = 1, line: str = "green"):
         if train_id % 2:
             # Add hardware train to the train list
+            print("Hardware Train")
             self.train_list.append(TrainSystem(self.engineer_table[train_id], line, train_id, self.ssh_client))
             ##### ADD CONNECTIONS TO THE TRAIN SYSTEM #####
         else:
             # Add software train to the train list
+            print("Software Train")
             self.train_list.append(TrainSystem(self.engineer_table[train_id], line, train_id))
             ##### ADD CONNECTIONS TO THE TRAIN SYSTEM #####
 
@@ -58,3 +60,15 @@ if __name__ == "__main__":
     manager.engineer_table[0].set_engineer(5000, 1)
     manager.handle_dispatch(0, "green")
     manager.train_list[0].small_run()
+    manager.handle_train_removed(0)
+    # manager.train_list[0].long_run()
+    # manager.train_list[0].full_loop_run()
+    # manager.train_list[0].destination_run()
+    # manager.train_list[0].service_run()
+    # manager.train_list[0].emergency_run()
+    # manager.train_list[0].commanded_speed_run()
+    # manager.train_list[0].switch_modes_run()
+    # manager.train_list[0].fault_run()
+    # manager.train_list[0].ac_run()
+    print(f"Train List Length: {len(manager.train_list)}")
+    
