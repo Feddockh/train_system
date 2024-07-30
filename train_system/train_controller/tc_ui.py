@@ -46,6 +46,8 @@ class TestBenchWindow(QMainWindow):
     position_updated = pyqtSignal(int) #may change depending on how we represent location
     destination_updated = pyqtSignal(str)
 
+    textSubmitted = pyqtSignal(str)
+
     def __init__(self):
         super().__init__()
 
@@ -196,6 +198,15 @@ class TestBenchWindow(QMainWindow):
         self.curr_authority_stat.setPlaceholderText("Enter Authority")
         self.curr_authority_stat.textChanged.connect(self.authority_changed)
 
+        tm_authority_label = QLabel("Train Model Authority")
+        tm_authority_label.setFixedSize(150, 25)
+        tm_authority_label.setFont(header_font)
+
+        self.tm_authority_stat = QLineEdit()
+        self.tm_authority_stat.setFixedSize(75, 25)
+        self.tm_authority_stat.setPlaceholderText("Enter TM Authority")
+
+
         #add stat lines and labels to left_out layout
         left_out_layout.addWidget(curr_speed_label)
         left_out_layout.addWidget(self.curr_speed_stat)
@@ -203,6 +214,8 @@ class TestBenchWindow(QMainWindow):
         left_out_layout.addWidget(self.comm_speed_stat)
         left_out_layout.addWidget(curr_authority_label)
         left_out_layout.addWidget(self.curr_authority_stat)
+        left_out_layout.addWidget(tm_authority_label)
+        left_out_layout.addWidget(self.tm_authority_stat)
 
         #create the Kp slider
         kp_slider = QSlider() #make horizontal
@@ -403,6 +416,13 @@ class TestBenchWindow(QMainWindow):
         widget = QWidget()
         widget.setLayout(main_layout)
         self.setCentralWidget(widget)
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_Enter or event.key() == Qt.Key.Key_Return:
+            # Emit the signal with the text from QLineEdit
+            self.textSubmitted.emit(self.tm_authority_stat.text())
+        else:
+            super().keyPressEvent(event)
 
     def navigate_automatic_mode(self, checked):
         #check that window is not already opened before opening
@@ -1139,8 +1159,8 @@ class DriverWindow(QMainWindow): ###DriverWindow
         else:
             self.right_door_label.setText("Right Door Status: Closed")
 
-    @pyqtSlot(int)
-    def handle_train_temp_update(self, temp: int) -> None:
+    @pyqtSlot(float)
+    def handle_train_temp_update(self, temp: float) -> None:
         self.temp = temp
 
         self.curr_temp.setText("Train Temperature: " + str(self.temp) + " F")

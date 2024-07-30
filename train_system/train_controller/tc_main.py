@@ -57,6 +57,7 @@ test.left_door_updated.connect(tc.handle_left_door_changed)###checked
 #test.ki_updated.connect(tc.handle_ki_changed) ###checked but needs to update table
 test.position_updated.connect(tc.handle_position_changed) ###checked
 test.destination_updated.connect(tc.handle_destination_changed) ###checked
+test.textSubmitted.connect(tc.update_authority)
 
 #DRIVER TO TRAIN CONTROLLER
 driver.mode_button.toggled.connect(tc.handle_toggle_driver_mode) ###checked

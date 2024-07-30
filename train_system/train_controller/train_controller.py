@@ -338,7 +338,7 @@ class TrainController(QObject):
         try:
             authority_str, destination_block_str = authority.split(":")
             self.authority = abs(float(authority_str))
-            self.destination = int(destination_block_str)
+            self.set_destination(destination_block_str)
         except ValueError:
             raise ValueError("Input string is not in the correct format 'authority:destination_block' or contains invalid values.")
     def update_authority(self, authority: str):
@@ -848,7 +848,7 @@ class MockTrainModel(QObject):
     engine_fault_updated = pyqtSignal(bool)
     brake_fault_updated = pyqtSignal(bool)
     signal_fault_updated = pyqtSignal(bool)
-    # comm_speed_received = pyqtSignal(float)
+    comm_speed_received = pyqtSignal(float)
     authority_received = pyqtSignal(str)
     train_temp_updated = pyqtSignal(float)
 
@@ -915,8 +915,8 @@ class MockTrainModel(QObject):
         return self.commanded_speed
     def set_commanded_speed(self, speed: float):
         self.commanded_speed = speed
+        self.comm_speed_received.emit(self.commanded_speed)
         print("Train Model -- Commanded Speed: ", self.commanded_speed)
-        # self.comm_speed_received.emit(self.commanded_speed)
 
 
     def set_position(self, position: float):
