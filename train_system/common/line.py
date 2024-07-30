@@ -392,7 +392,7 @@ class Line(QObject):
         """
 
         for station in self.stations:
-            if station.name == name:
+            if station.name.lower() == name.lower():
                 return station
         print(f"Station {name} does not exist.")
         return None
