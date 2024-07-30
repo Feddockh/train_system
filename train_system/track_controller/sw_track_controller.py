@@ -5,6 +5,8 @@ from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
 from train_system.common.track_block import TrackBlock
 from train_system.common.line import Line
 import sys
+import paramiko
+import time
 
 
 class TrackController(QObject):
@@ -19,6 +21,8 @@ class TrackController(QObject):
         self.plc_program = ""
         self.wayside_name = wayside_name
         self.numBlocks = num_blocks
+
+        #Initialize variables needed for pi
        
         for block in self.track_blocks:
                 block.authority_updated.connect(self.handle_authority_update)
@@ -82,6 +86,7 @@ class TrackController(QObject):
             exec(code, {}, local_vars)
 
             self.track_blocks = local_vars["track_blocks"]
+    
 
     def check_PLC_program_switch(self, x, old_pos, new_pos):
         #Will only run if PLC program has been uploaded

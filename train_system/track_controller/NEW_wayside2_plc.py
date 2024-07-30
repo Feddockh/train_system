@@ -23,19 +23,32 @@ Post Index Change
 # updated wayside 2, July 24, 2024
 # Switch 58
 
-# Scenario 1: 57-->151, check if 58 is occupied, if so, go to yard
-if(track_blocks[28].occupancy and track_blocks[103].occupancy == False and track_blocks[29].occupancy):
 
-    # set switch position
+#Scenario 1: heading to yard
+if(track_blocks[104].authority < 0):
+    
+    #set switch position
     track_blocks[28].switch.position = track_blocks[28].switch.child_blocks[1]
-
-    # set light colors
-    track_blocks[28]._light_signal = True
+    
+    #set light
     track_blocks[29]._light_signal = False
     track_blocks[103]._light_signal = True
 
-# Scenario 2: 57-->58, check if 151 is occupied, if so and 58 is not, go to 58, and continue on J
-if(track_blocks[28].occupancy and track_blocks[29].occupancy == False and track_blocks[103].occupancy):
+# Scenario 2: 57 stop, check if 58 is occupied
+if(track_blocks[28].occupancy and track_blocks[29].occupancy):
+
+    # set switch position
+    track_blocks[28].switch.position = track_blocks[28].switch.child_blocks[0]
+
+    #set authority
+    track_blocks[28].authority = 0
+
+    # set light colors
+    track_blocks[29]._light_signal = False
+    track_blocks[103]._light_signal = False
+
+# Scenario 3: 57-->58, check if 57 is occupied and if the occupancy is greater than zero continue straight
+if(track_blocks[28].occupancy and track_blocks[28].authority > 0):
     
     # set switch position
     track_blocks[28].switch.position = track_blocks[28].switch.child_blocks[0] 
