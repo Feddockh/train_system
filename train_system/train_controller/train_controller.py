@@ -30,6 +30,7 @@ class TrainController(QObject):
     power_updated = pyqtSignal(float)
     faults_fixed = pyqtSignal()
     authority_updated = pyqtSignal(float)
+    delete_train = pyqtSignal(int)
 
     #lights_updated = pyqtSignal(bool) -> in lights class
     #left_door_updated = pyqtSignal(bool) -> in doors class
@@ -180,7 +181,8 @@ class TrainController(QObject):
                 self.set_position(self.position)
         elif self.finished:
             #### DELETE TRAIN CONTROLLER ####
-            pass
+            self.delete_train.emit(self.id)
+            return
             
         # Increment track block
         self.block = self.route[0]
@@ -1038,6 +1040,11 @@ class TrainSystem:
         for _ in range(20):
             self.controller.update_train_controller()
             print(f"Position: {self.controller.position}, Loop Length: {self.controller.loop_length}")
+
+    def to_yard_run(self):
+        self.controller.set_setpoint_speed(20)
+        self.controller.set_position(19900)
+        self.controller.update_authority("1000000000:152")
 
     def destination_run(self):
         self.controller.train_model.set_authority("300:65")
