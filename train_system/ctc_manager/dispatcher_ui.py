@@ -214,6 +214,10 @@ class DispatcherUI(QMainWindow):
     def handle_test_bench_toggle(self, state: bool) -> None:
         if state:
             self.test_bench_track_switch_widget.show()
+
+            # If the maintenance toggle is on, turn it off
+            if self.maintenance_toggle_switch.isChecked():
+                self.maintenance_toggle_switch.mousePressEvent(None)
         else:
             self.test_bench_track_switch_widget.hide()
 
@@ -223,6 +227,10 @@ class DispatcherUI(QMainWindow):
             self.bottom_stacked_widget.setCurrentWidget(self.maintenance_widget)
             self.dispatch_command_widget.setEnabled(False)
             self.schedule_selection_widget.setEnabled(False)
+
+            # If the test bench toggle is on, turn it off
+            if self.test_bench_toggle_switch.isChecked():
+                self.test_bench_toggle_switch.mousePressEvent(None)
         else:
             self.bottom_stacked_widget.setCurrentWidget(self.bottom_widget)
             self.dispatch_command_widget.setEnabled(True)
@@ -259,14 +267,6 @@ class DispatcherUI(QMainWindow):
     @pyqtSlot(str, int, bool)
     def handle_occupancy_update(self, line_name: str, block_number: int, occupancy: bool) -> None:
         self.track_visual_widget.update()
-
-    # @pyqtSlot(int)
-    # def handle_switch_position_update(self, switch_number: int) -> None:
-    #     print(f"Switch {switch_number} position updated")
-
-    # @pyqtSlot(int, int)
-    # def handle_crossing_signal_update(self, block_number: int, signal: int) -> None:
-    #     print(f"Block {block_number} crossing signal updated: {signal}")
 
     @pyqtSlot(str, int, bool)
     def handle_maintenance_update(self, line_name: str, block_number: int, maintenance: bool) -> None:
