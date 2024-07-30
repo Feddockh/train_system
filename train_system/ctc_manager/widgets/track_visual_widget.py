@@ -157,7 +157,7 @@ class TrackVisualWidget(QWidget):
         self.x_scale = self.width() // (self.max_x + 2)
         self.y_scale = self.height() // (self.max_y + 2)
 
-        self.line_width = 3
+        self.line_width = 5
 
     def find_max_y(self):
         max_y = 0
@@ -243,23 +243,23 @@ class TrackVisualWidget(QWidget):
                 text_x = center_x + text_width // 2
                 text_y = center_y - text_height // 2 - self.line_width
             elif text_position == 4:
-                text_x = center_x - text_width // 2
+                text_x = center_x - text_width // 2 - self.line_width
                 text_y = center_y
             elif text_position == 5:
                 text_x = center_x
                 text_y = center_y
             elif text_position == 6:
-                text_x = center_x + text_width // 2
+                text_x = center_x + text_width // 2 + self.line_width
                 text_y = center_y
             elif text_position == 7:
                 text_x = center_x - text_width // 2
-                text_y = center_y + text_height // 2 - self.line_width
+                text_y = center_y + text_height // 2
             elif text_position == 8:
                 text_x = center_x
-                text_y = center_y + text_height // 2 - self.line_width
+                text_y = center_y + text_height // 2
             elif text_position == 9:
                 text_x = center_x + text_width // 2
-                text_y = center_y + text_height // 2 - self.line_width
+                text_y = center_y + text_height // 2
             else:
                 print("Invalid text position")
 

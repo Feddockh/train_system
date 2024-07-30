@@ -59,6 +59,9 @@ class DispatcherUI(QMainWindow):
         self.central_widget.setLayout(self.central_layout)
         self.setCentralWidget(self.central_widget)
 
+        # Set the background color to dark grey
+        # self.central_widget.setStyleSheet("background-color: #2e2e2e;")
+
         # Add the time keeper widget to the top of the central layout
         self.time_keeper_widget = TimeKeeperWidget(self.time_keeper)
         self.central_layout.addWidget(self.time_keeper_widget)
