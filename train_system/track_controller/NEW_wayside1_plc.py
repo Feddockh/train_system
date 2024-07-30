@@ -2,6 +2,7 @@ print("Wayside 1: ")
 """
 POST INDEX CHANGE
 """
+#(Correct)
 #Scenario 1: 1-->13, block 1 = OCCUPIED, D through F are unoccupied
 if(track_blocks[0].occupancy and track_blocks[12].occupancy == False and (track_blocks[13].occupancy == False and track_blocks[14].occupancy == False and track_blocks[15].occupancy == False and track_blocks[16].occupancy == False and track_blocks[17].occupancy == False and track_blocks[18].occupancy == False and track_blocks[19].occupancy == False and track_blocks[20].occupancy == False and track_blocks[21].occupancy == False and track_blocks[22].occupancy == False and track_blocks[23].occupancy == False and track_blocks[24].occupancy == False and track_blocks[25].occupancy == False and track_blocks[26].occupancy == False and track_blocks[27].occupancy == False and track_blocks[28].occupancy == False)):
     
@@ -9,22 +10,26 @@ if(track_blocks[0].occupancy and track_blocks[12].occupancy == False and (track_
     track_blocks[12].switch.position = track_blocks[12].switch.child_blocks[0]
     #track_blocks[12].switch.child_blocks[0]
 
+    #set authority at block 12 
+    track_blocks[12].authority = 0
+
     #set lights
-    track_blocks[0]._light_signal = True
+    track_blocks[0]._light_signal = False
     track_blocks[11]._light_signal = False
-    track_blocks[12]._light_signal = False
+    track_blocks[12]._light_signal = True
 
 #Scenario 2: 13-->12, block 13 is occupied, A is unoccupied
 if(track_blocks[12].occupancy and track_blocks[0].occupancy == False and track_blocks[11].occupancy == False):
 
     #set switch position
     track_blocks[12].switch.position = track_blocks[12].switch.child_blocks[1]
-    #track_blocks[12].switch.child_blocks[11]
+
+    track_blocks[0].authority = 0
 
     #set lights
     track_blocks[0]._light_signal = False
     track_blocks[11]._light_signal = True
-    track_blocks[12]._light_signal = True
+    track_blocks[12]._light_signal = False
 
 #Scenario 3: 13-->12, block 13 is occupied, 1 is occupied, load loop, until D through F is unoccupied, then send through train
 if(track_blocks[12].occupancy and track_blocks[0].occupancy and track_blocks[11].occupancy == False):
@@ -34,7 +39,6 @@ if(track_blocks[12].occupancy and track_blocks[0].occupancy and track_blocks[11]
 
     #set switch position
     track_blocks[12].switch.position = track_blocks[12].switch.child_blocks[1]
-    #track_blocks[12].switch.child_blocks[11]
 
     #set ligths
     track_blocks[0]._light_signal = False
@@ -57,10 +61,7 @@ if(track_blocks[19].occupancy == False and track_blocks[18].occupancy == False a
     print("Crossing Signal: Up\nPedestrians May Cross\n")
 
 
-
-
 #SWITCH AT BLOCK 29
-
 #Scenario 1: 29-> 30, block 150 is not occupied
 if(track_blocks[28].occupancy and track_blocks[32].occupancy == False and track_blocks[29].occupancy == False):
     
@@ -99,8 +100,28 @@ if(track_blocks[32].occupancy and (track_blocks[12].occupancy == False and track
     #set lights
     track_blocks[28]._light_signal = False
     track_blocks[32]._light_signal = True
-    #track_blocks[29]._light_signal = False
+    track_blocks[29]._light_signal = False
 
+#Emergency Scenario: block 150 is occupied, D through F be unoccupied, and block 1 be occupied, so we can't let either end in
+if(track_blocks[32].occupancy and track_blocks[0].occupancy and (track_blocks[13].occupancy == False or track_blocks[14].occupancy == False or track_blocks[15].occupancy == False or track_blocks[16].occupancy == False or track_blocks[17].occupancy == False
+    or track_blocks[18].occupancy == False or track_blocks[19].occupancy == False or track_blocks[20].occupancy == False or track_blocks[21].occupancy == False or track_blocks[22].occupancy == False or track_blocks[23].occupancy == False or track_blocks[24].occupancy == False 
+    or track_blocks[25].occupancy == False or track_blocks[26].occupancy == False or track_blocks[27].occupancy == False or track_blocks[28].occupancy == False or track_blocks[29].occupancy == False)):
+
+    #set switch position at 1 to 13, then let the train travel through
+    track_blocks[12].switch.position = track_blocks[12].switch.child_blocks[0]
+    
+    #set switch position at 29 to 30, that will then allow the train to go through
+    track_blocks[28].switch.position = track_blocks[28].switch.child_blocks[0]
+
+    track_blocks[32].authority = 0
+
+    track_blocks[0]._light_signal = False
+    track_blocks[11]._light_signal = False
+    track_blocks[12]._light_signal = True
+    track_blocks[28]._light_signal = False
+    track_blocks[29]._light_signal = True
+    track_blocks[32]._light_signal = False
+    
 
 
 # Consolidated print statements for error checking
