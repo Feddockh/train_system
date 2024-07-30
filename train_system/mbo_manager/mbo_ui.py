@@ -1,4 +1,4 @@
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QObject, pyqtSlot, pyqtSignal
 from PyQt6.QtGui import * 
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
@@ -8,86 +8,133 @@ import sys
 
 
 from PyQt6.QtWidgets import QWidget
+from train_system.mbo_manager.gui_features import CustomTable
+from train_system.common.time_keeper import TimeKeeper
+from train_system.common.time_keeper import TimeKeeperWidget
 
-from mbo_manager import MBOController
-from gui_features import CustomTable
+
+from train_system.common.train_dispatch import TrainDispatch
+from train_system.ctc_manager.ctc_manager import CTCOffice
+from train_system.ctc_manager.ctc_train_dispatch import CTCTrainDispatch
+from train_system.common.line import Line
+
 
 class MBOWindow(QMainWindow):
+    
+    schedule_created = pyqtSignal(QDateTime, str, list, list)
+    
     def __init__(self):
         super(MBOWindow, self).__init__()
         
+        self.MBO_mode_window = None
+        
         #name window
-        self.setWindowTitle("MBO Controller")
+        self.setWindowTitle("MBO Planner")
         self.setFixedSize(1222, 702)
         
-        self.MBO_mode_window = None
         #button to navigate to MBO mode view, see trains postitions, commanded speed and authority in real time? 
-        self.MBO_mode_view = QPushButton('MBO Mode View', self)
-        self.MBO_mode_view.setFixedSize(150,50)
-        self.MBO_mode_view.setFont(QFont('Times', 12))
-        self.MBO_mode_view.clicked.connect(self.open_MBO_mode_view)
+        self.MBO_mode_view_button = QPushButton('MBO Mode View', self)
+        self.MBO_mode_view_button.setFixedSize(150,50)
+        self.MBO_mode_view_button.setFont(QFont('Times', 12))
+        self.MBO_mode_view_button.clicked.connect(self.open_MBO_mode_view)
         
-        
-        MBO = MBOController()
-        #displaying current dispatch mode
-        self.dispatch_label = QLabel('Dispatch Mode:') 
-        self.dispatch_label.setFont(QFont('Times',15))
-        self.dispatch_label.setFixedSize(200,50)
-        self.dispatch_mode = QLabel(str(MBO.dispatch_mode))
-        self.dispatch_mode.setFont(QFont('Times',15))
-        self.dispatch_mode.setFixedSize(200,50)
-        
-        
-        #lable to prompt/dircetion for user to enter information
-        self.enter_label = QLabel('Please enter the date and time for the new schedules.')
-        self.enter_label.setFont(QFont('Times', 18))
+        #lable to prompt/dircetion for user to enter date and time
+        self.enter_label = QLabel('Please enter the date and time for the new schedules, then select the button.')
+        self.enter_label.setFont(QFont('Times', 15))
         self.enter_label.setFixedHeight(50)
         
-        #creating calendar pop up and time
+        #Creating calendar pop up to enter date and time
         self.schedule_date_time = QDateTimeEdit(datetime.now(),self)
         self.schedule_date_time.setFixedSize(400,50)
-        self.schedule_date_time.setFont(QFont('Times', 12))
+        self.schedule_date_time.setFont(QFont('Times', 15))
         self.schedule_date_time.setCalendarPopup(True)
         
-        #Creat New Schedules Button, when clicked calls create sched function 
+        #create combo box to select train throughput for the given day 
+        self.throughput_label = QLabel('Select the train throughput for the given day.')
+        self.throughput_label.setFont(QFont('Times', 15))
+        self.throughput_label.setFixedHeight(50)
+        self.througput_options = ["Low", "Medium", "High"]
+        self.train_throughput_selection = QComboBox()
+        self.train_throughput_selection.setFixedSize(100,50)
+        self.train_throughput_selection.setFont(QFont('Times', 12))
+        self.train_throughput_selection.addItems(self.througput_options)
+        
+        
+        scroll_area = QScrollArea()
+        scroll_widget = QWidget()
+        scroll_layout = QVBoxLayout(scroll_widget)
+        scroll_area.setWidget(scroll_widget)
+        scroll_area.setWidgetResizable(True)
+
+        # Add checkable items to the layout
+        self.checkboxes = []
+        items = ["Glenbury 1", "Dormont 1", "Mt. Lebanon 1", "Poplar", "Castle Shannon", "Mt. Lebanon 2", "Dormont 2", "Glenbury 2", 
+                 "Overbrook 1", "Inglewood", "Central 1", "Whited 1", "Edgebrook", "Pioneer", "Station", "Whited 2", "South Bank", 
+                 "Central 2", "Overbrook 2" ]
+        for item_text in items:
+            checkbox = QCheckBox(item_text)
+            self.checkboxes.append(checkbox)
+            scroll_layout.addWidget(checkbox)
+        
+        
+        scroll_area2 = QScrollArea()
+        scroll_widget2 = QWidget()
+        scroll_layout2 = QVBoxLayout(scroll_widget2)
+        scroll_area2.setWidget(scroll_widget2)
+        scroll_area2.setWidgetResizable(True)
+
+        # Add checkable items to the layout
+        self.checkboxes2 = []
+        """items = ["Glenbury 1", "Dormont 1", "Mt. Lebanon 1", "Poplar", "Castle Shannon", "Mt. Lebanon 2", "Dormont 2", "Glenbury 2", 
+                 "Overbrook 1", "Inglewood", "Central 1", "Whited 1", "Edgebrook", "Pioneer", "Station", "Whited 2", "South Bank", 
+                 "Central 2", "Overbrook 2" ]"""
+        
+        
+        for item_text in items:
+            checkbox2 = QCheckBox(item_text)
+            self.checkboxes2.append(checkbox2)
+            scroll_layout2.addWidget(checkbox2)
+        
+        #Creat New Schedules Button, when clicked calls handle slot 
         self.create_schedules = QPushButton('Create New Schedules', self)
-        self.create_schedules.setFixedSize(300,100)
+        self.create_schedules.setFixedSize(300,80)
         self.create_schedules.setFont(QFont('Times', 18))
         self.create_schedules.setStyleSheet("background-color : lime") 
-        self.create_schedules.clicked.connect(self.save_schedule_date_time)
+        self.create_schedules.clicked.connect(self.handle_schedule)
         
-        #setting dispatch mode layout 
-        self.dispatch_layout = QHBoxLayout()
-        self.dispatch_layout.addWidget(self.dispatch_label)
-        self.dispatch_layout.addWidget(self.dispatch_mode)
-        self.dispatch_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
-      
-       
+        #page layout 
+        self.select_label = QLabel("Please select the stations you would like the each schedule option to include")
+        self.select_label.setFont(QFont('Times', 15))
         
-        #setting layout of the page
-        self.schedule_layout = QVBoxLayout()
-        self.schedule_layout.addWidget(self.MBO_mode_view)
-        self.schedule_layout.addLayout(self.dispatch_layout)
-        self.schedule_layout.addWidget(self.enter_label)
-        self.schedule_layout.addWidget(self.schedule_date_time)
-        self.schedule_layout.addWidget(self.create_schedules)
+        self.option1 = QLabel("Schedule Option 1")
+        self.option1.setFont(QFont('Times', 11))
+        self.option2 = QLabel("Schedule Option 2")
+        self.option2.setFont(QFont('Times', 11))
+        
+        self.horizontal_layout_option = QHBoxLayout()
+        self.horizontal_layout_option.addWidget(self.option1)
+        self.horizontal_layout_option.addWidget(self.option2)
+        
+        self.horizontal_layout_scrolls = QHBoxLayout()
+        self.horizontal_layout_scrolls.addWidget(scroll_area)
+        self.horizontal_layout_scrolls.addWidget(scroll_area2)
+        
+        self.vertical_layout = QVBoxLayout()
 
+        self.vertical_layout.addWidget(self.MBO_mode_view_button)
+        self.vertical_layout.addWidget(self.enter_label)
+        self.vertical_layout.addWidget(self.schedule_date_time)
+        self.vertical_layout.addWidget(self.throughput_label)
+        self.vertical_layout.addWidget(self.train_throughput_selection)
+        self.vertical_layout.addWidget(self.select_label)
+        self.vertical_layout.addLayout(self.horizontal_layout_option)
+        self.vertical_layout.addLayout(self.horizontal_layout_scrolls)
+        self.vertical_layout.addWidget(self.create_schedules)
         
-        widget = QWidget()
-        widget.setLayout(self.schedule_layout)
-        self.setCentralWidget(widget)
-        
-        
-    #calling function to create schedules 
-    def save_schedule_date_time(self):
-        """
-        Format and send user entered date and time to mbo_manager file to create schedule 
-        """
-        self.selected_day = self.schedule_date_time.dateTime().toString('MM-dd-yyyy')
-        self.selected_start_time = self.schedule_date_time.dateTime().toString('HH:mm:ss')
-        x = MBOController()   
-        x.create_schedules(self.selected_day, self.selected_start_time)
-    
+        main_widget = QWidget()
+        main_widget.setLayout(self.vertical_layout)
+        self.setCentralWidget(main_widget)
+
     #opening MBO mode view window
     def open_MBO_mode_view(self):
         if self.MBO_mode_window is None:
@@ -96,38 +143,48 @@ class MBOWindow(QMainWindow):
         else:
             self.MBO_mode_window.close()
             self.MBO_mode_window = None
-    
         
+    @pyqtSlot()
+    def handle_schedule(self) -> None:
+        """
+        emit date and start time selected 
+        """    
+        checked_items = []
+        checked_items2 = []
+        
+        for checkbox in self.checkboxes:
+            if checkbox.isChecked():
+                checked_items.append(checkbox.text())
+        
+        for checkbox2 in self.checkboxes2:
+            if checkbox2.isChecked():
+                checked_items2.append(checkbox2.text())
+                
+        throughput = self.train_throughput_selection.currentText()
+        selected_datetime = self.schedule_date_time.dateTime()
+        self.schedule_created.emit(selected_datetime, throughput, checked_items, checked_items2)
     
+    #slot to disable MBO Mode View button (not clickable) when in fixed block mode
 
 class MBOModeView(QMainWindow):
     def __init__(self):
-        super(MBOModeView, self).__init__()
         
+        super(MBOModeView, self).__init__()
+            #name window
         self.setWindowTitle("MBO Mode View")
         self.setFixedSize(1222, 702)
-        
-        
-        m = MBOController()
-         
-        #displaying current dispatch mode
-        self.dispatch_label = QLabel('Dispatch Mode:') 
-        self.dispatch_label.setFont(QFont('Times',12))
-        self.dispatch_label.setFixedSize(150,50)
-        self.dispatch_mode = QLabel(str(m.dispatch_mode))
-        self.dispatch_mode.setFont(QFont('Times',12))
-        self.dispatch_mode.setFixedSize(150,50)
         
         
         self.title = QLabel('Current Commanded Speed and Authority')
         self.title.setFont(QFont('Times',12))
         
         self.test_bench_window = None
+        self.test_bench_window = None
         #button to navigate to test bench view 
         self.test_bench_view = QPushButton('Test Bench')
         self.test_bench_view.setFont(QFont('Times', 12))
         self.test_bench_view.setFixedSize(100,50)
-        self.test_bench_view.clicked.connect(self.open_test_bench_view)
+        self.test_bench_view.clicked.connect(self.open_test_bench_view) 
         
         self.headers = ['Trains', 'Line', 'Station', 'Position [ft from yard]', 'Authority [ft]', 'Commanded Speed [mph]']
         self.table = QTableWidget(3,6)
@@ -161,65 +218,25 @@ class MBOModeView(QMainWindow):
         palette.setColor(QPalette.ColorRole.Text, QColor(0x333333))
         self.table.setPalette(palette)
         
+        self.main_layout = QVBoxLayout()
+        self.main_layout.addWidget(self.test_bench_view)
+        self.main_layout.addWidget(self.table)
         
-        self.demo_data_positions = m.testing_positions_1
-        self.demo_data_destination = m.destinations_1
-        self.demo_data_block = m.block_maint_1
-        
-        self.demo_data_authority = m.authority(self.demo_data_positions, self.demo_data_destination, self.demo_data_block)
-        self.demo_data_speed = m.commanded_speed(1)
-        
-        self.row1 = ["Train1", "Blue", self.demo_data_destination['Train1'], str(m.m_to_ft(self.demo_data_positions['Train1'])), str(m.m_to_ft(self.demo_data_authority['Train1'])), str(m.ms_to_mph(self.demo_data_speed)) ]
-        self.row2 = ["Train2", "Blue", self.demo_data_destination['Train2'], str(m.m_to_ft(self.demo_data_positions['Train2'])), str(m.m_to_ft(self.demo_data_authority['Train2'])), str(m.ms_to_mph(self.demo_data_speed))]
-        self.row3 = ["Train3", "Blue", self.demo_data_destination['Train3'], str(m.m_to_ft(self.demo_data_positions['Train3'])), str(m.m_to_ft(self.demo_data_authority['Train3'])), str(m.ms_to_mph(self.demo_data_speed))]
+        main_widget = QWidget()
+        main_widget.setLayout(self.main_layout)
+        self.setCentralWidget(main_widget)
+    
 
-        
-        
-        for col in range(0,6):
-            table_item = QTableWidgetItem(self.row1[col])
-            table_item.setFont(QFont('Times',13))
-            table_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            table_item.setFlags(
-            table_item.flags() & ~Qt.ItemFlag.ItemIsEditable
-            )
-            self.table.setItem(0, col, table_item)
-        
-        for col in range(0,6):
-            table_item = QTableWidgetItem(self.row2[col])
-            table_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            table_item.setFont(QFont('Times',13))
-            table_item.setFlags(
-            table_item.flags() & ~Qt.ItemFlag.ItemIsEditable
-            )
-            self.table.setItem(1, col, table_item)
-        
-        for col in range(0,6):
-            table_item = QTableWidgetItem(self.row3[col])
-            table_item.setFont(QFont('Times',13))
-            table_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            table_item.setFlags(
-            table_item.flags() & ~Qt.ItemFlag.ItemIsEditable
-            )
-            self.table.setItem(2, col, table_item)
-        
-        
-        self.dispatch_lay = QHBoxLayout()
-        self.dispatch_lay.addWidget(self.dispatch_label)
-        self.dispatch_lay.addWidget(self.dispatch_mode)
-        self.dispatch_lay.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        
-        
-        self.lay = QVBoxLayout()
-        self.lay.addLayout(self.dispatch_lay)
-        self.lay.addWidget(self.title)
-        self.lay.addWidget(self.table)
-        self.lay.addWidget(self.test_bench_view)
-        
-        widget = QWidget()
-        widget.setLayout(self.lay)
-        self.setCentralWidget(widget)
-        
-    #opening test bench view for MBO mode view window 
+    def update_table(self, train_data):
+        self.table_widget.setRowCount(len(train_data))
+        for row, train in enumerate(train_data):
+            self.table_widget.setItem(row, 0, QTableWidgetItem(str(train["train_id"])))
+            self.table_widget.setItem(row, 1, QTableWidgetItem(train["line"]))
+            self.table_widget.setItem(row, 2, QTableWidgetItem(train["station"]))
+            self.table_widget.setItem(row, 3, QTableWidgetItem(str(train["position"])))
+            self.table_widget.setItem(row, 4, QTableWidgetItem(str(train["commanded_speed"])))
+            self.table_widget.setItem(row, 5, QTableWidgetItem(str(train["authority"])))
+
     def open_test_bench_view(self):
         if self.test_bench_window is None:
             self.test_bench_window = TestBench()
@@ -227,13 +244,10 @@ class MBOModeView(QMainWindow):
         else:
             self.test_bench_window.close()
             self.test_bench_window = None
-        
-        
- 
-        
 
 class TestBench(QMainWindow):
     def __init__(self):
+        super(TestBench,self).__init__()
         super(TestBench,self).__init__()
         
         #label for page window 
@@ -308,11 +322,11 @@ class TestBench(QMainWindow):
         
         
         #line 
-        self.line1 = QLabel("Blue")
+        self.line1 = QLabel("Green")
         self.line1.setFont(QFont('Times',15))
-        self.line2 = QLabel("Blue")
+        self.line2 = QLabel("Green")
         self.line2.setFont(QFont('Times',15))
-        self.line3 = QLabel("Blue")
+        self.line3 = QLabel("Green")
         self.line3.setFont(QFont('Times',15))
         self.table.setCellWidget(0, 1, self.line1)
         self.table.setCellWidget(1, 1, self.line2)
@@ -321,13 +335,14 @@ class TestBench(QMainWindow):
         
         #stations(for blue line)
         self.train1_station = QComboBox()
-        self.train1_station.addItems(['Station B', 'Station C', 'Yard'])
+
+        self.train1_station.addItems(['Glenbury', 'Dormont', 'Mt Lebanon', 'Poplar'])
         self.train1_station.setFont(QFont('Times',15))
         self.train2_station = QComboBox()
-        self.train2_station.addItems(['Station B', 'Station C', 'Yard'])
+        self.train2_station.addItems(['Glenbury', 'Dormont', 'Mt Lebanon', 'Poplar'])
         self.train2_station.setFont(QFont('Times',15))
         self.train3_station = QComboBox()
-        self.train3_station.addItems(['Station B', 'Station C', 'Yard'])
+        self.train3_station.addItems(['Glenbury', 'Dormont', 'Mt Lebanon', 'Poplar'])
         self.train3_station.setFont(QFont('Times',15))
         
         self.table.setCellWidget(0,2, self.train1_station)
@@ -398,35 +413,19 @@ class TestBench(QMainWindow):
         #show authority and commanded speed being enabled and disabled?
     
     def run_test_bench(self):
-        x = MBOController() 
+        """will run a test for commanded speed and authority
+        """
         
-        x.enable_s_and_a = 1
-        
-        #send out positions 
-        test_trains_positions = {"Train1": int(self.train1_position.toPlainText()), "Train2": int(self.train2_position.toPlainText()), "Train3": int(self.train3_position.toPlainText())}
-        destinations = {"Train1" : str(self.train1_station.currentText()), "Train2" : str(self.train2_station.currentText()), "Train3": str(self.train3_station.currentText())}
-        
-        c =x.commanded_speed(x.enable_s_and_a)
-        self.train1_commanded_speed.setText(str(c))
-        self.train2_commanded_speed.setText(str(c))
-        self.train3_commanded_speed.setText(str(c))
-        
-        x.emergency_breaking_distance()
-        
-        if (self.block_select.currentText() == 'None'):
-            block = {}
-        else:
-            block = str(self.block_select.currentText())
-        
-        authorities = x.authority(test_trains_positions, destinations, block)
-        
-        self.train1_authority.setText(str(authorities['Train1']))
-        self.train2_authority.setText(str(authorities['Train2']))
-        self.train3_authority.setText(str(authorities['Train3']))
-        
+
+
 
 app = QApplication(sys.argv)
 
 window = MBOWindow()
 window.show()
 app.exec()
+
+
+        
+
+        

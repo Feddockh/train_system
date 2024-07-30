@@ -1,38 +1,32 @@
 # train_system.common.station.py
 
-class Station:
-    def __init__(self, name: str, line: str, block_number: int) -> None:
+from typing import List, Tuple
 
+
+class Station:
+    def __init__(self, line: str, name: str, blocks: List[int] = None, sides: List[Tuple[int, int, str]] = None) -> None:
+        
         """
         Initializes the Station object.
 
         Args:
-            name (str): The name of the station.
             line (str): The line the station is on.
-            block_number (int): The block number the station is on.
+            name (str): The name of the station.
+            blocks (List[int]): The block numbers the station is connected to.
+            sides (List[Tuple[int, int, str]]): List of tuples containing previous block, current block, and side information.
 
         Returns:
             None
         """
 
-        self.name = name
         self.line = line
-        self.block_number = block_number
-
-    def __repr__(self) -> str:
-
-        """
-        Returns a string representation of the Station object.
-
-        Returns:
-            str: String representation of the Station object.
-        """
-
-        return (
-            f"Station {self.name}\n"
-            f"Line: {self.line}\n"
-            f"Block Number: {self.block_number}\n"
-        )
+        self.name = name
+        self.blocks = blocks
+        self.sides = sides
+    
+    def __repr__(self):
+        return (f"Station(line={self.line}, name={self.name}, blocks={self.blocks}, "
+                f"sides={self.sides})")
 
     def __eq__(self, other: object) -> bool:
         
@@ -53,6 +47,22 @@ class Station:
             raise TypeError(
                 f"Expected a Station object, but got {type(other).__name__}"
             )
-        return (self.name, self.line, self.block_number) == (
-            other.name, other.line, other.block_number
-        )
+        return (self.line, self.name) == (other.line, other.name)
+    
+    def get_side(self, prev_block: int, current_block: int) -> str:
+        
+        """
+        Gets the side of the station that is connected to the current block.
+
+        Args:
+            prev_block (int): The previous block number.
+            current_block (int): The current block number.
+
+        Returns:
+            str: The side of the station that is connected to the current block.
+        """
+
+        for side in self.sides:
+            if side[0] == prev_block and side[1] == current_block:
+                return side[2]
+        return None

@@ -31,7 +31,7 @@ class ScheduleSelectionWidget(QWidget):
         self.current_schedule_index = -1
         self.rows = 0
         self.cols = 3
-        self.headers = ["Train ID", "Set Block (Station)", "Arrival Time"]
+        self.headers = ["Train ID", "Block", "Arrival Time"]
         self.init_ui()
 
     def init_ui(self) -> None:
@@ -172,6 +172,15 @@ class ScheduleSelectionWidget(QWidget):
             )
             self.table.setItem(i, 2, arrival_item)
 
+    def clear_table(self) -> None:
+
+        """
+        Clears the table of all entries.
+        """
+
+        self.rows = 0
+        self.table.setRowCount(self.rows)
+
     def dispatch_trains(self) -> None:
 
         """
@@ -188,9 +197,19 @@ class ScheduleSelectionWidget(QWidget):
 
             self.dispatched_train.emit(train_id, target_block, arrival_time)
 
-        self.rows = 0
-        self.table.setRowCount(self.rows)
+        self.clear_table()
 
+    def set_line(self, line: Line) -> None:
+
+        """
+        Sets the line for the ScheduleSelectionWidget.
+
+        Args:
+            line (Line): The line object.
+        """
+
+        self.line = line
+        self.clear_table()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

@@ -144,3 +144,16 @@ class MaintenanceWidget(QWidget):
         if widget:
             color = QColor("#FFFF00") if under_maintenance else QColor("#FFFFFF")
             widget.setStyleSheet(f"background-color: {color.name()}; color: black;")
+
+    def set_line(self, line: Line) -> None:
+
+        """
+        Sets the line object for the widget.
+
+        Args:
+            line (Line): The line object.
+        """
+
+        self.line = line
+        self.rows = len(line.track_blocks)
+        self.update_table_data()

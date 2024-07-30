@@ -1,6 +1,8 @@
+import sys
 from typing import Optional
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTableWidget,
-                             QTableWidgetItem, QHeaderView, QComboBox, QPushButton)
+                             QTableWidgetItem, QHeaderView, QComboBox, QPushButton,
+                             QApplication)
 from PyQt6.QtGui import QColor, QPalette
 from PyQt6.QtCore import Qt, pyqtSignal
 
@@ -16,7 +18,7 @@ class DispatchCommandWidget(QWidget):
         self.line = line
         self.rows = 0
         self.cols = 3
-        self.headers = ["Train ID", "Set Block (Station)", "Arrival Time"]
+        self.headers = ["Train ID", "Block", "Arrival Time"]
         self.init_ui()
 
     def init_ui(self) -> None:
@@ -85,6 +87,11 @@ class DispatchCommandWidget(QWidget):
         self.add_entry_button.clicked.connect(self.add_table_entry)
         button_layout.addWidget(self.add_entry_button)
 
+        # Add a clear button
+        self.clear_button = QPushButton("Clear")
+        self.clear_button.clicked.connect(self.clear_table)
+        button_layout.addWidget(self.clear_button)
+
         # Add dispatch button
         self.dispatch_button = QPushButton("Dispatch")
         self.dispatch_button.clicked.connect(self.dispatch_trains)
@@ -143,8 +150,8 @@ class DispatchCommandWidget(QWidget):
         
         stops = []
         for block in self.line.track_blocks:
-            if len(block.station):
-                stops.append(f"{block.number} ({block.station})")
+            if block.station:
+                stops.append(f"{block.number} ({block.station.name})")
             else:
                 stops.append(f"{block.number}")
         return stops
@@ -152,7 +159,7 @@ class DispatchCommandWidget(QWidget):
     def generate_time_slots(self) -> list[str]:
 
         """
-        Generates a list of time slots in 15-minute increments.
+        Generates a list of time slots in 1-minute increments.
 
         Returns:
             list[str]: A list of time slots as strings.
@@ -160,9 +167,18 @@ class DispatchCommandWidget(QWidget):
 
         times = []
         for hour in range(24):
-            for minute in [0, 15, 30, 45]:
+            for minute in range(0, 60):
                 times.append(f"{hour:02d}:{minute:02d}")
         return times
+
+    def clear_table(self) -> None:
+            
+        """
+        Clears the table of all entries.
+        """
+
+        self.rows = 0
+        self.table.setRowCount(self.rows)
 
     def dispatch_trains(self) -> None:
 
@@ -179,6 +195,27 @@ class DispatchCommandWidget(QWidget):
 
             self.dispatched_train.emit(train_id, target_block, arrival_time)
 
-        self.rows = 0
-        self.table.setRowCount(self.rows)
-            
+        self.clear_table()
+
+    def set_line(self, line: Line) -> None:
+
+        """
+        Sets the line for the DispatchCommandWidget.
+
+        Args:
+            line (Line): The line object.
+        """
+
+        self.line = line
+        self.clear_table()
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+
+    line = Line("Red")
+    line.load_defaults()
+
+    widget = DispatchCommandWidget(line)
+    widget.show()
+    sys.exit(app.exec())
