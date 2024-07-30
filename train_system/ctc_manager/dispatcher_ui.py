@@ -190,34 +190,32 @@ class DispatcherUI(QMainWindow):
 
         ### TEST BENCH WIDGET ###
 
-        # Create and add the OccupancyWidget to the bottom stacked widget
-        # self.set_occupancy_widget = OccupancyWidget(self.line)
-        # self.bottom_stacked_widget.addWidget(self.set_occupancy_widget)
-
         # Create a track switch widget
-        self.track_switch_widget = TrackSwitchWidget(self.line)
-        self.bottom_layout.addWidget(self.track_switch_widget, stretch=1)
-        self.track_switch_widget.hide()
+        self.test_bench_track_switch_widget = TrackSwitchWidget(self.line)
+        self.bottom_layout.addWidget(self.test_bench_track_switch_widget, stretch=1)
+        self.test_bench_track_switch_widget.hide()
 
         ### MAINTENANCE WIDGET ###
 
-        # Create and add the MaintenanceWidget to the bottom stacked widget
-        self.maintenance_widget = MaintenanceWidget(self.line)
+        # Create the maintenance widget and add it to the stacked widget
+        self.maintenance_widget = QWidget()
+        self.maintenance_layout = QHBoxLayout()
+        self.maintenance_widget.setLayout(self.maintenance_layout)
+        self.maintenance_widget.setLayout(self.maintenance_layout)
         self.bottom_stacked_widget.addWidget(self.maintenance_widget)
+
+        # Create the maintenance status widget and track switch widget and add them to the maintenance layout
+        self.maintenance_status_widget = MaintenanceWidget(self.line)
+        self.maintenance_layout.addWidget(self.maintenance_status_widget)
+        self.maintenance_track_switch_widget = TrackSwitchWidget(self.line)
+        self.maintenance_layout.addWidget(self.maintenance_track_switch_widget)
 
     @pyqtSlot(bool)
     def handle_test_bench_toggle(self, state: bool) -> None:
         if state:
-            # self.bottom_stacked_widget.setCurrentWidget(self.set_occupancy_widget)
-            # self.dispatch_command_widget.setEnabled(False)
-            self.track_switch_widget.show()
-            self.schedule_selection_widget.setEnabled(False)
+            self.test_bench_track_switch_widget.show()
         else:
-            # self.bottom_stacked_widget.setCurrentWidget(self.bottom_widget)
-            self.track_switch_widget.hide()
-            if not self.maintenance_toggle_switch.isChecked():
-                self.dispatch_command_widget.setEnabled(True)
-                self.schedule_selection_widget.setEnabled(True)
+            self.test_bench_track_switch_widget.hide()
 
     @pyqtSlot(bool)
     def handle_maintenance_toggle(self, state: bool) -> None:
@@ -227,9 +225,8 @@ class DispatcherUI(QMainWindow):
             self.schedule_selection_widget.setEnabled(False)
         else:
             self.bottom_stacked_widget.setCurrentWidget(self.bottom_widget)
-            if not self.test_bench_toggle_switch.isChecked():
-                self.dispatch_command_widget.setEnabled(True)
-                self.schedule_selection_widget.setEnabled(True)
+            self.dispatch_command_widget.setEnabled(True)
+            self.schedule_selection_widget.setEnabled(True)
 
     @pyqtSlot(bool)
     def handle_mbo_toggle(self, state: bool) -> None:
@@ -255,8 +252,9 @@ class DispatcherUI(QMainWindow):
         self.throughput_widget.set_line(self.line)
         self.dispatch_command_widget.set_line(self.line)
         self.schedule_selection_widget.set_line(self.line)
-        self.track_switch_widget.set_line(self.line)
-        self.maintenance_widget.set_line(self.line)
+        self.test_bench_track_switch_widget.set_line(self.line)
+        self.maintenance_status_widget.set_line(self.line)
+        self.maintenance_track_switch_widget.set_line(self.line)
 
     @pyqtSlot(str, int, bool)
     def handle_occupancy_update(self, line_name: str, block_number: int, occupancy: bool) -> None:
