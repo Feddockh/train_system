@@ -686,6 +686,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
 
         self.position = 0
         self.destination = 0
+        self.station_name = ""
 
 
         #the left outputs will use a vertical layout
@@ -984,7 +985,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.loc_label.setFixedSize(100, 50)
 
         self.des_label = QLabel(str(self.destination))
-        self.des_label.setFixedSize(100, 50)
+        self.des_label.setFixedSize(200, 50)
 
         #create emergency brake
         em_brake_label = QLabel("Emergency Brake")

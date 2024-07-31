@@ -85,7 +85,8 @@ tc.curr_speed_updated.connect(driver.handle_curr_speed_update)
 tc.train_model.comm_speed_received.connect(driver.handle_comm_speed_update)
 tc.authority_updated.connect(driver.handle_authority_update)
 tc.position_updated.connect(driver.handle_position_update)
-tc.destination_updated.connect(driver.handle_destination_update)
+tc.station_name_updated.connect(driver.handle_destination_update)
+#tc.destination_updated.connect(driver.handle_station_name_update)
 
 #TRAIN CONTROLLER TO ENGINEER
 #tc.kp_updated_for_eng.connect(engineer.handle_kp_update)
@@ -111,6 +112,7 @@ app.exec()
 
 print("Driver UI: " + str(driver.user_serv_brake_status))
 print("TC: " + str(tc.brake.user_service_brake))
+print(tc.station_name)
 
 
 

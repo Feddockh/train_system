@@ -41,7 +41,7 @@ class TrainController(QObject):
 
     curr_speed_updated = pyqtSignal(float)
     destination_updated = pyqtSignal(str)
-    
+    station_name_updated = pyqtSignal(str)
     authority_updated = pyqtSignal(float)
     
     
@@ -63,6 +63,7 @@ class TrainController(QObject):
         self.faults_fixed.connect(self.train_model.handle_faults_fixed)
         # self.train_model.comm_speed_received.connect(self.handle_comm_speed_changed)
         self.train_model.authority_received.connect(self.update_authority)
+        
 
         self.engineer = engineer if engineer else None # Engineer holds Kp and Ki and is the only one that can set them
 
@@ -105,6 +106,8 @@ class TrainController(QObject):
         self.brake_fault = self.train_model.brake_fault           # Fault status from the Train Model
         self.signal_fault = self.train_model.signal_fault           # Fault status from the Train Model
         
+        self.station_name = ""
+
     # Update all variables with the train model input, calculate, then output to train model
     # Take train model outputs, update all variables, and transmit to train model the Train Controller's new values
     # Triggered by receiving authority
@@ -339,6 +342,19 @@ class TrainController(QObject):
             authority_str, destination_block_str = authority.split(":")
             self.authority = abs(float(authority_str))
             self.set_destination(destination_block_str)
+
+            #parse the station name from authority
+            block_str = str(self.line.get_track_block(int(self.destination)))
+            find_station = block_str.splitlines()
+            full_station = find_station[10]
+            m_loc = full_station.find("m")
+            b_loc = full_station.find("b")
+            self.station_name = ""
+            for i in range(m_loc + 3, b_loc -2):
+                self.station_name = self.station_name + full_station[i]
+
+            self.station_name_updated.emit(self.station_name)
+
         except ValueError:
             raise ValueError("Input string is not in the correct format 'authority:destination_block' or contains invalid values.")
     def update_authority(self, authority: str):
