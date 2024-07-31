@@ -437,7 +437,7 @@ class TrainController(QObject):
 
     @pyqtSlot(float)
     def handle_curr_speed_changed(self, speed: float) -> None:
-        self.current_speed = speed
+        self.update_current_speed(speed)
     
     @pyqtSlot(float)
     def handle_comm_speed_changed(self, speed: float) -> None:
@@ -913,7 +913,7 @@ class MockTrainModel(QObject):
         # Calculate current speed based on power command            
         self.current_speed += self.power_command * time_step
         self.current_speed = min(self.current_speed, speed_limit)
-        self.current_speed = (max(self.current_speed, 0))
+        self.update_current_speed((max(self.current_speed, 0)))
         print("Power Command:", self.power_command, "Current Speed: ", self.current_speed, "\n")
 
     # Iterative (float representing meters)? Absolute (position representing when to stop by)?
