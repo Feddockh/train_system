@@ -104,7 +104,7 @@ class TrainInfoWidget(QWidget):
         self.table.setRowCount(self.rows)
 
         for row, ((train_id, line_name), train) in enumerate(self.trains.items()):
-            self.set_table_item(row, 0, str(train_id))
+            self.set_table_item(row, 0, f"{train_id} - {line_name.capitalize()}")
 
             if train.dispatched:
                 block_id = train.get_current_block_id()
@@ -145,7 +145,7 @@ class TrainInfoWidget(QWidget):
     def set_table_item(self, row: int, col: int, text: str) -> None:
 
         """
-        Helper method to create a non-editable, center-aligned table item.
+        Helper method to create a non-editable, center-aligned table item with optional background color.
 
         Args:
             row (int): The row in which to place the item.
@@ -155,7 +155,7 @@ class TrainInfoWidget(QWidget):
 
         item = QTableWidgetItem(text)
         item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-        item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+        item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)        
         self.table.setItem(row, col, item)
 
     @pyqtSlot()
