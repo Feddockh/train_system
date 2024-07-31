@@ -4,6 +4,7 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QTableWidget,
 from PyQt6.QtGui import QColor, QPalette
 from PyQt6.QtCore import Qt, pyqtSlot
 
+from train_system.common.palette import Colors
 from train_system.common.time_keeper import TimeKeeper
 from train_system.common.line import Line
 from train_system.ctc_manager.ctc_train_dispatch import CTCTrainDispatch
@@ -32,20 +33,22 @@ class TrainInfoWidget(QWidget):
         self.cols = 6
         self.headers = ["ID", "Block", "Destination", "Arrival",
                         "Speed", "Authority"]
-        self.initialize_ui()
+        self.init_ui()
 
-    def initialize_ui(self) -> None:
+    def init_ui(self) -> None:
+
         """
         Initializes the user interface for the TrainInfoWidget.
         """
+
         layout = QVBoxLayout()
 
         # Create table title
         title_label = QLabel(self.title)
         title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title_label.setStyleSheet(
-            "background-color: #333333;"
-            "color: #fdfdfd;"
+            f"background-color: {Colors.BLACK};"
+            f"color: {Colors.WHITE};"
             "font-size: 16pt;"
             "font-weight: 600;"
         )
@@ -57,25 +60,25 @@ class TrainInfoWidget(QWidget):
         self.table.verticalHeader().setVisible(False)
 
         # Set the style for the table headers and cells
-        self.table.setStyleSheet("""
-            QHeaderView::section { 
-                background-color: #C8C8C8;
-                color: #333333;
+        self.table.setStyleSheet(f"""
+            QHeaderView::section {{ 
+                background-color: {Colors.GREY};
+                color: {Colors.BLACK};
                 font-size: 14pt;
-            }
-            QTableWidget::item {
-                background-color: #FDFDFD;
-                border: 1px solid #333333; 
-            }
-            QTableWidget {
-                gridline-color: #333333; 
-            }
+            }}
+            QTableWidget::item {{
+                background-color: {Colors.WHITE};
+                color: {Colors.BLACK};
+                border: 1px solid {Colors.BLACK}; 
+            }}
+            QTableWidget {{
+                background-color: {Colors.GREY};
+                gridline-color: {Colors.BLACK};
+            }}
         """)
 
         # Set the palette for the table to control the background and text colors
         palette = self.table.palette()
-        palette.setColor(QPalette.ColorRole.Base, QColor(0xd9d9d9))
-        palette.setColor(QPalette.ColorRole.Text, QColor(0x333333))
         self.table.setPalette(palette)
 
         # Adjust column widths to fit contents and stretch all columns
@@ -149,6 +152,7 @@ class TrainInfoWidget(QWidget):
         item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
         item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
         self.table.setItem(row, col, item)
+        self.table.setStyleSheet(f"color: {Colors.BLACK}; background-color: {Colors.WHITE};")
 
     @pyqtSlot()
     def handle_time_update(self) -> None:
