@@ -5,6 +5,7 @@ import time
 from PyQt6.QtCore import QThread, pyqtSignal, QMutex, QWaitCondition, pyqtSlot, Qt
 from PyQt6.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget, QSlider, QHBoxLayout
 
+from train_system.common.palette import Colors
 
 class TimeKeeper(QThread):
 
@@ -65,7 +66,7 @@ class TimeKeeperWidget(QWidget):
     def init_ui(self):
         self.layout = QHBoxLayout()
         self.label = QLabel("00:00:00")
-        self.label.setStyleSheet("font-size: 24px")
+        self.label.setStyleSheet(f"font-size: 24px; color: {Colors.BLACK};")
         self.layout.addWidget(self.label)
 
         # Create a horizontal layout for the slider and its label
@@ -79,7 +80,34 @@ class TimeKeeperWidget(QWidget):
         self.slider.setTickInterval(1)
         self.slider.valueChanged.connect(self.adjust_speed)
 
+        # Set the style sheet for the slider
+        self.slider.setStyleSheet(f"""
+            QSlider::groove:horizontal {{
+                border: 1px solid #999999;
+                height: 8px;
+                background: {Colors.BLACK};
+                margin: 2px 0;
+            }}
+            QSlider::handle:horizontal {{
+                background: {Colors.WHITE};
+                border: 1px solid {Colors.BLACK};
+                width: 18px;
+                margin: -2px 0;
+                border-radius: 3px;
+            }}
+            QSlider::add-page:horizontal {{
+                background: {Colors.GREY};
+            }}
+            QSlider::sub-page:horizontal {{
+                background: {Colors.BLUE};
+            }}
+            QSlider::tick:horizontal {{
+                background: {Colors.GREY};
+            }}
+        """)
+
         self.slider_label = QLabel("1.0x")
+        self.slider_label.setStyleSheet(f"color: {Colors.BLACK};")
         
         self.slider_layout.addWidget(self.slider)
         self.slider_layout.addWidget(self.slider_label)
