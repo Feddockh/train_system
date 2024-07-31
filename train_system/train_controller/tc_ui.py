@@ -41,7 +41,7 @@ class TestBenchWindow(QMainWindow):
     signal_fault_updated = pyqtSignal(bool)
     curr_speed_updated = pyqtSignal(float)
     comm_speed_updated = pyqtSignal(float)
-    authority_updated = pyqtSignal(float)
+    authority_updated = pyqtSignal(str)
     curr_temp_updated = pyqtSignal(float)
     light_status_updated = pyqtSignal(bool)
     right_door_updated = pyqtSignal(bool)
@@ -562,7 +562,7 @@ class TestBenchWindow(QMainWindow):
             self.authority = float(x)
             #self.train.train_model.set_authority(self.convert_to_m(int(x)))
             #self.train.authority = self.convert_to_m(int(x))
-            self.authority_updated.emit(self.convert_to_m(self.authority))
+            self.authority_updated.emit(x)
     
     def curr_temp_changed(self, x):
         if(x != ""):

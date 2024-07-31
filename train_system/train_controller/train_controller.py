@@ -8,9 +8,12 @@ from PyQt6.QtCore import Qt, pyqtSlot, pyqtSignal, QObject
 from train_system.common.line import Line
 from train_system.common.track_block import TrackBlock
 from train_system.common.station import Station
+from train_system.common.authority import Authority
 
 from train_system.train_model.train_model import TrainModel
 from train_system.train_controller.engineer import Engineer
+
+
 
 HOST= '192.168.0.114'
 PORT = 22
@@ -448,8 +451,10 @@ class TrainController(QObject):
     def handle_comm_speed_changed(self, speed: float) -> None:
         self.commanded_speed = speed
 
-    @pyqtSlot(float)
+    @pyqtSlot(str)
     def handle_authority_changed(self, authority: str) -> None:
+        new_authority = Authority()
+        new_authority.authority = authority
         self.update_authority(authority)
 
     @pyqtSlot(bool)
