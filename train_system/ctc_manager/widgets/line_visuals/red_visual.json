@@ -14,19 +14,19 @@
         {"block_number":   8, "y1":  3, "y2":  2, "x1":  1, "x2":  2, "text_position": 2, "attribute": ""},
         {"block_number":  15, "y1":  2, "y2":  3, "x1": 14, "x2": 15, "text_position": 2, "attribute": ""},
 
-        {"block_number":   7, "y1":  3, "y2":  3, "x1":  1, "x2":  3, "text_position": 8, "attribute": ""},
+        {"block_number":   7, "y1":  3, "y2":  3, "x1":  1, "x2":  3, "text_position": 0, "attribute": ""},
         {"block_number":   6, "y1":  3, "y2":  3, "x1":  3, "x2":  5, "text_position": 8, "attribute": ""},
         {"block_number":   5, "y1":  3, "y2":  3, "x1":  5, "x2":  7, "text_position": 8, "attribute": ""},
         {"block_number":   4, "y1":  3, "y2":  3, "x1":  7, "x2":  9, "text_position": 8, "attribute": ""},
         {"block_number":   3, "y1":  3, "y2":  3, "x1":  9, "x2": 11, "text_position": 8, "attribute": ""},
         {"block_number":   2, "y1":  3, "y2":  3, "x1": 11, "x2": 13, "text_position": 8, "attribute": ""},
         {"block_number":   1, "y1":  3, "y2":  3, "x1": 13, "x2": 15, "text_position": 8, "attribute": ""},
-        {"block_number":  16, "y1":  3, "y2":  3, "x1": 15, "x2": 17, "text_position": 8, "attribute": ""},
+        {"block_number":  16, "y1":  3, "y2":  3, "x1": 15, "x2": 17, "text_position": 0, "attribute": ""},
         {"block_number":  17, "y1":  3, "y2":  3, "x1": 17, "x2": 19, "text_position": 8, "attribute": ""},
         {"block_number":  18, "y1":  3, "y2":  3, "x1": 19, "x2": 21, "text_position": 8, "attribute": ""},
         {"block_number":  19, "y1":  3, "y2":  3, "x1": 21, "x2": 23, "text_position": 8, "attribute": ""},
         {"block_number":  20, "y1":  3, "y2":  3, "x1": 23, "x2": 25, "text_position": 8, "attribute": ""},
-        {"block_number":  21, "y1":  3, "y2":  3, "x1": 25, "x2": 27, "text_position": 8, "attribute": ""},
+        {"block_number":  21, "y1":  3, "y2":  3, "x1": 25, "x2": 27, "text_position": 0, "attribute": ""},
         {"block_number":  22, "y1":  3, "y2":  3, "x1": 27, "x2": 29, "text_position": 8, "attribute": ""},
 
         {"block_number":  23, "y1":  3, "y2":  4, "x1": 29, "x2": 30, "text_position": 0, "attribute": ""},
@@ -90,7 +90,7 @@
         {"block_number":  59, "y1": 12, "y2": 11, "x1": 11, "x2": 13, "text_position": 1, "attribute": ""},
         {"block_number":  66, "y1": 12, "y2": 11, "x1": 23, "x2": 25, "text_position": 9, "attribute": ""},
 
-        {"block_number":  60, "y1": 12, "y2": 12, "x1": 11, "x2": 13, "text_position": 8, "attribute": ""},
+        {"block_number":  60, "y1": 12, "y2": 12, "x1": 11, "x2": 13, "text_position": 0, "attribute": ""},
         {"block_number":  61, "y1": 12, "y2": 12, "x1": 13, "x2": 15, "text_position": 8, "attribute": ""},
         {"block_number":  62, "y1": 12, "y2": 12, "x1": 15, "x2": 17, "text_position": 8, "attribute": ""},
         {"block_number":  63, "y1": 12, "y2": 12, "x1": 17, "x2": 19, "text_position": 8, "attribute": ""},
@@ -99,6 +99,13 @@
     ],
     
     "stations": [
-        {"station_name": "Yard", "x":  9, "y":  1}
+        {"station_name": "Shadyside", "x": 2, "y": 3.5},
+        {"station_name": "Herron Ave", "x": 16, "y": 3.5},
+        {"station_name": "Swissville", "x": 26, "y": 3.5},
+        {"station_name": "Penn Station", "x": 28, "y": 5.5},
+        {"station_name": "Steel Plaza", "x": 8, "y": 5.5},
+        {"station_name": "First Ave", "x": 22, "y": 8.5},
+        {"station_name": "Station Square", "x": 28, "y": 8.5},
+        {"station_name": "South Hills", "x": 12, "y": 12.5}
     ]
 }      
