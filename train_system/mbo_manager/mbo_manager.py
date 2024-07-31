@@ -3,7 +3,7 @@ from csv import writer
 import datetime
 from datetime import timedelta
 from datetime import datetime
-from typing import List, Dict, Optional
+from typing import List, Dict, Tuple, Optional
 from cryptography.fernet import Fernet
 import json
 from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
@@ -12,6 +12,9 @@ from train_system.common.conversions import *
 from train_system.common.time_keeper import TimeKeeper
 from train_system.common.line import Line
 from train_system.common.track_block import TrackBlock
+
+from train_system.common.train_dispatch import TrainRouteUpdate
+from train_system.mbo_manager.mbo_train_dispatch import MBOTrainDispatch
 
 
 class MBOOffice(QObject):
@@ -27,6 +30,9 @@ class MBOOffice(QObject):
         
         self.red_line = Line('Red')
         self.red_line.load_defaults()
+        
+        #list of trains 
+        self.trains: Dict[Tuple[int, str], MBOTrainDispatch] = {}
         
               
     def kmhr_to_ms(self, km_hr):
@@ -63,23 +69,20 @@ class MBOOffice(QObject):
     
      return (breaking_distance)
             
-    def compute_commanded_speed(self, train_id, block):
+    def compute_commanded_speed(self, line, block):
         """Commanded speed for a train based off of the block it is currently in 
 
         Args:
-            train_id (_type_): _description_
+            line (_type_): _description_
             block (_type_): _description_
         """
-        
-        current_block = self.green_line.get_track_block(block)
-        print(f"calculating commanded speed for {train_id} in block ", block)
-
+        current_block = self.line.get_track_block(block)
         if block: 
             self.block_speed = self.kmhr_to_ms(current_block.speed_limit)
             
         return(self.block_speed)
     
-    def compute_authority(self, train_id, position, velocity, block):
+    def compute_authority(self, train_id, line_name, position, velocity, block):
         """
         Calculate trains authority such that more than one train can be in a block 
         each train stops at it's desitnation and opens the doors, and stops before any block maintenance 
@@ -100,10 +103,37 @@ class MBOOffice(QObject):
         
         #use mbo_train_dispatch to adjust the departure time and next stop for the train once it reaches it's destination 
 
+        train = self.get_train(train_id, line_name)
+        line = self.get_line(line_name)
         
+        destination_block = train.get_next_stop()[1]
         
+        path = train.get_route_to_next_stop()
+        unobstructed_path = line.get_unobstructed_path(path)
         
-        #need to remove next block 
+        authority_distance = line.get_path_length(unobstructed_path)
+        #authority_distance -= distance traveled from previous station 
+        #authority_distance += stop block length/2 +half of train ?? 
+        
+        #check 2 trains will not be to close 
+            #if within 40m + 33m (back of train) to next train 
+                #authority goes to 10m from back of next train 
+                
+            #if within 10m train
+                #authoirity goes to 0? 
+        
+        #for trains on line in self.trains:
+            #if (trains.position - train.position <= )  
+            
+            #if (line = green line) and block = 57?     
+                #make padding bigger 
+            #if (line = red line) and block = ? 
+                #make padding bigger
+                
+        #if (current block == next_stop) and (velocity == 0) and (train.departed == False)    
+        
+        #make string 
+        # authority = "authority_distance:destination_block"
         return (self.authority)
     
                
@@ -127,7 +157,7 @@ class MBOOffice(QObject):
             #is key int or string? think string
             key = 0
         
-        def satellite_send(self, train_id: str, position: float, block: int):
+        def satellite_send(self, train_id: str, position: float, velocity: float, block: int):
             """
             gathering info to send over satellite, authority and speed
             
@@ -176,6 +206,11 @@ class MBOOffice(QObject):
             Args:
                 tick (int): _description_
             """
+            #every tick, send satellite info to train 
+            for (train_id, line_name), train in self.trains.items():
+                if train.dispathed :
+                    self.satellite_send(train_id)
+            
         @pyqtSlot(str, float, int)
         def satellite_recieve(self, train_id: str, position: float, velocity: float, block: int) -> None:
             """
@@ -186,9 +221,8 @@ class MBOOffice(QObject):
                 position (float): _description_
                 blcok (int): _description_
             """
-            #pass self.train_positions[train_id] = {'position' : position, 'block' : block}
-            #if MBO mode
-            self.satellite_send(train_id, position, float) 
+            #update train position, velocity, and current block in MBO train dispatch for each train??
+             
               
         
         @pyqtSlot(bool)

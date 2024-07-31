@@ -98,7 +98,7 @@ class MBOWindow(QMainWindow):
 
         # Add checkable items to the layout
         self.red_checkboxes = []
-        items_red = ["Glenbury 1", "Dormont 1" ]
+        items_red = ["Herron", "Swissville" ,"Penn Station", "Steel Plaza", "First Ave", "Station Square", "South Hills Junction", "Shadyside"]
         for item_text in items_red:
             red_checkbox = QCheckBox(item_text)
             self.red_checkboxes.append(red_checkbox)
@@ -112,8 +112,7 @@ class MBOWindow(QMainWindow):
 
         # Add checkable items to the layout
         self.red_checkboxes2 = []
-        items = ["Glenbury 1", "Dormont 1" ]
-        for item_text in items:
+        for item_text in items_red:
             red_checkbox2 = QCheckBox(item_text)
             self.red_checkboxes2.append(red_checkbox2)
             scroll_layout4.addWidget(red_checkbox2)

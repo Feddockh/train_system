@@ -31,6 +31,7 @@ class Schedules:
             # Loading in line blocks/routes
             self.green_line = Line('Green')
             self.green_line.load_defaults()
+            
             self.red_line = Line('Red')
             self.red_line.load_defaults()
 
@@ -50,18 +51,12 @@ class Schedules:
             
             #TODO update red line block info 
             # Route blocks for the red line
-            self.route_blocks_red = {'yard': 152, 'from_yard' : 153, 'Glenbury 1': 65, 'Dormont 1': 73, 'Mt. Lebanon 1': 77,
-                                    'Poplar': 88, 'Castle Shannon': 96, 'Mt. Lebanon 2' : 77, 'Dormont 2' : 105, 'Glenbury 2' : 114,'Overbrook 1': 123,
-                                    'Inglewood': 132, 'Central 1': 141, 'Whited 1' : 22, 'Edgebrook': 9,
-                                    'Pioneer': 2, 'Station': 16, 'Whited 2': 22,
-                                    'South Bank': 31, 'Central 2' : 39, 'Overbrook 2' : 57, 'past_yard': 62, 'to_yard': 151}
+            self.route_blocks_red = {'Herron': 16, 'Swissville' : 21,'Penn Station' : 25, 'Steel Plaza': 35, 'First Ave': 45, 'Station Square': 48,
+                                    'South Hills Junction': 60, 'Shadyside': 7, 'yard': 78 }
             
             #prev block the train would have passed to get to station 
-            self.route_prev_blocks_red = {'yard': 152, 'from_yard' : 152, 'Glenbury 1': 64, 'Dormont 1': 72, 'Mt. Lebanon 1': 76,
-                                    'Poplar': 87, 'Castle Shannon': 95, 'Mt. Lebanon 2' : 78, 'Dormont 2' : 104, 'Glenbury 2' : 113, 'Overbrook 1': 122,
-                                    'Inglewood': 131, 'Central 1': 140, 'Whited 1' : 23, 'Edgebrook': 1,
-                                    'Pioneer': 3, 'Station': 15, 'Whited 2': 21,
-                                    'South Bank': 30, 'Central 2' : 38, 'Overbrook 2' : 56, 'past_yard': 62, 'to_yard': 57}
+            self.route_prev_blocks_red = {'Herron': 15, 'Swissville' : 20,'Penn Station' : 24, 'Steel Plaza': 34, 'First Ave': 44, 'Station Square': 47,
+                                    'South Hills Junction': 59, 'Shadyside': 8, 'yard': 78}
 
         
         def create_schedules_green(self, date_time, train_throughput, checked_items1, checked_items2):
@@ -292,7 +287,7 @@ class Schedules:
                                     first_trip = False
                                 else:
                                     prev_block = filtered_prev_blocks[stations[i-1]] if i > 0 else start_block
-
+                                    
                                 path = self.red_line.get_path(prev_block, start_block, end_block)
                                 travel_time = timedelta(seconds=self.red_line.get_travel_time(path))
                                 arrival_time = train_current_time + travel_time
