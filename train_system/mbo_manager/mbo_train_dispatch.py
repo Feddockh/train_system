@@ -10,15 +10,11 @@ class MBOTrainDispatch(TrainDispatch):
         super().__init__(time_keeper, train_id, line)
 
         self.position = 0
-        # self.current_block = 0
+        self.current_block = 0
         self.velocity = 0
-        self.authority = 0
-        self.commanded_speed = 0
-    
-    
+        
     def move_train_to_next_block(self) -> None:
-        """_summary_
-        """
+        
         current_block_id = self.get_current_block_id()
         next_block_id = self.get_next_stop()
         destination_block = self.get_next_stop()[1]
@@ -52,6 +48,7 @@ class MBOTrainDispatch(TrainDispatch):
         #safety incase train is not being sent back to yard? would be a case if in manual mbo? 
         #Case 4:
         elif self.route and next_block_id == destination_block and len(self.stop_priority_queue) == 1 and destination_block != self.line.yard:
+            
             self.prev_block_id = self.route.popleft()
             self.pop_stop()
 

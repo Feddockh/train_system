@@ -34,6 +34,7 @@ class MBOOffice(QObject):
         #list of trains 
         self.trains: Dict[Tuple[int, str], MBOTrainDispatch] = {}
         
+        
               
     def kmhr_to_ms(self, km_hr):
         """convert km/hr to m/s
@@ -139,65 +140,94 @@ class MBOOffice(QObject):
                
     class Satellite(QObject):
         
-        #trainid, authority, speed
-        send_data_signal = pyqtSignal(str, float, float)
+        #"trainid", "authority:destination_block", "commanded_speed"
+        send_data_signal = pyqtSignal(str, str, str)
         
         def __init__(self):
             super().__init__()
+            
             self.mbo_mode = True
-            #pass self.mbo_office = MBOOffice()
+            self.key = ''
             
-            self.train_positions = {}
-            self.train_id = ''
-            
-            time_keeper = TimeKeeper()
-            
-            self.mbo_office = MBOOffice(time_keeper)
-            
-            #is key int or string? think string
-            key = 0
-        
-        def satellite_send(self, train_id: str, position: float, velocity: float, block: int):
+        @pyqtSlot(str, float, int)
+        def satellite_recieve(self, encrypted_train_id: str, encrypted_train_information: str) -> None:
+            """get updated information regarding the trains current position, velocity, and current block 
+
+            Args:
+                encrypted_train_id (str): identifier of which train is being updating 
+                encrypted_train_information (str): "position:velocity:block"
             """
-            gathering info to send over satellite, authority and speed
+            #decrypt information sent from the train model
+            train_id = self.decrypt(encrypted_train_id)
+            train_information = self.decrypt(encrypted_train_information)
             
+            
+            #split train information to get position, velocity, and current block of the train
+            new_position = 0
+            new_velocity = 0
+            new_block = 0
+            
+            #update the information for each train
+            train = self.get_train(train_id)
+            train.position = new_position
+            train.velocity = new_velocity
+            train.current_block = new_block
+            
+            #call to move train to next block?? 
+            
+        def satellite_send(self, train_id: int):
+            """send information about authority and commanded speed to the train model 
+                when in MBO mode else send nothing 
+
+            Args:
+                train_id (int): _description_
             """
-            #pass self.train_info = self.train_positions[train_id]
+            train = self.get_train(train_id)
             
-            self.authority = self.mbo_office.compute_authority(train_id, position, block)
-            self.commanded_speed = self.mbo_office.compute_commanded_speed(train_id, block)
+            position = train.position
+            velocity = train.velocity
+            block = train.block
+            
+            authority = self.compute_authority(train_id, position, velocity, block)
+            commanded_speed = self.compute_commanded_speed(train_id, block)
+            
+            encrypt_train_id = self.encrypt(str(train_id))
+            encrypt_authority = self.encryt(authority)
+            encrypt_speed = self.encrypt(commanded_speed)
+             
              
             if (self.mbo_mode == True):
-                """
-                send speed and authority 
-                """ 
-                print('mbo mode is true')
-                #pass encrypted_id = self.encrypty(train_id)
-                #pass encrypted_authority = self.encrypt(authority)
-                #pass encrypted_speed = self.(commanded_speed)
-                
-                #will emit encrypt
-                self.send_data_signal.emit(self.train_id, self.authority, self.commanded_speed)
-                  
-            else: 
-                """
-                do not send information, information will be sent to train through CTC office
-                """ 
-                #TODO what train model wants me to send when in fixed block? 
-                self.update_satellite({})
-        
-        def encrypty(self):
-            """
-            encryption to send vital information
-            """
-            #will generate key in top level main to use here, and encrypt the speed and authority 
+                self.send_data_signal.emit(encrypt_train_id, encrypt_authority, encrypt_speed)
             
-        
-        def decrypt(self):
+        def encrypt(self, key, plain_text):
+            """_summary_
+
+            Args:
+                key (_type_): _description_
+                plain_text (_type_): _description_
+
+            Returns:
+                _type_: _description_
             """
-            decryption to recieve position(s)
+             
+            cipher_text = self.cipher_suite.encrypt(plain_text.encode())
+            
+            return (cipher_text)
+            
+        def decrypt(self, key, cipher_text):
+            """_summary_
+
+            Args:
+                key (_type_): _description_
+                cipher_text (_type_): _description_
+
+            Returns:
+                _type_: _description_
             """
-            #will generate key in top level main to use here, and decrypt the speed and authority 
+            
+            plain_text = self.cipher_suite.decrypt(cipher_text.decode())
+            
+            return (plain_text)
             
         @pyqtSlot(int)
         def handle_time_update(self, tick: int) -> None:
@@ -210,32 +240,29 @@ class MBOOffice(QObject):
             for (train_id, line_name), train in self.trains.items():
                 if train.dispathed :
                     self.satellite_send(train_id)
-            
-        @pyqtSlot(str, float, int)
-        def satellite_recieve(self, train_id: str, position: float, velocity: float, block: int) -> None:
-            """
-            Recieve train position
-            
-            Args:
-                train_id (str): _description_
-                position (float): _description_
-                blcok (int): _description_
-            """
-            #update train position, velocity, and current block in MBO train dispatch for each train??
-             
-              
-        
+               
         @pyqtSlot(bool)
-        def switch_modes():
+        def switch_modes(self, mbo: bool):
+            """Know when CTC switched between FBO and MBO mode
+
+            Args:
+                mbo (bool): track current overlay mode
             """
-            
-            """  
-            
- 
+            if mbo == True:
+                self.mbo_mode == True
+            else:
+                self.mbo_mode == False 
+        
+        @pyqtSlot(str)
+        def key_recieved(self, key_value: str):
+            """receive key to encrypt and decrypt vital information
 
-
-                    
-                               
+            Args:
+                key_value (str): _description_
+            """
+            self.key = key_value 
+            self.cipher_suite = Fernet(self.key)
+                                
             
 # pass if __name__ == "__main__":
     
