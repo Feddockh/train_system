@@ -33,17 +33,26 @@ if (track_blocks[0].occupancy == False
     and track_blocks[27].occupancy == False
     and track_blocks[28].occupancy == False
     and track_blocks[29].occupancy == False):
-    print("")
+    track_blocks[8]._plc_unsafe = False
+    track_blocks[11]._plc_unsafe = False
+    track_blocks[7]._plc_unsafe = False
+    track_blocks[8]._plc_unsafe = False
+    track_blocks[3]._plc_unsafe = False
+    track_blocks[2]._plc_unsafe = False
+    track_blocks[11]._plc_unsafe = False
+    track_blocks[12]._plc_unsafe = False
 
 # emergency stop - elif(Q & H.M-H.B)
 elif(track_blocks[2].occupancy == True and 
     track_blocks[11].switch.get_child_index() == 0):
     track_blocks[2]._authority = 0
+    track_blocks[2]._plc_unsafe = False
 
 # emergency stop - elif(H.T & H-T)
 elif(track_blocks[7].occupancy == True and
     track_blocks[8].switch.get_child_index() == 1):
     track_blocks[7]._authority = 0
+    track_blocks[7]._plc_unsafe = False
 
 # Train coming down
 elif(track_blocks[7].occupancy == True and
@@ -64,6 +73,8 @@ elif(track_blocks[7].occupancy == True and
     track_blocks[6].occupancy == True))):
     track_blocks[8].switch.position = track_blocks[8].switch.child_blocks[0]
     track_blocks[11].switch.position = track_blocks[11].switch.child_blocks[0]
+    track_blocks[8]._plc_unsafe = False
+    track_blocks[11]._plc_unsafe = False
 
 # Train Leaving
 elif(track_blocks[2].occupancy == True and
@@ -84,14 +95,16 @@ elif(track_blocks[2].occupancy == True and
     track_blocks[6].occupancy == False))):
     track_blocks[8].switch.position = track_blocks[8].switch.child_blocks[1]
     track_blocks[11].switch.position = track_blocks[11].switch.child_blocks[1]
+    track_blocks[8]._plc_unsafe = False
+    track_blocks[11]._plc_unsafe = False
 
 # Unsafe by PLC
 elif(track_blocks[9].occupancy == True or
     track_blocks[10].occupancy == True or
     track_blocks[11].occupancy == True or 
     track_blocks[12].occupancy == True):
-    track_blocks[8]._authority = 10000
-    track_blocks[11]._authority = 10000
+    track_blocks[8]._plc_unsafe = True
+    track_blocks[11]._plc_unsafe = True
 
 
 """
@@ -104,12 +117,20 @@ if(track_blocks[2].occupancy == True and
     track_blocks[11]._crossing_signal = True
     track_blocks[12]._crossing_signal = False
 
+    track_blocks[2]._plc_unsafe = False
+    track_blocks[11]._plc_unsafe = False
+    track_blocks[12]._plc_unsafe = False
+
 # emergency stop - elif(H.T & H-T)
 elif(track_blocks[7].occupancy == True and
     track_blocks[8].switch.get_child_index() == 1):
     track_blocks[7]._crossing_signal = False
     track_blocks[8]._crossing_signal = True
     track_blocks[3].crossing_signal = False
+
+    track_blocks[7]._plc_unsafe = False
+    track_blocks[8]._plc_unsafe = False
+    track_blocks[3]._plc_unsafe = False
 
 # Train coming down
 elif(track_blocks[7].occupancy == True and
@@ -135,6 +156,13 @@ elif(track_blocks[7].occupancy == True and
     track_blocks[11]._crossing_signal = False
     track_blocks[12]._crossing_signal = False
 
+    track_blocks[7]._plc_unsafe = False
+    track_blocks[8]._plc_unsafe = False
+    track_blocks[3]._plc_unsafe = False
+    track_blocks[2]._plc_unsafe = False
+    track_blocks[11]._plc_unsafe = False
+    track_blocks[12]._plc_unsafe = False
+
 # Train Leaving
 elif(track_blocks[2].occupancy == True and
     (track_blocks[9].occupancy == False and
@@ -159,14 +187,21 @@ elif(track_blocks[2].occupancy == True and
     track_blocks[11]._crossing_signal = False
     track_blocks[12]._crossing_signal = True
 
+    track_blocks[7]._plc_unsafe = False
+    track_blocks[8]._plc_unsafe = False
+    track_blocks[3]._plc_unsafe = False
+    track_blocks[2]._plc_unsafe = False
+    track_blocks[11]._plc_unsafe = False
+    track_blocks[12]._plc_unsafe = False
+
 # Unsafe by PLC
 elif(track_blocks[9].occupancy == True or
     track_blocks[10].occupancy == True or
     track_blocks[11].occupancy == True or 
     track_blocks[12].occupancy == True):
-    track_blocks[7]._authority = 10000
-    track_blocks[8]._authority = 10000
-    track_blocks[3]._authority = 10000
-    track_blocks[2]._authority = 10000
-    track_blocks[11]._authority = 10000
-    track_blocks[12]._authority = 10000
+    track_blocks[7]._plc_unsafe = True
+    track_blocks[8]._plc_unsafe = True
+    track_blocks[3]._plc_unsafe = True
+    track_blocks[2]._plc_unsafe = True
+    track_blocks[11]._plc_unsafe = True
+    track_blocks[12]._plc_unsafe = True
