@@ -1,9 +1,10 @@
 import sys
 from PyQt6.QtWidgets import *
-from PyQt6.QtGui import QPainter, QColor, QPalette
+from PyQt6.QtGui import QPainter, QColor, QPalette, QIntValidator
 from PyQt6.QtCore import Qt
 from PyQt6 import QtCore, QtGui, QtWidgets, uic
 from typing import List, Optional
+
 
 TRAIN_COL = 0
 KP_COL = 1
@@ -74,6 +75,28 @@ class EngineerTrains:
         self.edit_kp = QLineEdit()
         self.edit_ki = QLineEdit()
 
+class TableCellDelegate(QStyledItemDelegate):
+    def __init__(self, validator, parent=None):
+        super().__init__(parent)
+        self.validator = validator
+
+    def createEditor(self, parent, option, index):
+        editor = QLineEdit(parent)
+        editor.setValidator(self.validator)
+        return editor
+
+    def setEditorData(self, editor, index):
+        value = index.model().data(index, Qt.ItemDataRole.EditRole)
+        editor.setText(value)
+
+    def setModelData(self, editor, model, index):
+        text = editor.text()
+        # Validate the input
+        if self.validator.validate(text, 0)[0] == QIntValidator.State.Acceptable:
+            model.setData(index, text)
+        else:
+            QMessageBox.warning(editor, "Invalid Input", "Please enter a valid number.")
+
 class EngineerTable(QWidget):
     def __init__(self, title: str, rows: int, cols: int, headers: List[str],
                  data: List[List[str]], parent: Optional[QWidget] = None) -> None:
@@ -136,23 +159,23 @@ class EngineerTable(QWidget):
         # Set the style for the table headers and cells
         self.table.setStyleSheet("""
             QHeaderView::section { 
-                background-color: #C8C8C8;
-                color: #333333;
+                background-color: #BDB4BF;
+                color: #071013;
                 font-size: 14pt;
             }
             QTableWidget::item {
-                background-color: #FDFDFD;
-                border: 1px solid #333333; 
+                background-color: #FCF7FF;
+                border: 1px solid #071013; 
             }
             QTableWidget {
-                gridline-color: #333333; 
+                gridline-color: #071013; 
             }
         """)
 
         # Set the palette for the table to control the background and text colors
         palette = self.table.palette()
-        palette.setColor(QPalette.ColorRole.Base, QColor(0xd9d9d9))
-        palette.setColor(QPalette.ColorRole.Text, QColor(0x333333))
+        palette.setColor(QPalette.ColorRole.Base, QColor(0xBDB4BF))
+        palette.setColor(QPalette.ColorRole.Text, QColor(0x071013))
         self.table.setPalette(palette)
 
         # Adjust column widths to fit contents
@@ -160,6 +183,7 @@ class EngineerTable(QWidget):
         for col in range(self.cols):
             self.table.horizontalHeader().setSectionResizeMode(
                 col, QHeaderView.ResizeMode.Stretch
+            
             )
 
         # Add data to the table
