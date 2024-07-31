@@ -1,6 +1,7 @@
 from PyQt6.QtCore import Qt, pyqtSlot
 from PyQt6.QtWidgets import QWidget, QLabel, QHBoxLayout
 
+from train_system.common.palette import Colors
 from train_system.common.line import Line
 
 class ThroughputWidget(QWidget):
@@ -11,6 +12,11 @@ class ThroughputWidget(QWidget):
         self.line = line
 
         self.throughput_label = QLabel()
+        self.throughput_label.setStyleSheet(
+            f"color: {Colors.BLACK};"
+            "font-size: 12pt;"
+            "font-weight: 400;"
+        )
         self.throughput_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         layout = QHBoxLayout()
