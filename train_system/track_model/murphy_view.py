@@ -1,9 +1,12 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QButtonGroup, QRadioButton, QPushButton, QGridLayout, QCheckBox, QComboBox
-from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QButtonGroup, QRadioButton, QPushButton, QGridLayout, QCheckBox, QComboBox, QLineEdit
+from PyQt6.QtCore import Qt, pyqtSignal
 
+from train_system.common.line import Line
 from train_system.track_model.live_map import LiveMap
 
 class MurphyUI(QWidget):
+
+    temp_changed = pyqtSignal(int)
     
     def __init__(self):
 
@@ -12,8 +15,9 @@ class MurphyUI(QWidget):
         self.murphy_layout = QGridLayout()
         self.setLayout(self.murphy_layout)
 
+        self.lines: dict[str, Line]
         self.block_info = BlockInfoWidget()
-        self.map = QWidget()
+        self.map = LiveMap()
         self.line_picker = QComboBox()
         self.block_picker = QComboBox()
         self.line_block_pickers = QHBoxLayout()
@@ -27,10 +31,23 @@ class MurphyUI(QWidget):
         self.murphy_layout.addLayout(self.block_info_side, 0, 0, 1, 1)
         self.murphy_layout.addWidget(self.map, 0, 1, 1, 2)
 
-    def set_live_map(self, live_map: LiveMap):
+        # Temperature toggle and heater status
+        self.temp_change = QLineEdit()
+        self.heater_status = QLabel()
 
-        self.map = live_map
+        self.temp_change.returnPressed.connect(self.temp_changed.emit)
 
+    def add_line(self, line: Line):
+
+        self.lines[line.name] = line
+        self.line_picker.addItem(line.name)
+
+    def select_line(self, line: str):
+        
+        self.map.set_line(self.lines[line])
+        self.block_picker.clear()
+        for block in self.lines[line].track_blocks:
+            self.block_picker.addItem(block.section + block.number)
 
 class BlockInfoWidget(QWidget):
 
@@ -41,7 +58,7 @@ class BlockInfoWidget(QWidget):
         self.info_layout = QVBoxLayout()
         self.setLayout(self.info_layout)
 
-        #Static info to display for any selected block
+        # Static info to display for any selected block
         self.static_info = QGridLayout()
         self.info_layout.addLayout(self.static_info)
 
@@ -69,7 +86,7 @@ class BlockInfoWidget(QWidget):
         self.static_info.addWidget(self.grade, 3, 1, Qt.AlignmentFlag.AlignRight)
         self.static_info.addWidget(self.elevation, 4, 1, Qt.AlignmentFlag.AlignRight)
 
-        #Dynamic info (occupancy and failure) to display for any selected block
+        # Dynamic info (occupancy and failure) to display for any selected block
         self.occupancy_info = QHBoxLayout()
         self.info_layout.addLayout(self.occupancy_info)
 
@@ -82,7 +99,7 @@ class BlockInfoWidget(QWidget):
         self.failure_info = FailureWidget()
         self.info_layout.addWidget(self.failure_info)
 
-        #Station info to display if block contains a station
+        # Station info to display if block contains a station
         self.station_info = QGridLayout()
         self.info_layout.addLayout(self.station_info)
         
@@ -102,7 +119,7 @@ class BlockInfoWidget(QWidget):
         self.station_info.addWidget(self.waiting_passengers, 1, 1, Qt.AlignmentFlag.AlignRight)
         self.station_info.addWidget(self.beacon, 2, 1, Qt.AlignmentFlag.AlignRight)
 
-        #Switch info to display if block is parent or child of switch
+        # Switch info to display if block is parent or child of switch
         self.switch_info = QGridLayout()
         self.info_layout.addLayout(self.switch_info)
 
@@ -125,8 +142,6 @@ class BlockInfoWidget(QWidget):
         self.switch_info.addWidget(self.switch_children, 1, 1, Qt.AlignmentFlag.AlignRight)
         self.switch_info.addWidget(self.switch_position, 2, 1, Qt.AlignmentFlag.AlignRight)
         self.switch_info.addWidget(self.signal, 3, 1, Qt.AlignmentFlag.AlignRight)
-
-
 
 class FailureWidget(QWidget):
 

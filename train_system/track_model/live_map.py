@@ -33,7 +33,6 @@ class LiveMap(QWidget):
     def set_line(self, line: Line):
 
         self.line = line
-        self.line.load_defaults()
         self.switches = [switch.child_blocks for switch in self.line.switches]
 
         self.edges = list()
@@ -61,6 +60,11 @@ class LiveMap(QWidget):
         self.map = nx.kamada_kawai_layout(self.graph)
 
         self.plot()
+
+        self.line.track_block_occupancy_updated.connect(self.plot)
+        self.line.track_block_track_failure_updated.connect(self.plot)
+        self.line.track_block_under_maintenance_updated.connect(self.plot)
+        self.line.track_block_crossing_signal_updated.connect(self.plot)
         
 
     def plot(self):
@@ -77,7 +81,7 @@ class LiveMap(QWidget):
                 color_map.append('yellow')
             elif block.occupancy:
                 color_map.append('red')
-            elif block.station != None:
+            elif block.station:
                 color_map.append('#00e1ff')
             else:
                 color_map.append('black')

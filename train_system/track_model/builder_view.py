@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 from PyQt6.QtWidgets import QWidget, QFileDialog, QPushButton, QHBoxLayout, QVBoxLayout, QApplication
 from PyQt6.QtCore import QObject, pyqtSignal, Qt
@@ -8,9 +9,12 @@ from train_system.track_model.live_map import LiveMap
 
 class BuilderUI(QWidget):
 
+    to_murphy_view = pyqtSignal(Line)
+
     def __init__(self):
 
         super().__init__()
+
 
         self.big_layout = QHBoxLayout()
         self.live_map = LiveMap()
@@ -30,17 +34,27 @@ class BuilderUI(QWidget):
         self.big_layout.addWidget(self.live_map)
         self.setLayout(self.big_layout)
 
+        self.line_imported = False
+
         self.upload_button.clicked.connect(self.open_file)
+        self.murphy_button.clicked.connect(self.murphy_clicked)
 
     def open_file(self):
         filename = QFileDialog.getOpenFileName(self, caption='Select Track Model', directory='./system_data/lines')
 
-        self.line = Line('Green')
+        self.line = Line(str.split(filename[0].split('/')[-1], '_')[0])
         self.line.load_track_blocks(filename[0])
-        self.line.load_stations(filename[0])
-        self.line.load_switches(filename[0])
+        self.line.load_route()
+        self.line.load_switches()
+        self.line.load_stations()
 
         self.live_map.set_line(self.line)
+        self.line_imported = True
+
+    def murphy_clicked(self):
+        if self.line_imported:
+            self.to_murphy_view.emit(self.line)
+        
 
 if __name__ == "__main__":
 
