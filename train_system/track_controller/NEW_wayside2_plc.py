@@ -20,100 +20,88 @@ Returns:
 """
 Post Index Change
 """
-# Scenario 1: 57-->151, check if 58 is occupied, if so, go to yard
-if (track_blocks[28].occupancy and  # block 57
-    track_blocks[55].occupancy == False and  # block 151
-    track_blocks[29].occupancy):  # block 58
+# updated wayside 2, July 24, 2024
+# Switch 58
 
-    # set switch position
-    track_blocks[28].switch.position = track_blocks[28].switch.child_blocks[55]
-    #track_blocks[28].switch.child_blocks[55]
+
+#Scenario 1: heading to yard, authority at yard indicates that we're going to yard, check for it then set swithc position
+if(track_blocks[108].authority < 0 and track_blocks[28].occupancy):
     
-    # set light colors
-    #track_blocks[28]._light_signal = True
+    #set switch position
+    track_blocks[28].switch.position = track_blocks[28].switch.child_blocks[1]
+    
+    #set light
+    #track_blocks[28]._light_signal = False
     track_blocks[29]._light_signal = False
-    track_blocks[55]._light_signal = True
+    track_blocks[107]._light_signal = True
 
-# Scenario 2: 57-->58, check if 151 is occupied, if so and 58 is not, go to 58, and continue on J
-if (track_blocks[28].occupancy and  # block 57
-    track_blocks[29].occupancy == False and  # block 58
-    track_blocks[55].occupancy):  # block 151
+# Scenario 2: 57 stop, check if 58 is unoccupied continue straight along J
+if(track_blocks[28].occupancy and track_blocks[29].occupancy == False and track_blocks[108].authority >= 0):
 
     # set switch position
-    track_blocks[28].switch.position = track_blocks[28].switch.child_blocks[29]
-    #track_blocks[28].switch.child_blocks[29]
+    track_blocks[28].switch.position = track_blocks[28].switch.child_blocks[0]
 
     # set light colors
-    #track_blocks[28]._light_signal = True
+    #track_blocks[28]._light_signal = False
     track_blocks[29]._light_signal = True
-    track_blocks[55]._light_signal = False
+    track_blocks[107]._light_signal = False
 
-# Scenario 3: 57 58 and 151 are occupied, temporary stop
-if (track_blocks[28].occupancy and  # block 57
-    track_blocks[29].occupancy and  # block 58
-    track_blocks[55].occupancy):  # block 151
+# Scenario 3: 57, 58 and 151 are occupied, temporary stop
+if(track_blocks[29].occupancy and track_blocks[107].occupancy and track_blocks[107].authority > 0):
 
     # set authority at 57 to zero, and wait for those blocks to become unoccupied
     track_blocks[28].authority = 0
 
     # set light signals 
-    #track_blocks[28]._light_signal = False
+    track_blocks[28]._light_signal = False
     track_blocks[29]._light_signal = False
-    track_blocks[55]._light_signal = False
+    track_blocks[107]._light_signal = False
 
 # SWITCH AT BLOCK 63
 
-# Scenario 1: 62 to 63, if block 62 is unoccupied, 
-if (track_blocks[32].occupancy and  # block 62
-    track_blocks[33].occupancy == False and  # block 63
-    track_blocks[57].occupancy == False):  # block 153
+# Scenario 1: 62 to 63, if block 62 is occupied
+if(track_blocks[33].occupancy and track_blocks[34].occupancy == False and track_blocks[109].occupancy == False):
 
     # set switch position
-    track_blocks[33].switch.position = track_blocks[33].switch.child_blocks[32]
-    #track_blocks[33].switch.child_blocks[32]
+    track_blocks[34].switch.position = track_blocks[34].switch.child_blocks[0]
 
     # set lights
-    track_blocks[32]._light_signal = True
-    #track_blocks[33]._light_signal = True
-    track_blocks[57]._light_signal = False
+    track_blocks[33]._light_signal = True
+    track_blocks[34]._light_signal = True
+    track_blocks[109]._light_signal = False
 
 # Scenario 2: 153 to 63, as long as none of block 62 is occupied and 63 is unoccupied
-if (track_blocks[32].occupancy == False and  # block 62
-    track_blocks[33].occupancy == False and  # block 63
-    track_blocks[57].occupancy):  # block 153
+if(track_blocks[34].occupancy == False and track_blocks[33].occupancy == False and track_blocks[109].occupancy):
 
     # set switch position
-    track_blocks[33].switch.position = track_blocks[33].switch.child_blocks[57]
-    #track_blocks[33].switch.child_blocks[57]
+    track_blocks[34].switch.position = track_blocks[34].switch.child_blocks[1]
 
     # set light signals
-    track_blocks[32]._light_signal = False
-    #track_blocks[33]._light_signal = True
-    track_blocks[57]._light_signal = True
+    track_blocks[34]._light_signal = True
+    track_blocks[33]._light_signal = False
+    track_blocks[109]._light_signal = True
 
 # Scenario 3: 62, 63, 153 are all occupied, authority for 62 and 153 must turn red, then keep 63 green to allow
-if (track_blocks[32].occupancy and  # block 62
-    track_blocks[33].occupancy and  # block 63
-    track_blocks[57].occupancy):  # block 153
+if(track_blocks[33].occupancy and track_blocks[34].occupancy and track_blocks[109].occupancy):
 
     # set authorities of 62 and 153 to zero
-    track_blocks[32].authority = 0
-    track_blocks[57].authority = 0
+    track_blocks[33].authority = 0
+    track_blocks[109].authority = 0
 
     # set lights to red
-    track_blocks[32]._light_signal = False
-    #track_blocks[33]._light_signal = True
-    track_blocks[57]._light_signal = False
+    track_blocks[33]._light_signal = False
+    track_blocks[34]._light_signal = True
+    track_blocks[108]._light_signal = False
 
 
 # Consolidated print statements for error checking
 
 #SWITCH AT BLOCK 57
-
 print("Switch  57:\n")
+
 # Block 57
 print("Block 57 (Switch) Information: ")
-print(f"Switch Position: {track_blocks[28]._switch_position}")
+print(f"Switch Position: {track_blocks[28].switch.position}")
 print(f"Light Signal: {track_blocks[28]._light_signal}")
 print(f"Authority: {track_blocks[28].authority}\n")
 
@@ -124,26 +112,26 @@ print(f"Authority: {track_blocks[29].authority}\n")
 
 # Block 151
 print("Block 151 Information: ")
-print(f"Light Signal: {track_blocks[55]._light_signal}")
-print(f"Authority: {track_blocks[55].authority}\n")
+print(f"Light Signal: {track_blocks[107]._light_signal}")
+print(f"Authority: {track_blocks[107].authority}\n")
 
 
-#Switch at BLOCK 63
+# Switch at BLOCK 63
 print("Switch 63: \n")
 print("Block 63 (Switch) Information: ")
-print(f"Switch Position: {track_blocks[33]._switch_position}")
-print(f"Light Signal: {track_blocks[33]._light_signal}")
-print(f"Authority: {track_blocks[33].authority}\n")
+print(f"Switch Position: {track_blocks[34].switch.position}")
+print(f"Light Signal: {track_blocks[34]._light_signal}")
+print(f"Authority: {track_blocks[34].authority}\n")
 
 # Block 62
 print("Block 62 Information: ")
-print(f"Light Signal: {track_blocks[32]._light_signal}")
-print(f"Authority: {track_blocks[32].authority}\n")
+print(f"Light Signal: {track_blocks[33]._light_signal}")
+print(f"Authority: {track_blocks[33].authority}\n")
 
 # Block 153
 print("Block 153 Information: ")
-print(f"Light Signal: {track_blocks[57]._light_signal}")
-print(f"Authority: {track_blocks[57].authority}\n")
+print(f"Light Signal: {track_blocks[109]._light_signal}")
+print(f"Authority: {track_blocks[109].authority}\n")
 
 
 
