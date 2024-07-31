@@ -12,6 +12,7 @@ from collections import deque
 from train_system.common.track_block import TrackBlock
 from train_system.common.track_switch import TrackSwitch
 from train_system.common.station import Station
+from train_system.common.authority import Authority
 
 class Route:
     def __init__(self, line: str, yard: int, to_yard: List[int], from_yard: List[int], past_yard: List[int], default_route: List[int]) -> None:
@@ -164,7 +165,7 @@ class Line(QObject):
 
     # Signals to notify track block updates (line name, block number, attribute value)
     track_block_suggested_speed_updated = pyqtSignal(str, int, int)
-    track_block_authority_updated = pyqtSignal(str, int, int)
+    track_block_authority_updated = pyqtSignal(str, int, object)
     track_block_occupancy_updated = pyqtSignal(str, int, bool)
     track_block_crossing_signal_updated = pyqtSignal(str, int, int)
     track_block_under_maintenance_updated = pyqtSignal(str, int, bool)
@@ -361,7 +362,15 @@ class Line(QObject):
             switch (TrackSwitch): The switch to connect signals for.
         """
 
+        # Connect to the line signal
         switch.position_updated.connect(lambda new_position, sw=switch: self.switch_position_updated.emit(self.name, sw.number))
+
+        # Connect to the track block signals
+        for block_id in switch.connected_blocks:
+            block = self.get_track_block(block_id)
+            switch.position_updated.connect(
+                lambda new_position, blk=block: blk.switch_position_updated.emit(new_position)
+            )
 
     def add_station(self, station: Station) -> None:
         
@@ -392,7 +401,7 @@ class Line(QObject):
         """
 
         for station in self.stations:
-            if station.name == name:
+            if station.name.lower() == name.lower():
                 return station
         print(f"Station {name} does not exist.")
         return None
@@ -668,7 +677,7 @@ class Line(QObject):
             self.get_track_block(block).suggested_speed = new_speed
 
     @pyqtSlot(str, int, int)
-    def handle_authority_updated(self, line: str, block: int, new_authority: int) -> None:
+    def handle_authority_updated(self, line: str, block: int, new_authority: Authority) -> None:
         
         """
         Handles the authority updated signal from a track block.
@@ -676,7 +685,7 @@ class Line(QObject):
         Args:
             line (str): The name of the line.
             block (int): The block number.
-            new_authority (int): The new authority.
+            new_authority (Authority): The new authority.
         """
         
         if line == self.name:

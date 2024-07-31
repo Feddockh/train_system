@@ -20,14 +20,12 @@ def main():
     time_keeper.start_timer()
 
     ### Instantiate the CTCOffice object and the dispatcher's UI ###
-    line_names = ["green", "red"]
-    ctc_manager = CTCOffice(time_keeper, line_names)
+    ctc_manager = CTCOffice(time_keeper)
     dispatcher_ui = DispatcherUI(time_keeper, ctc_manager.lines, ctc_manager.trains)
     ctc_manager.connect_dispatcher_ui(dispatcher_ui)
     dispatcher_ui.show()
 
     ### Instantiate the TrackController object and the programmer's UI ###
-
 
     ### Instantiate the TrackModel object and the track's UI ###
 

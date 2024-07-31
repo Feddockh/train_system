@@ -6,17 +6,18 @@ from train_system.common.track_failures import TrackFailure
 from train_system.track_model.beacon import Beacon
 from train_system.common.track_switch import TrackSwitch
 from train_system.common.station import Station
+from train_system.common.authority import Authority
 
 
 class TrackBlock(QObject):
-    # Signals to notify updates
     suggested_speed_updated = pyqtSignal(int)
-    authority_updated = pyqtSignal(int)
+    authority_updated = pyqtSignal(object)
     occupancy_updated = pyqtSignal(bool)
     crossing_signal_updated = pyqtSignal(bool)
     light_signal_updated = pyqtSignal(bool)
     under_maintenance_updated = pyqtSignal(bool)
     track_failure_updated = pyqtSignal(TrackFailure)
+    switch_position_updated = pyqtSignal(int)
 
     def __init__(self, line: str, section: str, number: int, length: int,
                  grade: float, speed_limit: int, elevation: float, 
@@ -46,14 +47,18 @@ class TrackBlock(QObject):
         # Calculated parameters
         self.traversal_time = self.length / (self.speed_limit / 3.6) # meters/seconds
 
-        # Dynamic parameters
+
+        # Dynamic 
         self._suggested_speed = 0
-        self._authority = 0
+        self._authority: Authority = Authority(0)
+        
+
         self._occupancy = False
         self._crossing_signal = None if crossing_signal is False else False
         self._light_signal = None if light_signal is False else False
         self._under_maintenance = False
         self._track_failure = TrackFailure.NONE
+        self._plc_unsafe = False
 
     def __repr__(self) -> str:
 
@@ -121,11 +126,11 @@ class TrackBlock(QObject):
             self.suggested_speed_updated.emit(value)
 
     @property
-    def authority(self) -> int:
+    def authority(self) -> Authority:
         return self._authority
 
     @authority.setter
-    def authority(self, value: int) -> None:
+    def authority(self, value: Authority) -> None:
         if self._authority != value:
             self._authority = value
             self.authority_updated.emit(value)
