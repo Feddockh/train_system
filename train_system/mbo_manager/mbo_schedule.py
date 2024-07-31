@@ -64,7 +64,7 @@ class Schedules:
                                     'South Bank': 30, 'Central 2' : 38, 'Overbrook 2' : 56, 'past_yard': 62, 'to_yard': 57}
 
         
-        def create_schedules(self, date_time, train_throughput, checked_items1, checked_items2):
+        def create_schedules_green(self, date_time, train_throughput, checked_items1, checked_items2):
             """ Create schedule options with various station stops 
                 Schedules trains, driver, and crew 
 
@@ -207,3 +207,148 @@ class Schedules:
             print("calling create sched")
             create_schedule(filtered_route_blocks1, filtered_prev_blocks1 ,f"1_{train_throughput.lower()}")
             create_schedule(filtered_route_blocks2, filtered_prev_blocks2 ,f"2_{train_throughput.lower()}")
+          
+            
+        def create_schedules_red(self, date_time, train_throughput, checked_items1, checked_items2):
+            """ Create schedule options with various station stops 
+                Schedules trains, driver, and crew 
+
+            Args:
+                date_time (_type_): _description_
+                train_throughput (_type_): _description_
+                checked_items1 (_type_): _description_
+                checked_items2 (_type_): _description_
+            """
+           
+            # Set the number of trains based on throughput (trains/line/hour)
+            if train_throughput == "Low":
+                num_of_trains = 4
+                train_departure_interval = timedelta(minutes=15)
+            elif train_throughput == 'Medium':
+                num_of_trains = 10
+                train_departure_interval = timedelta(minutes=6)
+            elif train_throughput == "High":
+                num_of_trains = 20
+                train_departure_interval = timedelta(minutes=3)
+
+            selected_day = date_time.toString('MM-dd-yyyy')
+            selected_start_time = date_time.toString('HH:mm:ss')
+            print(f"making schedule for: {date_time}, with a {train_throughput} throughput")
+            print("schedule option 1 has stations: ", checked_items1)
+            print("schedule option 2 has stations: ", checked_items2)
+
+            # Filter route schedule based on checked items
+            filtered_route_blocks1 = {station: self.route_blocks_red[station] for station in checked_items1}
+            filtered_route_blocks2 = {station: self.route_blocks_red[station] for station in checked_items2}
+            
+            filtered_prev_blocks1 = {station: self.route_prev_blocks_red[station] for station in checked_items1}
+            filtered_prev_blocks2 = {station: self.route_prev_blocks_red[station] for station in checked_items2}
+
+            start_time = datetime.strptime(selected_day + ' ' + selected_start_time, '%m-%d-%Y %H:%M:%S')
+            end_time = start_time + timedelta(hours=24)
+
+            def create_schedule(filtered_route_blocks, filtered_prev_blocks ,file_suffix):
+                """ Making a schedule option 
+
+                Args:
+                    filtered_route_blocks (_type_): _description_
+                    filtered_prev_blocks (_type_): _description_
+                    file_suffix (_type_): _description_
+                """
+                
+                print("making schedules")
+                current_time = start_time
+                crew_index = 0
+                driver_index = 0
+                schedule = []
+
+                for train_id in range(1, num_of_trains + 1):
+                    train_current_time = start_time + (train_id - 1) * train_departure_interval
+
+                    
+                    while train_current_time < end_time:
+                        driver = self.drivers[driver_index % len(self.drivers)]
+                        crew1 = self.crew[crew_index % len(self.crew)]
+                        crew2 = self.crew[(crew_index + 1) % len(self.crew)]
+                        crew_index += 2
+                        driver_index += 1
+
+                        shift_end_time = train_current_time + self.shift_length
+                        shift_start = train_current_time
+                        break_taken = False
+                        
+                        # Always start from yard
+                        start_block = self.route_blocks_red['yard']
+                        stations = list(filtered_route_blocks.keys())
+                        first_trip = True
+
+                        while train_current_time < shift_end_time and train_current_time < end_time:
+                            for i in range(len(stations)):
+                                end_station = stations[i]
+                                end_block = filtered_route_blocks[end_station]
+
+                                if first_trip:
+                                    prev_block = self.route_prev_blocks_red['yard']
+                                    first_trip = False
+                                else:
+                                    prev_block = filtered_prev_blocks[stations[i-1]] if i > 0 else start_block
+
+                                path = self.red_line.get_path(prev_block, start_block, end_block)
+                                travel_time = timedelta(seconds=self.red_line.get_travel_time(path))
+                                arrival_time = train_current_time + travel_time
+
+                                if arrival_time > shift_end_time:
+                                    break
+
+                                schedule.append([train_id, f"{end_station}", prev_block, start_block, end_block, arrival_time, driver, crew1, crew2])
+
+                                # Adding time to stop at station for 30s
+                                train_current_time = arrival_time + timedelta(seconds=30)
+
+                                if ((train_current_time - shift_start) >= self.drive_length) and (break_taken == False):
+                                    # Add yard stop for break
+                                    schedule.append([train_id, "Yard", end_block, end_block, self.route_blocks_red['yard'], train_current_time, driver, crew1, crew2])
+                                    train_current_time += self.break_length
+                                    break_taken = True
+                                    start_block = self.route_blocks_red['yard']  # Reset start_block to yard
+                                    first_trip = True  # After break, reset first_trip to True
+
+                                    if train_current_time >= shift_end_time or train_current_time >= end_time:
+                                        break
+                                else:
+                                    start_block = end_block
+
+                            if train_current_time >= shift_end_time or train_current_time >= end_time:
+                                break
+
+                            # Loop from the last station to the first, passing the yard
+                            if train_current_time < shift_end_time and train_current_time < end_time:
+                                end_block = filtered_route_blocks[stations[0]]
+                                path = self.red_line.get_path(prev_block, start_block, end_block)
+                                travel_time = timedelta(seconds=self.red_line.get_travel_time(path))
+                                train_current_time += travel_time # Time to pass yard and stop
+
+                        # Add yard stop at the end of the shift
+                        schedule.append([train_id, "Yard", start_block, start_block, self.route_blocks_red['yard'], train_current_time, driver, crew1, crew2])
+                        train_current_time = shift_end_time
+                        
+                        if train_current_time >= end_time:
+                            break
+                        
+                print("printing schedule")
+                file_path = 'system_data/schedules/red_line_schedules'            
+                file_name = f"{selected_day}_red_{file_suffix}.csv"
+                
+                folder_path = os.path.join(file_path, file_name)
+                
+                with open(folder_path, 'w', newline='') as csvfile:
+                    schedule_writer = csv.writer(csvfile)
+                    schedule_writer.writerow(["Train", "Station", "Prev Block", "Start Block", "End Block","Arrival Time", "Driver", "Crew 1", "Crew 2"])
+                
+                    for t in schedule:
+                        schedule_writer.writerow(t)
+
+         # Create schedules for both sets of checked items
+            print("calling create sched")
+            create_schedule(filtered_route_blocks1, filtered_prev_blocks1 ,f"1_{train_throughput.lower()}")
+            create_schedule(filtered_route_blocks2, filtered_prev_blocks2 ,f"2_{train_throughput.lower()}")    
