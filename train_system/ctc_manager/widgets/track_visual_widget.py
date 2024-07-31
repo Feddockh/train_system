@@ -8,6 +8,7 @@ from PyQt6.QtGui import QColor, QPaintEngine, QPaintEvent, QPalette, QPainter, Q
 from PyQt6.QtCore import Qt, QPoint
 from typing import Optional
 
+from train_system.common.palette import Colors
 from train_system.common.line import Line
 from train_system.common.track_block import TrackBlock
 
@@ -145,6 +146,7 @@ class TrackVisualWidget(QWidget):
         self.line = line
         self.title = f"{line.name} Line Visual"
         self.setGeometry(100, 100, 800, 600)
+        self.setStyleSheet(f"background-color: {Colors.BLUE};")
         
         # Load in the line visual data
         filename = os.path.join(os.path.dirname(__file__), f"line_visuals\\{line.name.lower()}_visual.json")
@@ -186,6 +188,7 @@ class TrackVisualWidget(QWidget):
 
     def paintEvent(self, event):
         painter = QPainter(self)
+        painter.fillRect(self.rect(), QColor(Colors.BLACK))
         font_metrics = QFontMetrics(painter.font())
         
         # Place the blocks on the visual
@@ -200,15 +203,15 @@ class TrackVisualWidget(QWidget):
 
             # Set the pen color based on the status of the block
             if self.line.get_track_block(block['block_number']).occupancy:
-                pen = QPen(Qt.GlobalColor.red, self.line_width)
+                pen = QPen(QColor(Colors.RED), self.line_width)
             elif self.line.get_track_block(block['block_number']).under_maintenance:
-                pen = QPen(Qt.GlobalColor.yellow, self.line_width)
+                pen = QPen(QColor(Colors.YELLOW), self.line_width)
             else:
-                pen = QPen(Qt.GlobalColor.white, self.line_width)
+                pen = QPen(QColor(Colors.WHITE), self.line_width)
 
             # Check if the block is part of the yard
             if block['attribute'] == "Yard":
-                pen = QPen(Qt.GlobalColor.white, self.line_width, Qt.PenStyle.DotLine)
+                pen = QPen(QColor(Colors.WHITE), self.line_width, Qt.PenStyle.DotLine)
                 block_text = "Yard"
             
             # Check if the block is part of the station
@@ -265,6 +268,9 @@ class TrackVisualWidget(QWidget):
             else:
                 print("Invalid text position")
 
+            # Draw the block text
+            pen = QPen(QColor(Colors.WHITE), self.line_width)
+            painter.setPen(pen)
             painter.drawText(text_x, text_y, block_text)
 
         # Place stations on the visual
@@ -274,14 +280,10 @@ class TrackVisualWidget(QWidget):
             x = int(station['x'] * self.x_scale)
             y = int(station['y'] * self.y_scale)
 
-            # Set the pen color
-            pen = QPen(Qt.GlobalColor.white, self.line_width)
-            painter.setPen(pen)
-
             # Draw the station circle
+            pen = QPen(QColor(Colors.WHITE), self.line_width)
+            painter.setPen(pen)
             painter.drawEllipse(QPoint(x, y), min(self.x_scale, self.y_scale) // 3, min(self.x_scale, self.y_scale) // 3)
-
-            # Fill the station circle
             
 
     def set_line(self, line: Line) -> None:
@@ -297,6 +299,8 @@ class TrackVisualWidget(QWidget):
         filename = os.path.join(os.path.dirname(__file__), f"line_visuals\\{line.name.lower()}_visual.json")
         with open(filename, "r") as file:
             self.block_visuals = json.load(file)
+        self.blocks = self.block_visuals['blocks']
+        self.stations = self.block_visuals['stations']
 
         self.max_x = self.find_max_x()
         self.max_y = self.find_max_y()
@@ -308,7 +312,7 @@ class TrackVisualWidget(QWidget):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
-    line = Line("Green")
+    line = Line("Red")
     line.load_defaults()
 
     widget = TrackVisualWidget(line)

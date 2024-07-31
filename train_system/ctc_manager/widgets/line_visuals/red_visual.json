@@ -97,6 +97,7 @@
         {"block_number":  64, "y1": 12, "y2": 12, "x1": 19, "x2": 21, "text_position": 8, "attribute": ""},
         {"block_number":  65, "y1": 12, "y2": 12, "x1": 21, "x2": 23, "text_position": 8, "attribute": ""}
     ],
+    
     "stations": [
         {"station_name": "Yard", "x":  9, "y":  1}
     ]

@@ -6,6 +6,7 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTableWi
 from PyQt6.QtGui import QColor, QPalette
 from PyQt6.QtCore import Qt, pyqtSignal
 
+from train_system.common.palette import Colors
 from train_system.common.line import Line
 from train_system.common.conversions import time_to_seconds
 
@@ -13,6 +14,15 @@ class DispatchCommandWidget(QWidget):
     dispatched_train = pyqtSignal(int, int, int)
 
     def __init__(self, line: Line, parent: Optional[QWidget] = None):
+
+        """
+        Initializes the DispatchCommandWidget.
+        
+        Args:
+            line (Line): The line object.
+            parent (Optional[QWidget]): The parent widget.
+        """
+
         super().__init__(parent)
         self.title = "Dispatch Command"
         self.line = line
@@ -33,8 +43,8 @@ class DispatchCommandWidget(QWidget):
         title_label = QLabel(self.title)
         title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title_label.setStyleSheet(
-            "background-color: #333333;"
-            "color: #fdfdfd;"
+            f"background-color: {Colors.BLACK};"
+            f"color: {Colors.WHITE};"
             "font-size: 16pt;"
             "font-weight: 600;"
         )
@@ -46,25 +56,25 @@ class DispatchCommandWidget(QWidget):
         self.table.verticalHeader().setVisible(False)
 
         # Set the style for the table headers and cells
-        self.table.setStyleSheet("""
-            QHeaderView::section { 
-                background-color: #C8C8C8;
-                color: #333333;
+        self.table.setStyleSheet(f"""
+            QHeaderView::section {{ 
+                background-color: {Colors.GREY};
+                color: {Colors.BLACK};
                 font-size: 14pt;
-            }
-            QTableWidget::item {
-                background-color: #FDFDFD;
-                border: 1px solid #333333; 
-            }
-            QTableWidget {
-                gridline-color: #333333; 
-            }
+            }}
+            QTableWidget::item {{
+                background-color: {Colors.WHITE};
+                color: {Colors.BLACK};
+                border: 1px solid {Colors.BLACK}; 
+            }}
+            QTableWidget {{
+                background-color: {Colors.GREY};
+                gridline-color: {Colors.BLACK};
+            }}
         """)
 
         # Set the palette for the table to control the background and text colors
         palette = self.table.palette()
-        palette.setColor(QPalette.ColorRole.Base, QColor(0xd9d9d9))
-        palette.setColor(QPalette.ColorRole.Text, QColor(0x333333))
         self.table.setPalette(palette)
 
         # Adjust column widths to fit contents
@@ -85,16 +95,19 @@ class DispatchCommandWidget(QWidget):
         # Add new entry button
         self.add_entry_button = QPushButton("Add Entry")
         self.add_entry_button.clicked.connect(self.add_table_entry)
+        self.add_entry_button.setStyleSheet(f"background-color: {Colors.GREY}; color: {Colors.BLACK};")
         button_layout.addWidget(self.add_entry_button)
 
         # Add a clear button
         self.clear_button = QPushButton("Clear")
         self.clear_button.clicked.connect(self.clear_table)
+        self.clear_button.setStyleSheet(f"background-color: {Colors.GREY}; color: {Colors.BLACK};")
         button_layout.addWidget(self.clear_button)
 
         # Add dispatch button
         self.dispatch_button = QPushButton("Dispatch")
         self.dispatch_button.clicked.connect(self.dispatch_trains)
+        self.dispatch_button.setStyleSheet(f"background-color: {Colors.GREY}; color: {Colors.BLACK};")
         button_layout.addWidget(self.dispatch_button)
 
         self.setLayout(layout)
@@ -114,18 +127,21 @@ class DispatchCommandWidget(QWidget):
         train_id_cell = QComboBox()
         trains_ids = self.generate_train_ids()
         train_id_cell.addItems(trains_ids)
+        train_id_cell.setStyleSheet(f"color: {Colors.BLACK}; background-color: {Colors.WHITE};")
         self.table.setCellWidget(row_num, 0, train_id_cell)
 
         # Create combo box for track block inputs
         track_block_cell = QComboBox()
         block_numbers = self.generate_stops()
         track_block_cell.addItems(block_numbers)
+        track_block_cell.setStyleSheet(f"color: {Colors.BLACK}; background-color: {Colors.WHITE};")
         self.table.setCellWidget(row_num, 1, track_block_cell)
 
         # Create combo box for arrival times
         time_cell = QComboBox()
         times = self.generate_time_slots()
         time_cell.addItems(times)
+        time_cell.setStyleSheet(f"color: {Colors.BLACK}; background-color: {Colors.WHITE};")
         self.table.setCellWidget(row_num, 2, time_cell)
 
     def generate_train_ids(self) -> list[str]:
