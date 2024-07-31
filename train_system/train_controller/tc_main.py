@@ -25,7 +25,7 @@ tm = ts.train_model
         
 tc = ts.controller
 
-manager = TrainManager()
+
 
 driver = DriverWindow(time_keeper)
 test = TestBenchWindow()

@@ -1,3 +1,4 @@
+
 import paramiko
 import json
 from collections import deque as dq
@@ -315,6 +316,7 @@ class TrainController(QObject):
     def handle_fault_update(self, fault: bool):
         if(fault):
             print("!!!! Fault detected !!!!")
+            self.faults = self.train_model.get_fault_statuses()
             self.set_maintenance_mode(True)
 
     ## Maintenance Mode Functions
@@ -437,7 +439,7 @@ class TrainController(QObject):
 
     @pyqtSlot(float)
     def handle_curr_speed_changed(self, speed: float) -> None:
-        self.update_current_speed(speed)
+        self.current_speed = speed
     
     @pyqtSlot(float)
     def handle_comm_speed_changed(self, speed: float) -> None:
@@ -913,7 +915,7 @@ class MockTrainModel(QObject):
         # Calculate current speed based on power command            
         self.current_speed += self.power_command * time_step
         self.current_speed = min(self.current_speed, speed_limit)
-        self.update_current_speed((max(self.current_speed, 0)))
+        self.current_speed = (max(self.current_speed, 0))
         print("Power Command:", self.power_command, "Current Speed: ", self.current_speed, "\n")
 
     # Iterative (float representing meters)? Absolute (position representing when to stop by)?
@@ -962,8 +964,8 @@ class MockTrainModel(QObject):
     def get_train_temp(self):
         # Logic to get the temperature inside the train
         return self.train_temp
-    def set_train_temp(self, temp: int):
-        self.train_temp = temp
+    def set_train_temp(self, temp: float):
+        self.train_temp = round(temp, 1)
     
 
     # List of bools? Individual bools?
@@ -1159,4 +1161,3 @@ if __name__ == "__main__":
     # train_system.switch_modes_run()
     # train_system.fault_run()
     # train_system.ac_run()
-

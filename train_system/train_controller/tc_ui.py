@@ -7,6 +7,7 @@ from train_system.common.time_keeper import TimeKeeper, TimeKeeperWidget
 from train_system.common.gui_features import CustomTable
 from train_system.train_controller.train_controller import MockTrainModel
 from train_system.train_model.train_model import TrainModel
+from train_system.train_controller.engineer import Engineer
 
 GREEN = "#29C84C"
 RED = "#FF4444"
@@ -1365,12 +1366,17 @@ class EngineerWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        eng = Engineer()
+
+        str_kp = str(eng.get_kp())
+        str_ki = str(eng.get_ki())
+
         headers = ["Train", "Kp", "Ki"]
         self.data = []
 
         #CHANGE TO WHATEVER DEFAULT VAL IS
         for i in range(1, 21):
-            self.data.append([str(i), "0", "0"])
+            self.data.append([str(i), str_kp, str_ki])
 
         self.table = EngineerTable("Set Kp and Ki", 21, 3, headers, self.data)
 
@@ -1397,7 +1403,7 @@ class EngineerWindow(QMainWindow):
         if(col == 1):
             if(check_new_item >= KP_MIN and check_new_item <= KP_MAX):
                 self.data[row][col] = new_item
-                print("item changed and signal emits")
+                print("KP = " + new_item)
                 self.kp_updated.emit(int(new_item))
             else:
                 raise Exception("invalid kp value")

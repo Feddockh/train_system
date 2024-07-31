@@ -17,7 +17,7 @@ class TrainManager(QObject):
         super().__init__()
 
         self.ssh_client = None
-        self.engineer_table: list[Engineer] = [Engineer()] * 100
+        self.engineer_table: list[Engineer] = [Engineer()] * 40
         self.train_list: list[TrainSystem] = []
         if(HOST and PORT and USERNAME and PASSWORD):
             self.ssh_client = self.create_ssh_connection(HOST, PORT, USERNAME, PASSWORD)
