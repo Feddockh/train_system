@@ -17,7 +17,8 @@ class TrainManager(QObject):
         super().__init__()
 
         self.ssh_client = None
-        self.engineer_table: list[Engineer] = [Engineer()] * 100
+        self.train_count = 40
+        self.engineer_table: list[Engineer] = [Engineer()] * self.train_count
         self.train_list: list[TrainSystem] = []
         if(HOST and PORT and USERNAME and PASSWORD):
             self.ssh_client = self.create_ssh_connection(HOST, PORT, USERNAME, PASSWORD)
@@ -55,6 +56,7 @@ class TrainManager(QObject):
 
     # When train reaches the yard, it removes itself from the train list
     #### NEED TO MANUALLY DELETE CONNECTIONS AS THE CONNECTIONS AREN'T DELETED WHEN TRAIN IS REMOVED ####
+    @pyqtSlot(int)
     def handle_train_removed(self, train_id: int):
         for train in self.train_list:
             if train.id == train_id:
@@ -69,6 +71,8 @@ class TrainManager(QObject):
                 print(f"Train {train_id} removed. Train List Length: {len(self.train_list)}")
                 return
         raise ValueError(f"Train {train_id} not found in the train list")
+    
+    
 
     def self_deletion_run(self):
         print(f"Train List Length: {len(manager.train_list)}")
