@@ -33,8 +33,6 @@ class MBOOffice(QObject):
         
         #list of trains 
         self.trains: Dict[Tuple[int, str], MBOTrainDispatch] = {}
-        
-        
               
     def kmhr_to_ms(self, km_hr):
         """convert km/hr to m/s
@@ -136,8 +134,7 @@ class MBOOffice(QObject):
         #make string 
         # authority = "authority_distance:destination_block"
         return (self.authority)
-    
-               
+             
     class Satellite(QObject):
         
         #"trainid", "authority:destination_block", "commanded_speed"
@@ -149,8 +146,8 @@ class MBOOffice(QObject):
             self.mbo_mode = True
             self.key = ''
             
-        @pyqtSlot(str, float, int)
-        def satellite_recieve(self, encrypted_train_id: str, encrypted_train_information: str) -> None:
+        @pyqtSlot(int, str)
+        def satellite_recieve(self, train_id: int, encrypted_train_information: str) -> None:
             """get updated information regarding the trains current position, velocity, and current block 
 
             Args:
@@ -158,14 +155,16 @@ class MBOOffice(QObject):
                 encrypted_train_information (str): "position:velocity:block"
             """
             #decrypt information sent from the train model
-            train_id = self.decrypt(encrypted_train_id)
+            train_id = self.decrypt(train_id)
             train_information = self.decrypt(encrypted_train_information)
-            
-            
+        
             #split train information to get position, velocity, and current block of the train
             new_position = 0
             new_velocity = 0
             new_block = 0
+            
+            if new_block != train.current_block :
+                train.move_train_to_next_block()
             
             #update the information for each train
             train = self.get_train(train_id)
@@ -173,7 +172,6 @@ class MBOOffice(QObject):
             train.velocity = new_velocity
             train.current_block = new_block
             
-            #call to move train to next block?? 
             
         def satellite_send(self, train_id: int):
             """send information about authority and commanded speed to the train model 
@@ -183,7 +181,6 @@ class MBOOffice(QObject):
                 train_id (int): _description_
             """
             train = self.get_train(train_id)
-            
             position = train.position
             velocity = train.velocity
             block = train.block
@@ -194,7 +191,6 @@ class MBOOffice(QObject):
             encrypt_train_id = self.encrypt(str(train_id))
             encrypt_authority = self.encryt(authority)
             encrypt_speed = self.encrypt(commanded_speed)
-             
              
             if (self.mbo_mode == True):
                 self.send_data_signal.emit(encrypt_train_id, encrypt_authority, encrypt_speed)
