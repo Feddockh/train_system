@@ -1,6 +1,7 @@
 import sys
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import Qt, pyqtSlot, pyqtSignal
+from PyQt6.QtGui import QDoubleValidator, QIntValidator
 from train_system.train_controller.tc_widgets import CircleWidget, EngineerTable
 from train_system.common.time_keeper import TimeKeeper, TimeKeeperWidget
 from train_system.common.gui_features import CustomTable
@@ -688,6 +689,13 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.destination = 0
         self.station_name = ""
 
+        #input validators
+        dec_validator = QDoubleValidator()
+        dec_validator.setNotation(QDoubleValidator.Notation.StandardNotation)
+        dec_validator.setDecimals(1)
+
+        int_validator = QIntValidator()
+        #int_validator.setNotation(QIntValidator.Notation.StandardNotation)
 
         #the left outputs will use a vertical layout
         left_out_layout = QVBoxLayout()
@@ -827,6 +835,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.speed_input = QLineEdit()
         self.speed_input.setPlaceholderText("Enter Speed")
         self.speed_input.setFixedSize(75, 50)
+        self.speed_input.setValidator(dec_validator)
         ###move to mode toggle function
 
         #create control mode button and label
@@ -967,6 +976,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.comm_temp_input = QLineEdit() 
         self.comm_temp_input.setPlaceholderText("Enter Temp")
         self.comm_temp_input.setFixedSize(100, 50)
+        self.comm_temp_input.setValidator(int_validator)
         self.comm_temp_input.textChanged.connect(self.handle_comm_temp_changed)###enabled/disabled depends on mode
 
         temp_unit_label = QLabel("F")
