@@ -3,8 +3,9 @@ import sys
 import json
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QTableWidget,
                              QTableWidgetItem, QHeaderView, QApplication,
-                             QMainWindow)
-from PyQt6.QtGui import QColor, QPaintEngine, QPaintEvent, QPalette, QPainter, QPen, QFontMetrics
+                             QMainWindow, QToolTip)
+from PyQt6.QtGui import (QColor, QPaintEvent, QPalette, QPainter, QPen, 
+                         QFontMetrics, QMouseEvent, QFont)
 from PyQt6.QtCore import Qt, QPoint
 from typing import Optional
 
@@ -163,6 +164,10 @@ class TrackVisualWidget(QWidget):
 
         self.line_width = 5
 
+        QToolTip.setFont(QFont('SansSerif', 12))
+        self.setStyleSheet(str("QToolTip { color: " + str(Colors.BLACK) + "; background-color: " + str(Colors.WHITE) + "; border: 1px solid black; }"))
+
+
     def find_max_y(self):
         max_y = 0
         for block in self.blocks:
@@ -285,6 +290,18 @@ class TrackVisualWidget(QWidget):
             painter.setPen(pen)
             painter.drawEllipse(QPoint(x, y), min(self.x_scale, self.y_scale) // 3, min(self.x_scale, self.y_scale) // 3)
             
+    def mousePressEvent(self, event: QMouseEvent):
+
+        # Check if the mouse is over a station
+        for station in self.stations:
+            station_x = int(station['x'] * self.x_scale)
+            station_y = int(station['y'] * self.y_scale)
+            radius = min(self.x_scale, self.y_scale) // 3
+            if (station_x - radius <= event.position().x() <= station_x + radius) and (station_y - radius <= event.position().y() <= station_y + radius):
+                QToolTip.showText(event.globalPosition().toPoint(), station['station_name'], self)
+                break
+            else:
+                QToolTip.hideText()
 
     def set_line(self, line: Line) -> None:
 

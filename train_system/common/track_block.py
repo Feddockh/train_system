@@ -6,12 +6,12 @@ from train_system.common.track_failures import TrackFailure
 from train_system.track_model.beacon import Beacon
 from train_system.common.track_switch import TrackSwitch
 from train_system.common.station import Station
+from train_system.common.authority import Authority
 
 
 class TrackBlock(QObject):
-    # Signals to notify updates
     suggested_speed_updated = pyqtSignal(int)
-    authority_updated = pyqtSignal(int)
+    authority_updated = pyqtSignal(object)
     occupancy_updated = pyqtSignal(bool)
     crossing_signal_updated = pyqtSignal(bool)
     light_signal_updated = pyqtSignal(bool)
@@ -47,9 +47,11 @@ class TrackBlock(QObject):
         # Calculated parameters
         self.traversal_time = self.length / (self.speed_limit / 3.6) # meters/seconds
 
-        # Dynamic parameters
-        self._suggested_speed = 35
-        self._authority = 0
+
+        # Dynamic 
+        self._suggested_speed = 0
+        self._authority: Authority = None
+
         self._occupancy = False
         self._crossing_signal = None if crossing_signal is False else False
         self._light_signal = None if light_signal is False else False
@@ -81,7 +83,7 @@ class TrackBlock(QObject):
             f"Switch:                  {self.switch}\n"
             f"Beacon:                  {self.beacon}\n"
             f"Suggested Speed:         {self._suggested_speed}\n"
-            f"Authority:               {self._authority}\n"
+            f"Authority:               {self._authority.authority}\n"
             f"Occupancy:               {self._occupancy}\n"
             f"Crossing Signal:         {self._crossing_signal}\n"
             f"Light Signal:            {self._light_signal}\n"
@@ -123,11 +125,11 @@ class TrackBlock(QObject):
             self.suggested_speed_updated.emit(value)
 
     @property
-    def authority(self) -> int:
+    def authority(self) -> Authority:
         return self._authority
 
     @authority.setter
-    def authority(self, value: int) -> None:
+    def authority(self, value: Authority) -> None:
         if self._authority != value:
             self._authority = value
             self.authority_updated.emit(value)
