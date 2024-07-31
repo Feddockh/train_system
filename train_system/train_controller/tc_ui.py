@@ -5,7 +5,7 @@ from PyQt6.QtGui import QDoubleValidator, QIntValidator
 from train_system.train_controller.tc_widgets import CircleWidget, EngineerTable
 from train_system.common.time_keeper import TimeKeeper, TimeKeeperWidget
 from train_system.common.gui_features import CustomTable
-from train_system.train_controller.train_controller import MockTrainModel
+from train_system.train_controller.train_controller import MockTrainModel, TrainController
 from train_system.train_model.train_model import TrainModel
 from train_system.train_controller.engineer import Engineer
 from train_system.common.palette import Colors
@@ -463,18 +463,13 @@ class TestBenchWindow(QMainWindow):
         m = ft / 3.28084
         return m
 
-    """
-    NEEDS ERROR CHECKING
-    """
     def setpoint_edit_changed(self, x):
-        if(x != ""):
+        x_num = float(x)
+        if(x_num <= SPEED_MAX and x_num >= SPEED_MIN):
             self.setpoint_speed = float(x)
             self.setpoint_updated.emit(x)
             #self.train.setpoint_speed = self.convert_to_ms(float(x))
         
-    """
-    DOESNT WORK
-    """
     def service_brake_toggled(self, check):
         if check:
             self.serv_brake_status = True
@@ -493,9 +488,7 @@ class TestBenchWindow(QMainWindow):
             self.emerg_brake_status = False
             self.emergency_brake_updated.emit(self.emerg_brake_status)
             #self.train.brake.set_emergency_brake(False)
-    """
-    NEEDS ERROR CHECKING
-    """
+  
     def comm_temp_changed(self, x):
         if(x != ""):
             self.comm_temp = int(x)
@@ -666,6 +659,8 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.setWindowTitle("Driver") #Driver
 
         self.tm = MockTrainModel()
+        #temp ac for mins and maxes
+
 
         self.test_window = None
         self.manual_window = None
@@ -680,7 +675,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.light_status = False
         self.right_door = False
         self.left_door = False
-        self.temp = 0
+        self.temp = 69.0
 
         self.setpoint_speed = 5
         
@@ -697,10 +692,11 @@ class DriverWindow(QMainWindow): ###DriverWindow
         dec_validator = QDoubleValidator()
         dec_validator.setNotation(QDoubleValidator.Notation.StandardNotation)
         dec_validator.setDecimals(1)
+        dec_validator.setRange(SPEED_MIN, SPEED_MAX)
 
         int_validator = QIntValidator()
-        #int_validator.setNotation(QIntValidator.Notation.StandardNotation)
-
+        #int_validator.setRange(self.ac.MIN_TEMP, self.ac.MAX_TEMP)
+  
         #the left outputs will use a vertical layout
         left_out_layout = QVBoxLayout()
 
@@ -1087,8 +1083,10 @@ class DriverWindow(QMainWindow): ###DriverWindow
     """
     @pyqtSlot(str)
     def handle_setpoint_edit_changed(self, x: str) -> None:
-        if(x != ""):
+        x_num = float(x)
+        if(x_num <= SPEED_MAX and x_num >= SPEED_MIN):
             self.setpoint_speed = float(x)
+            self.setpoint_updated.emit(x)
             #self.train.setpoint_speed = self.convert_to_ms(float(x))
 
     @pyqtSlot(bool)

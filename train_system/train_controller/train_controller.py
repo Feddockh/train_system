@@ -403,8 +403,11 @@ class TrainController(QObject):
 
     @pyqtSlot(str)
     def handle_setpoint_edit_changed(self, x: str) -> None:
-        if(x != ""):
-            self.set_setpoint_speed(float(x) / 2.23694)
+        x_num = float(x)
+        if(x_num <= 43 and x_num >= 0):
+            self.set_setpoint_speed(x_num / 2.23694)
+        else:
+            self.set_setpoint_speed(0)
 
     @pyqtSlot(bool)
     def handle_service_brake_toggled(self, check: bool) -> None:
