@@ -1107,9 +1107,13 @@ class TrainSystem:
     # Multiple laps around
     def long_run(self):
         self.controller.set_setpoint_speed(20)
-        for _ in range(80):
+        self.controller.set_position(1000)
+        position = []
+        for _ in range(8000):
             self.controller.update_authority(Authority(1000000000,65))
-            print(f"Position: {self.controller.position}, Authority: {self.controller.authority}")
+            if self.controller.track_block.underground:
+                position.append(self.controller.position)
+        print(position)
 
     def full_loop_run(self):
         self.controller.set_setpoint_speed(20)
@@ -1172,7 +1176,7 @@ class TrainSystem:
 
         self.controller.update_authority(Authority(1000000000,65))
         self.controller.train_model.handle_emergency_stop()
-        
+
         for _ in range(5):
             self.controller.update_authority(Authority(1000000000,65))
             self.controller.train_model.handle_emergency_stop()
@@ -1227,13 +1231,13 @@ class TrainSystem:
 if __name__ == "__main__":
     # train_system = TrainSystem(HOST, PORT, USERNAME, PASSWORD)
     train_system = TrainSystem()
-    # train_system.small_run()
+    train_system.small_run()
     # train_system.long_run()
     # train_system.full_loop_run()
-    train_system.destination_run()
+    # train_system.destination_run()
     # train_system.service_brake_run()
     # train_system.emergency_brake_run()
-    train_system.emergency_run()
+    # train_system.emergency_run()
     # train_system.commanded_speed_run()
     # train_system.switch_modes_run()
     # train_system.fault_run()
