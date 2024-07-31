@@ -8,7 +8,6 @@ from train_system.common.line import Line
 from train_system.common.track_block import TrackBlock
 from train_system.mbo_manager.mbo_manager import MBOOffice
 from train_system.mbo_manager.mbo_ui import MBOWindow
-
 from train_system.mbo_manager.mbo_schedule import Schedules
 
 
@@ -45,8 +44,3 @@ mbo_main_ui.show()
 sys.exit(app.exec())
 
 #if __name__ == "__main__":
-
-
-
-
-

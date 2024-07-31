@@ -28,16 +28,6 @@ class MBOOffice(QObject):
         self.red_line = Line('Red')
         self.red_line.load_defaults()
         
-        # Create a list of train objects
-        #pass self.trains: Dict[int, TrainDispatchUpdate] = {}
-        self.last_train_dispatched = None
-                
-        self.route_authority_green = {'Glenbury Down' : 400 , 'Dormont Down' : 950, 'Mt Lebanon Down' : 500, 'Poplar' : 2786.6, 'Castle Shannon' : 612.5, 
-                      'Mt Lebanon Up' : 2887.5 , 'Dormont Up' : 515, 'Glenbury Up' : 921, 'Overbrook Up' : 546, 'Inglewood' : 450, 
-                      'Central Up' : 450, 'Edgebrook' : 3684, 'Pioneer' : 700, 'Station' : 675, 'Whited' : 1125, 'South Bank' : 1275,
-                      'Central Down' : 400, 'Overbrook Down' : 900, 'Yard' : -125}
-        
-        self.previous_position = {}
               
     def kmhr_to_ms(self, km_hr):
         """convert km/hr to m/s
@@ -95,10 +85,18 @@ class MBOOffice(QObject):
         each train stops at it's desitnation and opens the doors, and stops before any block maintenance 
         """
         # "authority:destination_block"
+            #where authority is the m to it needs to stop 
+            #where destination block is next station 
+
+        #if block is in 57 then train padding needs to be bigger
+        #block  in red 
+
         #initial authority will be unobtructed path to destination 
-            #looking for blocks under maint, switch positions 
+            #looking for blocks under maint, switch positions then will change 
+            
         #if train infront is within certain distance of the train then set authority tooooo
             # service breaking distance? 
+            #set to back of train infront with some wiggle room 
         
         #use mbo_train_dispatch to adjust the departure time and next stop for the train once it reaches it's destination 
 
@@ -128,19 +126,6 @@ class MBOOffice(QObject):
             
             #is key int or string? think string
             key = 0
-        
-        @pyqtSlot(str, float, int)
-        def satellite_recieve(self, train_id: str, position: float, block: int) -> None:
-            """
-            Recieve train position
-            
-            Args:
-                train_id (str): _description_
-                position (float): _description_
-                blcok (int): _description_
-            """
-            #pass self.train_positions[train_id] = {'position' : position, 'block' : block}
-            self.satellite_send(train_id, position, float)
         
         def satellite_send(self, train_id: str, position: float, block: int):
             """
@@ -183,6 +168,34 @@ class MBOOffice(QObject):
             decryption to recieve position(s)
             """
             #will generate key in top level main to use here, and decrypt the speed and authority 
+            
+        @pyqtSlot(int)
+        def handle_time_update(self, tick: int) -> None:
+            """send speed and authority every step - IF in MBO mode 
+
+            Args:
+                tick (int): _description_
+            """
+        @pyqtSlot(str, float, int)
+        def satellite_recieve(self, train_id: str, position: float, velocity: float, block: int) -> None:
+            """
+            Recieve train position
+            
+            Args:
+                train_id (str): _description_
+                position (float): _description_
+                blcok (int): _description_
+            """
+            #pass self.train_positions[train_id] = {'position' : position, 'block' : block}
+            #if MBO mode
+            self.satellite_send(train_id, position, float) 
+              
+        
+        @pyqtSlot(bool)
+        def switch_modes():
+            """
+            
+            """  
             
  
 

@@ -1,5 +1,6 @@
 import csv
 from csv import writer
+import os
 import datetime
 from datetime import timedelta
 from datetime import datetime
@@ -47,6 +48,7 @@ class Schedules:
                                     'Pioneer': 3, 'Station': 15, 'Whited 2': 21,
                                     'South Bank': 30, 'Central 2' : 38, 'Overbrook 2' : 56, 'past_yard': 62, 'to_yard': 57}
             
+            #TODO update red line block info 
             # Route blocks for the red line
             self.route_blocks_red = {'yard': 152, 'from_yard' : 153, 'Glenbury 1': 65, 'Dormont 1': 73, 'Mt. Lebanon 1': 77,
                                     'Poplar': 88, 'Castle Shannon': 96, 'Mt. Lebanon 2' : 77, 'Dormont 2' : 105, 'Glenbury 2' : 114,'Overbrook 1': 123,
@@ -73,7 +75,7 @@ class Schedules:
                 checked_items2 (_type_): _description_
             """
            
-            # Set the number of trains based on throughput 
+            # Set the number of trains based on throughput (trains/line/hour)
             if train_throughput == "Low":
                 num_of_trains = 4
                 train_departure_interval = timedelta(minutes=15)
@@ -99,8 +101,6 @@ class Schedules:
 
             start_time = datetime.strptime(selected_day + ' ' + selected_start_time, '%m-%d-%Y %H:%M:%S')
             end_time = start_time + timedelta(hours=24)
-
-            # pass train_departure_interval = timedelta(minutes=20) if train_throughput == "High" else timedelta(hours=1)
 
             def create_schedule(filtered_route_blocks, filtered_prev_blocks ,file_suffix):
                 """ Making a schedule option 
@@ -151,13 +151,14 @@ class Schedules:
                                 if arrival_time > shift_end_time:
                                     break
 
-                                schedule.append([f"Train{train_id}", f"{end_station}", prev_block ,start_block, end_block, arrival_time, driver, crew1, crew2])
+                                schedule.append([train_id, f"{end_station}", prev_block ,start_block, end_block, arrival_time, driver, crew1, crew2])
                                 
                                 # Adding time to stop at station for 30s
                                 train_current_time = arrival_time + timedelta(seconds=30)
 
                                 if (train_current_time - shift_start) >= self.drive_length:
                                     train_current_time += self.break_length
+                                    
                                     if train_current_time >= shift_end_time or train_current_time >= end_time:
                                         break
 
@@ -176,9 +177,13 @@ class Schedules:
                         if train_current_time >= end_time:
                             break
                 
-                print("printing schedule")            
+                print("printing schedule")
+                file_path = 'system_data/schedules/green_line_schedules'            
                 file_name = f"{selected_day}_green_{file_suffix}.csv"
-                with open(file_name, 'w', newline='') as csvfile:
+                
+                folder_path = os.path.join(file_path, file_name)
+                
+                with open(folder_path, 'w', newline='') as csvfile:
                     schedule_writer = csv.writer(csvfile)
                     schedule_writer.writerow(["Train", "Station", "Prev Block", "Start Block", "End Block","Arrival Time", "Driver", "Crew 1", "Crew 2"])
                 

@@ -8,11 +8,10 @@ import sys
 
 
 from PyQt6.QtWidgets import QWidget
-from train_system.mbo_manager.gui_features import CustomTable
 from train_system.common.time_keeper import TimeKeeper
 from train_system.common.time_keeper import TimeKeeperWidget
 from train_system.common.line import Line
-
+from train_system.common.gui_features import CustomTable
 
 class MBOWindow(QMainWindow):
     
