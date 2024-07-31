@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtGui import QPainter, QColor
 from PyQt6.QtCore import Qt
 from PyQt6 import QtCore, QtGui, QtWidgets, uic
-from train_system.track_controller.sw_track_controller import TrackController
+from train_system.track_controller.sw_track_controller import SWTrackController
 from train_system.common.track_block import TrackBlock
 from train_system.common.line import Line
 from train_system.track_controller.sw_ui import ProgrammerUI
