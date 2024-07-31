@@ -55,6 +55,12 @@ if (track_blocks[0].occupancy == False
     and track_blocks[26].occupancy == False):
     track_blocks[3]._plc_unsafe = False  
     track_blocks[11]._plc_unsafe = False 
+    track_blocks[2]._plc_unsafe = False
+    track_blocks[3]._plc_unsafe = False
+    track_blocks[27]._plc_unsafe = False
+    track_blocks[11]._plc_unsafe = False
+    track_blocks[12]._plc_unsafe = False
+    track_blocks[26]._plc_unsafe = False
 
 #Train waiting to join or leave loop - if((M.lastBlock & N) OR (Loop.lastBlock & N))
 elif(track_blocks[2].occupancy == True and  
