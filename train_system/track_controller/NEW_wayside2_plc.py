@@ -24,24 +24,14 @@ Post Index Change
 # Switch 58
 
 
-#Scenario 1: heading to yard
-if(track_blocks[109].authority < 0 and track_blocks[28].occupancy and track_blocks[29].occupancy == False):
+#Scenario 1: heading to yard, authority at yard indicates that we're going to yard, check for it then set swithc position
+if(track_blocks[108].authority < 0 and track_blocks[28].occupancy):
     
     #set switch position
     track_blocks[28].switch.position = track_blocks[28].switch.child_blocks[1]
     
     #set light
-    track_blocks[28]._light_signal = True
-    track_blocks[29]._light_signal = False
-    track_blocks[107]._light_signal = True
-
-if(track_blocks[109].authority < 0 and track_blocks[28].occupancy and track_blocks[29].occupancy):
-    
-    #set switch position
-    track_blocks[28].switch.position = track_blocks[28].switch.child_blocks[1]
-    
-    #set light
-    track_blocks[28]._light_signal = True
+    #track_blocks[28]._light_signal = False
     track_blocks[29]._light_signal = False
     track_blocks[107]._light_signal = True
 
@@ -52,12 +42,12 @@ if(track_blocks[28].occupancy and track_blocks[29].occupancy == False and track_
     track_blocks[28].switch.position = track_blocks[28].switch.child_blocks[0]
 
     # set light colors
-    track_blocks[28]._light_signal = True
+    #track_blocks[28]._light_signal = False
     track_blocks[29]._light_signal = True
     track_blocks[107]._light_signal = False
 
 # Scenario 3: 57, 58 and 151 are occupied, temporary stop
-if(track_blocks[28].occupancy and track_blocks[29].occupancy and track_blocks[107].occupancy):
+if(track_blocks[29].occupancy and track_blocks[107].occupancy and track_blocks[107].authority > 0):
 
     # set authority at 57 to zero, and wait for those blocks to become unoccupied
     track_blocks[28].authority = 0
@@ -87,7 +77,7 @@ if(track_blocks[34].occupancy == False and track_blocks[33].occupancy == False a
     track_blocks[34].switch.position = track_blocks[34].switch.child_blocks[1]
 
     # set light signals
-    track_blocks[34]._light_signal = False
+    track_blocks[34]._light_signal = True
     track_blocks[33]._light_signal = False
     track_blocks[109]._light_signal = True
 

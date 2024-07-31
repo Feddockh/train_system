@@ -1,6 +1,34 @@
 #train_system/track_controller/wayside4_plc.py
 
 #SWITCH AT BLOCK 9
+#Scenario: Default Route coming into the loop
+if(track_blocks[15]._occupancy and (track_blocks[0]._occupancy == False and track_blocks[1].occupancy == False and track_blocks[2].occupancy == False 
+    and track_blocks[3].occupancy == False and track_blocks[4].occupancy == False and track_blocks[5].occupancy == False 
+    and track_blocks[6].occupancy == False and track_blocks[7].occupancy == False and track_blocks[8].occupancy == False
+    and track_blocks[9].occupancy == False and track_blocks[10].occupancy == False and track_blocks[11].occupancy == False
+    and track_blocks[12].occupancy == False and track_blocks[13].occupancy == False and track_blocks[14].occupancy == False)):
+
+    #set switch position
+    track_blocks[15].switch.position = track_blocks[15].switch.child_blocks[0]
+
+    #set lights
+    track_blocks[0]._light_signal = True
+    track_blocks[14]._light_signal = False
+    track_blocks[15]._light_signal = False
+
+
+#Scenario: Default Route coming out of the yard
+if(track_blocks[39].occupancy and (track_blocks[0].occupancy == False and track_blocks[1].occupancy == False and track_blocks[2].occupancy == False and track_blocks[3].occupancy == False and track_blocks[4].occupancy == False
+    and track_blocks[5].occupancy == False and track_blocks[6].occupancy == False and track_blocks[7].occupancy == False and track_blocks[8].occupancy == False and track_blocks[9].occupancy == False)):
+
+    #set switch position
+    track_blocks[8].switch.position = track_blocks[8].switch.child_blocks[1]
+
+    track_blocks[9].authority = 0
+    #set ligth color
+    track_blocks[8]._light_signal = True
+    track_blocks[9]._light_signal = False
+    track_blocks[10]._light_signal = False
 
 #(Correct)
 # Scenario 1: C to yard, 9 to block 77, check yards authority if negative go to yard
@@ -19,7 +47,7 @@ if(track_blocks[8].occupancy and track_blocks[39].authority < 0):
 
 #(Correct)
 # Scenario 2: Yard to C, 77 to 9
-if(track_blocks[38].occupancy and 
+if(track_blocks[39].occupancy and 
     (track_blocks[0].occupancy == False and track_blocks[1].occupancy == False and track_blocks[2].occupancy == False and 
      track_blocks[3].occupancy == False and track_blocks[4].occupancy == False and track_blocks[5].occupancy == False and 
      track_blocks[6].occupancy == False and track_blocks[7].occupancy == False and track_blocks[8].occupancy == False)):
@@ -33,7 +61,7 @@ if(track_blocks[38].occupancy and
     # set light signals
     track_blocks[8]._light_signal = True
     track_blocks[9]._light_signal = False
-    tracK_blocks[38]._light_signal = False
+    track_blocks[38]._light_signal = False
 
 # Scenario 3: Block 9 to 10
 if(track_blocks[8].occupancy and track_blocks[38].occupancy and 
@@ -90,7 +118,7 @@ if((track_blocks[0].occupancy or track_blocks[1].occupancy or track_blocks[2].oc
 
 #(correct)
 # Scenario 1: A to F, check if block 1 is occupied, then make sure no blocks from F to H(27) are unoccupeid, also check if block 15 is unoccupied
-if(track_blocks[0].occupancy and track_blocks[14].occupancy == False
+if(track_blocks[0].occupancy and track_blocks[14].occupancy == False and
    (track_blocks[15].occupancy == False and track_blocks[16].occupancy == False and track_blocks[17].occupancy == False and 
     track_blocks[18].occupancy == False and track_blocks[19].occupancy == False and track_blocks[20].occupancy == False and 
     track_blocks[21].occupancy == False and track_blocks[22].occupancy == False and track_blocks[23].occupancy == False and 
@@ -101,9 +129,9 @@ if(track_blocks[0].occupancy and track_blocks[14].occupancy == False
     track_blocks[15].switch.position = track_blocks[15].switch.child_blocks[0]
 
     # set light signals
-    track_blocks[0]._light_signal = True
+    track_blocks[0]._light_signal = False
     track_blocks[14]._light_signal = False
-    track_blocks[15]._light_signal = False
+    track_blocks[15]._light_signal = True
 
 #(Correct)
 # Scenario 2: E to F, check if all blocks 16 through 27 are unoccupied, if so connect to block. make sure block 1 is unoccupied so that it doesn't confuse switch
@@ -178,16 +206,16 @@ if(track_blocks[26].occupancy and track_blocks[27].occupancy == False and track_
     track_blocks[26].switch.position = track_blocks[26].switch.child_blocks[0]
 
     #set authority at 76 to zero
-    track_blocks[37].authority = 0
+    track_blocks[38].authority = 0
 
     #set light color
     track_blocks[26]._light_signal = False
     track_blocks[27]._light_signal = True
-    track_blocks[37]._light_signal = False
+    track_blocks[38]._light_signal = False
 
 #(Correct)
 #  Scenario 2: connect 76 to 27, check all occupancies in F G and H(27) if unoccupied then connect if not, don't connect
-if(track_blocks[37].occupancy and (track_blocks[15].occupancy == False and track_blocks[16].occupancy == False and track_blocks[17].occupancy == False and track_blocks[18].occupancy == False
+if(track_blocks[38].occupancy and (track_blocks[15].occupancy == False and track_blocks[16].occupancy == False and track_blocks[17].occupancy == False and track_blocks[18].occupancy == False
     and track_blocks[18].occupancy == False and track_blocks[19].occupancy == False and track_blocks[20].occupancy == False and track_blocks[21].occupancy == False and track_blocks[22].occupancy == False
     and track_blocks[23].occupancy == False and track_blocks[24].occupancy == False and track_blocks[25].occupancy == False and track_blocks[26].occupancy == False)):
 
@@ -200,7 +228,7 @@ if(track_blocks[37].occupancy and (track_blocks[15].occupancy == False and track
     #set lights
     track_blocks[26]._light_signal = True
     track_blocks[27]._light_signal = False
-    track_blocks[37]._light_signal = False
+    track_blocks[38]._light_signal = False
 
 #(Correct)
 #Scenario 3: 27 to 76 check that blocks 72 73 74 75 and 76 are all unoccupied, and check if 28 through 30 are occupied
@@ -216,7 +244,7 @@ if(track_blocks[26].occupancy and track_blocks[33].occupancy == False and track_
     #set lights
     track_blocks[26]._light_signal = False
     track_blocks[27]._light_signal = False
-    track_blocks[37]._light_signal = True
+    track_blocks[38]._light_signal = True
 
 
 #Switch at Block 9
@@ -235,8 +263,8 @@ print(f"Authority: {track_blocks[9].authority}\n")
 
 # Block 27
 print("Block 77 Information: ")
-print(f"Light Signal: {track_blocks[38]._light_signal}")
-print(f"Authority: {track_blocks[38].authority}\n")
+print(f"Light Signal: {track_blocks[39]._light_signal}")
+print(f"Authority: {track_blocks[39].authority}\n")
 
 
 #Switch at BLOCK 16
@@ -270,8 +298,8 @@ print(f"Authority: {track_blocks[27].authority}\n")
 
 #block 76 information
 print("Block 76 Information: ")
-print(f"Light Signal: {track_blocks[37]._light_signal}")
-print(f"Authority: {track_blocks[37].authority}\n")
+print(f"Light Signal: {track_blocks[38]._light_signal}")
+print(f"Authority: {track_blocks[38].authority}\n")
 
 
 

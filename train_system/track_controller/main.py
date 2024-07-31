@@ -67,7 +67,7 @@ def main():
 
 
     #Had to adjust so that red line would work 
-    track_blocks4 = line2.track_blocks[0:34] + line2.track_blocks[72:78]
+    track_blocks4 = line2.track_blocks[0:34] + line2.track_blocks[71:78]
 
     track_blocks5 = line2.track_blocks[23:45] + line2.track_blocks[67:75]
 
@@ -81,7 +81,7 @@ def main():
 
     Wayside_3 = TrackController(track_blocks3, "Wayside 3", 28)
     
-    Wayside_4 = TrackController(track_blocks4, "Wayside 4", 38)
+    Wayside_4 = TrackController(track_blocks4, "Wayside 4", 40)
     
     Wayside_5 = TrackController(track_blocks5, "Wayside 5", 30)
     
