@@ -153,7 +153,10 @@ class DispatchCommandWidget(QWidget):
             list[str]: A list of train IDs as strings.
         """
 
-        return [str(i) for i in range(1, 101)]
+        if self.line.name.lower() == "red":
+            return [str(i) for i in range(20, 40)]
+        else:
+            return [str(i) for i in range(0, 20)]
     
     def generate_stops(self) -> list[str]:
 
