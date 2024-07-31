@@ -84,7 +84,7 @@ class TrackBlock(QObject):
             f"Switch:                  {self.switch}\n"
             f"Beacon:                  {self.beacon}\n"
             f"Suggested Speed:         {self._suggested_speed}\n"
-            f"Authority:               {self._authority.authority}\n"
+            f"Authority:               {self._authority}\n"
             f"Occupancy:               {self._occupancy}\n"
             f"Crossing Signal:         {self._crossing_signal}\n"
             f"Light Signal:            {self._light_signal}\n"

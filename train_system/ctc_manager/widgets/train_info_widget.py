@@ -9,6 +9,7 @@ from train_system.common.time_keeper import TimeKeeper
 from train_system.common.line import Line
 from train_system.ctc_manager.ctc_train_dispatch import CTCTrainDispatch
 from train_system.common.conversions import seconds_to_time, meters_to_miles, kph_to_mph
+from train_system.common.authority import Authority
 
 
 class TrainInfoWidget(QWidget):
@@ -134,7 +135,11 @@ class TrainInfoWidget(QWidget):
             speed_mph = round(kph_to_mph(train.suggested_speed), 2)
             self.set_table_item(row, 4, f"{speed_mph} mph")
 
-            authority_miles = round(meters_to_miles(train.authority), 2)
+            authority = train.authority
+            if authority is not None:
+                authority_miles = round(meters_to_miles(train.authority.get_distance()), 2)
+            else :
+                authority_miles = 0
             self.set_table_item(row, 5, f"{authority_miles} miles")
 
     def set_table_item(self, row: int, col: int, text: str) -> None:
