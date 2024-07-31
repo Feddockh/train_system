@@ -55,7 +55,6 @@ class TrainController(QObject):
         print(f"Hardware: {self.hardware}")
         self.time_step = 1  # 1 second time step
         self.train_length = 32.2  # 32.2 meters
-        self.AUTHORITY_PADDING = 0.25 * self.train_length  # Padding for authority
 
         ## Initialize objects
         self.train_model = MockTrainModel()  # Used to store data received from Train Model. No computations done in the object
@@ -71,7 +70,6 @@ class TrainController(QObject):
         self.brake = self.Brake()       # Brake holds service and emergency brake status
         self.brake.service_brake_updated.connect(self.train_model.handle_service_brake_update)
         self.brake.emergency_brake_updated.connect(self.train_model.handle_emergency_brake_update)
-        self.emergency_mode = False
         self.train_model.emergency_mode.connect(self.handle_emergency_mode)
 
 
@@ -94,6 +92,7 @@ class TrainController(QObject):
 
         # Train Controller Calculated Variables
         self.maintenance_mode = False     # Maintenance status of the train
+        self.emergency_mode = False     # Track Controller emergency signal
         
         # Train Block Inputs
         self.line.load_defaults()
@@ -104,6 +103,7 @@ class TrainController(QObject):
         self.current_speed = self.train_model.current_speed    # Current speed of the train
         self.commanded_speed = self.train_model.commanded_speed  # Commanded speed from the Train Model (CTC or MBO)
         self.authority, self.destination = None, None
+        self.AUTHORITY_PADDING = 0.25 * self.train_length  # Padding for authority
         self.update_authority(self.train_model.authority)        # Authority and destination from the Train Model (CTC or MBO)
         self.engine_fault = self.train_model.engine_fault           # Fault status from the Train Model
         self.brake_fault = self.train_model.brake_fault           # Fault status from the Train Model
@@ -117,6 +117,9 @@ class TrainController(QObject):
         # If last timestep TM received emergency from Track Controller, set service brake
         if self.emergency_mode:
             self.brake.set_service_brake(True)
+        if self.destination_counter > 0:
+            self.brake.set_service_brake(True)
+            self.destination_counter -= 1
         self.emergency_mode = False # Reset emergency mode. Will be set back to True if emergency mode is triggered again
         self.update_current_speed(self.train_model.get_current_speed())
         self.update_commanded_speed(self.train_model.get_commanded_speed())
@@ -151,6 +154,7 @@ class TrainController(QObject):
         self.polarity = 0
         self.block_number = None
         self.station = None
+        self.destination_counter = 0
         self.yard_block = 152
         self.finished = False
         self.update_track_block()
@@ -207,9 +211,10 @@ class TrainController(QObject):
     # Input) float: position from the yard
     def set_position(self, position: float):
         # print("------------- Setting Position ---------------")
-        if(position >= self.position):
+        if position > self.position:
             self.polarity -= position - self.position
-        else:
+            self.destination_counter = 0
+        elif position < self.position:
             # Reset Route and position
             self.route = dq(self.line.route.from_yard)
             self.reset_route()
@@ -265,12 +270,14 @@ class TrainController(QObject):
             if self.destination == self.block_number:
                 # If we're in the center of the block, open doors
                 if abs(self.track_block.length / 2 - self.polarity) >= 0.25*self.track_block.length:
-                    self.doors.open_door()
-                    self.dropped_off = True
-                    # self.authority = self.position  # Stay at the current position until authoirty is updated #####
+                    self.at_station()
         elif self.doors.get_status():
             self.doors.close_door()
         
+    def at_station(self):
+        self.doors.open_door()
+        self.dropped_off = True
+        self.destination_counter = 30
         
     ## Setpoint and Commanded Speed Functions
     def set_setpoint_speed(self, speed: float):
