@@ -157,7 +157,6 @@ class TrainInfoWidget(QWidget):
         item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
         item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
         self.table.setItem(row, col, item)
-        self.table.setStyleSheet(f"color: {Colors.BLACK}; background-color: {Colors.WHITE};")
 
     @pyqtSlot()
     def handle_time_update(self) -> None:
