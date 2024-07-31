@@ -7,10 +7,11 @@ from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget,
                              QStackedWidget, QSizePolicy)
 from PyQt6.QtCore import pyqtSignal, Qt, pyqtSlot
 
+from train_system.common.palette import Colors
 from train_system.common.line import Line
 from train_system.common.track_block import TrackBlock
-from train_system.ctc_manager.ctc_train_dispatch import CTCTrainDispatch
 from train_system.common.time_keeper import TimeKeeper, TimeKeeperWidget
+from train_system.ctc_manager.ctc_train_dispatch import CTCTrainDispatch
 from train_system.ctc_manager.widgets.switch_widget import SwitchWidget
 from train_system.ctc_manager.widgets.track_visual_widget import TrackVisualWidget
 from train_system.ctc_manager.widgets.throughput_widget import ThroughputWidget
@@ -59,6 +60,9 @@ class DispatcherUI(QMainWindow):
         self.central_widget.setLayout(self.central_layout)
         self.setCentralWidget(self.central_widget)
 
+        # Set the background color to white
+        self.central_widget.setStyleSheet(f"background-color: {Colors.WHITE};")
+
         # Add the time keeper widget to the top of the central layout
         self.time_keeper_widget = TimeKeeperWidget(self.time_keeper)
         self.central_layout.addWidget(self.time_keeper_widget)
@@ -96,10 +100,11 @@ class DispatcherUI(QMainWindow):
         # Test bench toggle label
         self.test_bench_toggle_label = QLabel("Test Bench Mode")
         self.test_bench_toggle_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.test_bench_toggle_label.setStyleSheet(f"color: {Colors.BLACK};")
         self.test_bench_toggle_layout.addWidget(self.test_bench_toggle_label)
 
         # Test bench toggle switch
-        self.test_bench_toggle_switch = SwitchWidget()
+        self.test_bench_toggle_switch = SwitchWidget(bg_color=Colors.GREY, circle_color=Colors.WHITE, active_color=Colors.RED)
         centered_test_bench_toggle = QHBoxLayout()
         centered_test_bench_toggle.addWidget(self.test_bench_toggle_switch)
         self.test_bench_toggle_layout.addLayout(centered_test_bench_toggle)
@@ -108,10 +113,11 @@ class DispatcherUI(QMainWindow):
         # Maintenance mode toggle label
         self.maintenance_toggle_label = QLabel("Maintenance Mode")
         self.maintenance_toggle_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.maintenance_toggle_label.setStyleSheet(f"color: {Colors.BLACK};")
         self.maintenance_toggle_layout.addWidget(self.maintenance_toggle_label)
 
         # Maintenance mode toggle switch
-        self.maintenance_toggle_switch = SwitchWidget()
+        self.maintenance_toggle_switch = SwitchWidget(bg_color=Colors.GREY, circle_color=Colors.WHITE, active_color=Colors.YELLOW)
         centered_maintenance_toggle = QHBoxLayout()
         centered_maintenance_toggle.addWidget(self.maintenance_toggle_switch)
         self.maintenance_toggle_layout.addLayout(centered_maintenance_toggle)
@@ -120,10 +126,11 @@ class DispatcherUI(QMainWindow):
         # MBO mode toggle label
         self.mbo_toggle_label = QLabel("MBO Mode")
         self.mbo_toggle_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.mbo_toggle_label.setStyleSheet(f"color: {Colors.BLACK};")
         self.mbo_toggle_layout.addWidget(self.mbo_toggle_label)
 
         # MBO mode toggle switch
-        self.mbo_toggle_switch = SwitchWidget()
+        self.mbo_toggle_switch = SwitchWidget(bg_color=Colors.GREY, circle_color=Colors.WHITE, active_color=Colors.BLUE)
         centered_mbo_toggle = QHBoxLayout()
         centered_mbo_toggle.addWidget(self.mbo_toggle_switch)
         self.mbo_toggle_layout.addLayout(centered_mbo_toggle)
@@ -132,10 +139,11 @@ class DispatcherUI(QMainWindow):
         # Automatic mode toggle label
         self.automatic_toggle_label = QLabel("Automatic Mode")
         self.automatic_toggle_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.automatic_toggle_label.setStyleSheet(f"color: {Colors.BLACK};")
         self.automatic_toggle_layout.addWidget(self.automatic_toggle_label)
 
         # Automatic mode toggle switch
-        self.automatic_toggle_switch = SwitchWidget()
+        self.automatic_toggle_switch = SwitchWidget(bg_color=Colors.GREY, circle_color=Colors.WHITE, active_color=Colors.BLUE)
         centered_automatic_toggle = QHBoxLayout()
         centered_automatic_toggle.addWidget(self.automatic_toggle_switch)
         self.automatic_toggle_layout.addLayout(centered_automatic_toggle)
@@ -144,10 +152,13 @@ class DispatcherUI(QMainWindow):
         # Line toggle label
         self.line_toggle_label = QLabel(f"{lines[0].name.capitalize()}      {lines[1].name.capitalize()}") 
         self.line_toggle_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.line_toggle_label.setStyleSheet(f"color: {Colors.BLACK};")
         self.line_toggle_layout.addWidget(self.line_toggle_label)
 
         # Line toggle switch
-        self.line_toggle_switch = SwitchWidget(bg_color=lines[0].name.lower(), active_color=lines[1].name.lower())
+        line1_color = Colors.GREEN if lines[0].name.lower() == "green" else Colors.RED
+        line2_color = Colors.GREEN if lines[1].name.lower() == "green" else Colors.RED
+        self.line_toggle_switch = SwitchWidget(bg_color=line1_color, circle_color=Colors.WHITE, active_color=line2_color)  
         centered_line_toggle = QHBoxLayout()
         centered_line_toggle.addWidget(self.line_toggle_switch)
         self.line_toggle_layout.addLayout(centered_line_toggle)
@@ -156,8 +167,13 @@ class DispatcherUI(QMainWindow):
         ### TRAIN VISUAL WIDGET ###
 
         # Create a layout that combines the train visual widget and thorughput widget
+        self.visual_widget = QWidget()
         self.visual_layout = QVBoxLayout()
-        self.top_layout.addLayout(self.visual_layout)
+        self.top_layout.addWidget(self.visual_widget)
+        self.visual_widget.setLayout(self.visual_layout)
+
+        # Set the visual widget background color
+        self.visual_widget.setStyleSheet(f"background-color: {Colors.GREY};")
 
         # Track visual widget
         self.track_visual_widget = TrackVisualWidget(self.line)

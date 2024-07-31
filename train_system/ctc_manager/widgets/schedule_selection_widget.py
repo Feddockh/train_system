@@ -8,6 +8,7 @@ from typing import Optional, List
 import pandas as pd
 import os
 
+from train_system.common.palette import Colors
 from train_system.common.schedule import Schedule
 from train_system.common.line import Line
 from train_system.common.conversions import time_to_seconds
@@ -46,8 +47,8 @@ class ScheduleSelectionWidget(QWidget):
         title_label = QLabel(self.title)
         title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title_label.setStyleSheet(
-            "background-color: #333333;"
-            "color: #fdfdfd;"
+            f"background-color: {Colors.BLACK};"
+            f"color: {Colors.WHITE};"
             "font-size: 16pt;"
             "font-weight: 600;"
         )
@@ -59,19 +60,21 @@ class ScheduleSelectionWidget(QWidget):
         self.table.verticalHeader().setVisible(False)
 
         # Set the style for the table headers and cells
-        self.table.setStyleSheet("""
-            QHeaderView::section { 
-                background-color: #C8C8C8;
-                color: #333333;
+        self.table.setStyleSheet(f"""
+            QHeaderView::section {{ 
+                background-color: {Colors.GREY};
+                color: {Colors.BLACK};
                 font-size: 14pt;
-            }
-            QTableWidget::item {
-                background-color: #FDFDFD;
-                border: 1px solid #333333; 
-            }
-            QTableWidget {
-                gridline-color: #333333; 
-            }
+            }}
+            QTableWidget::item {{
+                background-color: {Colors.WHITE};
+                color: {Colors.BLACK};
+                border: 1px solid {Colors.BLACK}; 
+            }}
+            QTableWidget {{
+                background-color: {Colors.GREY};
+                gridline-color: {Colors.BLACK};
+            }}
         """)
 
         # Set the palette for the table to control the background and text colors
@@ -96,16 +99,19 @@ class ScheduleSelectionWidget(QWidget):
         # Load schedules button
         self.load_button = QPushButton("Load Schedules")
         self.load_button.clicked.connect(self.load_schedules)
+        self.load_button.setStyleSheet(f"background-color: {Colors.GREY}; color: {Colors.BLACK};")
         button_layout.addWidget(self.load_button)
 
         # Next schedule button
         self.next_schedule_button = QPushButton("Next Schedule")
         self.next_schedule_button.clicked.connect(self.next_schedule)
+        self.next_schedule_button.setStyleSheet(f"background-color: {Colors.GREY}; color: {Colors.BLACK};")
         button_layout.addWidget(self.next_schedule_button)
 
         # Add dispatch button
         self.dispatch_button = QPushButton("Dispatch")
         self.dispatch_button.clicked.connect(self.dispatch_trains)
+        self.dispatch_button.setStyleSheet(f"background-color: {Colors.GREY}; color: {Colors.BLACK};")
         button_layout.addWidget(self.dispatch_button)
 
         self.setLayout(layout)

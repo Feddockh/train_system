@@ -5,6 +5,7 @@ from PyQt6.QtGui import QColor, QPalette
 from PyQt6.QtCore import Qt
 from typing import Optional
 
+from train_system.common.palette import Colors
 from train_system.common.line import Line
 from train_system.common.track_switch import TrackSwitch
 
@@ -39,8 +40,8 @@ class TrackSwitchWidget(QWidget):
         title_label = QLabel(self.title)
         title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title_label.setStyleSheet(
-            "background-color: #333333;"
-            "color: #fdfdfd;"
+            f"background-color: {Colors.BLACK};"
+            f"color: {Colors.WHITE};"
             "font-size: 16pt;"
             "font-weight: 600;"
         )
@@ -52,25 +53,25 @@ class TrackSwitchWidget(QWidget):
         self.table.verticalHeader().setVisible(False)
 
         # Set the style for the table headers and cells
-        self.table.setStyleSheet("""
-            QHeaderView::section { 
-                background-color: #C8C8C8;
-                color: #333333;
+        self.table.setStyleSheet(f"""
+            QHeaderView::section {{ 
+                background-color: {Colors.GREY};
+                color: {Colors.BLACK};
                 font-size: 14pt;
-            }
-            QTableWidget::item {
-                background-color: #FDFDFD;
-                border: 1px solid #333333; 
-            }
-            QTableWidget {
-                gridline-color: #333333; 
-            }
+            }}
+            QTableWidget::item {{
+                background-color: {Colors.WHITE};
+                color: {Colors.BLACK};
+                border: 1px solid {Colors.BLACK}; 
+            }}
+            QTableWidget {{
+                background-color: {Colors.GREY};
+                gridline-color: {Colors.BLACK};
+            }}
         """)
 
         # Set the palette for the table to control the background and text colors
         palette = self.table.palette()
-        palette.setColor(QPalette.ColorRole.Base, QColor(0xd9d9d9))
-        palette.setColor(QPalette.ColorRole.Text, QColor(0x333333))
         self.table.setPalette(palette)
 
         # Adjust column widths to fit contents
@@ -112,6 +113,9 @@ class TrackSwitchWidget(QWidget):
             )
             status_cell.currentTextChanged.connect(
                 lambda state, sw=switch: self.update_switch_position(sw, state)
+            )
+            status_cell.setStyleSheet(
+                f"background-color: {Colors.WHITE}; color: {Colors.BLACK};"
             )
             self.table.setCellWidget(i, 1, status_cell)
 

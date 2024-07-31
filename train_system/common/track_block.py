@@ -17,6 +17,7 @@ class TrackBlock(QObject):
     light_signal_updated = pyqtSignal(bool)
     under_maintenance_updated = pyqtSignal(bool)
     track_failure_updated = pyqtSignal(TrackFailure)
+    switch_position_updated = pyqtSignal(int)
 
     def __init__(self, line: str, section: str, number: int, length: int,
                  grade: float, speed_limit: int, elevation: float, 
@@ -47,8 +48,8 @@ class TrackBlock(QObject):
         self.traversal_time = self.length / (self.speed_limit / 3.6) # meters/seconds
 
         # Dynamic parameters
-        self._suggested_speed = 0
-        self._authority = 0
+        self._suggested_speed = 35
+        self._authority = 10000
         self._occupancy = False
         self._crossing_signal = None if crossing_signal is False else False
         self._light_signal = None if light_signal is False else False
