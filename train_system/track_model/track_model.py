@@ -2,6 +2,7 @@ import copy
 import os
 from dataclasses import dataclass
 from random import randint
+from PyQt6.QtCore import pyqtSignal
 from train_system.common.station import Station
 from train_system.common.track_block import TrackBlock
 from train_system.common.line import Line
@@ -19,22 +20,37 @@ class Train:
 
 class TrackModel:
 
+    track_to_train = pyqtSignal(int, float, str, float, int) # train id, speed, authority, grade, temperature
+    passengers_to_train = pyqtSignal(int)
+
     def __init__(self, lines: list[Line]) -> None:
 
-        self.lines = lines
+        self.lines: dict[str, Line] = {}
         self.trains: list[Train] = []
         self._temperature: int = 85
         self.heaters: bool = False
         self.tickets_by_station: dict[str, int] = {}
 
         # Prepare lines
-        for line in self.lines:
+        for line in lines:
+            self.lines[line.name] = line
+        for _, line in self.lines.items():
             line.load_defaults()
+            line.track_block_authority_updated.connect(self.send_to_trains)
+            line.track_block_suggested_speed_updated.connect(self.send_to_trains)
 
         # Sell tickets at stations
-        for line in self.lines:
+        for _, line in self.lines.items():
             for station in line.stations:
                 self.tickets_by_station[station.name] = randint(0, 50)
+
+    def send_to_trains(self):
+        for train in self.trains:
+            block = self.lines[train.line].get_track_block(train.block)
+            self.track_to_train.emit(train.id, block.suggested_speed, block.authority, block.grade, self.temperature)
+
+    def handle_position(self, id: int, position: float):
+        self.move_train(id, position)
 
     def create_failure(self, block: TrackBlock, failure: TrackFailure) -> None:
 
@@ -94,7 +110,9 @@ class TrackModel:
             line (str): The name of the line the train was dispatched onto.
         """
 
-        for l in self.lines:
+        l: Line
+
+        for _, l in self.lines.items():
             if l.name == line:
                 from_yard_block = l.get_track_block(l.route.from_yard[0])
                 from_yard_block.occupancy = True
@@ -122,17 +140,17 @@ class TrackModel:
         distance_delta = abs(position - moving_train.pos)
         moving_train.pos = position
         
-        for l in self.lines:
-            if l.name == train.line:
+        for name, l in self.lines.items():
+            if name == train.line:
                 curr_block = l.get_track_block(train.block)
-                curr_line = l
+                curr_line = name
                 break
 
         # When train moves into next block
         if distance_delta + moving_train.pos_in_block > curr_block.length:
 
             # Determine which block train moves into
-            new_block = curr_line.get_next_block(moving_train.prev_block, moving_train.block)
+            new_block = self.lines[curr_line].get_next_block(moving_train.prev_block, moving_train.block)
 
             new_block.occupancy = True
             
@@ -147,6 +165,8 @@ class TrackModel:
                     curr_block_occ = True
                     break
             curr_block.occupancy = curr_block_occ
+
+            self.send_to_trains()
 
         else:
             moving_train.pos_in_block += distance_delta
@@ -173,6 +193,7 @@ class TrackModel:
         num_boarding = randint(0, self.tickets_by_station[station])
         self.tickets_by_station[station] -= num_boarding
         train.passengers += num_boarding
+        train.passengers_to_train.emit(train.passengers)
 
         return num_disembarked, num_boarding
     

@@ -32,7 +32,7 @@ class TrackModelUI(QMainWindow):
         self.murphy.add_line(line)
         self.views.setCurrentWidget(self.murphy)
 
-    def change_temp(self, temp: int):
+    # def change_temp(self, temp: int):
         ###
 
 
