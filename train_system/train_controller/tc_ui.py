@@ -1,27 +1,32 @@
 import sys
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import Qt, pyqtSlot, pyqtSignal
+from PyQt6.QtGui import QDoubleValidator, QIntValidator
 from train_system.train_controller.tc_widgets import CircleWidget, EngineerTable
 from train_system.common.time_keeper import TimeKeeper, TimeKeeperWidget
 from train_system.common.gui_features import CustomTable
-from train_system.train_controller.train_controller import MockTrainModel
+from train_system.train_controller.train_controller import MockTrainModel, TrainController
 from train_system.train_model.train_model import TrainModel
+from train_system.train_controller.engineer import Engineer
+from train_system.common.palette import Colors
 
-GREEN = "#29C84C"
-RED = "#FF4444"
+GREEN = "#81F499"
+RED = "#FF1053"
 DARK_GREY = "#C8C8C8"
-YELLOW = "FFB800"
+YELLOW = "F5E960"
 
 BRAKE_STATUS_SIZE = 125
 
 KP_MIN = 0
-KP_MAX = 50
+KP_MAX = 1000
 
 KI_MIN = 0
-KI_MAX = 5
+KI_MAX = 100
 
 SPEED_MIN = 0
 SPEED_MAX = 43
+
+COLORS = Colors()
 
 
 
@@ -36,7 +41,7 @@ class TestBenchWindow(QMainWindow):
     signal_fault_updated = pyqtSignal(bool)
     curr_speed_updated = pyqtSignal(float)
     comm_speed_updated = pyqtSignal(float)
-    authority_updated = pyqtSignal(float)
+    authority_updated = pyqtSignal(str)
     curr_temp_updated = pyqtSignal(float)
     light_status_updated = pyqtSignal(bool)
     right_door_updated = pyqtSignal(bool)
@@ -45,6 +50,8 @@ class TestBenchWindow(QMainWindow):
     ki_updated = pyqtSignal(int)
     position_updated = pyqtSignal(int) #may change depending on how we represent location
     destination_updated = pyqtSignal(str)
+
+    textSubmitted = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
@@ -122,7 +129,7 @@ class TestBenchWindow(QMainWindow):
         #create the engine fault signal
         self.engine_toggle_button = QPushButton("Off")
         self.engine_toggle_button.setFixedSize(75, 75)
-        self.engine_toggle_button.setStyleSheet("background-color: #29C84C; color: black;")
+        self.engine_toggle_button.setStyleSheet("background-color: #81F499; color: #071013;")
         self.engine_toggle_button.setCheckable(True)
         self.engine_toggle_button.toggled.connect(self.engine_fault_toggled)
 
@@ -133,7 +140,7 @@ class TestBenchWindow(QMainWindow):
         #create the brake fault signal
         self.brake_toggle_button = QPushButton("Off")
         self.brake_toggle_button.setFixedSize(75, 75)
-        self.brake_toggle_button.setStyleSheet("background-color: #29C84C; color: black;")
+        self.brake_toggle_button.setStyleSheet("background-color: #81F499; color: #071013;")
         self.brake_toggle_button.setCheckable(True)
         self.brake_toggle_button.toggled.connect(self.brake_fault_toggled)
         
@@ -143,7 +150,7 @@ class TestBenchWindow(QMainWindow):
         #create the signal fault signal
         self.signal_toggle_button = QPushButton("Off")
         self.signal_toggle_button.setFixedSize(75, 75)
-        self.signal_toggle_button.setStyleSheet("background-color: #29C84C; color: black;")
+        self.signal_toggle_button.setStyleSheet("background-color: #81F499; color: #071013;")
         self.signal_toggle_button.setCheckable(True)
         self.signal_toggle_button.toggled.connect(self.signal_fault_toggled)
         signal_label = QLabel("Signal Pickup")
@@ -196,6 +203,15 @@ class TestBenchWindow(QMainWindow):
         self.curr_authority_stat.setPlaceholderText("Enter Authority")
         self.curr_authority_stat.textChanged.connect(self.authority_changed)
 
+        tm_authority_label = QLabel("Train Model Authority")
+        tm_authority_label.setFixedSize(150, 25)
+        tm_authority_label.setFont(header_font)
+
+        self.tm_authority_stat = QLineEdit()
+        self.tm_authority_stat.setFixedSize(75, 25)
+        self.tm_authority_stat.setPlaceholderText("Enter TM Authority")
+
+
         #add stat lines and labels to left_out layout
         left_out_layout.addWidget(curr_speed_label)
         left_out_layout.addWidget(self.curr_speed_stat)
@@ -203,6 +219,8 @@ class TestBenchWindow(QMainWindow):
         left_out_layout.addWidget(self.comm_speed_stat)
         left_out_layout.addWidget(curr_authority_label)
         left_out_layout.addWidget(self.curr_authority_stat)
+        left_out_layout.addWidget(tm_authority_label)
+        left_out_layout.addWidget(self.tm_authority_stat)
 
         #create the Kp slider
         kp_slider = QSlider() #make horizontal
@@ -248,7 +266,7 @@ class TestBenchWindow(QMainWindow):
         #create the service brake button and its label
         self.service_brake_button = QPushButton("X")
         self.service_brake_button.setFixedSize(75, 75)
-        self.service_brake_button.setStyleSheet("background-color: #FFB800; color: black;")
+        self.service_brake_button.setStyleSheet("background-color: #FF1053; color: #071013;")
         self.service_brake_button.setCheckable(True)
         if self.serv_brake_status == True: #checks if brake on other pages is on
             self.service_brake_button.setChecked(True)
@@ -279,7 +297,7 @@ class TestBenchWindow(QMainWindow):
         data_font = power_stat.font()
         data_font.setPointSize(11)
         power_stat.setFont(data_font)
-        power_stat.setStyleSheet("background-color: #C8C8C8; color: black;")
+        power_stat.setStyleSheet("background-color: #C8C8C8; color: #071013;")
 
         
         #add labels to power layout
@@ -298,7 +316,7 @@ class TestBenchWindow(QMainWindow):
         #create status buttons at bottom-center
         self.light_status_button = QPushButton("Lights On")
         self.light_status_button.setFixedSize(75, 75)
-        self.light_status_button.setStyleSheet("background-color: #29C84C; color: black;")
+        self.light_status_button.setStyleSheet("background-color: #81F499; color: #071013;")
         if(self.light_status == False):
             self.light_status_button.setChecked(True)
         self.light_status_button.setCheckable(True)
@@ -306,7 +324,7 @@ class TestBenchWindow(QMainWindow):
 
         self.right_door_button = QPushButton("Right Door Closed")
         self.right_door_button.setFixedSize(75, 75)
-        self.right_door_button.setStyleSheet("background-color: #29C84C; color: black;")
+        self.right_door_button.setStyleSheet("background-color: #81F499; color: #071013;")
         if(self.right_door == True):
             self.right_door_button.setChecked(True)
         self.right_door_button.setCheckable(True)
@@ -314,7 +332,7 @@ class TestBenchWindow(QMainWindow):
 
         self.left_door_button = QPushButton("Left Door Closed")
         self.left_door_button.setFixedSize(75, 75)
-        self.left_door_button.setStyleSheet("background-color: #29C84C; color: black;")
+        self.left_door_button.setStyleSheet("background-color: #81F499; color: #071013;")
         if(self.left_door == True):
             self.left_door_button.setChecked(True)
         self.left_door_button.setCheckable(True)
@@ -376,7 +394,7 @@ class TestBenchWindow(QMainWindow):
 
         self.em_brake_button = QPushButton("!")
         self.em_brake_button.setFixedSize(100, 100)
-        self.em_brake_button.setStyleSheet("background-color: #FF4444; color: white;")
+        self.em_brake_button.setStyleSheet("background-color: #FF1053; color: #FCF7FF;")
         self.em_brake_button.setCheckable(True)
         if self.emerg_brake_status == True:
             self.em_brake_button.setChecked(True)
@@ -403,6 +421,13 @@ class TestBenchWindow(QMainWindow):
         widget = QWidget()
         widget.setLayout(main_layout)
         self.setCentralWidget(widget)
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_Enter or event.key() == Qt.Key.Key_Return:
+            # Emit the signal with the text from QLineEdit
+            self.textSubmitted.emit(self.tm_authority_stat.text())
+        else:
+            super().keyPressEvent(event)
 
     def navigate_automatic_mode(self, checked):
         #check that window is not already opened before opening
@@ -438,18 +463,13 @@ class TestBenchWindow(QMainWindow):
         m = ft / 3.28084
         return m
 
-    """
-    NEEDS ERROR CHECKING
-    """
     def setpoint_edit_changed(self, x):
-        if(x != ""):
+        x_num = float(x)
+        if(x_num <= SPEED_MAX and x_num >= SPEED_MIN):
             self.setpoint_speed = float(x)
             self.setpoint_updated.emit(x)
             #self.train.setpoint_speed = self.convert_to_ms(float(x))
         
-    """
-    DOESNT WORK
-    """
     def service_brake_toggled(self, check):
         if check:
             self.serv_brake_status = True
@@ -468,9 +488,7 @@ class TestBenchWindow(QMainWindow):
             self.emerg_brake_status = False
             self.emergency_brake_updated.emit(self.emerg_brake_status)
             #self.train.brake.set_emergency_brake(False)
-    """
-    NEEDS ERROR CHECKING
-    """
+  
     def comm_temp_changed(self, x):
         if(x != ""):
             self.comm_temp = int(x)
@@ -482,14 +500,14 @@ class TestBenchWindow(QMainWindow):
             self.engine_toggle_button.setText("On")
             self.faults[0] = True
             #self.train.train_model.faults[0] = True
-            self.engine_toggle_button.setStyleSheet("background-color: #FF4444; color: black;")
+            self.engine_toggle_button.setStyleSheet("background-color: #FF1053; color: #071013;")
 
             self.engine_fault_updated.emit(self.faults[0])
         else:
             self.engine_toggle_button.setText("Off")
             self.faults[0] = False
             #self.train.train_model.faults[0] = False
-            self.engine_toggle_button.setStyleSheet("background-color: #29C84C; color: black;")
+            self.engine_toggle_button.setStyleSheet("background-color: #81F499; color: #071013;")
 
             self.engine_fault_updated.emit(self.faults[0])
 
@@ -498,14 +516,14 @@ class TestBenchWindow(QMainWindow):
             self.brake_toggle_button.setText("On")
             self.faults[1] = True
             #self.train.train_model.faults[1] = True
-            self.brake_toggle_button.setStyleSheet("background-color: #FF4444; color: black;")
+            self.brake_toggle_button.setStyleSheet("background-color: #FF1053; color: #071013;")
 
             self.brake_fault_updated.emit(self.faults[1])
         else:
             self.brake_toggle_button.setText("Off")
             self.faults[1] = False
             #self.train.train_model.faults[1] = False
-            self.brake_toggle_button.setStyleSheet("background-color: #29C84C; color: black;")
+            self.brake_toggle_button.setStyleSheet("background-color: #81F499; color: #071013;")
 
             self.brake_fault_updated.emit(self.faults[1])
     
@@ -514,14 +532,14 @@ class TestBenchWindow(QMainWindow):
             self.signal_toggle_button.setText("On")
             self.faults[2] = True
             #self.train.train_model.faults[2] = True
-            self.signal_toggle_button.setStyleSheet("background-color: #FF4444; color: black;")
+            self.signal_toggle_button.setStyleSheet("background-color: #FF1053; color: #071013;")
 
             self.signal_fault_updated.emit(self.faults[2])
         else:
             self.signal_toggle_button.setText("Off")
             self.faults[2] = False
             #self.train.train_model.faults[2] = False
-            self.signal_toggle_button.setStyleSheet("background-color: #29C84C; color: black;")
+            self.signal_toggle_button.setStyleSheet("background-color: #81F499; color: #071013;")
 
             self.signal_fault_updated.emit(self.faults[2])
 
@@ -544,7 +562,7 @@ class TestBenchWindow(QMainWindow):
             self.authority = float(x)
             #self.train.train_model.set_authority(self.convert_to_m(int(x)))
             #self.train.authority = self.convert_to_m(int(x))
-            self.authority_updated.emit(self.convert_to_m(self.authority))
+            self.authority_updated.emit(x)
     
     def curr_temp_changed(self, x):
         if(x != ""):
@@ -558,7 +576,7 @@ class TestBenchWindow(QMainWindow):
             self.light_status_button.setText("Lights Off")
             self.light_status = False
             #self.train.lights.set_lights(False)
-            self.light_status_button.setStyleSheet("background-color: #FF4444; color: black;")
+            self.light_status_button.setStyleSheet("background-color: #FF1053; color: #071013;")
 
             self.light_status_updated.emit(self.light_status)
 
@@ -566,7 +584,7 @@ class TestBenchWindow(QMainWindow):
             self.light_status_button.setText("Lights On")
             self.light_status = True
             #self.train.lights.set_lights(True)
-            self.light_status_button.setStyleSheet("background-color: #29C84C; color: black;")
+            self.light_status_button.setStyleSheet("background-color: #81F499; color: #071013;")
 
             self.light_status_updated.emit(self.light_status)
 
@@ -575,7 +593,7 @@ class TestBenchWindow(QMainWindow):
             self.right_door_button.setText("Right Door Open")
             self.right_door = True
             #self.train.doors.set_right(True)
-            self.right_door_button.setStyleSheet("background-color: #FF4444; color: black;") 
+            self.right_door_button.setStyleSheet("background-color: #FF1053; color: #071013;") 
 
             self.right_door_updated.emit(self.right_door)
 
@@ -583,7 +601,7 @@ class TestBenchWindow(QMainWindow):
             self.right_door_button.setText("Right Door Closed")
             self.right_door = False
             #self.train.doors.set_right(False)
-            self.right_door_button.setStyleSheet("background-color: #29C84C; color: black;")
+            self.right_door_button.setStyleSheet("background-color: #81F499; color: #071013;")
 
             self.right_door_updated.emit(self.right_door)
 
@@ -592,7 +610,7 @@ class TestBenchWindow(QMainWindow):
             self.left_door_button.setText("Left Door Open")
             self.left_door = True
             #self.train.doors.set_left(True)
-            self.left_door_button.setStyleSheet("background-color: #FF4444; color: black;")
+            self.left_door_button.setStyleSheet("background-color: #FF1053; color: #071013;")
 
             self.left_door_updated.emit(self.left_door)
 
@@ -600,7 +618,7 @@ class TestBenchWindow(QMainWindow):
             self.left_door_button.setText("Left Door Closed")
             self.left_door = False
             #self.train.doors.set_left(False)
-            self.left_door_button.setStyleSheet("background-color: #29C84C; color: black;")
+            self.left_door_button.setStyleSheet("background-color: #81F499; color: #071013;")
 
             self.left_door_updated.emit(self.left_door)
 
@@ -641,6 +659,8 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.setWindowTitle("Driver") #Driver
 
         self.tm = MockTrainModel()
+        #temp ac for mins and maxes
+
 
         self.test_window = None
         self.manual_window = None
@@ -655,7 +675,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.light_status = False
         self.right_door = False
         self.left_door = False
-        self.temp = 0
+        self.temp = 69.0
 
         self.setpoint_speed = 5
         
@@ -666,8 +686,17 @@ class DriverWindow(QMainWindow): ###DriverWindow
 
         self.position = 0
         self.destination = 0
+        self.station_name = ""
 
+        #input validators
+        dec_validator = QDoubleValidator()
+        dec_validator.setNotation(QDoubleValidator.Notation.StandardNotation)
+        dec_validator.setDecimals(1)
+        dec_validator.setRange(SPEED_MIN, SPEED_MAX)
 
+        int_validator = QIntValidator()
+        #int_validator.setRange(self.ac.MIN_TEMP, self.ac.MAX_TEMP)
+  
         #the left outputs will use a vertical layout
         left_out_layout = QVBoxLayout()
 
@@ -714,27 +743,27 @@ class DriverWindow(QMainWindow): ###DriverWindow
         #create the engine fault signal
         self.engine_circle = CircleWidget(10, 20)
         if(self.faults[0] == False):
-            self.engine_circle.setColor(GREEN)
+            self.engine_circle.setColor(COLORS.GREEN)
         else:
-            self.engine_circle.setColor(RED)
+            self.engine_circle.setColor(COLORS.RED)
         engine_label = QLabel("Train Engine")
         engine_label.setFixedSize(100, 50)
 
         #create the brake fault signal
         self.brake_circle = CircleWidget(20, 20)
         if(self.faults[1] == False):
-            self.brake_circle.setColor(GREEN)
+            self.brake_circle.setColor(COLORS.GREEN)
         else:
-            self.brake_circle.setColor(RED)
+            self.brake_circle.setColor(COLORS.RED)
         brake_label = QLabel("Brake Function")
         brake_label.setFixedSize(100, 50)
 
         #create the signal fault signal
         self.signal_circle = CircleWidget(30, 20)
         if(self.faults[2] == False):
-            self.signal_circle.setColor(GREEN)
+            self.signal_circle.setColor(COLORS.GREEN)
         else:
-            self.signal_circle.setColor(RED)
+            self.signal_circle.setColor(COLORS.RED)
         signal_label = QLabel("Signal Pickup")
         signal_label.setFixedSize(100, 50)
 
@@ -758,7 +787,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         
         self.curr_speed_stat = QLabel(str(self.curr_speed) + " mph") 
         self.curr_speed_stat.setFixedSize(100, 25)
-        self.curr_speed_stat.setStyleSheet("background-color: #C8C8C8; color: black;")
+        self.curr_speed_stat.setStyleSheet("background-color: #BDB4BF; color: #071013;")
 
         #create a font that will be used for
         data_font = self.curr_speed_stat.font()
@@ -773,7 +802,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.comm_speed_stat = QLabel(str(self.comm_speed) + " mph")
         self.comm_speed_stat.setFixedSize(100, 25)
         self.comm_speed_stat.setFont(data_font)
-        self.comm_speed_stat.setStyleSheet("background-color: #C8C8C8; color: black;")
+        self.comm_speed_stat.setStyleSheet("background-color: #BDB4BF; color: #071013;")
 
         #create label and stat line for commanded speed
         curr_authority_label = QLabel("Current Authority")
@@ -783,7 +812,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.curr_authority_stat = QLabel(str(self.authority) + " ft")
         self.curr_authority_stat.setFixedSize(100, 25)
         self.curr_authority_stat.setFont(data_font)
-        self.curr_authority_stat.setStyleSheet("background-color: #C8C8C8; color: black;")
+        self.curr_authority_stat.setStyleSheet("background-color: #BDB4BF; color: #071013;")
 
         #button to refresh data from train controller/test bench
         self.time_keeper = time_keeper
@@ -806,6 +835,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.speed_input = QLineEdit()
         self.speed_input.setPlaceholderText("Enter Speed")
         self.speed_input.setFixedSize(75, 50)
+        self.speed_input.setValidator(dec_validator)
         ###move to mode toggle function
 
         #create control mode button and label
@@ -841,7 +871,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         #create the service brake button and its label
         self.service_brake_button = QPushButton("X")
         self.service_brake_button.setFixedSize(75, 75)
-        self.service_brake_button.setStyleSheet("background-color: #FFB800; color: black;")
+        self.service_brake_button.setStyleSheet("background-color: #F5E960; color: #071013;")
         self.service_brake_button.setCheckable(True)
         if self.serv_brake_status == True:
             self.service_brake_button.setChecked(True)
@@ -868,7 +898,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.power_stat = QLabel(str(self.power) + " kW")
         self.power_stat.setFixedSize(75, 50)
         self.power_stat.setFont(data_font)
-        self.power_stat.setStyleSheet("background-color: #C8C8C8; color: black;")
+        self.power_stat.setStyleSheet("background-color: #BDB4BF; color: #071013;")
 
 
         #add labels to power layout
@@ -888,19 +918,19 @@ class DriverWindow(QMainWindow): ###DriverWindow
         if self.brake_on == True:
             self.brake_status_label = QLabel("Brake Status: On")
             self.brake_status_label.setFixedSize(BRAKE_STATUS_SIZE, 50)
-            self.brake_status_label.setStyleSheet("background-color: #FF4444; color: white;") #brake on, box red
+            self.brake_status_label.setStyleSheet("background-color: #FF1053; color: #FCF7FF;") #brake on, box red
         else:
             self.brake_status_label = QLabel("Brake Status: Off")
             self.brake_status_label.setFixedSize(BRAKE_STATUS_SIZE, 50)
-            self.brake_status_label.setStyleSheet("background-color: #29C84C; color: white;") #brake off, box green
+            self.brake_status_label.setStyleSheet("background-color: #81F499; color: #071013;") #brake off, box green
 
         self.light_staus_label = QLabel("Lights Off")
-        self.light_staus_label.setFixedSize(100, 50)
+        self.light_staus_label.setFixedSize(125, 50)
         if(self.light_status == True):
-            self.light_staus_label.setStyleSheet("background-color: #fcba03; color: black;") #lights on, box yellow
+            self.light_staus_label.setStyleSheet("background-color: #fcba03; color: #071013;") #lights on, box yellow
             self.light_staus_label.setText("Lights On")
         else:
-            self.light_staus_label.setStyleSheet("background-color: #595959; color: white;") #lights off, box grey
+            self.light_staus_label.setStyleSheet("background-color: #595959; color: #FCF7FF;") #lights off, box grey
             self.light_staus_label.setText("Lights Off")
 
         if(self.right_door == True):
@@ -946,6 +976,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.comm_temp_input = QLineEdit() 
         self.comm_temp_input.setPlaceholderText("Enter Temp")
         self.comm_temp_input.setFixedSize(100, 50)
+        self.comm_temp_input.setValidator(int_validator)
         self.comm_temp_input.textChanged.connect(self.handle_comm_temp_changed)###enabled/disabled depends on mode
 
         temp_unit_label = QLabel("F")
@@ -964,7 +995,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.loc_label.setFixedSize(100, 50)
 
         self.des_label = QLabel(str(self.destination))
-        self.des_label.setFixedSize(100, 50)
+        self.des_label.setFixedSize(200, 50)
 
         #create emergency brake
         em_brake_label = QLabel("Emergency Brake")
@@ -973,7 +1004,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
 
         self.em_brake_button = QPushButton("!")
         self.em_brake_button.setFixedSize(100, 100)
-        self.em_brake_button.setStyleSheet("background-color: #FF4444; color: white;")
+        self.em_brake_button.setStyleSheet("background-color: #FF1053; color: #FCF7FF;")
         self.em_brake_button.setCheckable(True)
         if self.emerg_brake_status == True:
             self.em_brake_button.setChecked(True)
@@ -1052,8 +1083,10 @@ class DriverWindow(QMainWindow): ###DriverWindow
     """
     @pyqtSlot(str)
     def handle_setpoint_edit_changed(self, x: str) -> None:
-        if(x != ""):
+        x_num = float(x)
+        if(x_num <= SPEED_MAX and x_num >= SPEED_MIN):
             self.setpoint_speed = float(x)
+            self.setpoint_updated.emit(x)
             #self.train.setpoint_speed = self.convert_to_ms(float(x))
 
     @pyqtSlot(bool)
@@ -1116,10 +1149,10 @@ class DriverWindow(QMainWindow): ###DriverWindow
 
         if(self.light_status == True): ###might change colors
             self.light_staus_label.setText("Lights On")
-            self.light_staus_label.setStyleSheet("background-color: #29C84C; color: white;")
+            self.light_staus_label.setStyleSheet("background-color: #81F499; color: #FCF7FF;")
         else:
             self.light_staus_label.setText("Lights Off")
-            self.light_staus_label.setStyleSheet("background-color: #FF4444; color: white;")
+            self.light_staus_label.setStyleSheet("background-color: #FF1053; color: #FCF7FF;")
 
     @pyqtSlot(bool)
     def handle_left_door_update(self, door: bool) -> None:
@@ -1139,8 +1172,8 @@ class DriverWindow(QMainWindow): ###DriverWindow
         else:
             self.right_door_label.setText("Right Door Status: Closed")
 
-    @pyqtSlot(int)
-    def handle_train_temp_update(self, temp: int) -> None:
+    @pyqtSlot(float)
+    def handle_train_temp_update(self, temp: float) -> None:
         self.temp = temp
 
         self.curr_temp.setText("Train Temperature: " + str(self.temp) + " F")
@@ -1164,11 +1197,11 @@ class DriverWindow(QMainWindow): ###DriverWindow
         if self.brake_on == True:
             self.brake_status_label.setText("Brake Status: On")
             self.brake_status_label.setFixedSize(BRAKE_STATUS_SIZE, 50)
-            self.brake_status_label.setStyleSheet("background-color: #FF4444; color: white;")
+            self.brake_status_label.setStyleSheet("background-color: #FF1053; color: #FCF7FF;")
         else:
             self.brake_status_label.setText("Brake Status: Off")
             self.brake_status_label.setFixedSize(BRAKE_STATUS_SIZE, 50)
-            self.brake_status_label.setStyleSheet("background-color: #29C84C; color: white;")
+            self.brake_status_label.setStyleSheet("background-color: #81F499; color: #071013;")
 
     @pyqtSlot(bool)
     def handle_user_emerg_brake_update(self, brake: bool) -> None:
@@ -1188,11 +1221,11 @@ class DriverWindow(QMainWindow): ###DriverWindow
         if self.brake_on == True:
             self.brake_status_label.setText("Brake Status: On")
             self.brake_status_label.setFixedSize(BRAKE_STATUS_SIZE, 50)
-            self.brake_status_label.setStyleSheet("background-color: #FF4444; color: white;")
+            self.brake_status_label.setStyleSheet("background-color: #FF1053; color: #FCF7FF;")
         else:
             self.brake_status_label.setText("Brake Status: Off")
             self.brake_status_label.setFixedSize(BRAKE_STATUS_SIZE, 50)
-            self.brake_status_label.setStyleSheet("background-color: #29C84C; color: white;")
+            self.brake_status_label.setStyleSheet("background-color: #81F499; color: #071013;")
     
     @pyqtSlot(bool)
     def handle_service_brake_update(self, brake: bool) -> None:
@@ -1204,11 +1237,11 @@ class DriverWindow(QMainWindow): ###DriverWindow
         if self.brake_on == True:
             self.brake_status_label.setText("Brake Status: On")
             self.brake_status_label.setFixedSize(BRAKE_STATUS_SIZE, 50)
-            self.brake_status_label.setStyleSheet("background-color: #FF4444; color: white;")
+            self.brake_status_label.setStyleSheet("background-color: #FF1053; color: #FCF7FF;")
         else:
             self.brake_status_label.setText("Brake Status: Off")
             self.brake_status_label.setFixedSize(BRAKE_STATUS_SIZE, 50)
-            self.brake_status_label.setStyleSheet("background-color: #29C84C; color: white;")
+            self.brake_status_label.setStyleSheet("background-color: #81F499; color: #071013;")
 
     @pyqtSlot(bool)
     def handle_emerg_brake_update(self, brake: bool) -> None:
@@ -1220,11 +1253,11 @@ class DriverWindow(QMainWindow): ###DriverWindow
         if self.brake_on == True:
             self.brake_status_label.setText("Brake Status: On")
             self.brake_status_label.setFixedSize(BRAKE_STATUS_SIZE, 50)
-            self.brake_status_label.setStyleSheet("background-color: #FF4444; color: white;")
+            self.brake_status_label.setStyleSheet("background-color: #FF1053; color: #FCF7FF;")
         else:
             self.brake_status_label.setText("Brake Status: Off")
             self.brake_status_label.setFixedSize(BRAKE_STATUS_SIZE, 50)
-            self.brake_status_label.setStyleSheet("background-color: #29C84C; color: white;")
+            self.brake_status_label.setStyleSheet("background-color: #81F499; color: #071013;")
 
     @pyqtSlot(bool)
     def handle_engine_fault_update(self, status: bool) -> None:
@@ -1286,7 +1319,6 @@ class DriverWindow(QMainWindow): ###DriverWindow
     @pyqtSlot(str)
     def handle_destination_update(self, des: str):
         self.destination = des
-
         self.des_label.setText(self.destination)
 
 
@@ -1334,11 +1366,17 @@ class EngineerWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        eng = Engineer()
+
+        str_kp = str(eng.get_kp())
+        str_ki = str(eng.get_ki())
+
         headers = ["Train", "Kp", "Ki"]
         self.data = []
 
+        #CHANGE TO WHATEVER DEFAULT VAL IS
         for i in range(1, 21):
-            self.data.append([str(i), "-", "-"])
+            self.data.append([str(i), str_kp, str_ki])
 
         self.table = EngineerTable("Set Kp and Ki", 21, 3, headers, self.data)
 
@@ -1358,17 +1396,25 @@ class EngineerWindow(QMainWindow):
         row = item.row()
         col = item.column()
         new_item = item.text()
-        
+
+        check_new_item = int(new_item)
+    
+        #error checking Kp and Ki input
         if(col == 1):
-            self.data[row][col] = new_item
-            if(new_item != "-"):
-                print("item changed and signal emits")
+            if(check_new_item >= KP_MIN and check_new_item <= KP_MAX):
+                self.data[row][col] = new_item
+                print("KP = " + new_item)
                 self.kp_updated.emit(int(new_item))
+            else:
+                raise Exception("invalid kp value")
+
         if(col == 2):
-            self.data[row][col] = new_item
-            if(new_item != "-"):
+            if(check_new_item >= KI_MIN and check_new_item <= KI_MAX):
+                self.data[row][col] = new_item
                 print("item changed and signal emits")
                 self.ki_updated.emit(int(new_item))
+            else:
+                raise Exception("invalid ki value")
 
     def handle_kp_update(self, kp: int):
         print("in kp handler")
