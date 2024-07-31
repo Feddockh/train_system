@@ -159,23 +159,23 @@ class EngineerTable(QWidget):
         # Set the style for the table headers and cells
         self.table.setStyleSheet("""
             QHeaderView::section { 
-                background-color: #C8C8C8;
-                color: #333333;
+                background-color: #BDB4BF;
+                color: #071013;
                 font-size: 14pt;
             }
             QTableWidget::item {
-                background-color: #FDFDFD;
-                border: 1px solid #333333; 
+                background-color: #FCF7FF;
+                border: 1px solid #071013; 
             }
             QTableWidget {
-                gridline-color: #333333; 
+                gridline-color: #071013; 
             }
         """)
 
         # Set the palette for the table to control the background and text colors
         palette = self.table.palette()
-        palette.setColor(QPalette.ColorRole.Base, QColor(0xd9d9d9))
-        palette.setColor(QPalette.ColorRole.Text, QColor(0x333333))
+        palette.setColor(QPalette.ColorRole.Base, QColor(0xBDB4BF))
+        palette.setColor(QPalette.ColorRole.Text, QColor(0x071013))
         self.table.setPalette(palette)
 
         # Adjust column widths to fit contents
