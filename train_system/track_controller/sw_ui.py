@@ -295,7 +295,7 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         for x in range(len(self.track_controllers[waysideIndex].track_blocks)):
             tempData = [self.track_controllers[waysideIndex].track_blocks[x].number, 
                         self.display_occupied_tracks(x, waysideIndex), 
-                        self.track_controllers[waysideIndex].track_blocks[x].authority, 
+                        self.track_controllers[waysideIndex].track_blocks[x]._authority.get_distance(), 
                         self.track_controllers[waysideIndex].track_blocks[x].suggested_speed, 
                         " ", " "]
             tempData.append(self.display_crossing_signal(x, waysideIndex))
@@ -650,8 +650,8 @@ class TestBench(QtWidgets.QMainWindow):
                     self.track_controllers[waysideIndex].track_blocks[row].occupancy = False
             #Authority
             case 2:
-                new_authority = int(new_item)
-                self.track_controllers[waysideIndex].track_blocks[row].authority = new_authority
+                new_authority = float(new_item)
+                self.track_controllers[waysideIndex].track_blocks[row]._authority.set_distance(new_authority)
             #Speed
             case 3:
                 new_speed = int(new_item)
@@ -679,7 +679,7 @@ class TestBench(QtWidgets.QMainWindow):
         for x in range(len(self.track_controllers[waysideIndex].track_blocks)):
             tempData = [self.track_controllers[waysideIndex].track_blocks[x].number, 
                         self.display_occupied_tracks(x, waysideIndex), 
-                        self.track_controllers[waysideIndex].track_blocks[x].authority, 
+                        self.track_controllers[waysideIndex].track_blocks[x]._authority.get_distance(), 
                         self.track_controllers[waysideIndex].track_blocks[x].suggested_speed]
             data.append(tempData)
 
