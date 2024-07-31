@@ -32,8 +32,7 @@ print("Test: " + str(test.ki_val))
 print("Engineer UI: " + str(engineer.data[0][2]))
 print("TC: " + str(tc.engineer.get_ki()))
 
-time_keeper.tick.connect(tc.lights.update_lights)
-
+# tc.train_model.authority_received.connect(tc.handle_tick) #### USE INSTEAD THIS INSTEAD AFTER INTEGRATION
 time_keeper.tick.connect(tc.handle_tick)
 
 #TRAIN CONTROLLER TO EXTERNAL
