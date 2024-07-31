@@ -15,40 +15,34 @@ from train_system.ctc_manager.dispatcher_ui import DispatcherUI
 class CTCOffice(QObject):
     train_dispatch_updated = pyqtSignal(TrainRouteUpdate)
 
-    def __init__(self, time_keeper: TimeKeeper, line_names: List[str]) -> None:
+    def __init__(self, time_keeper: TimeKeeper) -> None:
 
         """
         Initialize the CTC Office.
 
         Args:
             time_keeper (TimeKeeper): The time keeper for managing time updates.
-            line_name List(str): The name of the lines.
         """
 
         super().__init__()
         self.time_keeper = time_keeper
-
-        # Check that there are exactly two lines
-        if len(line_names) != 2:
-            raise ValueError("CTC manager requires exactly two lines.")
         
         # Create the line objects
         self.lines: List[Line] = []
-        for line_name in line_names:
 
-            # Create the line object
-            line = Line(line_name.lower())
+        # Create the green line object
+        green_line = Line("green")
+        green_line.load_defaults()
+        green_line.track_block_occupancy_updated.connect(self.handle_occupancy_update)
+        green_line.switch_position_updated.connect(self.handle_switch_position_update)
+        self.lines.append(green_line)
 
-            # Load the default track block configurations
-            line.load_defaults()
-
-            # Connect the line signals to the CTC Manager slots
-            line.track_block_occupancy_updated.connect(self.handle_occupancy_update)
-            line.track_block_crossing_signal_updated.connect(self.handle_crossing_signal_update)
-            line.switch_position_updated.connect(self.handle_switch_position_update)
-
-            # Add the line object to the dictionary
-            self.lines.append(line)
+        # Create the red line object
+        red_line = Line("red")
+        red_line.load_defaults()
+        red_line.track_block_occupancy_updated.connect(self.handle_occupancy_update)
+        red_line.switch_position_updated.connect(self.handle_switch_position_update)
+        self.lines.append(red_line)
 
         # Create a list of train objects indexed by the train ID and the line name
         self.trains: Dict[Tuple[int, str], CTCTrainDispatch] = {}
@@ -358,11 +352,6 @@ class CTCOffice(QObject):
         # Update the speed and authority of the trains (this is done on positive and negative occupancy signals)
         self.update_all_trains_speed_authority(line_name)
 
-    @pyqtSlot(str, int, int)
-    def handle_crossing_signal_update(self, line_name: str, block_number: int, new_signal: int) -> None:
-        # TODO: Implement crossing signal logic
-        print(f"Line {line_name} block {block_number} crossing signal updated to {new_signal}")
-    
     @pyqtSlot(str, int)
     def handle_switch_position_update(self, line_name: str, switch_number: int) -> None:
         self.update_all_trains_speed_authority(line_name)
@@ -398,8 +387,7 @@ if __name__ == "__main__":
     time_keeper = TimeKeeper()
     time_keeper.start_timer()
 
-    line_names = ["green", "red"]
-    ctc_manager = CTCOffice(time_keeper, line_names)
+    ctc_manager = CTCOffice(time_keeper)
     dispatcher_ui = DispatcherUI(time_keeper, ctc_manager.lines, ctc_manager.trains)
     ctc_manager.connect_dispatcher_ui(dispatcher_ui)
 
