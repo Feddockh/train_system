@@ -5,7 +5,7 @@ import json
 import pandas as pd
 import math
 from typing import List, Optional
-from PyQt6.QtCore import QObject, pyqtSignal
+from PyQt6.QtCore import QObject, pyqtSignal, pyqtSlot
 from anytree import Node, RenderTree
 from collections import deque
 
@@ -361,7 +361,15 @@ class Line(QObject):
             switch (TrackSwitch): The switch to connect signals for.
         """
 
-        switch.position_updated.connect(lambda new_position, sw=switch: self.switch_position_updated.emit(sw.number))
+        # Connect to the line signal
+        switch.position_updated.connect(lambda new_position, sw=switch: self.switch_position_updated.emit(self.name, sw.number))
+
+        # Connect to the track block signals
+        for block_id in switch.connected_blocks:
+            block = self.get_track_block(block_id)
+            switch.position_updated.connect(
+                lambda new_position, blk=block: blk.switch_position_updated.emit(new_position)
+            )
 
     def add_station(self, station: Station) -> None:
         
@@ -392,7 +400,7 @@ class Line(QObject):
         """
 
         for station in self.stations:
-            if station.name == name:
+            if station.name.lower() == name.lower():
                 return station
         print(f"Station {name} does not exist.")
         return None
@@ -647,12 +655,131 @@ class Line(QObject):
                     sides=sides
                 )
                 self.add_station(station)
-            
+        
+    @pyqtSlot(str, int, int)
+    def handle_suggested_speed_updated(self, line: str, block: int, new_speed: int) -> None:
+        
+        """
+        Handles the suggested speed updated signal from a track block.
+        
+        Args:
+            line (str): The name of the line.
+            block (int): The block number.
+            new_speed (int): The new suggested speed.
+        """
+        
+        if line == self.name:
+            self.get_track_block(block).suggested_speed = new_speed
+
+    @pyqtSlot(str, int, int)
+    def handle_authority_updated(self, line: str, block: int, new_authority: int) -> None:
+        
+        """
+        Handles the authority updated signal from a track block.
+        
+        Args:
+            line (str): The name of the line.
+            block (int): The block number.
+            new_authority (int): The new authority.
+        """
+        
+        if line == self.name:
+            self.get_track_block(block).authority = new_authority
+
+    @pyqtSlot(str, int, bool)
+    def handle_occupancy_updated(self, line: str, block: int, new_occupancy: bool) -> None:
+        
+        """
+        Handles the occupancy updated signal from a track block.
+        
+        Args:
+            line (str): The name of the line.
+            block (int): The block number.
+            new_occupancy (bool): The new occupancy status.
+        """
+        
+        if line == self.name:
+            self.get_track_block(block).occupancy = new_occupancy
+
+    @pyqtSlot(str, int, int)
+    def handle_crossing_signal_updated(self, line: str, block: int, new_signal: int) -> None:
+        
+        """
+        Handles the crossing signal updated signal from a track block.
+        
+        Args:
+            line (str): The name of the line.
+            block (int): The block number.
+            new_signal (int): The new crossing signal.
+        """
+        
+        if line == self.name:
+            self.get_track_block(block).crossing_signal = new_signal
+
+    @pyqtSlot(str, int, bool)
+    def handle_under_maintenance_updated(self, line: str, block: int, new_maintenance: bool) -> None:
+        
+        """
+        Handles the under maintenance updated signal from a track block.
+        
+        Args:
+            line (str): The name of the line.
+            block (int): The block number.
+            new_maintenance (bool): The new maintenance status.
+        """
+        
+        if line == self.name:
+            self.get_track_block(block).under_maintenance = new_maintenance
+
+    @pyqtSlot(str, int, int)
+    def handle_track_failure_updated(self, line: str, block: int, new_failure: int) -> None:
+        
+        """
+        Handles the track failure updated signal from a track block.
+        
+        Args:
+            line (str): The name of the line.
+            block (int): The block number.
+            new_failure (int): The new track failure status.
+        """
+        
+        if line == self.name:
+            self.get_track_block(block).track_failure = new_failure
+
+    @pyqtSlot(str, int)
+    def handle_switch_position_updated(self, line: str, switch: int) -> None:
+        
+        """
+        Handles the switch position updated signal from a track switch.
+        
+        Args:
+            line (str): The name of the line.
+            switch (int): The switch number.
+        """
+        
+        if line == self.name:
+            self.get_switch(switch).toggle()
+    
 
 if __name__ == "__main__":
-    line = Line('Red')
+
+    # Create a line object
+    line_name = 'Red'
+    line = Line(line_name)
     line.load_defaults()
-    print(line)
+
+    # Create a second line object
+    line2 = Line(line_name)
+    line2.load_defaults()
+
+    # Connect the signals between the two lines
+    line.track_block_suggested_speed_updated.connect(line2.handle_suggested_speed_updated)
+
+    # Test the signal connection
+    block_number = 1
+    new_speed = 30
+    line.get_track_block(block_number).suggested_speed = new_speed
+    print(f"Changed block {block_number} suggested speed to {new_speed} and got {line2.get_track_block(block_number).suggested_speed}")
 
     # target = 15
     # path = line.get_path(line.yard, line.yard, target)

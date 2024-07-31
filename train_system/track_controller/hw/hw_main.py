@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtGui import QPainter, QColor
 from PyQt6.QtCore import Qt
 from PyQt6 import QtCore, QtGui, QtWidgets, uic
-from train_system.track_controller.sw_track_controller import SWTrackController
+from train_system.track_controller.hw.hw_track_controller import TrackController
 from train_system.common.track_block import TrackBlock
 from train_system.common.line import Line
 from train_system.track_controller.sw_ui import ProgrammerUI
@@ -65,9 +65,7 @@ def main():
     line2.load_track_blocks()
     line2.load_switches()
 
-
-    #Had to adjust so that red line would work 
-    track_blocks4 = line2.track_blocks[0:34] + line2.track_blocks[71:78]
+    track_blocks4 = line2.track_blocks[0:23] + line2.track_blocks[72:76]
 
     track_blocks5 = line2.track_blocks[23:45] + line2.track_blocks[67:75]
 
@@ -81,7 +79,7 @@ def main():
 
     Wayside_3 = TrackController(track_blocks3, "Wayside 3", 28)
     
-    Wayside_4 = TrackController(track_blocks4, "Wayside 4", 40)
+    Wayside_4 = TrackController(track_blocks4, "Wayside 4", 27)
     
     Wayside_5 = TrackController(track_blocks5, "Wayside 5", 30)
     
@@ -90,7 +88,7 @@ def main():
 
 
     #Add waysides to be sent to UI
-    waysides = [Wayside_1, Wayside_2, Wayside_3, Wayside_4, Wayside_5, Wayside_6]
+    waysides = [Wayside_1, Wayside_2, Wayside_3,Wayside_4, Wayside_5, Wayside_6]
 
     #Create application
     app = QApplication(sys.argv)
