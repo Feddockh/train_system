@@ -72,6 +72,7 @@ class TrainDispatch(QObject, metaclass=MetaQObjectABC):
         self.stop_priority_queue: List[Tuple[int, int]] = []
 
         self.authority: float = 0
+        self.max_speed = 21.67 # m/s
 
     def __repr__(self) -> str:
 
