@@ -50,7 +50,8 @@ class TrackBlock(QObject):
 
         # Dynamic 
         self._suggested_speed = 0
-        self._authority: Authority = None
+        self._authority: Authority = Authority(0)
+        
 
         self._occupancy = False
         self._crossing_signal = None if crossing_signal is False else False
