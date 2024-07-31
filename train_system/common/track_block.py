@@ -47,14 +47,17 @@ class TrackBlock(QObject):
         # Calculated parameters
         self.traversal_time = self.length / (self.speed_limit / 3.6) # meters/seconds
 
+
         # Dynamic 
         self._suggested_speed = 0
         self._authority: Authority = None
+
         self._occupancy = False
         self._crossing_signal = None if crossing_signal is False else False
         self._light_signal = None if light_signal is False else False
         self._under_maintenance = False
         self._track_failure = TrackFailure.NONE
+        self._plc_unsafe = False
 
     def __repr__(self) -> str:
 
@@ -80,7 +83,7 @@ class TrackBlock(QObject):
             f"Switch:                  {self.switch}\n"
             f"Beacon:                  {self.beacon}\n"
             f"Suggested Speed:         {self._suggested_speed}\n"
-            f"Authority:               {self._authority.authority}\n"
+            f"Authority:               {self._authority}\n"
             f"Occupancy:               {self._occupancy}\n"
             f"Crossing Signal:         {self._crossing_signal}\n"
             f"Light Signal:            {self._light_signal}\n"

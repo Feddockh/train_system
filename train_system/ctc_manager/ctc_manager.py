@@ -10,6 +10,7 @@ from train_system.common.line import Line
 from train_system.common.train_dispatch import TrainRouteUpdate
 from train_system.ctc_manager.ctc_train_dispatch import CTCTrainDispatch
 from train_system.ctc_manager.dispatcher_ui import DispatcherUI
+from train_system.common.authority import Authority
 
 
 class CTCOffice(QObject):
@@ -107,7 +108,7 @@ class CTCOffice(QObject):
             update = TrainRouteUpdate(train.train_id, line, train.route, train.stop_priority_queue)
             self.train_dispatch_updated.emit(update)
 
-    def compute_train_authority(self, train_id: int, line_name: str) -> float:
+    def update_train_authority(self, train_id: int, line_name: str) -> None:
 
         # Check if the train exists
         if not self.train_exists(train_id, line_name):
@@ -119,7 +120,7 @@ class CTCOffice(QObject):
 
         # If the train is boarding, do not update the authority
         if not train.departed and train.departure_time > self.time_keeper.current_second:
-            return train.authority
+            return
 
         # Get the current block and next stop
         next_stop_id = train.get_next_stop()[1]
@@ -128,47 +129,55 @@ class CTCOffice(QObject):
         path = train.get_route_to_next_stop()
         unobstructed_path = line.get_unobstructed_path(path)
         
-        # Compute the authority by summing the lengths of the blocks in the path and half the length of the stop block
-        authority = line.get_path_length(unobstructed_path)
-        authority += line.get_track_block(next_stop_id).length / 2
+        # Compute the distance by summing the lengths of the blocks in the path and half the length of the stop block
+        _distance = line.get_path_length(unobstructed_path)
+        _distance += line.get_track_block(next_stop_id).length / 2
 
-        # If the next stop is the yard negate authority
-        if next_stop_id == line.yard:
-            authority = -abs(authority)
-        
-        return authority
+        # Update the train's authority
+        train.authority = Authority(_distance, next_stop_id)
 
-    def compute_train_suggested_speed(self, train_id: int, line_name: str) -> int:
+        # Get the current block of the train
+        current_block_id = train.get_current_block_id()
+        current_block = line.get_track_block(current_block_id)
 
-        # TODO: Consider lag in the computation
+        # Set the Authority of the block
+        current_block.authority = Authority(_distance, next_stop_id)
+
+    def update_train_suggested_speed(self, train_id: int, line_name: str) -> None:
 
         # Check if the train exists
         if not self.train_exists(train_id, line_name):
-            return 0
+            print(f"Train {train_id} on line {line_name} does not exist, cannot set speed.")
+            return
         
         # Get the train and line objects
         train = self.get_train(train_id, line_name)
-        line = self.get_line(line_name)
+        line = self.get_line(line_name)      
+        
+        # Get the current block of the train
+        current_block_id = train.get_current_block_id()
+        current_block = line.get_track_block(current_block_id)
 
-        # If the train is boarding (has reached stop), suggested speed should be 5
-        if not train.departed and train.departure_time > self.time_keeper.current_second:
-            return 5
+        # If the train is not boarding, then set the suggested speed to speed limit (min between train or block)
+        _suggested_speed = 0
+        if train.departed or train.departure_time < self.time_keeper.current_second:
+            _suggested_speed = min(train.max_speed, current_block.speed_limit)
 
-        # Return the speed limit of the block
-        return line.get_track_block(train.get_current_block_id()).speed_limit
+        # Set the speed of the train dispatch object
+        train.suggested_speed = _suggested_speed
 
+        # Set the speed of the block
+        current_block.suggested_speed = _suggested_speed
+    
     def update_all_trains_speed_authority(self, line_name: str) -> None:
 
         # Update the authority and suggested speed of each train (on the line)
         for (train_id, _line_name), train in self.trains.items():
             if train.dispatched and _line_name == line_name:
 
-                # Compute the suggested speed and authority
-                suggested_speed = self.compute_train_suggested_speed(train_id, line_name)
-                authority = self.compute_train_authority(train_id, line_name)
-
-                # Update the train object
-                train.update_speed_authority(suggested_speed, authority)
+                # Update the suggested speed and authority
+                self.update_train_suggested_speed(train_id, line_name)
+                self.update_train_authority(train_id, line_name)
 
     def test_bench_simulation(self) -> None:
 
@@ -192,7 +201,7 @@ class CTCOffice(QObject):
                     move_train = True
 
                 # Check if the train has exceeded the time per block
-                if train.time_in_block >= current_block.length / train.suggested_speed:
+                elif train.time_in_block >= current_block.length / train.suggested_speed:
                     move_train = True
 
                 # Check if the next block is clear and not under maintenance
@@ -200,7 +209,7 @@ class CTCOffice(QObject):
                     move_train = False
 
                 # Check if the current block is a switch and if the train can move to the next block
-                if current_block.switch is not None and next_block.switch is not None:
+                elif current_block.switch is not None and next_block.switch is not None:
                     if not current_block.switch.is_connected(current_block_id, next_block_id):
                         move_train = False
 
@@ -255,8 +264,8 @@ class CTCOffice(QObject):
             if train.dispatched and not train.departed and self.time_keeper.current_second >= train.departure_time:
                 
                 # Update the speed and authority of the train
-                train.suggested_speed = self.compute_train_suggested_speed(train_id, line_name)
-                train.authority = self.compute_train_authority(train_id, line_name)
+                self.update_train_suggested_speed(train_id, line_name)
+                self.update_train_authority(train_id, line_name)
             
             # Check for dispatching trains (must be dispatched, have a stop, and the dispatch time has passed)
             if not train.dispatched and train.stop_priority_queue and self.time_keeper.current_second >= train.dispatch_time:
@@ -265,9 +274,9 @@ class CTCOffice(QObject):
         # Dispatch the train with the highest lag if there are trains to dispatch
         if trains_to_dispatch:
             train = self.get_trains_ordered_by_lag(trains_to_dispatch)[0]
-            suggested_speed = self.compute_train_suggested_speed(train_id, train.line.name)
-            authority = self.compute_train_authority(train_id, train.line.name)
-            train.dispatch(suggested_speed, authority)
+            self.update_train_suggested_speed(train_id, train.line.name)
+            self.update_train_authority(train_id, train.line.name)
+            train.dispatched = True
 
         # Run the test bench simulation if the test bench mode is enabled
         if self.test_bench_mode:
@@ -368,8 +377,8 @@ class CTCOffice(QObject):
         else:
             train = self.get_train(train_id, self.dispatching_line_name)
             train.add_stop(arrival_time, target_block)
-            train.suggested_speed = self.compute_train_suggested_speed(train_id, self.dispatching_line_name)
-            train.authority = self.compute_train_authority(train_id, self.dispatching_line_name)
+            self.update_train_suggested_speed(train_id, self.dispatching_line_name)
+            self.update_train_authority(train_id, self.dispatching_line_name)
 
     @pyqtSlot(TrainRouteUpdate)
     def handle_train_route_update(self, update: TrainRouteUpdate):
