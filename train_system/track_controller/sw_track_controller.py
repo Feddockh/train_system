@@ -21,9 +21,10 @@ class TrackController(QObject):
         self.numBlocks = num_blocks
        
         for block in self.track_blocks:
-                block.authority_updated.connect(self.handle_authority_update)
-                block.occupancy_updated.connect(self.handle_occupancy_update)
-                block.suggested_speed_updated.connect(self.handle_speed_update)
+            block.authority_updated.connect(self.handle_authority_update)
+            block.occupancy_updated.connect(self.handle_occupancy_update)
+            block.suggested_speed_updated.connect(self.handle_speed_update)
+                
 
     
     @pyqtSlot(bool)
