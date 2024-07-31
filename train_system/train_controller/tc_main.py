@@ -1,5 +1,6 @@
 import sys
 from train_system.train_controller.train_controller import TrainController, TrainModel, TrainSystem
+from train_system.train_controller.tc_manager import TrainManager
 from train_system.train_controller.tc_ui import *
 from train_system.common.time_keeper import TimeKeeper
 from PyQt6.QtWidgets import QApplication
@@ -24,6 +25,8 @@ tm = ts.train_model
         
 tc = ts.controller
 
+
+
 driver = DriverWindow(time_keeper)
 test = TestBenchWindow()
 engineer = EngineerWindow()
@@ -32,8 +35,7 @@ print("Test: " + str(test.ki_val))
 print("Engineer UI: " + str(engineer.data[0][2]))
 print("TC: " + str(tc.engineer.get_ki()))
 
-time_keeper.tick.connect(tc.lights.update_lights)
-
+# tc.train_model.authority_received.connect(tc.handle_tick) #### USE INSTEAD THIS INSTEAD AFTER INTEGRATION
 time_keeper.tick.connect(tc.handle_tick)
 
 #TRAIN CONTROLLER TO EXTERNAL
@@ -57,6 +59,7 @@ test.left_door_updated.connect(tc.handle_left_door_changed)###checked
 #test.ki_updated.connect(tc.handle_ki_changed) ###checked but needs to update table
 test.position_updated.connect(tc.handle_position_changed) ###checked
 test.destination_updated.connect(tc.handle_destination_changed) ###checked
+test.textSubmitted.connect(tc.handle_authority_changed)
 
 #DRIVER TO TRAIN CONTROLLER
 driver.mode_button.toggled.connect(tc.handle_toggle_driver_mode) ###checked
@@ -84,7 +87,8 @@ tc.curr_speed_updated.connect(driver.handle_curr_speed_update)
 tc.train_model.comm_speed_received.connect(driver.handle_comm_speed_update)
 tc.authority_updated.connect(driver.handle_authority_update)
 tc.position_updated.connect(driver.handle_position_update)
-tc.destination_updated.connect(driver.handle_destination_update)
+tc.station_name_updated.connect(driver.handle_destination_update)
+#tc.destination_updated.connect(driver.handle_station_name_update)
 
 #TRAIN CONTROLLER TO ENGINEER
 #tc.kp_updated_for_eng.connect(engineer.handle_kp_update)
@@ -110,6 +114,7 @@ app.exec()
 
 print("Driver UI: " + str(driver.user_serv_brake_status))
 print("TC: " + str(tc.brake.user_service_brake))
+print(tc.station_name)
 
 
 

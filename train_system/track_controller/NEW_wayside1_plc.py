@@ -10,9 +10,6 @@ if(track_blocks[0].occupancy and track_blocks[12].occupancy == False and (track_
     track_blocks[12].switch.position = track_blocks[12].switch.child_blocks[0]
     #track_blocks[12].switch.child_blocks[0]
 
-    #set authority at block 12 
-    track_blocks[12].authority = 0
-
     #set lights
     track_blocks[0]._light_signal = False
     track_blocks[11]._light_signal = False

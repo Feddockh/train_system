@@ -8,16 +8,11 @@ import sys
 
 
 from PyQt6.QtWidgets import QWidget
-from train_system.mbo_manager.gui_features import CustomTable
 from train_system.common.time_keeper import TimeKeeper
 from train_system.common.time_keeper import TimeKeeperWidget
-
-
-from train_system.common.train_dispatch import TrainDispatch
-from train_system.ctc_manager.ctc_manager import CTCOffice
-from train_system.ctc_manager.ctc_train_dispatch import CTCTrainDispatch
 from train_system.common.line import Line
-
+from train_system.common.gui_features import CustomTable
+from train_system.mbo_manager.mbo_schedule import Schedules
 
 class MBOWindow(QMainWindow):
     
@@ -67,14 +62,14 @@ class MBOWindow(QMainWindow):
         scroll_area.setWidgetResizable(True)
 
         # Add checkable items to the layout
-        self.checkboxes = []
+        self.green_checkboxes = []
         items = ["Glenbury 1", "Dormont 1", "Mt. Lebanon 1", "Poplar", "Castle Shannon", "Mt. Lebanon 2", "Dormont 2", "Glenbury 2", 
                  "Overbrook 1", "Inglewood", "Central 1", "Whited 1", "Edgebrook", "Pioneer", "Station", "Whited 2", "South Bank", 
                  "Central 2", "Overbrook 2" ]
         for item_text in items:
-            checkbox = QCheckBox(item_text)
-            self.checkboxes.append(checkbox)
-            scroll_layout.addWidget(checkbox)
+            green_checkbox = QCheckBox(item_text)
+            self.green_checkboxes.append(green_checkbox)
+            scroll_layout.addWidget(green_checkbox)
         
         
         scroll_area2 = QScrollArea()
@@ -84,16 +79,45 @@ class MBOWindow(QMainWindow):
         scroll_area2.setWidgetResizable(True)
 
         # Add checkable items to the layout
-        self.checkboxes2 = []
+        self.green_checkboxes2 = []
         """items = ["Glenbury 1", "Dormont 1", "Mt. Lebanon 1", "Poplar", "Castle Shannon", "Mt. Lebanon 2", "Dormont 2", "Glenbury 2", 
                  "Overbrook 1", "Inglewood", "Central 1", "Whited 1", "Edgebrook", "Pioneer", "Station", "Whited 2", "South Bank", 
                  "Central 2", "Overbrook 2" ]"""
         
-        
         for item_text in items:
-            checkbox2 = QCheckBox(item_text)
-            self.checkboxes2.append(checkbox2)
-            scroll_layout2.addWidget(checkbox2)
+            green_checkbox2 = QCheckBox(item_text)
+            self.green_checkboxes2.append(green_checkbox2)
+            scroll_layout2.addWidget(green_checkbox2)
+        
+        
+        scroll_area3 = QScrollArea()
+        scroll_widget3 = QWidget()
+        scroll_layout3 = QVBoxLayout(scroll_widget3)
+        scroll_area3.setWidget(scroll_widget3)
+        scroll_area3.setWidgetResizable(True)
+
+        # Add checkable items to the layout
+        self.red_checkboxes = []
+        items_red = ["Herron", "Swissville" ,"Penn Station", "Steel Plaza", "First Ave", "Station Square", "South Hills Junction", "Shadyside"]
+        for item_text in items_red:
+            red_checkbox = QCheckBox(item_text)
+            self.red_checkboxes.append(red_checkbox)
+            scroll_layout3.addWidget(red_checkbox)
+        
+        scroll_area4 = QScrollArea()
+        scroll_widget4 = QWidget()
+        scroll_layout4 = QVBoxLayout(scroll_widget4)
+        scroll_area4.setWidget(scroll_widget4)
+        scroll_area4.setWidgetResizable(True)
+
+        # Add checkable items to the layout
+        self.red_checkboxes2 = []
+        for item_text in items_red:
+            red_checkbox2 = QCheckBox(item_text)
+            self.red_checkboxes2.append(red_checkbox2)
+            scroll_layout4.addWidget(red_checkbox2)
+        
+        
         
         #Creat New Schedules Button, when clicked calls handle slot 
         self.create_schedules = QPushButton('Create New Schedules', self)
@@ -111,13 +135,31 @@ class MBOWindow(QMainWindow):
         self.option2 = QLabel("Schedule Option 2")
         self.option2.setFont(QFont('Times', 11))
         
+        self.green_option1 = QLabel("Green Stations 1")
+        self.green_option1.setFont(QFont('Times', 8))
+        self.green_option2 = QLabel("Green Stations 2")
+        self.green_option2.setFont(QFont('Times', 8))
+        
+        self.red_option1 = QLabel("Red Stations 1")
+        self.red_option1.setFont(QFont('Times', 8))
+        self.red_option2 = QLabel("Red Stations 2")
+        self.red_option2.setFont(QFont('Times', 8))
+        
         self.horizontal_layout_option = QHBoxLayout()
         self.horizontal_layout_option.addWidget(self.option1)
         self.horizontal_layout_option.addWidget(self.option2)
         
+        self.line_layout_option = QHBoxLayout()
+        self.line_layout_option.addWidget(self.green_option1)
+        self.line_layout_option.addWidget(self.red_option1)
+        self.line_layout_option.addWidget(self.green_option2)
+        self.line_layout_option.addWidget(self.red_option2)
+        
         self.horizontal_layout_scrolls = QHBoxLayout()
         self.horizontal_layout_scrolls.addWidget(scroll_area)
+        self.horizontal_layout_scrolls.addWidget(scroll_area3)
         self.horizontal_layout_scrolls.addWidget(scroll_area2)
+        self.horizontal_layout_scrolls.addWidget(scroll_area4)
         
         self.vertical_layout = QVBoxLayout()
 
@@ -128,6 +170,7 @@ class MBOWindow(QMainWindow):
         self.vertical_layout.addWidget(self.train_throughput_selection)
         self.vertical_layout.addWidget(self.select_label)
         self.vertical_layout.addLayout(self.horizontal_layout_option)
+        self.vertical_layout.addLayout(self.line_layout_option)
         self.vertical_layout.addLayout(self.horizontal_layout_scrolls)
         self.vertical_layout.addWidget(self.create_schedules)
         
@@ -148,21 +191,38 @@ class MBOWindow(QMainWindow):
     def handle_schedule(self) -> None:
         """
         emit date and start time selected 
-        """    
+        """   
+        #checked stations for green line 
         checked_items = []
         checked_items2 = []
         
-        for checkbox in self.checkboxes:
+        #checked stations for red line
+        checked_items3 = []
+        checked_items4 = []
+        
+        for checkbox in self.green_checkboxes:
             if checkbox.isChecked():
                 checked_items.append(checkbox.text())
         
-        for checkbox2 in self.checkboxes2:
+        for checkbox2 in self.green_checkboxes2:
             if checkbox2.isChecked():
                 checked_items2.append(checkbox2.text())
+        
+        for checkbox3 in self.red_checkboxes:
+            if checkbox3.isChecked():
+                checked_items3.append(checkbox3.text())
+        
+        for checkbox4 in self.red_checkboxes2:
+            if checkbox4.isChecked():
+                checked_items4.append(checkbox4.text())
                 
         throughput = self.train_throughput_selection.currentText()
         selected_datetime = self.schedule_date_time.dateTime()
-        self.schedule_created.emit(selected_datetime, throughput, checked_items, checked_items2)
+        schedules = Schedules()
+        schedules.create_schedules_green(selected_datetime, throughput, checked_items, checked_items2)
+        schedules.create_schedules_red(selected_datetime, throughput, checked_items3, checked_items4)
+        #self.schedule_created.emit(selected_datetime, throughput, checked_items, checked_items2)
+        
     
     #slot to disable MBO Mode View button (not clickable) when in fixed block mode
 
