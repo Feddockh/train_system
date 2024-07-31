@@ -24,6 +24,7 @@ class TrackControllerManager(QObject):
         track_blocks2 = self.green_line.track_blocks[28:85] + self.green_line.track_blocks[100:153]
         track_blocks3 = self.green_line.track_blocks[73:101]
 
+        
         # Creating Red Line
         self.red_line = Line("Red")
         self.red_line.load_track_blocks()

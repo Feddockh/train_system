@@ -42,11 +42,7 @@ class TrackController(QObject):
 
             # Connect the block signal with the number to the handler
             block.authority_updated.connect(self.handle_authority_update)
-
-
-            #block.authority_updated.connect(self.handle_authority_update)
-            # block.occupancy_updated.connect(self.handle_occupancy_update)
-            # block.suggested_speed_updated.connect(self.handle_speed_update)
+            block.occupancy_updated.connect(self.handle_occupancy_update)
 
     def get_block(self, block_number: int) -> TrackBlock:
 
@@ -111,7 +107,7 @@ class TrackController(QObject):
         # Run the PLC program to update the track blocks
         self.run_PLC_program()
 
-    @pyqtSlot(int)
+    @pyqtSlot(int, object)
     def handle_authority_update(self, block_number: int, new_authority: Authority) -> None:
 
         # Get the block object
@@ -149,10 +145,13 @@ class TrackController(QObject):
             return None
         
         # Opening & running PLC code
-        with open (self.plc_program, mode = "r", encoding="utf-8") as plc_code:
-            code = plc_code.read()
-        local_vars = {"track_blocks": self.track_blocks}
-        exec(code, {}, local_vars)
+        if(self.plc_program_uploaded == True):
+            with open (self.plc_program, mode = "r", encoding="utf-8") as plc_code:
+                code = plc_code.read()
+            local_vars = {"track_blocks": self.track_blocks}
+            exec(code, {}, local_vars)
+
+            self.track_blocks = local_vars["track_blocks"]
 
     def check_PLC_program_switch(self, x, old_pos, new_pos):
         #Will only run if PLC program has been uploaded
