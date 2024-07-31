@@ -176,6 +176,48 @@ class TrackController(QObject):
             self.track_blocks[x]._authority = old_Auth
 
     def convert_to_strings(self):
+    # Message for Switch 13
+        self.message_switch13 = (
+            "#Switch at Block 13\n"
+            "Switch 13 Information:\n"
+            f"Switch Position: {track_blocks[12].switch.position}\n"
+            f"Light Signal: {track_blocks[12]._light_signal}\n"
+            f"Authority: {track_blocks[12].authority}\n\n"
+        
+            "# Block 1\n"
+            "Block 1 Information:\n"
+            f"Light Signal: {track_blocks[0]._light_signal}\n"
+            f"Authority: {track_blocks[0].authority}\n\n"
+
+            "# Block 12\n"
+            "Block 12 Information:\n"
+            f"Light Signal: {track_blocks[11]._light_signal}\n"
+            f"Authority: {track_blocks[11].authority}\n"
+        )
+
+        # Message for Switch 29
+        self.message_switch29 = (
+            "#Switch at Block 29\n"
+            "Switch 29 Information:\n"
+            f"Switch Position: {track_blocks[28].switch.position}\n"
+            f"Light Signal: {track_blocks[28]._light_signal}\n"
+            f"Authority: {track_blocks[28].authority}\n\n"
+        
+            "# Block 30\n"
+            "Block 30 Information:\n"
+            f"Light Signal: {track_blocks[29]._light_signal}\n"
+            f"Authority: {track_blocks[29].authority}\n\n"
+
+            "# Block 150\n"
+            "Block 150 Information:\n"
+            f"Light Signal: {track_blocks[32]._light_signal}\n"
+            f"Authority: {track_blocks[32].authority}\n"
+        )
+
+    # Print consolidated messages for error checking
+
+    """
+    def convert_to_strings(self):
         # Check block 58 Switch Position
         self.message_switch9 = (
             "Wayside 4\n"
@@ -231,9 +273,9 @@ class TrackController(QObject):
             f"Light Signal: {track_blocks[37]._light_signal}\n"
             f"Authority: {track_blocks[37].authority}\n"
         )
-
+"""
     def send_to_pi(self):
-        if self.wayside_name == "Wayside 4":
+        if self.wayside_name == "Wayside 1":
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
