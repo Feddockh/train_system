@@ -1,3 +1,4 @@
+
 import paramiko
 import json
 from collections import deque as dq
@@ -8,9 +9,12 @@ from train_system.common.line import Line
 from train_system.common.track_block import TrackBlock
 from train_system.common.station import Station
 from train_system.common.authority import Authority
+from train_system.common.authority import Authority
 
 from train_system.train_model.train_model import TrainModel
 from train_system.train_controller.engineer import Engineer
+
+
 
 HOST= '192.168.0.114'
 PORT = 22
@@ -31,6 +35,7 @@ class TrainController(QObject):
     power_updated = pyqtSignal(float)
     faults_fixed = pyqtSignal()
     authority_updated = pyqtSignal(float)
+    destination_updated = pyqtSignal(int)
     delete_train = pyqtSignal(int)
 
     #lights_updated = pyqtSignal(bool) -> in lights class
@@ -41,11 +46,6 @@ class TrainController(QObject):
     #emergency_brake_updated = pyqtSignal(bool) -> in brakes class
 
     curr_speed_updated = pyqtSignal(float)
-    destination_updated = pyqtSignal(int)
-    # destination_updated = pyqtSignal(str)
-
-    kp_updated_for_eng = pyqtSignal(int)
-    
     
     def __init__(self, engineer: Engineer = None, train_model=None, line_name: str = "green", id: int = 0, ssh=None) -> None:
         super().__init__()
@@ -113,6 +113,8 @@ class TrainController(QObject):
         self.brake_fault = self.train_model.brake_fault           # Fault status from the Train Model
         self.signal_fault = self.train_model.signal_fault           # Fault status from the Train Model
         
+        self.station_name = ""
+
     # Update all variables with the train model input, calculate, then output to train model
     # Take train model outputs, update all variables, and transmit to train model the Train Controller's new values
     # Triggered by receiving authority
@@ -371,6 +373,18 @@ class TrainController(QObject):
     def parse_authority(self, authority: Authority):
         self.authority = abs(authority.get_distance() + self.AUTHORITY_PADDING)
         self.set_destination(authority.get_stop_block())
+
+        #parse the station name from authority
+        # block_str = str(self.line.get_track_block(int(self.destination)))
+        # find_station = block_str.splitlines()
+        # full_station = find_station[10]
+        # m_loc = full_station.find("m")
+        # b_loc = full_station.find("b")
+        # self.station_name = ""
+        # for i in range(m_loc + 3, b_loc -2):
+        #     self.station_name = self.station_name + full_station[i]
+
+        # self.station_name_updated.emit(self.station_name)
     @pyqtSlot(Authority)
     def update_authority(self, authority: Authority):
         self.parse_authority(authority)
@@ -428,8 +442,11 @@ class TrainController(QObject):
 
     @pyqtSlot(str)
     def handle_setpoint_edit_changed(self, x: str) -> None:
-        if(x != ""):
-            self.set_setpoint_speed(float(x) / 2.23694)
+        x_num = float(x)
+        if(x_num <= 43 and x_num >= 0):
+            self.set_setpoint_speed(x_num / 2.23694)
+        else:
+            self.set_setpoint_speed(0)
 
     @pyqtSlot(bool)
     def handle_service_brake_toggled(self, check: bool) -> None:
@@ -470,8 +487,10 @@ class TrainController(QObject):
     def handle_comm_speed_changed(self, speed: float) -> None:
         self.commanded_speed = speed
 
-    @pyqtSlot(float)
-    def handle_authority_changed(self, authority: float) -> None:
+    @pyqtSlot(str)
+    def handle_authority_changed(self, authority: str) -> None:
+        new_authority = Authority()
+        new_authority.authority = authority
         self.update_authority(authority)
 
     @pyqtSlot(bool)
@@ -960,6 +979,7 @@ class MockTrainModel(QObject):
         return self.commanded_speed
     def set_commanded_speed(self, speed: float):
         self.commanded_speed = speed
+        self.comm_speed_received.emit(self.commanded_speed)
         print("Train Model -- Commanded Speed: ", self.commanded_speed)
         # self.comm_speed_received.emit(self.commanded_speed)
     def decode_commanded_speed(self, speed: str):
@@ -993,8 +1013,8 @@ class MockTrainModel(QObject):
     def get_train_temp(self):
         # Logic to get the temperature inside the train
         return self.train_temp
-    def set_train_temp(self, temp: int):
-        self.train_temp = temp
+    def set_train_temp(self, temp: float):
+        self.train_temp = round(temp, 1)
     
 
     # List of bools? Individual bools?
@@ -1186,4 +1206,3 @@ if __name__ == "__main__":
     # train_system.switch_modes_run()
     # train_system.fault_run()
     # train_system.ac_run()
-
