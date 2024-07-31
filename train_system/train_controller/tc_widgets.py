@@ -1,9 +1,10 @@
 import sys
 from PyQt6.QtWidgets import *
-from PyQt6.QtGui import QPainter, QColor, QPalette
+from PyQt6.QtGui import QPainter, QColor, QPalette, QIntValidator
 from PyQt6.QtCore import Qt
 from PyQt6 import QtCore, QtGui, QtWidgets, uic
 from typing import List, Optional
+
 
 TRAIN_COL = 0
 KP_COL = 1
@@ -73,6 +74,28 @@ class EngineerTrains:
     def __init__(self):
         self.edit_kp = QLineEdit()
         self.edit_ki = QLineEdit()
+
+class TableCellDelegate(QStyledItemDelegate):
+    def __init__(self, validator, parent=None):
+        super().__init__(parent)
+        self.validator = validator
+
+    def createEditor(self, parent, option, index):
+        editor = QLineEdit(parent)
+        editor.setValidator(self.validator)
+        return editor
+
+    def setEditorData(self, editor, index):
+        value = index.model().data(index, Qt.ItemDataRole.EditRole)
+        editor.setText(value)
+
+    def setModelData(self, editor, model, index):
+        text = editor.text()
+        # Validate the input
+        if self.validator.validate(text, 0)[0] == QIntValidator.State.Acceptable:
+            model.setData(index, text)
+        else:
+            QMessageBox.warning(editor, "Invalid Input", "Please enter a valid number.")
 
 class EngineerTable(QWidget):
     def __init__(self, title: str, rows: int, cols: int, headers: List[str],
@@ -160,6 +183,7 @@ class EngineerTable(QWidget):
         for col in range(self.cols):
             self.table.horizontalHeader().setSectionResizeMode(
                 col, QHeaderView.ResizeMode.Stretch
+            
             )
 
         # Add data to the table

@@ -1368,8 +1368,9 @@ class EngineerWindow(QMainWindow):
         headers = ["Train", "Kp", "Ki"]
         self.data = []
 
+        #CHANGE TO WHATEVER DEFAULT VAL IS
         for i in range(1, 21):
-            self.data.append([str(i), "-", "-"])
+            self.data.append([str(i), "0", "0"])
 
         self.table = EngineerTable("Set Kp and Ki", 21, 3, headers, self.data)
 
@@ -1389,17 +1390,25 @@ class EngineerWindow(QMainWindow):
         row = item.row()
         col = item.column()
         new_item = item.text()
-        
+
+        check_new_item = int(new_item)
+    
+        #error checking Kp and Ki input
         if(col == 1):
-            self.data[row][col] = new_item
-            if(new_item != "-"):
+            if(check_new_item >= KP_MIN and check_new_item <= KP_MAX):
+                self.data[row][col] = new_item
                 print("item changed and signal emits")
                 self.kp_updated.emit(int(new_item))
+            else:
+                raise Exception("invalid kp value")
+
         if(col == 2):
-            self.data[row][col] = new_item
-            if(new_item != "-"):
+            if(check_new_item >= KI_MIN and check_new_item <= KI_MAX):
+                self.data[row][col] = new_item
                 print("item changed and signal emits")
                 self.ki_updated.emit(int(new_item))
+            else:
+                raise Exception("invalid ki value")
 
     def handle_kp_update(self, kp: int):
         print("in kp handler")
