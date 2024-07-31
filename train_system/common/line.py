@@ -361,7 +361,15 @@ class Line(QObject):
             switch (TrackSwitch): The switch to connect signals for.
         """
 
+        # Connect to the line signal
         switch.position_updated.connect(lambda new_position, sw=switch: self.switch_position_updated.emit(self.name, sw.number))
+
+        # Connect to the track block signals
+        for block_id in switch.connected_blocks:
+            block = self.get_track_block(block_id)
+            switch.position_updated.connect(
+                lambda new_position, blk=block: blk.switch_position_updated.emit(new_position)
+            )
 
     def add_station(self, station: Station) -> None:
         
