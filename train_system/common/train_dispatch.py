@@ -10,6 +10,7 @@ from PyQt6.QtCore import pyqtSlot, QObject, pyqtSignal
 
 from train_system.common.line import Line
 from train_system.common.time_keeper import TimeKeeper
+from train_system.common.authority import Authority
 
 
 class MetaQObjectABC(PyQtWrapperType, ABCMeta):
@@ -48,7 +49,7 @@ class TrainDispatch(QObject, metaclass=MetaQObjectABC):
                 where each tuple contains:
                     - arrival time (int): The arrival time in seconds.
                     - block number (int): The block number of the stop.
-            authority (float): The authority level of the train.
+            authority (Authority): The authority level of the train.
         """
 
         self.time_keeper = time_keeper
@@ -71,7 +72,7 @@ class TrainDispatch(QObject, metaclass=MetaQObjectABC):
         self.prev_block_id: int = self.line.yard
         self.stop_priority_queue: List[Tuple[int, int]] = []
 
-        self.authority: float = 0
+        self.authority: Authority = None
         self.max_speed = 21.67 # m/s
 
     def __repr__(self) -> str:

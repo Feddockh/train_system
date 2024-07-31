@@ -6,6 +6,7 @@ from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
 from train_system.common.train_dispatch import TrainDispatch
 from train_system.common.line import Line
 from train_system.common.time_keeper import TimeKeeper
+from train_system.common.authority import Authority
 
 class CTCTrainDispatch(TrainDispatch):
     def __init__(self, time_keeper: TimeKeeper, train_id: int, 
@@ -22,32 +23,6 @@ class CTCTrainDispatch(TrainDispatch):
         """
 
         self.suggested_speed = 0
-
-    def update_speed_authority(self, suggested_speed: int, authority: int) -> None:
-
-        """
-        Update the suggested speed and authority of the train.
-        
-        Args:
-            suggested_speed (int): The suggested speed of the train.
-            authority (int): The authority level of the train.
-        """
-
-        self.suggested_speed = suggested_speed
-        self.authority = authority
-
-    def dispatch(self, suggested_speed: int, authority: int) -> None:
-
-        """
-        Dispatch the train with the suggested speed and authority.
-        
-        Args:
-            suggested_speed (int): The suggested speed of the train.
-            authority (int): The authority level of the train.
-        """
-
-        self.update_speed_authority(suggested_speed, authority)
-        self.dispatched = True
 
     def move_train_to_next_block(self) -> None:
 
