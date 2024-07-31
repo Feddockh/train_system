@@ -38,6 +38,8 @@ class TrainController(QObject):
     destination_updated = pyqtSignal(int)
     delete_train = pyqtSignal(int)
 
+    station_name_updated = pyqtSignal(str)
+
     #lights_updated = pyqtSignal(bool) -> in lights class
     #left_door_updated = pyqtSignal(bool) -> in doors class
     #right_door_updated = pyqtSignal(bool) -> in doors class
@@ -384,7 +386,7 @@ class TrainController(QObject):
         # for i in range(m_loc + 3, b_loc -2):
         #     self.station_name = self.station_name + full_station[i]
 
-        # self.station_name_updated.emit(self.station_name)
+        self.station_name_updated.emit(self.station_name)
     @pyqtSlot(Authority)
     def update_authority(self, authority: Authority):
         self.parse_authority(authority)
@@ -563,8 +565,10 @@ class TrainController(QObject):
 
     ## Brake class to hold brake status
     class Brake(QObject):
-        service_brake_updated = pyqtSignal(bool)
+        user_service_brake_updated = pyqtSignal(bool)
+        user_emergency_brake_updated = pyqtSignal(bool)
         emergency_brake_updated = pyqtSignal(bool)
+        service_brake_updated = pyqtSignal(bool)
         def __init__(self):
             super().__init__()
             # These are for outputting to the Train Model and for UI status
@@ -584,9 +588,12 @@ class TrainController(QObject):
             self.emergency_brake = status or self.user_emergency_brake
             self.emergency_brake_updated.emit(status) # For Train Model
         def set_user_service_brake(self, status: bool):
+            print("set brake")
             self.user_service_brake = status
+            self.user_service_brake_updated.emit(status)
         def set_user_emergency_brake(self, status: bool):
             self.user_emergency_brake = status
+            self.user_emergency_brake_updated.emit(status)
 
         ## Toggle Functions
         def toggle_service_brake(self):
@@ -594,9 +601,12 @@ class TrainController(QObject):
         def toggle_emergency_brake(self):
             self.set_emergency_brake(not self.emergency_brake)
         def toggle_user_service_brake(self):
-            self.set_user_service_brake(not self.user_service_brake)
+            self.user_service_brake = not self.user_service_brake
+            self.user_service_brake_updated.emit(self.user_service_brake)
         def toggle_user_emergency_brake(self):
-            self.set_user_emergency_brake(not self.user_emergency_brake)
+            self.user_emergency_brake = not self.user_emergency_brake
+            self.user_emergency_brake_updated.emit(self.user_emergency_brake)
+
 
         ## Accessor functions
         def get_service_brake(self):
@@ -979,7 +989,7 @@ class MockTrainModel(QObject):
         return self.commanded_speed
     def set_commanded_speed(self, speed: float):
         self.commanded_speed = speed
-        self.comm_speed_received.emit(self.commanded_speed)
+        # self.comm_speed_received.emit(self.commanded_speed)
         print("Train Model -- Commanded Speed: ", self.commanded_speed)
         # self.comm_speed_received.emit(self.commanded_speed)
     def decode_commanded_speed(self, speed: str):
