@@ -1,597 +1,585 @@
 Train,Station,Prev Block,Start Block,End Block,Arrival Time,Driver,Crew 1,Crew 2
-1,Mt. Lebanon 1,152,152,77,2024-07-30 00:02:57.417143,Alejandro,Alice,Barbra
-1,Central 2,76,77,39,2024-07-30 00:27:28.079411,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,39,39,77,2024-07-30 00:28:28.079411,Alejandro,Alice,Barbra
-1,Central 2,76,77,39,2024-07-30 00:52:58.741679,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,39,39,77,2024-07-30 00:53:58.741679,Alejandro,Alice,Barbra
-1,Central 2,76,77,39,2024-07-30 01:18:29.403947,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,39,39,77,2024-07-30 01:19:29.403947,Alejandro,Alice,Barbra
-1,Central 2,76,77,39,2024-07-30 01:44:00.066215,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,39,39,77,2024-07-30 01:45:00.066215,Alejandro,Alice,Barbra
-1,Central 2,76,77,39,2024-07-30 02:09:30.728483,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,39,39,77,2024-07-30 02:10:30.728483,Alejandro,Alice,Barbra
-1,Central 2,76,77,39,2024-07-30 02:35:01.390751,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,39,39,77,2024-07-30 02:36:01.390751,Alejandro,Alice,Barbra
-1,Central 2,76,77,39,2024-07-30 03:00:32.053019,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,39,39,77,2024-07-30 03:01:32.053019,Alejandro,Alice,Barbra
-1,Central 2,76,77,39,2024-07-30 03:26:02.715287,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,39,39,77,2024-07-30 03:27:02.715287,Alejandro,Alice,Barbra
-1,Central 2,76,77,39,2024-07-30 03:51:33.377555,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,39,39,77,2024-07-30 03:52:33.377555,Alejandro,Alice,Barbra
-1,Central 2,76,77,39,2024-07-30 04:17:04.039823,Alejandro,Alice,Barbra
-1,yard,39,39,152,2024-07-30 04:17:34.039823,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,152,152,77,2024-07-30 04:52:20.874109,Alejandro,Alice,Barbra
-1,Central 2,76,77,39,2024-07-30 05:16:51.536377,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,39,39,77,2024-07-30 05:17:51.536377,Alejandro,Alice,Barbra
-1,Central 2,76,77,39,2024-07-30 05:42:22.198645,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,39,39,77,2024-07-30 05:43:22.198645,Alejandro,Alice,Barbra
-1,Central 2,76,77,39,2024-07-30 06:07:52.860913,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,39,39,77,2024-07-30 06:08:52.860913,Alejandro,Alice,Barbra
-1,Central 2,76,77,39,2024-07-30 06:33:23.523181,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,39,39,77,2024-07-30 06:34:23.523181,Alejandro,Alice,Barbra
-1,Central 2,76,77,39,2024-07-30 06:58:54.185449,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,39,39,77,2024-07-30 06:59:54.185449,Alejandro,Alice,Barbra
-1,Central 2,76,77,39,2024-07-30 07:24:24.847717,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,39,39,77,2024-07-30 07:25:24.847717,Alejandro,Alice,Barbra
-1,Central 2,76,77,39,2024-07-30 07:49:55.509985,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,39,39,77,2024-07-30 07:50:55.509985,Alejandro,Alice,Barbra
-1,Central 2,76,77,39,2024-07-30 08:15:26.172253,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,39,39,77,2024-07-30 08:16:26.172253,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,77,77,77,2024-07-30 08:17:26.172253,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,77,77,77,2024-07-30 08:18:26.172253,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,77,77,77,2024-07-30 08:19:26.172253,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,77,77,77,2024-07-30 08:20:26.172253,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,77,77,77,2024-07-30 08:21:26.172253,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,77,77,77,2024-07-30 08:22:26.172253,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,77,77,77,2024-07-30 08:23:26.172253,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,77,77,77,2024-07-30 08:24:26.172253,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,77,77,77,2024-07-30 08:25:26.172253,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,77,77,77,2024-07-30 08:26:26.172253,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,77,77,77,2024-07-30 08:27:26.172253,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,77,77,77,2024-07-30 08:28:26.172253,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,77,77,77,2024-07-30 08:29:26.172253,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,77,77,77,2024-07-30 08:30:26.172253,Alejandro,Alice,Barbra
-1,yard,77,77,152,2024-07-30 08:30:56.172253,Alejandro,Alice,Barbra
-1,Mt. Lebanon 1,152,152,77,2024-07-30 08:32:57.417143,Bob,Cole,Dan
-1,Central 2,76,77,39,2024-07-30 08:57:28.079411,Bob,Cole,Dan
-1,Mt. Lebanon 1,39,39,77,2024-07-30 08:58:28.079411,Bob,Cole,Dan
-1,Central 2,76,77,39,2024-07-30 09:22:58.741679,Bob,Cole,Dan
-1,Mt. Lebanon 1,39,39,77,2024-07-30 09:23:58.741679,Bob,Cole,Dan
-1,Central 2,76,77,39,2024-07-30 09:48:29.403947,Bob,Cole,Dan
-1,Mt. Lebanon 1,39,39,77,2024-07-30 09:49:29.403947,Bob,Cole,Dan
-1,Central 2,76,77,39,2024-07-30 10:14:00.066215,Bob,Cole,Dan
-1,Mt. Lebanon 1,39,39,77,2024-07-30 10:15:00.066215,Bob,Cole,Dan
-1,Central 2,76,77,39,2024-07-30 10:39:30.728483,Bob,Cole,Dan
-1,Mt. Lebanon 1,39,39,77,2024-07-30 10:40:30.728483,Bob,Cole,Dan
-1,Central 2,76,77,39,2024-07-30 11:05:01.390751,Bob,Cole,Dan
-1,Mt. Lebanon 1,39,39,77,2024-07-30 11:06:01.390751,Bob,Cole,Dan
-1,Central 2,76,77,39,2024-07-30 11:30:32.053019,Bob,Cole,Dan
-1,Mt. Lebanon 1,39,39,77,2024-07-30 11:31:32.053019,Bob,Cole,Dan
-1,Central 2,76,77,39,2024-07-30 11:56:02.715287,Bob,Cole,Dan
-1,Mt. Lebanon 1,39,39,77,2024-07-30 11:57:02.715287,Bob,Cole,Dan
-1,Central 2,76,77,39,2024-07-30 12:21:33.377555,Bob,Cole,Dan
-1,Mt. Lebanon 1,39,39,77,2024-07-30 12:22:33.377555,Bob,Cole,Dan
-1,Central 2,76,77,39,2024-07-30 12:47:04.039823,Bob,Cole,Dan
-1,Mt. Lebanon 1,39,39,77,2024-07-30 12:48:04.039823,Bob,Cole,Dan
-1,Central 2,76,77,39,2024-07-30 13:12:34.702091,Bob,Cole,Dan
-1,Mt. Lebanon 1,39,39,77,2024-07-30 13:13:34.702091,Bob,Cole,Dan
-1,Central 2,76,77,39,2024-07-30 13:38:05.364359,Bob,Cole,Dan
-1,Mt. Lebanon 1,39,39,77,2024-07-30 13:39:05.364359,Bob,Cole,Dan
-1,Central 2,76,77,39,2024-07-30 14:03:36.026627,Bob,Cole,Dan
-1,Mt. Lebanon 1,39,39,77,2024-07-30 14:04:36.026627,Bob,Cole,Dan
-1,Central 2,76,77,39,2024-07-30 14:29:06.688895,Bob,Cole,Dan
-1,Mt. Lebanon 1,39,39,77,2024-07-30 14:30:06.688895,Bob,Cole,Dan
-1,Central 2,76,77,39,2024-07-30 14:54:37.351163,Bob,Cole,Dan
-1,Mt. Lebanon 1,39,39,77,2024-07-30 14:55:37.351163,Bob,Cole,Dan
-1,Central 2,76,77,39,2024-07-30 15:20:08.013431,Bob,Cole,Dan
-1,Mt. Lebanon 1,39,39,77,2024-07-30 15:21:08.013431,Bob,Cole,Dan
-1,Central 2,76,77,39,2024-07-30 15:45:38.675699,Bob,Cole,Dan
-1,Mt. Lebanon 1,39,39,77,2024-07-30 15:46:38.675699,Bob,Cole,Dan
-1,Central 2,76,77,39,2024-07-30 16:11:09.337967,Bob,Cole,Dan
-1,Mt. Lebanon 1,39,39,77,2024-07-30 16:12:09.337967,Bob,Cole,Dan
-1,Central 2,76,77,39,2024-07-30 16:36:40.000235,Bob,Cole,Dan
-1,Mt. Lebanon 1,39,39,77,2024-07-30 16:37:40.000235,Bob,Cole,Dan
-1,Mt. Lebanon 1,77,77,77,2024-07-30 16:38:40.000235,Bob,Cole,Dan
-1,Mt. Lebanon 1,77,77,77,2024-07-30 16:39:40.000235,Bob,Cole,Dan
-1,Mt. Lebanon 1,77,77,77,2024-07-30 16:40:40.000235,Bob,Cole,Dan
-1,Mt. Lebanon 1,77,77,77,2024-07-30 16:41:40.000235,Bob,Cole,Dan
-1,Mt. Lebanon 1,77,77,77,2024-07-30 16:42:40.000235,Bob,Cole,Dan
-1,Mt. Lebanon 1,77,77,77,2024-07-30 16:43:40.000235,Bob,Cole,Dan
-1,Mt. Lebanon 1,77,77,77,2024-07-30 16:44:40.000235,Bob,Cole,Dan
-1,Mt. Lebanon 1,77,77,77,2024-07-30 16:45:40.000235,Bob,Cole,Dan
-1,Mt. Lebanon 1,77,77,77,2024-07-30 16:46:40.000235,Bob,Cole,Dan
-1,Mt. Lebanon 1,77,77,77,2024-07-30 16:47:40.000235,Bob,Cole,Dan
-1,Mt. Lebanon 1,77,77,77,2024-07-30 16:48:40.000235,Bob,Cole,Dan
-1,Mt. Lebanon 1,77,77,77,2024-07-30 16:49:40.000235,Bob,Cole,Dan
-1,Mt. Lebanon 1,77,77,77,2024-07-30 16:50:40.000235,Bob,Cole,Dan
-1,Mt. Lebanon 1,77,77,77,2024-07-30 16:51:40.000235,Bob,Cole,Dan
-1,Mt. Lebanon 1,77,77,77,2024-07-30 16:52:40.000235,Bob,Cole,Dan
-1,Mt. Lebanon 1,77,77,77,2024-07-30 16:53:40.000235,Bob,Cole,Dan
-1,Mt. Lebanon 1,77,77,77,2024-07-30 16:54:40.000235,Bob,Cole,Dan
-1,Mt. Lebanon 1,77,77,77,2024-07-30 16:55:40.000235,Bob,Cole,Dan
-1,Mt. Lebanon 1,77,77,77,2024-07-30 16:56:40.000235,Bob,Cole,Dan
-1,Mt. Lebanon 1,77,77,77,2024-07-30 16:57:40.000235,Bob,Cole,Dan
-1,Mt. Lebanon 1,77,77,77,2024-07-30 16:58:40.000235,Bob,Cole,Dan
-1,Mt. Lebanon 1,77,77,77,2024-07-30 16:59:40.000235,Bob,Cole,Dan
-1,Mt. Lebanon 1,77,77,77,2024-07-30 17:00:40.000235,Bob,Cole,Dan
-1,yard,77,77,152,2024-07-30 17:01:10.000235,Bob,Cole,Dan
-1,Mt. Lebanon 1,152,152,77,2024-07-30 17:02:57.417143,Charlie,Earl,Fern
-1,Central 2,76,77,39,2024-07-30 17:27:28.079411,Charlie,Earl,Fern
-1,Mt. Lebanon 1,39,39,77,2024-07-30 17:28:28.079411,Charlie,Earl,Fern
-1,Central 2,76,77,39,2024-07-30 17:52:58.741679,Charlie,Earl,Fern
-1,Mt. Lebanon 1,39,39,77,2024-07-30 17:53:58.741679,Charlie,Earl,Fern
-1,Central 2,76,77,39,2024-07-30 18:18:29.403947,Charlie,Earl,Fern
-1,Mt. Lebanon 1,39,39,77,2024-07-30 18:19:29.403947,Charlie,Earl,Fern
-1,Central 2,76,77,39,2024-07-30 18:44:00.066215,Charlie,Earl,Fern
-1,Mt. Lebanon 1,39,39,77,2024-07-30 18:45:00.066215,Charlie,Earl,Fern
-1,Central 2,76,77,39,2024-07-30 19:09:30.728483,Charlie,Earl,Fern
-1,Mt. Lebanon 1,39,39,77,2024-07-30 19:10:30.728483,Charlie,Earl,Fern
-1,Central 2,76,77,39,2024-07-30 19:35:01.390751,Charlie,Earl,Fern
-1,Mt. Lebanon 1,39,39,77,2024-07-30 19:36:01.390751,Charlie,Earl,Fern
-1,Central 2,76,77,39,2024-07-30 20:00:32.053019,Charlie,Earl,Fern
-1,Mt. Lebanon 1,39,39,77,2024-07-30 20:01:32.053019,Charlie,Earl,Fern
-1,Central 2,76,77,39,2024-07-30 20:26:02.715287,Charlie,Earl,Fern
-1,Mt. Lebanon 1,39,39,77,2024-07-30 20:27:02.715287,Charlie,Earl,Fern
-1,Central 2,76,77,39,2024-07-30 20:51:33.377555,Charlie,Earl,Fern
-1,Mt. Lebanon 1,39,39,77,2024-07-30 20:52:33.377555,Charlie,Earl,Fern
-1,Central 2,76,77,39,2024-07-30 21:17:04.039823,Charlie,Earl,Fern
-1,Mt. Lebanon 1,39,39,77,2024-07-30 21:18:04.039823,Charlie,Earl,Fern
-1,Central 2,76,77,39,2024-07-30 21:42:34.702091,Charlie,Earl,Fern
-1,Mt. Lebanon 1,39,39,77,2024-07-30 21:43:34.702091,Charlie,Earl,Fern
-1,Central 2,76,77,39,2024-07-30 22:08:05.364359,Charlie,Earl,Fern
-1,Mt. Lebanon 1,39,39,77,2024-07-30 22:09:05.364359,Charlie,Earl,Fern
-1,Central 2,76,77,39,2024-07-30 22:33:36.026627,Charlie,Earl,Fern
-1,Mt. Lebanon 1,39,39,77,2024-07-30 22:34:36.026627,Charlie,Earl,Fern
-1,Central 2,76,77,39,2024-07-30 22:59:06.688895,Charlie,Earl,Fern
-1,Mt. Lebanon 1,39,39,77,2024-07-30 23:00:06.688895,Charlie,Earl,Fern
-1,Central 2,76,77,39,2024-07-30 23:24:37.351163,Charlie,Earl,Fern
-1,Mt. Lebanon 1,39,39,77,2024-07-30 23:25:37.351163,Charlie,Earl,Fern
-1,Central 2,76,77,39,2024-07-30 23:50:08.013431,Charlie,Earl,Fern
-1,Mt. Lebanon 1,39,39,77,2024-07-30 23:51:08.013431,Charlie,Earl,Fern
-1,Central 2,76,77,39,2024-07-31 00:15:38.675699,Charlie,Earl,Fern
-1,yard,39,39,152,2024-07-31 00:16:08.675699,Charlie,Earl,Fern
-2,Mt. Lebanon 1,152,152,77,2024-07-30 00:17:57.417143,David,George,Hank
-2,Central 2,76,77,39,2024-07-30 00:42:28.079411,David,George,Hank
-2,Mt. Lebanon 1,39,39,77,2024-07-30 00:43:28.079411,David,George,Hank
-2,Central 2,76,77,39,2024-07-30 01:07:58.741679,David,George,Hank
-2,Mt. Lebanon 1,39,39,77,2024-07-30 01:08:58.741679,David,George,Hank
-2,Central 2,76,77,39,2024-07-30 01:33:29.403947,David,George,Hank
-2,Mt. Lebanon 1,39,39,77,2024-07-30 01:34:29.403947,David,George,Hank
-2,Central 2,76,77,39,2024-07-30 01:59:00.066215,David,George,Hank
-2,Mt. Lebanon 1,39,39,77,2024-07-30 02:00:00.066215,David,George,Hank
-2,Central 2,76,77,39,2024-07-30 02:24:30.728483,David,George,Hank
-2,Mt. Lebanon 1,39,39,77,2024-07-30 02:25:30.728483,David,George,Hank
-2,Central 2,76,77,39,2024-07-30 02:50:01.390751,David,George,Hank
-2,Mt. Lebanon 1,39,39,77,2024-07-30 02:51:01.390751,David,George,Hank
-2,Central 2,76,77,39,2024-07-30 03:15:32.053019,David,George,Hank
-2,Mt. Lebanon 1,39,39,77,2024-07-30 03:16:32.053019,David,George,Hank
-2,Central 2,76,77,39,2024-07-30 03:41:02.715287,David,George,Hank
-2,Mt. Lebanon 1,39,39,77,2024-07-30 03:42:02.715287,David,George,Hank
-2,Central 2,76,77,39,2024-07-30 04:06:33.377555,David,George,Hank
-2,Mt. Lebanon 1,39,39,77,2024-07-30 04:07:33.377555,David,George,Hank
-2,Central 2,76,77,39,2024-07-30 04:32:04.039823,David,George,Hank
-2,yard,39,39,152,2024-07-30 04:32:34.039823,David,George,Hank
-2,Mt. Lebanon 1,152,152,77,2024-07-30 05:07:20.874109,David,George,Hank
-2,Central 2,76,77,39,2024-07-30 05:31:51.536377,David,George,Hank
-2,Mt. Lebanon 1,39,39,77,2024-07-30 05:32:51.536377,David,George,Hank
-2,Central 2,76,77,39,2024-07-30 05:57:22.198645,David,George,Hank
-2,Mt. Lebanon 1,39,39,77,2024-07-30 05:58:22.198645,David,George,Hank
-2,Central 2,76,77,39,2024-07-30 06:22:52.860913,David,George,Hank
-2,Mt. Lebanon 1,39,39,77,2024-07-30 06:23:52.860913,David,George,Hank
-2,Central 2,76,77,39,2024-07-30 06:48:23.523181,David,George,Hank
-2,Mt. Lebanon 1,39,39,77,2024-07-30 06:49:23.523181,David,George,Hank
-2,Central 2,76,77,39,2024-07-30 07:13:54.185449,David,George,Hank
-2,Mt. Lebanon 1,39,39,77,2024-07-30 07:14:54.185449,David,George,Hank
-2,Central 2,76,77,39,2024-07-30 07:39:24.847717,David,George,Hank
-2,Mt. Lebanon 1,39,39,77,2024-07-30 07:40:24.847717,David,George,Hank
-2,Central 2,76,77,39,2024-07-30 08:04:55.509985,David,George,Hank
-2,Mt. Lebanon 1,39,39,77,2024-07-30 08:05:55.509985,David,George,Hank
-2,Central 2,76,77,39,2024-07-30 08:30:26.172253,David,George,Hank
-2,Mt. Lebanon 1,39,39,77,2024-07-30 08:31:26.172253,David,George,Hank
-2,Mt. Lebanon 1,77,77,77,2024-07-30 08:32:26.172253,David,George,Hank
-2,Mt. Lebanon 1,77,77,77,2024-07-30 08:33:26.172253,David,George,Hank
-2,Mt. Lebanon 1,77,77,77,2024-07-30 08:34:26.172253,David,George,Hank
-2,Mt. Lebanon 1,77,77,77,2024-07-30 08:35:26.172253,David,George,Hank
-2,Mt. Lebanon 1,77,77,77,2024-07-30 08:36:26.172253,David,George,Hank
-2,Mt. Lebanon 1,77,77,77,2024-07-30 08:37:26.172253,David,George,Hank
-2,Mt. Lebanon 1,77,77,77,2024-07-30 08:38:26.172253,David,George,Hank
-2,Mt. Lebanon 1,77,77,77,2024-07-30 08:39:26.172253,David,George,Hank
-2,Mt. Lebanon 1,77,77,77,2024-07-30 08:40:26.172253,David,George,Hank
-2,Mt. Lebanon 1,77,77,77,2024-07-30 08:41:26.172253,David,George,Hank
-2,Mt. Lebanon 1,77,77,77,2024-07-30 08:42:26.172253,David,George,Hank
-2,Mt. Lebanon 1,77,77,77,2024-07-30 08:43:26.172253,David,George,Hank
-2,Mt. Lebanon 1,77,77,77,2024-07-30 08:44:26.172253,David,George,Hank
-2,Mt. Lebanon 1,77,77,77,2024-07-30 08:45:26.172253,David,George,Hank
-2,yard,77,77,152,2024-07-30 08:45:56.172253,David,George,Hank
-2,Mt. Lebanon 1,152,152,77,2024-07-30 08:47:57.417143,Eve,Ian,Jack
-2,Central 2,76,77,39,2024-07-30 09:12:28.079411,Eve,Ian,Jack
-2,Mt. Lebanon 1,39,39,77,2024-07-30 09:13:28.079411,Eve,Ian,Jack
-2,Central 2,76,77,39,2024-07-30 09:37:58.741679,Eve,Ian,Jack
-2,Mt. Lebanon 1,39,39,77,2024-07-30 09:38:58.741679,Eve,Ian,Jack
-2,Central 2,76,77,39,2024-07-30 10:03:29.403947,Eve,Ian,Jack
-2,Mt. Lebanon 1,39,39,77,2024-07-30 10:04:29.403947,Eve,Ian,Jack
-2,Central 2,76,77,39,2024-07-30 10:29:00.066215,Eve,Ian,Jack
-2,Mt. Lebanon 1,39,39,77,2024-07-30 10:30:00.066215,Eve,Ian,Jack
-2,Central 2,76,77,39,2024-07-30 10:54:30.728483,Eve,Ian,Jack
-2,Mt. Lebanon 1,39,39,77,2024-07-30 10:55:30.728483,Eve,Ian,Jack
-2,Central 2,76,77,39,2024-07-30 11:20:01.390751,Eve,Ian,Jack
-2,Mt. Lebanon 1,39,39,77,2024-07-30 11:21:01.390751,Eve,Ian,Jack
-2,Central 2,76,77,39,2024-07-30 11:45:32.053019,Eve,Ian,Jack
-2,Mt. Lebanon 1,39,39,77,2024-07-30 11:46:32.053019,Eve,Ian,Jack
-2,Central 2,76,77,39,2024-07-30 12:11:02.715287,Eve,Ian,Jack
-2,Mt. Lebanon 1,39,39,77,2024-07-30 12:12:02.715287,Eve,Ian,Jack
-2,Central 2,76,77,39,2024-07-30 12:36:33.377555,Eve,Ian,Jack
-2,Mt. Lebanon 1,39,39,77,2024-07-30 12:37:33.377555,Eve,Ian,Jack
-2,Central 2,76,77,39,2024-07-30 13:02:04.039823,Eve,Ian,Jack
-2,Mt. Lebanon 1,39,39,77,2024-07-30 13:03:04.039823,Eve,Ian,Jack
-2,Central 2,76,77,39,2024-07-30 13:27:34.702091,Eve,Ian,Jack
-2,Mt. Lebanon 1,39,39,77,2024-07-30 13:28:34.702091,Eve,Ian,Jack
-2,Central 2,76,77,39,2024-07-30 13:53:05.364359,Eve,Ian,Jack
-2,Mt. Lebanon 1,39,39,77,2024-07-30 13:54:05.364359,Eve,Ian,Jack
-2,Central 2,76,77,39,2024-07-30 14:18:36.026627,Eve,Ian,Jack
-2,Mt. Lebanon 1,39,39,77,2024-07-30 14:19:36.026627,Eve,Ian,Jack
-2,Central 2,76,77,39,2024-07-30 14:44:06.688895,Eve,Ian,Jack
-2,Mt. Lebanon 1,39,39,77,2024-07-30 14:45:06.688895,Eve,Ian,Jack
-2,Central 2,76,77,39,2024-07-30 15:09:37.351163,Eve,Ian,Jack
-2,Mt. Lebanon 1,39,39,77,2024-07-30 15:10:37.351163,Eve,Ian,Jack
-2,Central 2,76,77,39,2024-07-30 15:35:08.013431,Eve,Ian,Jack
-2,Mt. Lebanon 1,39,39,77,2024-07-30 15:36:08.013431,Eve,Ian,Jack
-2,Central 2,76,77,39,2024-07-30 16:00:38.675699,Eve,Ian,Jack
-2,Mt. Lebanon 1,39,39,77,2024-07-30 16:01:38.675699,Eve,Ian,Jack
-2,Central 2,76,77,39,2024-07-30 16:26:09.337967,Eve,Ian,Jack
-2,Mt. Lebanon 1,39,39,77,2024-07-30 16:27:09.337967,Eve,Ian,Jack
-2,Central 2,76,77,39,2024-07-30 16:51:40.000235,Eve,Ian,Jack
-2,Mt. Lebanon 1,39,39,77,2024-07-30 16:52:40.000235,Eve,Ian,Jack
-2,Mt. Lebanon 1,77,77,77,2024-07-30 16:53:40.000235,Eve,Ian,Jack
-2,Mt. Lebanon 1,77,77,77,2024-07-30 16:54:40.000235,Eve,Ian,Jack
-2,Mt. Lebanon 1,77,77,77,2024-07-30 16:55:40.000235,Eve,Ian,Jack
-2,Mt. Lebanon 1,77,77,77,2024-07-30 16:56:40.000235,Eve,Ian,Jack
-2,Mt. Lebanon 1,77,77,77,2024-07-30 16:57:40.000235,Eve,Ian,Jack
-2,Mt. Lebanon 1,77,77,77,2024-07-30 16:58:40.000235,Eve,Ian,Jack
-2,Mt. Lebanon 1,77,77,77,2024-07-30 16:59:40.000235,Eve,Ian,Jack
-2,Mt. Lebanon 1,77,77,77,2024-07-30 17:00:40.000235,Eve,Ian,Jack
-2,Mt. Lebanon 1,77,77,77,2024-07-30 17:01:40.000235,Eve,Ian,Jack
-2,Mt. Lebanon 1,77,77,77,2024-07-30 17:02:40.000235,Eve,Ian,Jack
-2,Mt. Lebanon 1,77,77,77,2024-07-30 17:03:40.000235,Eve,Ian,Jack
-2,Mt. Lebanon 1,77,77,77,2024-07-30 17:04:40.000235,Eve,Ian,Jack
-2,Mt. Lebanon 1,77,77,77,2024-07-30 17:05:40.000235,Eve,Ian,Jack
-2,Mt. Lebanon 1,77,77,77,2024-07-30 17:06:40.000235,Eve,Ian,Jack
-2,Mt. Lebanon 1,77,77,77,2024-07-30 17:07:40.000235,Eve,Ian,Jack
-2,Mt. Lebanon 1,77,77,77,2024-07-30 17:08:40.000235,Eve,Ian,Jack
-2,Mt. Lebanon 1,77,77,77,2024-07-30 17:09:40.000235,Eve,Ian,Jack
-2,Mt. Lebanon 1,77,77,77,2024-07-30 17:10:40.000235,Eve,Ian,Jack
-2,Mt. Lebanon 1,77,77,77,2024-07-30 17:11:40.000235,Eve,Ian,Jack
-2,Mt. Lebanon 1,77,77,77,2024-07-30 17:12:40.000235,Eve,Ian,Jack
-2,Mt. Lebanon 1,77,77,77,2024-07-30 17:13:40.000235,Eve,Ian,Jack
-2,Mt. Lebanon 1,77,77,77,2024-07-30 17:14:40.000235,Eve,Ian,Jack
-2,Mt. Lebanon 1,77,77,77,2024-07-30 17:15:40.000235,Eve,Ian,Jack
-2,yard,77,77,152,2024-07-30 17:16:10.000235,Eve,Ian,Jack
-2,Mt. Lebanon 1,152,152,77,2024-07-30 17:17:57.417143,Frank,Karen,Leo
-2,Central 2,76,77,39,2024-07-30 17:42:28.079411,Frank,Karen,Leo
-2,Mt. Lebanon 1,39,39,77,2024-07-30 17:43:28.079411,Frank,Karen,Leo
-2,Central 2,76,77,39,2024-07-30 18:07:58.741679,Frank,Karen,Leo
-2,Mt. Lebanon 1,39,39,77,2024-07-30 18:08:58.741679,Frank,Karen,Leo
-2,Central 2,76,77,39,2024-07-30 18:33:29.403947,Frank,Karen,Leo
-2,Mt. Lebanon 1,39,39,77,2024-07-30 18:34:29.403947,Frank,Karen,Leo
-2,Central 2,76,77,39,2024-07-30 18:59:00.066215,Frank,Karen,Leo
-2,Mt. Lebanon 1,39,39,77,2024-07-30 19:00:00.066215,Frank,Karen,Leo
-2,Central 2,76,77,39,2024-07-30 19:24:30.728483,Frank,Karen,Leo
-2,Mt. Lebanon 1,39,39,77,2024-07-30 19:25:30.728483,Frank,Karen,Leo
-2,Central 2,76,77,39,2024-07-30 19:50:01.390751,Frank,Karen,Leo
-2,Mt. Lebanon 1,39,39,77,2024-07-30 19:51:01.390751,Frank,Karen,Leo
-2,Central 2,76,77,39,2024-07-30 20:15:32.053019,Frank,Karen,Leo
-2,Mt. Lebanon 1,39,39,77,2024-07-30 20:16:32.053019,Frank,Karen,Leo
-2,Central 2,76,77,39,2024-07-30 20:41:02.715287,Frank,Karen,Leo
-2,Mt. Lebanon 1,39,39,77,2024-07-30 20:42:02.715287,Frank,Karen,Leo
-2,Central 2,76,77,39,2024-07-30 21:06:33.377555,Frank,Karen,Leo
-2,Mt. Lebanon 1,39,39,77,2024-07-30 21:07:33.377555,Frank,Karen,Leo
-2,Central 2,76,77,39,2024-07-30 21:32:04.039823,Frank,Karen,Leo
-2,Mt. Lebanon 1,39,39,77,2024-07-30 21:33:04.039823,Frank,Karen,Leo
-2,Central 2,76,77,39,2024-07-30 21:57:34.702091,Frank,Karen,Leo
-2,Mt. Lebanon 1,39,39,77,2024-07-30 21:58:34.702091,Frank,Karen,Leo
-2,Central 2,76,77,39,2024-07-30 22:23:05.364359,Frank,Karen,Leo
-2,Mt. Lebanon 1,39,39,77,2024-07-30 22:24:05.364359,Frank,Karen,Leo
-2,Central 2,76,77,39,2024-07-30 22:48:36.026627,Frank,Karen,Leo
-2,Mt. Lebanon 1,39,39,77,2024-07-30 22:49:36.026627,Frank,Karen,Leo
-2,Central 2,76,77,39,2024-07-30 23:14:06.688895,Frank,Karen,Leo
-2,Mt. Lebanon 1,39,39,77,2024-07-30 23:15:06.688895,Frank,Karen,Leo
-2,Central 2,76,77,39,2024-07-30 23:39:37.351163,Frank,Karen,Leo
-2,Mt. Lebanon 1,39,39,77,2024-07-30 23:40:37.351163,Frank,Karen,Leo
-2,Central 2,76,77,39,2024-07-31 00:05:08.013431,Frank,Karen,Leo
-2,yard,39,39,152,2024-07-31 00:05:38.013431,Frank,Karen,Leo
-3,Mt. Lebanon 1,152,152,77,2024-07-30 00:32:57.417143,Grace,Morgan,Niel
-3,Central 2,76,77,39,2024-07-30 00:57:28.079411,Grace,Morgan,Niel
-3,Mt. Lebanon 1,39,39,77,2024-07-30 00:58:28.079411,Grace,Morgan,Niel
-3,Central 2,76,77,39,2024-07-30 01:22:58.741679,Grace,Morgan,Niel
-3,Mt. Lebanon 1,39,39,77,2024-07-30 01:23:58.741679,Grace,Morgan,Niel
-3,Central 2,76,77,39,2024-07-30 01:48:29.403947,Grace,Morgan,Niel
-3,Mt. Lebanon 1,39,39,77,2024-07-30 01:49:29.403947,Grace,Morgan,Niel
-3,Central 2,76,77,39,2024-07-30 02:14:00.066215,Grace,Morgan,Niel
-3,Mt. Lebanon 1,39,39,77,2024-07-30 02:15:00.066215,Grace,Morgan,Niel
-3,Central 2,76,77,39,2024-07-30 02:39:30.728483,Grace,Morgan,Niel
-3,Mt. Lebanon 1,39,39,77,2024-07-30 02:40:30.728483,Grace,Morgan,Niel
-3,Central 2,76,77,39,2024-07-30 03:05:01.390751,Grace,Morgan,Niel
-3,Mt. Lebanon 1,39,39,77,2024-07-30 03:06:01.390751,Grace,Morgan,Niel
-3,Central 2,76,77,39,2024-07-30 03:30:32.053019,Grace,Morgan,Niel
-3,Mt. Lebanon 1,39,39,77,2024-07-30 03:31:32.053019,Grace,Morgan,Niel
-3,Central 2,76,77,39,2024-07-30 03:56:02.715287,Grace,Morgan,Niel
-3,Mt. Lebanon 1,39,39,77,2024-07-30 03:57:02.715287,Grace,Morgan,Niel
-3,Central 2,76,77,39,2024-07-30 04:21:33.377555,Grace,Morgan,Niel
-3,Mt. Lebanon 1,39,39,77,2024-07-30 04:22:33.377555,Grace,Morgan,Niel
-3,Central 2,76,77,39,2024-07-30 04:47:04.039823,Grace,Morgan,Niel
-3,yard,39,39,152,2024-07-30 04:47:34.039823,Grace,Morgan,Niel
-3,Mt. Lebanon 1,152,152,77,2024-07-30 05:22:20.874109,Grace,Morgan,Niel
-3,Central 2,76,77,39,2024-07-30 05:46:51.536377,Grace,Morgan,Niel
-3,Mt. Lebanon 1,39,39,77,2024-07-30 05:47:51.536377,Grace,Morgan,Niel
-3,Central 2,76,77,39,2024-07-30 06:12:22.198645,Grace,Morgan,Niel
-3,Mt. Lebanon 1,39,39,77,2024-07-30 06:13:22.198645,Grace,Morgan,Niel
-3,Central 2,76,77,39,2024-07-30 06:37:52.860913,Grace,Morgan,Niel
-3,Mt. Lebanon 1,39,39,77,2024-07-30 06:38:52.860913,Grace,Morgan,Niel
-3,Central 2,76,77,39,2024-07-30 07:03:23.523181,Grace,Morgan,Niel
-3,Mt. Lebanon 1,39,39,77,2024-07-30 07:04:23.523181,Grace,Morgan,Niel
-3,Central 2,76,77,39,2024-07-30 07:28:54.185449,Grace,Morgan,Niel
-3,Mt. Lebanon 1,39,39,77,2024-07-30 07:29:54.185449,Grace,Morgan,Niel
-3,Central 2,76,77,39,2024-07-30 07:54:24.847717,Grace,Morgan,Niel
-3,Mt. Lebanon 1,39,39,77,2024-07-30 07:55:24.847717,Grace,Morgan,Niel
-3,Central 2,76,77,39,2024-07-30 08:19:55.509985,Grace,Morgan,Niel
-3,Mt. Lebanon 1,39,39,77,2024-07-30 08:20:55.509985,Grace,Morgan,Niel
-3,Central 2,76,77,39,2024-07-30 08:45:26.172253,Grace,Morgan,Niel
-3,Mt. Lebanon 1,39,39,77,2024-07-30 08:46:26.172253,Grace,Morgan,Niel
-3,Mt. Lebanon 1,77,77,77,2024-07-30 08:47:26.172253,Grace,Morgan,Niel
-3,Mt. Lebanon 1,77,77,77,2024-07-30 08:48:26.172253,Grace,Morgan,Niel
-3,Mt. Lebanon 1,77,77,77,2024-07-30 08:49:26.172253,Grace,Morgan,Niel
-3,Mt. Lebanon 1,77,77,77,2024-07-30 08:50:26.172253,Grace,Morgan,Niel
-3,Mt. Lebanon 1,77,77,77,2024-07-30 08:51:26.172253,Grace,Morgan,Niel
-3,Mt. Lebanon 1,77,77,77,2024-07-30 08:52:26.172253,Grace,Morgan,Niel
-3,Mt. Lebanon 1,77,77,77,2024-07-30 08:53:26.172253,Grace,Morgan,Niel
-3,Mt. Lebanon 1,77,77,77,2024-07-30 08:54:26.172253,Grace,Morgan,Niel
-3,Mt. Lebanon 1,77,77,77,2024-07-30 08:55:26.172253,Grace,Morgan,Niel
-3,Mt. Lebanon 1,77,77,77,2024-07-30 08:56:26.172253,Grace,Morgan,Niel
-3,Mt. Lebanon 1,77,77,77,2024-07-30 08:57:26.172253,Grace,Morgan,Niel
-3,Mt. Lebanon 1,77,77,77,2024-07-30 08:58:26.172253,Grace,Morgan,Niel
-3,Mt. Lebanon 1,77,77,77,2024-07-30 08:59:26.172253,Grace,Morgan,Niel
-3,Mt. Lebanon 1,77,77,77,2024-07-30 09:00:26.172253,Grace,Morgan,Niel
-3,yard,77,77,152,2024-07-30 09:00:56.172253,Grace,Morgan,Niel
-3,Mt. Lebanon 1,152,152,77,2024-07-30 09:02:57.417143,Hannah,Ophelia,Paul
-3,Central 2,76,77,39,2024-07-30 09:27:28.079411,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,39,39,77,2024-07-30 09:28:28.079411,Hannah,Ophelia,Paul
-3,Central 2,76,77,39,2024-07-30 09:52:58.741679,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,39,39,77,2024-07-30 09:53:58.741679,Hannah,Ophelia,Paul
-3,Central 2,76,77,39,2024-07-30 10:18:29.403947,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,39,39,77,2024-07-30 10:19:29.403947,Hannah,Ophelia,Paul
-3,Central 2,76,77,39,2024-07-30 10:44:00.066215,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,39,39,77,2024-07-30 10:45:00.066215,Hannah,Ophelia,Paul
-3,Central 2,76,77,39,2024-07-30 11:09:30.728483,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,39,39,77,2024-07-30 11:10:30.728483,Hannah,Ophelia,Paul
-3,Central 2,76,77,39,2024-07-30 11:35:01.390751,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,39,39,77,2024-07-30 11:36:01.390751,Hannah,Ophelia,Paul
-3,Central 2,76,77,39,2024-07-30 12:00:32.053019,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,39,39,77,2024-07-30 12:01:32.053019,Hannah,Ophelia,Paul
-3,Central 2,76,77,39,2024-07-30 12:26:02.715287,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,39,39,77,2024-07-30 12:27:02.715287,Hannah,Ophelia,Paul
-3,Central 2,76,77,39,2024-07-30 12:51:33.377555,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,39,39,77,2024-07-30 12:52:33.377555,Hannah,Ophelia,Paul
-3,Central 2,76,77,39,2024-07-30 13:17:04.039823,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,39,39,77,2024-07-30 13:18:04.039823,Hannah,Ophelia,Paul
-3,Central 2,76,77,39,2024-07-30 13:42:34.702091,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,39,39,77,2024-07-30 13:43:34.702091,Hannah,Ophelia,Paul
-3,Central 2,76,77,39,2024-07-30 14:08:05.364359,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,39,39,77,2024-07-30 14:09:05.364359,Hannah,Ophelia,Paul
-3,Central 2,76,77,39,2024-07-30 14:33:36.026627,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,39,39,77,2024-07-30 14:34:36.026627,Hannah,Ophelia,Paul
-3,Central 2,76,77,39,2024-07-30 14:59:06.688895,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,39,39,77,2024-07-30 15:00:06.688895,Hannah,Ophelia,Paul
-3,Central 2,76,77,39,2024-07-30 15:24:37.351163,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,39,39,77,2024-07-30 15:25:37.351163,Hannah,Ophelia,Paul
-3,Central 2,76,77,39,2024-07-30 15:50:08.013431,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,39,39,77,2024-07-30 15:51:08.013431,Hannah,Ophelia,Paul
-3,Central 2,76,77,39,2024-07-30 16:15:38.675699,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,39,39,77,2024-07-30 16:16:38.675699,Hannah,Ophelia,Paul
-3,Central 2,76,77,39,2024-07-30 16:41:09.337967,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,39,39,77,2024-07-30 16:42:09.337967,Hannah,Ophelia,Paul
-3,Central 2,76,77,39,2024-07-30 17:06:40.000235,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,39,39,77,2024-07-30 17:07:40.000235,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,77,77,77,2024-07-30 17:08:40.000235,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,77,77,77,2024-07-30 17:09:40.000235,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,77,77,77,2024-07-30 17:10:40.000235,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,77,77,77,2024-07-30 17:11:40.000235,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,77,77,77,2024-07-30 17:12:40.000235,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,77,77,77,2024-07-30 17:13:40.000235,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,77,77,77,2024-07-30 17:14:40.000235,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,77,77,77,2024-07-30 17:15:40.000235,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,77,77,77,2024-07-30 17:16:40.000235,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,77,77,77,2024-07-30 17:17:40.000235,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,77,77,77,2024-07-30 17:18:40.000235,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,77,77,77,2024-07-30 17:19:40.000235,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,77,77,77,2024-07-30 17:20:40.000235,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,77,77,77,2024-07-30 17:21:40.000235,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,77,77,77,2024-07-30 17:22:40.000235,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,77,77,77,2024-07-30 17:23:40.000235,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,77,77,77,2024-07-30 17:24:40.000235,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,77,77,77,2024-07-30 17:25:40.000235,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,77,77,77,2024-07-30 17:26:40.000235,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,77,77,77,2024-07-30 17:27:40.000235,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,77,77,77,2024-07-30 17:28:40.000235,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,77,77,77,2024-07-30 17:29:40.000235,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,77,77,77,2024-07-30 17:30:40.000235,Hannah,Ophelia,Paul
-3,yard,77,77,152,2024-07-30 17:31:10.000235,Hannah,Ophelia,Paul
-3,Mt. Lebanon 1,152,152,77,2024-07-30 17:32:57.417143,Ivy,Quinn,Roger
-3,Central 2,76,77,39,2024-07-30 17:57:28.079411,Ivy,Quinn,Roger
-3,Mt. Lebanon 1,39,39,77,2024-07-30 17:58:28.079411,Ivy,Quinn,Roger
-3,Central 2,76,77,39,2024-07-30 18:22:58.741679,Ivy,Quinn,Roger
-3,Mt. Lebanon 1,39,39,77,2024-07-30 18:23:58.741679,Ivy,Quinn,Roger
-3,Central 2,76,77,39,2024-07-30 18:48:29.403947,Ivy,Quinn,Roger
-3,Mt. Lebanon 1,39,39,77,2024-07-30 18:49:29.403947,Ivy,Quinn,Roger
-3,Central 2,76,77,39,2024-07-30 19:14:00.066215,Ivy,Quinn,Roger
-3,Mt. Lebanon 1,39,39,77,2024-07-30 19:15:00.066215,Ivy,Quinn,Roger
-3,Central 2,76,77,39,2024-07-30 19:39:30.728483,Ivy,Quinn,Roger
-3,Mt. Lebanon 1,39,39,77,2024-07-30 19:40:30.728483,Ivy,Quinn,Roger
-3,Central 2,76,77,39,2024-07-30 20:05:01.390751,Ivy,Quinn,Roger
-3,Mt. Lebanon 1,39,39,77,2024-07-30 20:06:01.390751,Ivy,Quinn,Roger
-3,Central 2,76,77,39,2024-07-30 20:30:32.053019,Ivy,Quinn,Roger
-3,Mt. Lebanon 1,39,39,77,2024-07-30 20:31:32.053019,Ivy,Quinn,Roger
-3,Central 2,76,77,39,2024-07-30 20:56:02.715287,Ivy,Quinn,Roger
-3,Mt. Lebanon 1,39,39,77,2024-07-30 20:57:02.715287,Ivy,Quinn,Roger
-3,Central 2,76,77,39,2024-07-30 21:21:33.377555,Ivy,Quinn,Roger
-3,Mt. Lebanon 1,39,39,77,2024-07-30 21:22:33.377555,Ivy,Quinn,Roger
-3,Central 2,76,77,39,2024-07-30 21:47:04.039823,Ivy,Quinn,Roger
-3,Mt. Lebanon 1,39,39,77,2024-07-30 21:48:04.039823,Ivy,Quinn,Roger
-3,Central 2,76,77,39,2024-07-30 22:12:34.702091,Ivy,Quinn,Roger
-3,Mt. Lebanon 1,39,39,77,2024-07-30 22:13:34.702091,Ivy,Quinn,Roger
-3,Central 2,76,77,39,2024-07-30 22:38:05.364359,Ivy,Quinn,Roger
-3,Mt. Lebanon 1,39,39,77,2024-07-30 22:39:05.364359,Ivy,Quinn,Roger
-3,Central 2,76,77,39,2024-07-30 23:03:36.026627,Ivy,Quinn,Roger
-3,Mt. Lebanon 1,39,39,77,2024-07-30 23:04:36.026627,Ivy,Quinn,Roger
-3,Central 2,76,77,39,2024-07-30 23:29:06.688895,Ivy,Quinn,Roger
-3,Mt. Lebanon 1,39,39,77,2024-07-30 23:30:06.688895,Ivy,Quinn,Roger
-3,Central 2,76,77,39,2024-07-30 23:54:37.351163,Ivy,Quinn,Roger
-3,Mt. Lebanon 1,39,39,77,2024-07-30 23:55:37.351163,Ivy,Quinn,Roger
-3,Central 2,76,77,39,2024-07-31 00:20:08.013431,Ivy,Quinn,Roger
-3,yard,39,39,152,2024-07-31 00:20:38.013431,Ivy,Quinn,Roger
-4,Mt. Lebanon 1,152,152,77,2024-07-30 00:47:57.417143,Jack,Stacy,Terry
-4,Central 2,76,77,39,2024-07-30 01:12:28.079411,Jack,Stacy,Terry
-4,Mt. Lebanon 1,39,39,77,2024-07-30 01:13:28.079411,Jack,Stacy,Terry
-4,Central 2,76,77,39,2024-07-30 01:37:58.741679,Jack,Stacy,Terry
-4,Mt. Lebanon 1,39,39,77,2024-07-30 01:38:58.741679,Jack,Stacy,Terry
-4,Central 2,76,77,39,2024-07-30 02:03:29.403947,Jack,Stacy,Terry
-4,Mt. Lebanon 1,39,39,77,2024-07-30 02:04:29.403947,Jack,Stacy,Terry
-4,Central 2,76,77,39,2024-07-30 02:29:00.066215,Jack,Stacy,Terry
-4,Mt. Lebanon 1,39,39,77,2024-07-30 02:30:00.066215,Jack,Stacy,Terry
-4,Central 2,76,77,39,2024-07-30 02:54:30.728483,Jack,Stacy,Terry
-4,Mt. Lebanon 1,39,39,77,2024-07-30 02:55:30.728483,Jack,Stacy,Terry
-4,Central 2,76,77,39,2024-07-30 03:20:01.390751,Jack,Stacy,Terry
-4,Mt. Lebanon 1,39,39,77,2024-07-30 03:21:01.390751,Jack,Stacy,Terry
-4,Central 2,76,77,39,2024-07-30 03:45:32.053019,Jack,Stacy,Terry
-4,Mt. Lebanon 1,39,39,77,2024-07-30 03:46:32.053019,Jack,Stacy,Terry
-4,Central 2,76,77,39,2024-07-30 04:11:02.715287,Jack,Stacy,Terry
-4,Mt. Lebanon 1,39,39,77,2024-07-30 04:12:02.715287,Jack,Stacy,Terry
-4,Central 2,76,77,39,2024-07-30 04:36:33.377555,Jack,Stacy,Terry
-4,Mt. Lebanon 1,39,39,77,2024-07-30 04:37:33.377555,Jack,Stacy,Terry
-4,Central 2,76,77,39,2024-07-30 05:02:04.039823,Jack,Stacy,Terry
-4,yard,39,39,152,2024-07-30 05:02:34.039823,Jack,Stacy,Terry
-4,Mt. Lebanon 1,152,152,77,2024-07-30 05:37:20.874109,Jack,Stacy,Terry
-4,Central 2,76,77,39,2024-07-30 06:01:51.536377,Jack,Stacy,Terry
-4,Mt. Lebanon 1,39,39,77,2024-07-30 06:02:51.536377,Jack,Stacy,Terry
-4,Central 2,76,77,39,2024-07-30 06:27:22.198645,Jack,Stacy,Terry
-4,Mt. Lebanon 1,39,39,77,2024-07-30 06:28:22.198645,Jack,Stacy,Terry
-4,Central 2,76,77,39,2024-07-30 06:52:52.860913,Jack,Stacy,Terry
-4,Mt. Lebanon 1,39,39,77,2024-07-30 06:53:52.860913,Jack,Stacy,Terry
-4,Central 2,76,77,39,2024-07-30 07:18:23.523181,Jack,Stacy,Terry
-4,Mt. Lebanon 1,39,39,77,2024-07-30 07:19:23.523181,Jack,Stacy,Terry
-4,Central 2,76,77,39,2024-07-30 07:43:54.185449,Jack,Stacy,Terry
-4,Mt. Lebanon 1,39,39,77,2024-07-30 07:44:54.185449,Jack,Stacy,Terry
-4,Central 2,76,77,39,2024-07-30 08:09:24.847717,Jack,Stacy,Terry
-4,Mt. Lebanon 1,39,39,77,2024-07-30 08:10:24.847717,Jack,Stacy,Terry
-4,Central 2,76,77,39,2024-07-30 08:34:55.509985,Jack,Stacy,Terry
-4,Mt. Lebanon 1,39,39,77,2024-07-30 08:35:55.509985,Jack,Stacy,Terry
-4,Central 2,76,77,39,2024-07-30 09:00:26.172253,Jack,Stacy,Terry
-4,Mt. Lebanon 1,39,39,77,2024-07-30 09:01:26.172253,Jack,Stacy,Terry
-4,Mt. Lebanon 1,77,77,77,2024-07-30 09:02:26.172253,Jack,Stacy,Terry
-4,Mt. Lebanon 1,77,77,77,2024-07-30 09:03:26.172253,Jack,Stacy,Terry
-4,Mt. Lebanon 1,77,77,77,2024-07-30 09:04:26.172253,Jack,Stacy,Terry
-4,Mt. Lebanon 1,77,77,77,2024-07-30 09:05:26.172253,Jack,Stacy,Terry
-4,Mt. Lebanon 1,77,77,77,2024-07-30 09:06:26.172253,Jack,Stacy,Terry
-4,Mt. Lebanon 1,77,77,77,2024-07-30 09:07:26.172253,Jack,Stacy,Terry
-4,Mt. Lebanon 1,77,77,77,2024-07-30 09:08:26.172253,Jack,Stacy,Terry
-4,Mt. Lebanon 1,77,77,77,2024-07-30 09:09:26.172253,Jack,Stacy,Terry
-4,Mt. Lebanon 1,77,77,77,2024-07-30 09:10:26.172253,Jack,Stacy,Terry
-4,Mt. Lebanon 1,77,77,77,2024-07-30 09:11:26.172253,Jack,Stacy,Terry
-4,Mt. Lebanon 1,77,77,77,2024-07-30 09:12:26.172253,Jack,Stacy,Terry
-4,Mt. Lebanon 1,77,77,77,2024-07-30 09:13:26.172253,Jack,Stacy,Terry
-4,Mt. Lebanon 1,77,77,77,2024-07-30 09:14:26.172253,Jack,Stacy,Terry
-4,Mt. Lebanon 1,77,77,77,2024-07-30 09:15:26.172253,Jack,Stacy,Terry
-4,yard,77,77,152,2024-07-30 09:15:56.172253,Jack,Stacy,Terry
-4,Mt. Lebanon 1,152,152,77,2024-07-30 09:17:57.417143,Alejandro,Alice,Barbra
-4,Central 2,76,77,39,2024-07-30 09:42:28.079411,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,39,39,77,2024-07-30 09:43:28.079411,Alejandro,Alice,Barbra
-4,Central 2,76,77,39,2024-07-30 10:07:58.741679,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,39,39,77,2024-07-30 10:08:58.741679,Alejandro,Alice,Barbra
-4,Central 2,76,77,39,2024-07-30 10:33:29.403947,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,39,39,77,2024-07-30 10:34:29.403947,Alejandro,Alice,Barbra
-4,Central 2,76,77,39,2024-07-30 10:59:00.066215,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,39,39,77,2024-07-30 11:00:00.066215,Alejandro,Alice,Barbra
-4,Central 2,76,77,39,2024-07-30 11:24:30.728483,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,39,39,77,2024-07-30 11:25:30.728483,Alejandro,Alice,Barbra
-4,Central 2,76,77,39,2024-07-30 11:50:01.390751,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,39,39,77,2024-07-30 11:51:01.390751,Alejandro,Alice,Barbra
-4,Central 2,76,77,39,2024-07-30 12:15:32.053019,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,39,39,77,2024-07-30 12:16:32.053019,Alejandro,Alice,Barbra
-4,Central 2,76,77,39,2024-07-30 12:41:02.715287,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,39,39,77,2024-07-30 12:42:02.715287,Alejandro,Alice,Barbra
-4,Central 2,76,77,39,2024-07-30 13:06:33.377555,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,39,39,77,2024-07-30 13:07:33.377555,Alejandro,Alice,Barbra
-4,Central 2,76,77,39,2024-07-30 13:32:04.039823,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,39,39,77,2024-07-30 13:33:04.039823,Alejandro,Alice,Barbra
-4,Central 2,76,77,39,2024-07-30 13:57:34.702091,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,39,39,77,2024-07-30 13:58:34.702091,Alejandro,Alice,Barbra
-4,Central 2,76,77,39,2024-07-30 14:23:05.364359,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,39,39,77,2024-07-30 14:24:05.364359,Alejandro,Alice,Barbra
-4,Central 2,76,77,39,2024-07-30 14:48:36.026627,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,39,39,77,2024-07-30 14:49:36.026627,Alejandro,Alice,Barbra
-4,Central 2,76,77,39,2024-07-30 15:14:06.688895,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,39,39,77,2024-07-30 15:15:06.688895,Alejandro,Alice,Barbra
-4,Central 2,76,77,39,2024-07-30 15:39:37.351163,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,39,39,77,2024-07-30 15:40:37.351163,Alejandro,Alice,Barbra
-4,Central 2,76,77,39,2024-07-30 16:05:08.013431,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,39,39,77,2024-07-30 16:06:08.013431,Alejandro,Alice,Barbra
-4,Central 2,76,77,39,2024-07-30 16:30:38.675699,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,39,39,77,2024-07-30 16:31:38.675699,Alejandro,Alice,Barbra
-4,Central 2,76,77,39,2024-07-30 16:56:09.337967,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,39,39,77,2024-07-30 16:57:09.337967,Alejandro,Alice,Barbra
-4,Central 2,76,77,39,2024-07-30 17:21:40.000235,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,39,39,77,2024-07-30 17:22:40.000235,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,77,77,77,2024-07-30 17:23:40.000235,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,77,77,77,2024-07-30 17:24:40.000235,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,77,77,77,2024-07-30 17:25:40.000235,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,77,77,77,2024-07-30 17:26:40.000235,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,77,77,77,2024-07-30 17:27:40.000235,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,77,77,77,2024-07-30 17:28:40.000235,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,77,77,77,2024-07-30 17:29:40.000235,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,77,77,77,2024-07-30 17:30:40.000235,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,77,77,77,2024-07-30 17:31:40.000235,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,77,77,77,2024-07-30 17:32:40.000235,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,77,77,77,2024-07-30 17:33:40.000235,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,77,77,77,2024-07-30 17:34:40.000235,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,77,77,77,2024-07-30 17:35:40.000235,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,77,77,77,2024-07-30 17:36:40.000235,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,77,77,77,2024-07-30 17:37:40.000235,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,77,77,77,2024-07-30 17:38:40.000235,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,77,77,77,2024-07-30 17:39:40.000235,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,77,77,77,2024-07-30 17:40:40.000235,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,77,77,77,2024-07-30 17:41:40.000235,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,77,77,77,2024-07-30 17:42:40.000235,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,77,77,77,2024-07-30 17:43:40.000235,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,77,77,77,2024-07-30 17:44:40.000235,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,77,77,77,2024-07-30 17:45:40.000235,Alejandro,Alice,Barbra
-4,yard,77,77,152,2024-07-30 17:46:10.000235,Alejandro,Alice,Barbra
-4,Mt. Lebanon 1,152,152,77,2024-07-30 17:47:57.417143,Bob,Cole,Dan
-4,Central 2,76,77,39,2024-07-30 18:12:28.079411,Bob,Cole,Dan
-4,Mt. Lebanon 1,39,39,77,2024-07-30 18:13:28.079411,Bob,Cole,Dan
-4,Central 2,76,77,39,2024-07-30 18:37:58.741679,Bob,Cole,Dan
-4,Mt. Lebanon 1,39,39,77,2024-07-30 18:38:58.741679,Bob,Cole,Dan
-4,Central 2,76,77,39,2024-07-30 19:03:29.403947,Bob,Cole,Dan
-4,Mt. Lebanon 1,39,39,77,2024-07-30 19:04:29.403947,Bob,Cole,Dan
-4,Central 2,76,77,39,2024-07-30 19:29:00.066215,Bob,Cole,Dan
-4,Mt. Lebanon 1,39,39,77,2024-07-30 19:30:00.066215,Bob,Cole,Dan
-4,Central 2,76,77,39,2024-07-30 19:54:30.728483,Bob,Cole,Dan
-4,Mt. Lebanon 1,39,39,77,2024-07-30 19:55:30.728483,Bob,Cole,Dan
-4,Central 2,76,77,39,2024-07-30 20:20:01.390751,Bob,Cole,Dan
-4,Mt. Lebanon 1,39,39,77,2024-07-30 20:21:01.390751,Bob,Cole,Dan
-4,Central 2,76,77,39,2024-07-30 20:45:32.053019,Bob,Cole,Dan
-4,Mt. Lebanon 1,39,39,77,2024-07-30 20:46:32.053019,Bob,Cole,Dan
-4,Central 2,76,77,39,2024-07-30 21:11:02.715287,Bob,Cole,Dan
-4,Mt. Lebanon 1,39,39,77,2024-07-30 21:12:02.715287,Bob,Cole,Dan
-4,Central 2,76,77,39,2024-07-30 21:36:33.377555,Bob,Cole,Dan
-4,Mt. Lebanon 1,39,39,77,2024-07-30 21:37:33.377555,Bob,Cole,Dan
-4,Central 2,76,77,39,2024-07-30 22:02:04.039823,Bob,Cole,Dan
-4,Mt. Lebanon 1,39,39,77,2024-07-30 22:03:04.039823,Bob,Cole,Dan
-4,Central 2,76,77,39,2024-07-30 22:27:34.702091,Bob,Cole,Dan
-4,Mt. Lebanon 1,39,39,77,2024-07-30 22:28:34.702091,Bob,Cole,Dan
-4,Central 2,76,77,39,2024-07-30 22:53:05.364359,Bob,Cole,Dan
-4,Mt. Lebanon 1,39,39,77,2024-07-30 22:54:05.364359,Bob,Cole,Dan
-4,Central 2,76,77,39,2024-07-30 23:18:36.026627,Bob,Cole,Dan
-4,Mt. Lebanon 1,39,39,77,2024-07-30 23:19:36.026627,Bob,Cole,Dan
-4,Central 2,76,77,39,2024-07-30 23:44:06.688895,Bob,Cole,Dan
-4,Mt. Lebanon 1,39,39,77,2024-07-30 23:45:06.688895,Bob,Cole,Dan
-4,Central 2,76,77,39,2024-07-31 00:09:37.351163,Bob,Cole,Dan
-4,yard,39,39,152,2024-07-31 00:10:07.351163,Bob,Cole,Dan
+1,Poplar,152,152,88,2024-07-30 00:05:39.144686,Alejandro,Alice,Barbra
+1,Overbrook 2,87,88,57,2024-07-30 00:29:13.107983,Alejandro,Alice,Barbra
+1,Poplar,57,57,88,2024-07-30 00:29:43.107983,Alejandro,Alice,Barbra
+1,Overbrook 2,87,88,57,2024-07-30 00:53:17.071280,Alejandro,Alice,Barbra
+1,Poplar,57,57,88,2024-07-30 00:53:47.071280,Alejandro,Alice,Barbra
+1,Overbrook 2,87,88,57,2024-07-30 01:17:21.034577,Alejandro,Alice,Barbra
+1,Poplar,57,57,88,2024-07-30 01:17:51.034577,Alejandro,Alice,Barbra
+1,Overbrook 2,87,88,57,2024-07-30 01:41:24.997874,Alejandro,Alice,Barbra
+1,Poplar,57,57,88,2024-07-30 01:41:54.997874,Alejandro,Alice,Barbra
+1,Overbrook 2,87,88,57,2024-07-30 02:05:28.961171,Alejandro,Alice,Barbra
+1,Poplar,57,57,88,2024-07-30 02:05:58.961171,Alejandro,Alice,Barbra
+1,Overbrook 2,87,88,57,2024-07-30 02:29:32.924468,Alejandro,Alice,Barbra
+1,Poplar,57,57,88,2024-07-30 02:30:02.924468,Alejandro,Alice,Barbra
+1,Overbrook 2,87,88,57,2024-07-30 02:53:36.887765,Alejandro,Alice,Barbra
+1,Poplar,57,57,88,2024-07-30 02:54:06.887765,Alejandro,Alice,Barbra
+1,Overbrook 2,87,88,57,2024-07-30 03:17:40.851062,Alejandro,Alice,Barbra
+1,Poplar,57,57,88,2024-07-30 03:18:10.851062,Alejandro,Alice,Barbra
+1,Overbrook 2,87,88,57,2024-07-30 03:41:44.814359,Alejandro,Alice,Barbra
+1,Poplar,57,57,88,2024-07-30 03:42:14.814359,Alejandro,Alice,Barbra
+1,Overbrook 2,87,88,57,2024-07-30 04:05:48.777656,Alejandro,Alice,Barbra
+1,yard,57,57,152,2024-07-30 04:06:18.777656,Alejandro,Alice,Barbra
+1,Poplar,152,152,88,2024-07-30 04:46:07.067028,Alejandro,Alice,Barbra
+1,Overbrook 2,87,88,57,2024-07-30 05:09:41.030325,Alejandro,Alice,Barbra
+1,Poplar,57,57,88,2024-07-30 05:10:11.030325,Alejandro,Alice,Barbra
+1,Overbrook 2,87,88,57,2024-07-30 05:33:44.993622,Alejandro,Alice,Barbra
+1,Poplar,57,57,88,2024-07-30 05:34:14.993622,Alejandro,Alice,Barbra
+1,Overbrook 2,87,88,57,2024-07-30 05:57:48.956919,Alejandro,Alice,Barbra
+1,Poplar,57,57,88,2024-07-30 05:58:18.956919,Alejandro,Alice,Barbra
+1,Overbrook 2,87,88,57,2024-07-30 06:21:52.920216,Alejandro,Alice,Barbra
+1,Poplar,57,57,88,2024-07-30 06:22:22.920216,Alejandro,Alice,Barbra
+1,Overbrook 2,87,88,57,2024-07-30 06:45:56.883513,Alejandro,Alice,Barbra
+1,Poplar,57,57,88,2024-07-30 06:46:26.883513,Alejandro,Alice,Barbra
+1,Overbrook 2,87,88,57,2024-07-30 07:10:00.846810,Alejandro,Alice,Barbra
+1,Poplar,57,57,88,2024-07-30 07:10:30.846810,Alejandro,Alice,Barbra
+1,Overbrook 2,87,88,57,2024-07-30 07:34:04.810107,Alejandro,Alice,Barbra
+1,Poplar,57,57,88,2024-07-30 07:34:34.810107,Alejandro,Alice,Barbra
+1,Overbrook 2,87,88,57,2024-07-30 07:58:08.773404,Alejandro,Alice,Barbra
+1,Poplar,57,57,88,2024-07-30 07:58:38.773404,Alejandro,Alice,Barbra
+1,Overbrook 2,87,88,57,2024-07-30 08:22:12.736701,Alejandro,Alice,Barbra
+1,Poplar,57,57,88,2024-07-30 08:22:42.736701,Alejandro,Alice,Barbra
+1,Poplar,88,88,88,2024-07-30 08:23:12.736701,Alejandro,Alice,Barbra
+1,Poplar,88,88,88,2024-07-30 08:23:42.736701,Alejandro,Alice,Barbra
+1,Poplar,88,88,88,2024-07-30 08:24:12.736701,Alejandro,Alice,Barbra
+1,Poplar,88,88,88,2024-07-30 08:24:42.736701,Alejandro,Alice,Barbra
+1,Poplar,88,88,88,2024-07-30 08:25:12.736701,Alejandro,Alice,Barbra
+1,Poplar,88,88,88,2024-07-30 08:25:42.736701,Alejandro,Alice,Barbra
+1,Poplar,88,88,88,2024-07-30 08:26:12.736701,Alejandro,Alice,Barbra
+1,Poplar,88,88,88,2024-07-30 08:26:42.736701,Alejandro,Alice,Barbra
+1,Poplar,88,88,88,2024-07-30 08:27:12.736701,Alejandro,Alice,Barbra
+1,Poplar,88,88,88,2024-07-30 08:27:42.736701,Alejandro,Alice,Barbra
+1,Poplar,88,88,88,2024-07-30 08:28:12.736701,Alejandro,Alice,Barbra
+1,Poplar,88,88,88,2024-07-30 08:28:42.736701,Alejandro,Alice,Barbra
+1,Poplar,88,88,88,2024-07-30 08:29:12.736701,Alejandro,Alice,Barbra
+1,Poplar,88,88,88,2024-07-30 08:29:42.736701,Alejandro,Alice,Barbra
+1,Poplar,88,88,88,2024-07-30 08:30:12.736701,Alejandro,Alice,Barbra
+1,Poplar,88,88,88,2024-07-30 08:30:42.736701,Alejandro,Alice,Barbra
+1,yard,88,88,152,2024-07-30 08:31:12.736701,Alejandro,Alice,Barbra
+1,Poplar,152,152,88,2024-07-30 08:35:39.144686,Bob,Cole,Dan
+1,Overbrook 2,87,88,57,2024-07-30 08:59:13.107983,Bob,Cole,Dan
+1,Poplar,57,57,88,2024-07-30 08:59:43.107983,Bob,Cole,Dan
+1,Overbrook 2,87,88,57,2024-07-30 09:23:17.071280,Bob,Cole,Dan
+1,Poplar,57,57,88,2024-07-30 09:23:47.071280,Bob,Cole,Dan
+1,Overbrook 2,87,88,57,2024-07-30 09:47:21.034577,Bob,Cole,Dan
+1,Poplar,57,57,88,2024-07-30 09:47:51.034577,Bob,Cole,Dan
+1,Overbrook 2,87,88,57,2024-07-30 10:11:24.997874,Bob,Cole,Dan
+1,Poplar,57,57,88,2024-07-30 10:11:54.997874,Bob,Cole,Dan
+1,Overbrook 2,87,88,57,2024-07-30 10:35:28.961171,Bob,Cole,Dan
+1,Poplar,57,57,88,2024-07-30 10:35:58.961171,Bob,Cole,Dan
+1,Overbrook 2,87,88,57,2024-07-30 10:59:32.924468,Bob,Cole,Dan
+1,Poplar,57,57,88,2024-07-30 11:00:02.924468,Bob,Cole,Dan
+1,Overbrook 2,87,88,57,2024-07-30 11:23:36.887765,Bob,Cole,Dan
+1,Poplar,57,57,88,2024-07-30 11:24:06.887765,Bob,Cole,Dan
+1,Overbrook 2,87,88,57,2024-07-30 11:47:40.851062,Bob,Cole,Dan
+1,Poplar,57,57,88,2024-07-30 11:48:10.851062,Bob,Cole,Dan
+1,Overbrook 2,87,88,57,2024-07-30 12:11:44.814359,Bob,Cole,Dan
+1,Poplar,57,57,88,2024-07-30 12:12:14.814359,Bob,Cole,Dan
+1,Overbrook 2,87,88,57,2024-07-30 12:35:48.777656,Bob,Cole,Dan
+1,yard,57,57,152,2024-07-30 12:36:18.777656,Bob,Cole,Dan
+1,Poplar,152,152,88,2024-07-30 13:16:07.067028,Bob,Cole,Dan
+1,Overbrook 2,87,88,57,2024-07-30 13:39:41.030325,Bob,Cole,Dan
+1,Poplar,57,57,88,2024-07-30 13:40:11.030325,Bob,Cole,Dan
+1,Overbrook 2,87,88,57,2024-07-30 14:03:44.993622,Bob,Cole,Dan
+1,Poplar,57,57,88,2024-07-30 14:04:14.993622,Bob,Cole,Dan
+1,Overbrook 2,87,88,57,2024-07-30 14:27:48.956919,Bob,Cole,Dan
+1,Poplar,57,57,88,2024-07-30 14:28:18.956919,Bob,Cole,Dan
+1,Overbrook 2,87,88,57,2024-07-30 14:51:52.920216,Bob,Cole,Dan
+1,Poplar,57,57,88,2024-07-30 14:52:22.920216,Bob,Cole,Dan
+1,Overbrook 2,87,88,57,2024-07-30 15:15:56.883513,Bob,Cole,Dan
+1,Poplar,57,57,88,2024-07-30 15:16:26.883513,Bob,Cole,Dan
+1,Overbrook 2,87,88,57,2024-07-30 15:40:00.846810,Bob,Cole,Dan
+1,Poplar,57,57,88,2024-07-30 15:40:30.846810,Bob,Cole,Dan
+1,Overbrook 2,87,88,57,2024-07-30 16:04:04.810107,Bob,Cole,Dan
+1,Poplar,57,57,88,2024-07-30 16:04:34.810107,Bob,Cole,Dan
+1,Overbrook 2,87,88,57,2024-07-30 16:28:08.773404,Bob,Cole,Dan
+1,Poplar,57,57,88,2024-07-30 16:28:38.773404,Bob,Cole,Dan
+1,Overbrook 2,87,88,57,2024-07-30 16:52:12.736701,Bob,Cole,Dan
+1,Poplar,57,57,88,2024-07-30 16:52:42.736701,Bob,Cole,Dan
+1,Poplar,88,88,88,2024-07-30 16:53:12.736701,Bob,Cole,Dan
+1,Poplar,88,88,88,2024-07-30 16:53:42.736701,Bob,Cole,Dan
+1,Poplar,88,88,88,2024-07-30 16:54:12.736701,Bob,Cole,Dan
+1,Poplar,88,88,88,2024-07-30 16:54:42.736701,Bob,Cole,Dan
+1,Poplar,88,88,88,2024-07-30 16:55:12.736701,Bob,Cole,Dan
+1,Poplar,88,88,88,2024-07-30 16:55:42.736701,Bob,Cole,Dan
+1,Poplar,88,88,88,2024-07-30 16:56:12.736701,Bob,Cole,Dan
+1,Poplar,88,88,88,2024-07-30 16:56:42.736701,Bob,Cole,Dan
+1,Poplar,88,88,88,2024-07-30 16:57:12.736701,Bob,Cole,Dan
+1,Poplar,88,88,88,2024-07-30 16:57:42.736701,Bob,Cole,Dan
+1,Poplar,88,88,88,2024-07-30 16:58:12.736701,Bob,Cole,Dan
+1,Poplar,88,88,88,2024-07-30 16:58:42.736701,Bob,Cole,Dan
+1,Poplar,88,88,88,2024-07-30 16:59:12.736701,Bob,Cole,Dan
+1,Poplar,88,88,88,2024-07-30 16:59:42.736701,Bob,Cole,Dan
+1,Poplar,88,88,88,2024-07-30 17:00:12.736701,Bob,Cole,Dan
+1,Poplar,88,88,88,2024-07-30 17:00:42.736701,Bob,Cole,Dan
+1,yard,88,88,152,2024-07-30 17:01:12.736701,Bob,Cole,Dan
+1,Poplar,152,152,88,2024-07-30 17:05:39.144686,Charlie,Earl,Fern
+1,Overbrook 2,87,88,57,2024-07-30 17:29:13.107983,Charlie,Earl,Fern
+1,Poplar,57,57,88,2024-07-30 17:29:43.107983,Charlie,Earl,Fern
+1,Overbrook 2,87,88,57,2024-07-30 17:53:17.071280,Charlie,Earl,Fern
+1,Poplar,57,57,88,2024-07-30 17:53:47.071280,Charlie,Earl,Fern
+1,Overbrook 2,87,88,57,2024-07-30 18:17:21.034577,Charlie,Earl,Fern
+1,Poplar,57,57,88,2024-07-30 18:17:51.034577,Charlie,Earl,Fern
+1,Overbrook 2,87,88,57,2024-07-30 18:41:24.997874,Charlie,Earl,Fern
+1,Poplar,57,57,88,2024-07-30 18:41:54.997874,Charlie,Earl,Fern
+1,Overbrook 2,87,88,57,2024-07-30 19:05:28.961171,Charlie,Earl,Fern
+1,Poplar,57,57,88,2024-07-30 19:05:58.961171,Charlie,Earl,Fern
+1,Overbrook 2,87,88,57,2024-07-30 19:29:32.924468,Charlie,Earl,Fern
+1,Poplar,57,57,88,2024-07-30 19:30:02.924468,Charlie,Earl,Fern
+1,Overbrook 2,87,88,57,2024-07-30 19:53:36.887765,Charlie,Earl,Fern
+1,Poplar,57,57,88,2024-07-30 19:54:06.887765,Charlie,Earl,Fern
+1,Overbrook 2,87,88,57,2024-07-30 20:17:40.851062,Charlie,Earl,Fern
+1,Poplar,57,57,88,2024-07-30 20:18:10.851062,Charlie,Earl,Fern
+1,Overbrook 2,87,88,57,2024-07-30 20:41:44.814359,Charlie,Earl,Fern
+1,Poplar,57,57,88,2024-07-30 20:42:14.814359,Charlie,Earl,Fern
+1,Overbrook 2,87,88,57,2024-07-30 21:05:48.777656,Charlie,Earl,Fern
+1,yard,57,57,152,2024-07-30 21:06:18.777656,Charlie,Earl,Fern
+1,Poplar,152,152,88,2024-07-30 21:46:07.067028,Charlie,Earl,Fern
+1,Overbrook 2,87,88,57,2024-07-30 22:09:41.030325,Charlie,Earl,Fern
+1,Poplar,57,57,88,2024-07-30 22:10:11.030325,Charlie,Earl,Fern
+1,Overbrook 2,87,88,57,2024-07-30 22:33:44.993622,Charlie,Earl,Fern
+1,Poplar,57,57,88,2024-07-30 22:34:14.993622,Charlie,Earl,Fern
+1,Overbrook 2,87,88,57,2024-07-30 22:57:48.956919,Charlie,Earl,Fern
+1,Poplar,57,57,88,2024-07-30 22:58:18.956919,Charlie,Earl,Fern
+1,Overbrook 2,87,88,57,2024-07-30 23:21:52.920216,Charlie,Earl,Fern
+1,Poplar,57,57,88,2024-07-30 23:22:22.920216,Charlie,Earl,Fern
+1,Overbrook 2,87,88,57,2024-07-30 23:45:56.883513,Charlie,Earl,Fern
+1,Poplar,57,57,88,2024-07-30 23:46:26.883513,Charlie,Earl,Fern
+1,Overbrook 2,87,88,57,2024-07-31 00:10:00.846810,Charlie,Earl,Fern
+1,yard,57,57,152,2024-07-31 00:10:30.846810,Charlie,Earl,Fern
+2,Poplar,152,152,88,2024-07-30 00:20:39.144686,David,George,Hank
+2,Overbrook 2,87,88,57,2024-07-30 00:44:13.107983,David,George,Hank
+2,Poplar,57,57,88,2024-07-30 00:44:43.107983,David,George,Hank
+2,Overbrook 2,87,88,57,2024-07-30 01:08:17.071280,David,George,Hank
+2,Poplar,57,57,88,2024-07-30 01:08:47.071280,David,George,Hank
+2,Overbrook 2,87,88,57,2024-07-30 01:32:21.034577,David,George,Hank
+2,Poplar,57,57,88,2024-07-30 01:32:51.034577,David,George,Hank
+2,Overbrook 2,87,88,57,2024-07-30 01:56:24.997874,David,George,Hank
+2,Poplar,57,57,88,2024-07-30 01:56:54.997874,David,George,Hank
+2,Overbrook 2,87,88,57,2024-07-30 02:20:28.961171,David,George,Hank
+2,Poplar,57,57,88,2024-07-30 02:20:58.961171,David,George,Hank
+2,Overbrook 2,87,88,57,2024-07-30 02:44:32.924468,David,George,Hank
+2,Poplar,57,57,88,2024-07-30 02:45:02.924468,David,George,Hank
+2,Overbrook 2,87,88,57,2024-07-30 03:08:36.887765,David,George,Hank
+2,Poplar,57,57,88,2024-07-30 03:09:06.887765,David,George,Hank
+2,Overbrook 2,87,88,57,2024-07-30 03:32:40.851062,David,George,Hank
+2,Poplar,57,57,88,2024-07-30 03:33:10.851062,David,George,Hank
+2,Overbrook 2,87,88,57,2024-07-30 03:56:44.814359,David,George,Hank
+2,Poplar,57,57,88,2024-07-30 03:57:14.814359,David,George,Hank
+2,Overbrook 2,87,88,57,2024-07-30 04:20:48.777656,David,George,Hank
+2,yard,57,57,152,2024-07-30 04:21:18.777656,David,George,Hank
+2,Poplar,152,152,88,2024-07-30 05:01:07.067028,David,George,Hank
+2,Overbrook 2,87,88,57,2024-07-30 05:24:41.030325,David,George,Hank
+2,Poplar,57,57,88,2024-07-30 05:25:11.030325,David,George,Hank
+2,Overbrook 2,87,88,57,2024-07-30 05:48:44.993622,David,George,Hank
+2,Poplar,57,57,88,2024-07-30 05:49:14.993622,David,George,Hank
+2,Overbrook 2,87,88,57,2024-07-30 06:12:48.956919,David,George,Hank
+2,Poplar,57,57,88,2024-07-30 06:13:18.956919,David,George,Hank
+2,Overbrook 2,87,88,57,2024-07-30 06:36:52.920216,David,George,Hank
+2,Poplar,57,57,88,2024-07-30 06:37:22.920216,David,George,Hank
+2,Overbrook 2,87,88,57,2024-07-30 07:00:56.883513,David,George,Hank
+2,Poplar,57,57,88,2024-07-30 07:01:26.883513,David,George,Hank
+2,Overbrook 2,87,88,57,2024-07-30 07:25:00.846810,David,George,Hank
+2,Poplar,57,57,88,2024-07-30 07:25:30.846810,David,George,Hank
+2,Overbrook 2,87,88,57,2024-07-30 07:49:04.810107,David,George,Hank
+2,Poplar,57,57,88,2024-07-30 07:49:34.810107,David,George,Hank
+2,Overbrook 2,87,88,57,2024-07-30 08:13:08.773404,David,George,Hank
+2,Poplar,57,57,88,2024-07-30 08:13:38.773404,David,George,Hank
+2,Overbrook 2,87,88,57,2024-07-30 08:37:12.736701,David,George,Hank
+2,Poplar,57,57,88,2024-07-30 08:37:42.736701,David,George,Hank
+2,Poplar,88,88,88,2024-07-30 08:38:12.736701,David,George,Hank
+2,Poplar,88,88,88,2024-07-30 08:38:42.736701,David,George,Hank
+2,Poplar,88,88,88,2024-07-30 08:39:12.736701,David,George,Hank
+2,Poplar,88,88,88,2024-07-30 08:39:42.736701,David,George,Hank
+2,Poplar,88,88,88,2024-07-30 08:40:12.736701,David,George,Hank
+2,Poplar,88,88,88,2024-07-30 08:40:42.736701,David,George,Hank
+2,Poplar,88,88,88,2024-07-30 08:41:12.736701,David,George,Hank
+2,Poplar,88,88,88,2024-07-30 08:41:42.736701,David,George,Hank
+2,Poplar,88,88,88,2024-07-30 08:42:12.736701,David,George,Hank
+2,Poplar,88,88,88,2024-07-30 08:42:42.736701,David,George,Hank
+2,Poplar,88,88,88,2024-07-30 08:43:12.736701,David,George,Hank
+2,Poplar,88,88,88,2024-07-30 08:43:42.736701,David,George,Hank
+2,Poplar,88,88,88,2024-07-30 08:44:12.736701,David,George,Hank
+2,Poplar,88,88,88,2024-07-30 08:44:42.736701,David,George,Hank
+2,Poplar,88,88,88,2024-07-30 08:45:12.736701,David,George,Hank
+2,Poplar,88,88,88,2024-07-30 08:45:42.736701,David,George,Hank
+2,yard,88,88,152,2024-07-30 08:46:12.736701,David,George,Hank
+2,Poplar,152,152,88,2024-07-30 08:50:39.144686,Eve,Ian,Jack
+2,Overbrook 2,87,88,57,2024-07-30 09:14:13.107983,Eve,Ian,Jack
+2,Poplar,57,57,88,2024-07-30 09:14:43.107983,Eve,Ian,Jack
+2,Overbrook 2,87,88,57,2024-07-30 09:38:17.071280,Eve,Ian,Jack
+2,Poplar,57,57,88,2024-07-30 09:38:47.071280,Eve,Ian,Jack
+2,Overbrook 2,87,88,57,2024-07-30 10:02:21.034577,Eve,Ian,Jack
+2,Poplar,57,57,88,2024-07-30 10:02:51.034577,Eve,Ian,Jack
+2,Overbrook 2,87,88,57,2024-07-30 10:26:24.997874,Eve,Ian,Jack
+2,Poplar,57,57,88,2024-07-30 10:26:54.997874,Eve,Ian,Jack
+2,Overbrook 2,87,88,57,2024-07-30 10:50:28.961171,Eve,Ian,Jack
+2,Poplar,57,57,88,2024-07-30 10:50:58.961171,Eve,Ian,Jack
+2,Overbrook 2,87,88,57,2024-07-30 11:14:32.924468,Eve,Ian,Jack
+2,Poplar,57,57,88,2024-07-30 11:15:02.924468,Eve,Ian,Jack
+2,Overbrook 2,87,88,57,2024-07-30 11:38:36.887765,Eve,Ian,Jack
+2,Poplar,57,57,88,2024-07-30 11:39:06.887765,Eve,Ian,Jack
+2,Overbrook 2,87,88,57,2024-07-30 12:02:40.851062,Eve,Ian,Jack
+2,Poplar,57,57,88,2024-07-30 12:03:10.851062,Eve,Ian,Jack
+2,Overbrook 2,87,88,57,2024-07-30 12:26:44.814359,Eve,Ian,Jack
+2,Poplar,57,57,88,2024-07-30 12:27:14.814359,Eve,Ian,Jack
+2,Overbrook 2,87,88,57,2024-07-30 12:50:48.777656,Eve,Ian,Jack
+2,yard,57,57,152,2024-07-30 12:51:18.777656,Eve,Ian,Jack
+2,Poplar,152,152,88,2024-07-30 13:31:07.067028,Eve,Ian,Jack
+2,Overbrook 2,87,88,57,2024-07-30 13:54:41.030325,Eve,Ian,Jack
+2,Poplar,57,57,88,2024-07-30 13:55:11.030325,Eve,Ian,Jack
+2,Overbrook 2,87,88,57,2024-07-30 14:18:44.993622,Eve,Ian,Jack
+2,Poplar,57,57,88,2024-07-30 14:19:14.993622,Eve,Ian,Jack
+2,Overbrook 2,87,88,57,2024-07-30 14:42:48.956919,Eve,Ian,Jack
+2,Poplar,57,57,88,2024-07-30 14:43:18.956919,Eve,Ian,Jack
+2,Overbrook 2,87,88,57,2024-07-30 15:06:52.920216,Eve,Ian,Jack
+2,Poplar,57,57,88,2024-07-30 15:07:22.920216,Eve,Ian,Jack
+2,Overbrook 2,87,88,57,2024-07-30 15:30:56.883513,Eve,Ian,Jack
+2,Poplar,57,57,88,2024-07-30 15:31:26.883513,Eve,Ian,Jack
+2,Overbrook 2,87,88,57,2024-07-30 15:55:00.846810,Eve,Ian,Jack
+2,Poplar,57,57,88,2024-07-30 15:55:30.846810,Eve,Ian,Jack
+2,Overbrook 2,87,88,57,2024-07-30 16:19:04.810107,Eve,Ian,Jack
+2,Poplar,57,57,88,2024-07-30 16:19:34.810107,Eve,Ian,Jack
+2,Overbrook 2,87,88,57,2024-07-30 16:43:08.773404,Eve,Ian,Jack
+2,Poplar,57,57,88,2024-07-30 16:43:38.773404,Eve,Ian,Jack
+2,Overbrook 2,87,88,57,2024-07-30 17:07:12.736701,Eve,Ian,Jack
+2,Poplar,57,57,88,2024-07-30 17:07:42.736701,Eve,Ian,Jack
+2,Poplar,88,88,88,2024-07-30 17:08:12.736701,Eve,Ian,Jack
+2,Poplar,88,88,88,2024-07-30 17:08:42.736701,Eve,Ian,Jack
+2,Poplar,88,88,88,2024-07-30 17:09:12.736701,Eve,Ian,Jack
+2,Poplar,88,88,88,2024-07-30 17:09:42.736701,Eve,Ian,Jack
+2,Poplar,88,88,88,2024-07-30 17:10:12.736701,Eve,Ian,Jack
+2,Poplar,88,88,88,2024-07-30 17:10:42.736701,Eve,Ian,Jack
+2,Poplar,88,88,88,2024-07-30 17:11:12.736701,Eve,Ian,Jack
+2,Poplar,88,88,88,2024-07-30 17:11:42.736701,Eve,Ian,Jack
+2,Poplar,88,88,88,2024-07-30 17:12:12.736701,Eve,Ian,Jack
+2,Poplar,88,88,88,2024-07-30 17:12:42.736701,Eve,Ian,Jack
+2,Poplar,88,88,88,2024-07-30 17:13:12.736701,Eve,Ian,Jack
+2,Poplar,88,88,88,2024-07-30 17:13:42.736701,Eve,Ian,Jack
+2,Poplar,88,88,88,2024-07-30 17:14:12.736701,Eve,Ian,Jack
+2,Poplar,88,88,88,2024-07-30 17:14:42.736701,Eve,Ian,Jack
+2,Poplar,88,88,88,2024-07-30 17:15:12.736701,Eve,Ian,Jack
+2,Poplar,88,88,88,2024-07-30 17:15:42.736701,Eve,Ian,Jack
+2,yard,88,88,152,2024-07-30 17:16:12.736701,Eve,Ian,Jack
+2,Poplar,152,152,88,2024-07-30 17:20:39.144686,Frank,Karen,Leo
+2,Overbrook 2,87,88,57,2024-07-30 17:44:13.107983,Frank,Karen,Leo
+2,Poplar,57,57,88,2024-07-30 17:44:43.107983,Frank,Karen,Leo
+2,Overbrook 2,87,88,57,2024-07-30 18:08:17.071280,Frank,Karen,Leo
+2,Poplar,57,57,88,2024-07-30 18:08:47.071280,Frank,Karen,Leo
+2,Overbrook 2,87,88,57,2024-07-30 18:32:21.034577,Frank,Karen,Leo
+2,Poplar,57,57,88,2024-07-30 18:32:51.034577,Frank,Karen,Leo
+2,Overbrook 2,87,88,57,2024-07-30 18:56:24.997874,Frank,Karen,Leo
+2,Poplar,57,57,88,2024-07-30 18:56:54.997874,Frank,Karen,Leo
+2,Overbrook 2,87,88,57,2024-07-30 19:20:28.961171,Frank,Karen,Leo
+2,Poplar,57,57,88,2024-07-30 19:20:58.961171,Frank,Karen,Leo
+2,Overbrook 2,87,88,57,2024-07-30 19:44:32.924468,Frank,Karen,Leo
+2,Poplar,57,57,88,2024-07-30 19:45:02.924468,Frank,Karen,Leo
+2,Overbrook 2,87,88,57,2024-07-30 20:08:36.887765,Frank,Karen,Leo
+2,Poplar,57,57,88,2024-07-30 20:09:06.887765,Frank,Karen,Leo
+2,Overbrook 2,87,88,57,2024-07-30 20:32:40.851062,Frank,Karen,Leo
+2,Poplar,57,57,88,2024-07-30 20:33:10.851062,Frank,Karen,Leo
+2,Overbrook 2,87,88,57,2024-07-30 20:56:44.814359,Frank,Karen,Leo
+2,Poplar,57,57,88,2024-07-30 20:57:14.814359,Frank,Karen,Leo
+2,Overbrook 2,87,88,57,2024-07-30 21:20:48.777656,Frank,Karen,Leo
+2,yard,57,57,152,2024-07-30 21:21:18.777656,Frank,Karen,Leo
+2,Poplar,152,152,88,2024-07-30 22:01:07.067028,Frank,Karen,Leo
+2,Overbrook 2,87,88,57,2024-07-30 22:24:41.030325,Frank,Karen,Leo
+2,Poplar,57,57,88,2024-07-30 22:25:11.030325,Frank,Karen,Leo
+2,Overbrook 2,87,88,57,2024-07-30 22:48:44.993622,Frank,Karen,Leo
+2,Poplar,57,57,88,2024-07-30 22:49:14.993622,Frank,Karen,Leo
+2,Overbrook 2,87,88,57,2024-07-30 23:12:48.956919,Frank,Karen,Leo
+2,Poplar,57,57,88,2024-07-30 23:13:18.956919,Frank,Karen,Leo
+2,Overbrook 2,87,88,57,2024-07-30 23:36:52.920216,Frank,Karen,Leo
+2,Poplar,57,57,88,2024-07-30 23:37:22.920216,Frank,Karen,Leo
+2,Overbrook 2,87,88,57,2024-07-31 00:00:56.883513,Frank,Karen,Leo
+2,yard,57,57,152,2024-07-31 00:01:26.883513,Frank,Karen,Leo
+3,Poplar,152,152,88,2024-07-30 00:35:39.144686,Grace,Morgan,Niel
+3,Overbrook 2,87,88,57,2024-07-30 00:59:13.107983,Grace,Morgan,Niel
+3,Poplar,57,57,88,2024-07-30 00:59:43.107983,Grace,Morgan,Niel
+3,Overbrook 2,87,88,57,2024-07-30 01:23:17.071280,Grace,Morgan,Niel
+3,Poplar,57,57,88,2024-07-30 01:23:47.071280,Grace,Morgan,Niel
+3,Overbrook 2,87,88,57,2024-07-30 01:47:21.034577,Grace,Morgan,Niel
+3,Poplar,57,57,88,2024-07-30 01:47:51.034577,Grace,Morgan,Niel
+3,Overbrook 2,87,88,57,2024-07-30 02:11:24.997874,Grace,Morgan,Niel
+3,Poplar,57,57,88,2024-07-30 02:11:54.997874,Grace,Morgan,Niel
+3,Overbrook 2,87,88,57,2024-07-30 02:35:28.961171,Grace,Morgan,Niel
+3,Poplar,57,57,88,2024-07-30 02:35:58.961171,Grace,Morgan,Niel
+3,Overbrook 2,87,88,57,2024-07-30 02:59:32.924468,Grace,Morgan,Niel
+3,Poplar,57,57,88,2024-07-30 03:00:02.924468,Grace,Morgan,Niel
+3,Overbrook 2,87,88,57,2024-07-30 03:23:36.887765,Grace,Morgan,Niel
+3,Poplar,57,57,88,2024-07-30 03:24:06.887765,Grace,Morgan,Niel
+3,Overbrook 2,87,88,57,2024-07-30 03:47:40.851062,Grace,Morgan,Niel
+3,Poplar,57,57,88,2024-07-30 03:48:10.851062,Grace,Morgan,Niel
+3,Overbrook 2,87,88,57,2024-07-30 04:11:44.814359,Grace,Morgan,Niel
+3,Poplar,57,57,88,2024-07-30 04:12:14.814359,Grace,Morgan,Niel
+3,Overbrook 2,87,88,57,2024-07-30 04:35:48.777656,Grace,Morgan,Niel
+3,yard,57,57,152,2024-07-30 04:36:18.777656,Grace,Morgan,Niel
+3,Poplar,152,152,88,2024-07-30 05:16:07.067028,Grace,Morgan,Niel
+3,Overbrook 2,87,88,57,2024-07-30 05:39:41.030325,Grace,Morgan,Niel
+3,Poplar,57,57,88,2024-07-30 05:40:11.030325,Grace,Morgan,Niel
+3,Overbrook 2,87,88,57,2024-07-30 06:03:44.993622,Grace,Morgan,Niel
+3,Poplar,57,57,88,2024-07-30 06:04:14.993622,Grace,Morgan,Niel
+3,Overbrook 2,87,88,57,2024-07-30 06:27:48.956919,Grace,Morgan,Niel
+3,Poplar,57,57,88,2024-07-30 06:28:18.956919,Grace,Morgan,Niel
+3,Overbrook 2,87,88,57,2024-07-30 06:51:52.920216,Grace,Morgan,Niel
+3,Poplar,57,57,88,2024-07-30 06:52:22.920216,Grace,Morgan,Niel
+3,Overbrook 2,87,88,57,2024-07-30 07:15:56.883513,Grace,Morgan,Niel
+3,Poplar,57,57,88,2024-07-30 07:16:26.883513,Grace,Morgan,Niel
+3,Overbrook 2,87,88,57,2024-07-30 07:40:00.846810,Grace,Morgan,Niel
+3,Poplar,57,57,88,2024-07-30 07:40:30.846810,Grace,Morgan,Niel
+3,Overbrook 2,87,88,57,2024-07-30 08:04:04.810107,Grace,Morgan,Niel
+3,Poplar,57,57,88,2024-07-30 08:04:34.810107,Grace,Morgan,Niel
+3,Overbrook 2,87,88,57,2024-07-30 08:28:08.773404,Grace,Morgan,Niel
+3,Poplar,57,57,88,2024-07-30 08:28:38.773404,Grace,Morgan,Niel
+3,Overbrook 2,87,88,57,2024-07-30 08:52:12.736701,Grace,Morgan,Niel
+3,Poplar,57,57,88,2024-07-30 08:52:42.736701,Grace,Morgan,Niel
+3,Poplar,88,88,88,2024-07-30 08:53:12.736701,Grace,Morgan,Niel
+3,Poplar,88,88,88,2024-07-30 08:53:42.736701,Grace,Morgan,Niel
+3,Poplar,88,88,88,2024-07-30 08:54:12.736701,Grace,Morgan,Niel
+3,Poplar,88,88,88,2024-07-30 08:54:42.736701,Grace,Morgan,Niel
+3,Poplar,88,88,88,2024-07-30 08:55:12.736701,Grace,Morgan,Niel
+3,Poplar,88,88,88,2024-07-30 08:55:42.736701,Grace,Morgan,Niel
+3,Poplar,88,88,88,2024-07-30 08:56:12.736701,Grace,Morgan,Niel
+3,Poplar,88,88,88,2024-07-30 08:56:42.736701,Grace,Morgan,Niel
+3,Poplar,88,88,88,2024-07-30 08:57:12.736701,Grace,Morgan,Niel
+3,Poplar,88,88,88,2024-07-30 08:57:42.736701,Grace,Morgan,Niel
+3,Poplar,88,88,88,2024-07-30 08:58:12.736701,Grace,Morgan,Niel
+3,Poplar,88,88,88,2024-07-30 08:58:42.736701,Grace,Morgan,Niel
+3,Poplar,88,88,88,2024-07-30 08:59:12.736701,Grace,Morgan,Niel
+3,Poplar,88,88,88,2024-07-30 08:59:42.736701,Grace,Morgan,Niel
+3,Poplar,88,88,88,2024-07-30 09:00:12.736701,Grace,Morgan,Niel
+3,Poplar,88,88,88,2024-07-30 09:00:42.736701,Grace,Morgan,Niel
+3,yard,88,88,152,2024-07-30 09:01:12.736701,Grace,Morgan,Niel
+3,Poplar,152,152,88,2024-07-30 09:05:39.144686,Hannah,Ophelia,Paul
+3,Overbrook 2,87,88,57,2024-07-30 09:29:13.107983,Hannah,Ophelia,Paul
+3,Poplar,57,57,88,2024-07-30 09:29:43.107983,Hannah,Ophelia,Paul
+3,Overbrook 2,87,88,57,2024-07-30 09:53:17.071280,Hannah,Ophelia,Paul
+3,Poplar,57,57,88,2024-07-30 09:53:47.071280,Hannah,Ophelia,Paul
+3,Overbrook 2,87,88,57,2024-07-30 10:17:21.034577,Hannah,Ophelia,Paul
+3,Poplar,57,57,88,2024-07-30 10:17:51.034577,Hannah,Ophelia,Paul
+3,Overbrook 2,87,88,57,2024-07-30 10:41:24.997874,Hannah,Ophelia,Paul
+3,Poplar,57,57,88,2024-07-30 10:41:54.997874,Hannah,Ophelia,Paul
+3,Overbrook 2,87,88,57,2024-07-30 11:05:28.961171,Hannah,Ophelia,Paul
+3,Poplar,57,57,88,2024-07-30 11:05:58.961171,Hannah,Ophelia,Paul
+3,Overbrook 2,87,88,57,2024-07-30 11:29:32.924468,Hannah,Ophelia,Paul
+3,Poplar,57,57,88,2024-07-30 11:30:02.924468,Hannah,Ophelia,Paul
+3,Overbrook 2,87,88,57,2024-07-30 11:53:36.887765,Hannah,Ophelia,Paul
+3,Poplar,57,57,88,2024-07-30 11:54:06.887765,Hannah,Ophelia,Paul
+3,Overbrook 2,87,88,57,2024-07-30 12:17:40.851062,Hannah,Ophelia,Paul
+3,Poplar,57,57,88,2024-07-30 12:18:10.851062,Hannah,Ophelia,Paul
+3,Overbrook 2,87,88,57,2024-07-30 12:41:44.814359,Hannah,Ophelia,Paul
+3,Poplar,57,57,88,2024-07-30 12:42:14.814359,Hannah,Ophelia,Paul
+3,Overbrook 2,87,88,57,2024-07-30 13:05:48.777656,Hannah,Ophelia,Paul
+3,yard,57,57,152,2024-07-30 13:06:18.777656,Hannah,Ophelia,Paul
+3,Poplar,152,152,88,2024-07-30 13:46:07.067028,Hannah,Ophelia,Paul
+3,Overbrook 2,87,88,57,2024-07-30 14:09:41.030325,Hannah,Ophelia,Paul
+3,Poplar,57,57,88,2024-07-30 14:10:11.030325,Hannah,Ophelia,Paul
+3,Overbrook 2,87,88,57,2024-07-30 14:33:44.993622,Hannah,Ophelia,Paul
+3,Poplar,57,57,88,2024-07-30 14:34:14.993622,Hannah,Ophelia,Paul
+3,Overbrook 2,87,88,57,2024-07-30 14:57:48.956919,Hannah,Ophelia,Paul
+3,Poplar,57,57,88,2024-07-30 14:58:18.956919,Hannah,Ophelia,Paul
+3,Overbrook 2,87,88,57,2024-07-30 15:21:52.920216,Hannah,Ophelia,Paul
+3,Poplar,57,57,88,2024-07-30 15:22:22.920216,Hannah,Ophelia,Paul
+3,Overbrook 2,87,88,57,2024-07-30 15:45:56.883513,Hannah,Ophelia,Paul
+3,Poplar,57,57,88,2024-07-30 15:46:26.883513,Hannah,Ophelia,Paul
+3,Overbrook 2,87,88,57,2024-07-30 16:10:00.846810,Hannah,Ophelia,Paul
+3,Poplar,57,57,88,2024-07-30 16:10:30.846810,Hannah,Ophelia,Paul
+3,Overbrook 2,87,88,57,2024-07-30 16:34:04.810107,Hannah,Ophelia,Paul
+3,Poplar,57,57,88,2024-07-30 16:34:34.810107,Hannah,Ophelia,Paul
+3,Overbrook 2,87,88,57,2024-07-30 16:58:08.773404,Hannah,Ophelia,Paul
+3,Poplar,57,57,88,2024-07-30 16:58:38.773404,Hannah,Ophelia,Paul
+3,Overbrook 2,87,88,57,2024-07-30 17:22:12.736701,Hannah,Ophelia,Paul
+3,Poplar,57,57,88,2024-07-30 17:22:42.736701,Hannah,Ophelia,Paul
+3,Poplar,88,88,88,2024-07-30 17:23:12.736701,Hannah,Ophelia,Paul
+3,Poplar,88,88,88,2024-07-30 17:23:42.736701,Hannah,Ophelia,Paul
+3,Poplar,88,88,88,2024-07-30 17:24:12.736701,Hannah,Ophelia,Paul
+3,Poplar,88,88,88,2024-07-30 17:24:42.736701,Hannah,Ophelia,Paul
+3,Poplar,88,88,88,2024-07-30 17:25:12.736701,Hannah,Ophelia,Paul
+3,Poplar,88,88,88,2024-07-30 17:25:42.736701,Hannah,Ophelia,Paul
+3,Poplar,88,88,88,2024-07-30 17:26:12.736701,Hannah,Ophelia,Paul
+3,Poplar,88,88,88,2024-07-30 17:26:42.736701,Hannah,Ophelia,Paul
+3,Poplar,88,88,88,2024-07-30 17:27:12.736701,Hannah,Ophelia,Paul
+3,Poplar,88,88,88,2024-07-30 17:27:42.736701,Hannah,Ophelia,Paul
+3,Poplar,88,88,88,2024-07-30 17:28:12.736701,Hannah,Ophelia,Paul
+3,Poplar,88,88,88,2024-07-30 17:28:42.736701,Hannah,Ophelia,Paul
+3,Poplar,88,88,88,2024-07-30 17:29:12.736701,Hannah,Ophelia,Paul
+3,Poplar,88,88,88,2024-07-30 17:29:42.736701,Hannah,Ophelia,Paul
+3,Poplar,88,88,88,2024-07-30 17:30:12.736701,Hannah,Ophelia,Paul
+3,Poplar,88,88,88,2024-07-30 17:30:42.736701,Hannah,Ophelia,Paul
+3,yard,88,88,152,2024-07-30 17:31:12.736701,Hannah,Ophelia,Paul
+3,Poplar,152,152,88,2024-07-30 17:35:39.144686,Ivy,Quinn,Roger
+3,Overbrook 2,87,88,57,2024-07-30 17:59:13.107983,Ivy,Quinn,Roger
+3,Poplar,57,57,88,2024-07-30 17:59:43.107983,Ivy,Quinn,Roger
+3,Overbrook 2,87,88,57,2024-07-30 18:23:17.071280,Ivy,Quinn,Roger
+3,Poplar,57,57,88,2024-07-30 18:23:47.071280,Ivy,Quinn,Roger
+3,Overbrook 2,87,88,57,2024-07-30 18:47:21.034577,Ivy,Quinn,Roger
+3,Poplar,57,57,88,2024-07-30 18:47:51.034577,Ivy,Quinn,Roger
+3,Overbrook 2,87,88,57,2024-07-30 19:11:24.997874,Ivy,Quinn,Roger
+3,Poplar,57,57,88,2024-07-30 19:11:54.997874,Ivy,Quinn,Roger
+3,Overbrook 2,87,88,57,2024-07-30 19:35:28.961171,Ivy,Quinn,Roger
+3,Poplar,57,57,88,2024-07-30 19:35:58.961171,Ivy,Quinn,Roger
+3,Overbrook 2,87,88,57,2024-07-30 19:59:32.924468,Ivy,Quinn,Roger
+3,Poplar,57,57,88,2024-07-30 20:00:02.924468,Ivy,Quinn,Roger
+3,Overbrook 2,87,88,57,2024-07-30 20:23:36.887765,Ivy,Quinn,Roger
+3,Poplar,57,57,88,2024-07-30 20:24:06.887765,Ivy,Quinn,Roger
+3,Overbrook 2,87,88,57,2024-07-30 20:47:40.851062,Ivy,Quinn,Roger
+3,Poplar,57,57,88,2024-07-30 20:48:10.851062,Ivy,Quinn,Roger
+3,Overbrook 2,87,88,57,2024-07-30 21:11:44.814359,Ivy,Quinn,Roger
+3,Poplar,57,57,88,2024-07-30 21:12:14.814359,Ivy,Quinn,Roger
+3,Overbrook 2,87,88,57,2024-07-30 21:35:48.777656,Ivy,Quinn,Roger
+3,yard,57,57,152,2024-07-30 21:36:18.777656,Ivy,Quinn,Roger
+3,Poplar,152,152,88,2024-07-30 22:16:07.067028,Ivy,Quinn,Roger
+3,Overbrook 2,87,88,57,2024-07-30 22:39:41.030325,Ivy,Quinn,Roger
+3,Poplar,57,57,88,2024-07-30 22:40:11.030325,Ivy,Quinn,Roger
+3,Overbrook 2,87,88,57,2024-07-30 23:03:44.993622,Ivy,Quinn,Roger
+3,Poplar,57,57,88,2024-07-30 23:04:14.993622,Ivy,Quinn,Roger
+3,Overbrook 2,87,88,57,2024-07-30 23:27:48.956919,Ivy,Quinn,Roger
+3,Poplar,57,57,88,2024-07-30 23:28:18.956919,Ivy,Quinn,Roger
+3,Overbrook 2,87,88,57,2024-07-30 23:51:52.920216,Ivy,Quinn,Roger
+3,Poplar,57,57,88,2024-07-30 23:52:22.920216,Ivy,Quinn,Roger
+3,Overbrook 2,87,88,57,2024-07-31 00:15:56.883513,Ivy,Quinn,Roger
+3,yard,57,57,152,2024-07-31 00:16:26.883513,Ivy,Quinn,Roger
+4,Poplar,152,152,88,2024-07-30 00:50:39.144686,Jack,Stacy,Terry
+4,Overbrook 2,87,88,57,2024-07-30 01:14:13.107983,Jack,Stacy,Terry
+4,Poplar,57,57,88,2024-07-30 01:14:43.107983,Jack,Stacy,Terry
+4,Overbrook 2,87,88,57,2024-07-30 01:38:17.071280,Jack,Stacy,Terry
+4,Poplar,57,57,88,2024-07-30 01:38:47.071280,Jack,Stacy,Terry
+4,Overbrook 2,87,88,57,2024-07-30 02:02:21.034577,Jack,Stacy,Terry
+4,Poplar,57,57,88,2024-07-30 02:02:51.034577,Jack,Stacy,Terry
+4,Overbrook 2,87,88,57,2024-07-30 02:26:24.997874,Jack,Stacy,Terry
+4,Poplar,57,57,88,2024-07-30 02:26:54.997874,Jack,Stacy,Terry
+4,Overbrook 2,87,88,57,2024-07-30 02:50:28.961171,Jack,Stacy,Terry
+4,Poplar,57,57,88,2024-07-30 02:50:58.961171,Jack,Stacy,Terry
+4,Overbrook 2,87,88,57,2024-07-30 03:14:32.924468,Jack,Stacy,Terry
+4,Poplar,57,57,88,2024-07-30 03:15:02.924468,Jack,Stacy,Terry
+4,Overbrook 2,87,88,57,2024-07-30 03:38:36.887765,Jack,Stacy,Terry
+4,Poplar,57,57,88,2024-07-30 03:39:06.887765,Jack,Stacy,Terry
+4,Overbrook 2,87,88,57,2024-07-30 04:02:40.851062,Jack,Stacy,Terry
+4,Poplar,57,57,88,2024-07-30 04:03:10.851062,Jack,Stacy,Terry
+4,Overbrook 2,87,88,57,2024-07-30 04:26:44.814359,Jack,Stacy,Terry
+4,Poplar,57,57,88,2024-07-30 04:27:14.814359,Jack,Stacy,Terry
+4,Overbrook 2,87,88,57,2024-07-30 04:50:48.777656,Jack,Stacy,Terry
+4,yard,57,57,152,2024-07-30 04:51:18.777656,Jack,Stacy,Terry
+4,Poplar,152,152,88,2024-07-30 05:31:07.067028,Jack,Stacy,Terry
+4,Overbrook 2,87,88,57,2024-07-30 05:54:41.030325,Jack,Stacy,Terry
+4,Poplar,57,57,88,2024-07-30 05:55:11.030325,Jack,Stacy,Terry
+4,Overbrook 2,87,88,57,2024-07-30 06:18:44.993622,Jack,Stacy,Terry
+4,Poplar,57,57,88,2024-07-30 06:19:14.993622,Jack,Stacy,Terry
+4,Overbrook 2,87,88,57,2024-07-30 06:42:48.956919,Jack,Stacy,Terry
+4,Poplar,57,57,88,2024-07-30 06:43:18.956919,Jack,Stacy,Terry
+4,Overbrook 2,87,88,57,2024-07-30 07:06:52.920216,Jack,Stacy,Terry
+4,Poplar,57,57,88,2024-07-30 07:07:22.920216,Jack,Stacy,Terry
+4,Overbrook 2,87,88,57,2024-07-30 07:30:56.883513,Jack,Stacy,Terry
+4,Poplar,57,57,88,2024-07-30 07:31:26.883513,Jack,Stacy,Terry
+4,Overbrook 2,87,88,57,2024-07-30 07:55:00.846810,Jack,Stacy,Terry
+4,Poplar,57,57,88,2024-07-30 07:55:30.846810,Jack,Stacy,Terry
+4,Overbrook 2,87,88,57,2024-07-30 08:19:04.810107,Jack,Stacy,Terry
+4,Poplar,57,57,88,2024-07-30 08:19:34.810107,Jack,Stacy,Terry
+4,Overbrook 2,87,88,57,2024-07-30 08:43:08.773404,Jack,Stacy,Terry
+4,Poplar,57,57,88,2024-07-30 08:43:38.773404,Jack,Stacy,Terry
+4,Overbrook 2,87,88,57,2024-07-30 09:07:12.736701,Jack,Stacy,Terry
+4,Poplar,57,57,88,2024-07-30 09:07:42.736701,Jack,Stacy,Terry
+4,Poplar,88,88,88,2024-07-30 09:08:12.736701,Jack,Stacy,Terry
+4,Poplar,88,88,88,2024-07-30 09:08:42.736701,Jack,Stacy,Terry
+4,Poplar,88,88,88,2024-07-30 09:09:12.736701,Jack,Stacy,Terry
+4,Poplar,88,88,88,2024-07-30 09:09:42.736701,Jack,Stacy,Terry
+4,Poplar,88,88,88,2024-07-30 09:10:12.736701,Jack,Stacy,Terry
+4,Poplar,88,88,88,2024-07-30 09:10:42.736701,Jack,Stacy,Terry
+4,Poplar,88,88,88,2024-07-30 09:11:12.736701,Jack,Stacy,Terry
+4,Poplar,88,88,88,2024-07-30 09:11:42.736701,Jack,Stacy,Terry
+4,Poplar,88,88,88,2024-07-30 09:12:12.736701,Jack,Stacy,Terry
+4,Poplar,88,88,88,2024-07-30 09:12:42.736701,Jack,Stacy,Terry
+4,Poplar,88,88,88,2024-07-30 09:13:12.736701,Jack,Stacy,Terry
+4,Poplar,88,88,88,2024-07-30 09:13:42.736701,Jack,Stacy,Terry
+4,Poplar,88,88,88,2024-07-30 09:14:12.736701,Jack,Stacy,Terry
+4,Poplar,88,88,88,2024-07-30 09:14:42.736701,Jack,Stacy,Terry
+4,Poplar,88,88,88,2024-07-30 09:15:12.736701,Jack,Stacy,Terry
+4,Poplar,88,88,88,2024-07-30 09:15:42.736701,Jack,Stacy,Terry
+4,yard,88,88,152,2024-07-30 09:16:12.736701,Jack,Stacy,Terry
+4,Poplar,152,152,88,2024-07-30 09:20:39.144686,Alejandro,Alice,Barbra
+4,Overbrook 2,87,88,57,2024-07-30 09:44:13.107983,Alejandro,Alice,Barbra
+4,Poplar,57,57,88,2024-07-30 09:44:43.107983,Alejandro,Alice,Barbra
+4,Overbrook 2,87,88,57,2024-07-30 10:08:17.071280,Alejandro,Alice,Barbra
+4,Poplar,57,57,88,2024-07-30 10:08:47.071280,Alejandro,Alice,Barbra
+4,Overbrook 2,87,88,57,2024-07-30 10:32:21.034577,Alejandro,Alice,Barbra
+4,Poplar,57,57,88,2024-07-30 10:32:51.034577,Alejandro,Alice,Barbra
+4,Overbrook 2,87,88,57,2024-07-30 10:56:24.997874,Alejandro,Alice,Barbra
+4,Poplar,57,57,88,2024-07-30 10:56:54.997874,Alejandro,Alice,Barbra
+4,Overbrook 2,87,88,57,2024-07-30 11:20:28.961171,Alejandro,Alice,Barbra
+4,Poplar,57,57,88,2024-07-30 11:20:58.961171,Alejandro,Alice,Barbra
+4,Overbrook 2,87,88,57,2024-07-30 11:44:32.924468,Alejandro,Alice,Barbra
+4,Poplar,57,57,88,2024-07-30 11:45:02.924468,Alejandro,Alice,Barbra
+4,Overbrook 2,87,88,57,2024-07-30 12:08:36.887765,Alejandro,Alice,Barbra
+4,Poplar,57,57,88,2024-07-30 12:09:06.887765,Alejandro,Alice,Barbra
+4,Overbrook 2,87,88,57,2024-07-30 12:32:40.851062,Alejandro,Alice,Barbra
+4,Poplar,57,57,88,2024-07-30 12:33:10.851062,Alejandro,Alice,Barbra
+4,Overbrook 2,87,88,57,2024-07-30 12:56:44.814359,Alejandro,Alice,Barbra
+4,Poplar,57,57,88,2024-07-30 12:57:14.814359,Alejandro,Alice,Barbra
+4,Overbrook 2,87,88,57,2024-07-30 13:20:48.777656,Alejandro,Alice,Barbra
+4,yard,57,57,152,2024-07-30 13:21:18.777656,Alejandro,Alice,Barbra
+4,Poplar,152,152,88,2024-07-30 14:01:07.067028,Alejandro,Alice,Barbra
+4,Overbrook 2,87,88,57,2024-07-30 14:24:41.030325,Alejandro,Alice,Barbra
+4,Poplar,57,57,88,2024-07-30 14:25:11.030325,Alejandro,Alice,Barbra
+4,Overbrook 2,87,88,57,2024-07-30 14:48:44.993622,Alejandro,Alice,Barbra
+4,Poplar,57,57,88,2024-07-30 14:49:14.993622,Alejandro,Alice,Barbra
+4,Overbrook 2,87,88,57,2024-07-30 15:12:48.956919,Alejandro,Alice,Barbra
+4,Poplar,57,57,88,2024-07-30 15:13:18.956919,Alejandro,Alice,Barbra
+4,Overbrook 2,87,88,57,2024-07-30 15:36:52.920216,Alejandro,Alice,Barbra
+4,Poplar,57,57,88,2024-07-30 15:37:22.920216,Alejandro,Alice,Barbra
+4,Overbrook 2,87,88,57,2024-07-30 16:00:56.883513,Alejandro,Alice,Barbra
+4,Poplar,57,57,88,2024-07-30 16:01:26.883513,Alejandro,Alice,Barbra
+4,Overbrook 2,87,88,57,2024-07-30 16:25:00.846810,Alejandro,Alice,Barbra
+4,Poplar,57,57,88,2024-07-30 16:25:30.846810,Alejandro,Alice,Barbra
+4,Overbrook 2,87,88,57,2024-07-30 16:49:04.810107,Alejandro,Alice,Barbra
+4,Poplar,57,57,88,2024-07-30 16:49:34.810107,Alejandro,Alice,Barbra
+4,Overbrook 2,87,88,57,2024-07-30 17:13:08.773404,Alejandro,Alice,Barbra
+4,Poplar,57,57,88,2024-07-30 17:13:38.773404,Alejandro,Alice,Barbra
+4,Overbrook 2,87,88,57,2024-07-30 17:37:12.736701,Alejandro,Alice,Barbra
+4,Poplar,57,57,88,2024-07-30 17:37:42.736701,Alejandro,Alice,Barbra
+4,Poplar,88,88,88,2024-07-30 17:38:12.736701,Alejandro,Alice,Barbra
+4,Poplar,88,88,88,2024-07-30 17:38:42.736701,Alejandro,Alice,Barbra
+4,Poplar,88,88,88,2024-07-30 17:39:12.736701,Alejandro,Alice,Barbra
+4,Poplar,88,88,88,2024-07-30 17:39:42.736701,Alejandro,Alice,Barbra
+4,Poplar,88,88,88,2024-07-30 17:40:12.736701,Alejandro,Alice,Barbra
+4,Poplar,88,88,88,2024-07-30 17:40:42.736701,Alejandro,Alice,Barbra
+4,Poplar,88,88,88,2024-07-30 17:41:12.736701,Alejandro,Alice,Barbra
+4,Poplar,88,88,88,2024-07-30 17:41:42.736701,Alejandro,Alice,Barbra
+4,Poplar,88,88,88,2024-07-30 17:42:12.736701,Alejandro,Alice,Barbra
+4,Poplar,88,88,88,2024-07-30 17:42:42.736701,Alejandro,Alice,Barbra
+4,Poplar,88,88,88,2024-07-30 17:43:12.736701,Alejandro,Alice,Barbra
+4,Poplar,88,88,88,2024-07-30 17:43:42.736701,Alejandro,Alice,Barbra
+4,Poplar,88,88,88,2024-07-30 17:44:12.736701,Alejandro,Alice,Barbra
+4,Poplar,88,88,88,2024-07-30 17:44:42.736701,Alejandro,Alice,Barbra
+4,Poplar,88,88,88,2024-07-30 17:45:12.736701,Alejandro,Alice,Barbra
+4,Poplar,88,88,88,2024-07-30 17:45:42.736701,Alejandro,Alice,Barbra
+4,yard,88,88,152,2024-07-30 17:46:12.736701,Alejandro,Alice,Barbra
+4,Poplar,152,152,88,2024-07-30 17:50:39.144686,Bob,Cole,Dan
+4,Overbrook 2,87,88,57,2024-07-30 18:14:13.107983,Bob,Cole,Dan
+4,Poplar,57,57,88,2024-07-30 18:14:43.107983,Bob,Cole,Dan
+4,Overbrook 2,87,88,57,2024-07-30 18:38:17.071280,Bob,Cole,Dan
+4,Poplar,57,57,88,2024-07-30 18:38:47.071280,Bob,Cole,Dan
+4,Overbrook 2,87,88,57,2024-07-30 19:02:21.034577,Bob,Cole,Dan
+4,Poplar,57,57,88,2024-07-30 19:02:51.034577,Bob,Cole,Dan
+4,Overbrook 2,87,88,57,2024-07-30 19:26:24.997874,Bob,Cole,Dan
+4,Poplar,57,57,88,2024-07-30 19:26:54.997874,Bob,Cole,Dan
+4,Overbrook 2,87,88,57,2024-07-30 19:50:28.961171,Bob,Cole,Dan
+4,Poplar,57,57,88,2024-07-30 19:50:58.961171,Bob,Cole,Dan
+4,Overbrook 2,87,88,57,2024-07-30 20:14:32.924468,Bob,Cole,Dan
+4,Poplar,57,57,88,2024-07-30 20:15:02.924468,Bob,Cole,Dan
+4,Overbrook 2,87,88,57,2024-07-30 20:38:36.887765,Bob,Cole,Dan
+4,Poplar,57,57,88,2024-07-30 20:39:06.887765,Bob,Cole,Dan
+4,Overbrook 2,87,88,57,2024-07-30 21:02:40.851062,Bob,Cole,Dan
+4,Poplar,57,57,88,2024-07-30 21:03:10.851062,Bob,Cole,Dan
+4,Overbrook 2,87,88,57,2024-07-30 21:26:44.814359,Bob,Cole,Dan
+4,Poplar,57,57,88,2024-07-30 21:27:14.814359,Bob,Cole,Dan
+4,Overbrook 2,87,88,57,2024-07-30 21:50:48.777656,Bob,Cole,Dan
+4,yard,57,57,152,2024-07-30 21:51:18.777656,Bob,Cole,Dan
+4,Poplar,152,152,88,2024-07-30 22:31:07.067028,Bob,Cole,Dan
+4,Overbrook 2,87,88,57,2024-07-30 22:54:41.030325,Bob,Cole,Dan
+4,Poplar,57,57,88,2024-07-30 22:55:11.030325,Bob,Cole,Dan
+4,Overbrook 2,87,88,57,2024-07-30 23:18:44.993622,Bob,Cole,Dan
+4,Poplar,57,57,88,2024-07-30 23:19:14.993622,Bob,Cole,Dan
+4,Overbrook 2,87,88,57,2024-07-30 23:42:48.956919,Bob,Cole,Dan
+4,Poplar,57,57,88,2024-07-30 23:43:18.956919,Bob,Cole,Dan
+4,Overbrook 2,87,88,57,2024-07-31 00:06:52.920216,Bob,Cole,Dan
+4,yard,57,57,152,2024-07-31 00:07:22.920216,Bob,Cole,Dan

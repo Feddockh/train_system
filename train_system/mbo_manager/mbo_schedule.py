@@ -120,7 +120,6 @@ class Schedules:
                 for train_id in range(1, num_of_trains + 1):
                     train_current_time = start_time + (train_id - 1) * train_departure_interval
 
-                    break_taken = False
                     
                     while train_current_time < end_time:
                         driver = self.drivers[driver_index % len(self.drivers)]
@@ -131,7 +130,8 @@ class Schedules:
 
                         shift_end_time = train_current_time + self.shift_length
                         shift_start = train_current_time
-
+                        break_taken = False
+                        
                         # Always start from yard
                         start_block = self.route_blocks_green['yard']
                         stations = list(filtered_route_blocks.keys())
@@ -148,7 +148,7 @@ class Schedules:
                                 else:
                                     prev_block = filtered_prev_blocks[stations[i-1]] if i > 0 else start_block
 
-                                path = self.green_line.get_path(int(prev_block), int(start_block), int(end_block))
+                                path = self.green_line.get_path(prev_block, start_block, end_block)
                                 travel_time = timedelta(seconds=self.green_line.get_travel_time(path))
                                 arrival_time = train_current_time + travel_time
 
@@ -162,7 +162,7 @@ class Schedules:
 
                                 if ((train_current_time - shift_start) >= self.drive_length) and (break_taken == False):
                                     # Add yard stop for break
-                                    schedule.append([train_id, "yard", end_block, end_block, self.route_blocks_green['yard'], train_current_time, driver, crew1, crew2])
+                                    schedule.append([train_id, "Yard", end_block, end_block, self.route_blocks_green['yard'], train_current_time, driver, crew1, crew2])
                                     train_current_time += self.break_length
                                     break_taken = True
                                     start_block = self.route_blocks_green['yard']  # Reset start_block to yard
@@ -181,10 +181,10 @@ class Schedules:
                                 end_block = filtered_route_blocks[stations[0]]
                                 path = self.green_line.get_path(prev_block, start_block, end_block)
                                 travel_time = timedelta(seconds=self.green_line.get_travel_time(path))
-                                train_current_time += travel_time + timedelta(seconds=30)  # Time to pass yard and stop
+                                train_current_time += travel_time # Time to pass yard and stop
 
                         # Add yard stop at the end of the shift
-                        schedule.append([train_id, "yard", start_block, start_block, self.route_blocks_green['yard'], train_current_time, driver, crew1, crew2])
+                        schedule.append([train_id, "Yard", start_block, start_block, self.route_blocks_green['yard'], train_current_time, driver, crew1, crew2])
                         train_current_time = shift_end_time
                         
                         if train_current_time >= end_time:
