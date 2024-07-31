@@ -122,6 +122,7 @@ class TrainController(QObject):
         if self.emergency_mode:
             self.brake.set_service_brake(True)
         if self.destination_counter > 0:
+            print("Destination Counter: ", self.destination_counter)
             self.brake.set_service_brake(True)
             self.destination_counter -= 1
         self.emergency_mode = False # Reset emergency mode. Will be set back to True if emergency mode is triggered again
@@ -273,18 +274,16 @@ class TrainController(QObject):
             # If the destination is the current block number
             if self.destination == self.block_number:
                 # If we're in the center of the block, open doors
-                print(f"THIS IS THE SAME BLOCK")
-                print(f"Center Length: {abs(self.track_block.length / 2 - self.polarity)} should be >= {0.25*self.track_block.length}")
                 if abs(self.track_block.length / 2 - self.polarity) <= 0.25*self.track_block.length:
-                    print("AT STATION")
                     self.at_station()
         elif self.doors.get_status():
             self.doors.close_door()
         
     def at_station(self):
         self.doors.open_door()
-        self.dropped_off = True
-        self.destination_counter = 30
+        if self.dropped_off == False:
+            self.dropped_off = True
+            self.destination_counter = 30
         
     ## Setpoint and Commanded Speed Functions
     def set_setpoint_speed(self, speed: float):
@@ -1102,8 +1101,9 @@ class TrainSystem:
             self.controller.update_authority(Authority(1000000000,65))
             print("Current Track Block: ", self.controller.track_block.number, ", Destination: ", self.controller.destination)
             print(f"Position: {self.controller.position}, Authority: {self.controller.authority}")
-            print("!!!!!!!!!!!!! Destination Counter: ", self.controller.destination_counter, "!!!!!!!!!!!!!!!!")
+            
             if self.controller.doors.get_left() or self.controller.doors.get_right():
+                print("!!!!!!!!!!!!! Destination Counter: ", self.controller.destination_counter, "!!!!!!!!!!!!!!!!")
                 print(f"Position: {self.controller.position}, Authority: {self.controller.authority}, Destination: {self.controller.destination}")
                 print("Doors are open. Exit Door: ", self.controller.doors.exit_door, "Left: ", self.controller.doors.get_left(), ", Right: ", self.controller.doors.get_right())
                 print("Current Track Block: ", self.controller.track_block.number, ", Destination: ", self.controller.destination)
