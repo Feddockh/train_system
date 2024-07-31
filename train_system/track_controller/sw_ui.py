@@ -651,7 +651,7 @@ class TestBench(QtWidgets.QMainWindow):
             #Authority
             case 2:
                 new_authority = float(new_item)
-                self.track_controllers[waysideIndex].track_blocks[row]._authority.set_distance(new_authority)
+                self.track_controllers[waysideIndex].track_blocks[row].authority.set_distance(new_authority)
             #Speed
             case 3:
                 new_speed = int(new_item)
