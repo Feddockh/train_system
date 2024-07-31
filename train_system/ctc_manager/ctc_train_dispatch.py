@@ -1,6 +1,7 @@
 # train_system/ctc_manager/ctc_train_dispatch.py
 
 import heapq
+from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
 
 from train_system.common.train_dispatch import TrainDispatch
 from train_system.common.line import Line

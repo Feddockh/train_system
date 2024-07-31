@@ -255,8 +255,9 @@ class CTCOffice(QObject):
             if train.dispatched and not train.departed and self.time_keeper.current_second >= train.departure_time:
                 
                 # Update the speed and authority of the train
-                train.suggested_speed = self.compute_train_suggested_speed(train_id, line_name)
-                train.authority = self.compute_train_authority(train_id, line_name)
+                _suggested_speed = self.compute_train_suggested_speed(train_id, line_name)
+                _authority = self.compute_train_authority(train_id, line_name)
+                train.update_speed_authority(_suggested_speed, _authority)
             
             # Check for dispatching trains (must be dispatched, have a stop, and the dispatch time has passed)
             if not train.dispatched and train.stop_priority_queue and self.time_keeper.current_second >= train.dispatch_time:
@@ -265,9 +266,9 @@ class CTCOffice(QObject):
         # Dispatch the train with the highest lag if there are trains to dispatch
         if trains_to_dispatch:
             train = self.get_trains_ordered_by_lag(trains_to_dispatch)[0]
-            suggested_speed = self.compute_train_suggested_speed(train_id, train.line.name)
-            authority = self.compute_train_authority(train_id, train.line.name)
-            train.dispatch(suggested_speed, authority)
+            _suggested_speed = self.compute_train_suggested_speed(train_id, train.line.name)
+            _authority = self.compute_train_authority(train_id, train.line.name)
+            train.dispatch(_suggested_speed, _authority)
 
         # Run the test bench simulation if the test bench mode is enabled
         if self.test_bench_mode:
@@ -368,8 +369,9 @@ class CTCOffice(QObject):
         else:
             train = self.get_train(train_id, self.dispatching_line_name)
             train.add_stop(arrival_time, target_block)
-            train.suggested_speed = self.compute_train_suggested_speed(train_id, self.dispatching_line_name)
-            train.authority = self.compute_train_authority(train_id, self.dispatching_line_name)
+            _suggested_speed = self.compute_train_suggested_speed(train_id, self.dispatching_line_name)
+            _authority = self.compute_train_authority(train_id, self.dispatching_line_name)
+            train.update_speed_authority(_suggested_speed, _authority)
 
     @pyqtSlot(TrainRouteUpdate)
     def handle_train_route_update(self, update: TrainRouteUpdate):
