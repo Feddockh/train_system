@@ -35,8 +35,7 @@ print("Test: " + str(test.ki_val))
 print("Engineer UI: " + str(engineer.data[0][2]))
 print("TC: " + str(tc.engineer.get_ki()))
 
-time_keeper.tick.connect(tc.lights.update_lights)
-
+# tc.train_model.authority_received.connect(tc.handle_tick) #### USE INSTEAD THIS INSTEAD AFTER INTEGRATION
 time_keeper.tick.connect(tc.handle_tick)
 
 #TRAIN CONTROLLER TO EXTERNAL
@@ -60,7 +59,7 @@ test.left_door_updated.connect(tc.handle_left_door_changed)###checked
 #test.ki_updated.connect(tc.handle_ki_changed) ###checked but needs to update table
 test.position_updated.connect(tc.handle_position_changed) ###checked
 test.destination_updated.connect(tc.handle_destination_changed) ###checked
-test.textSubmitted.connect(tc.update_authority)
+test.textSubmitted.connect(tc.handle_authority_changed)
 
 #DRIVER TO TRAIN CONTROLLER
 driver.mode_button.toggled.connect(tc.handle_toggle_driver_mode) ###checked
