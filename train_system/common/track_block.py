@@ -10,14 +10,14 @@ from train_system.common.authority import Authority
 
 
 class TrackBlock(QObject):
-    suggested_speed_updated = pyqtSignal(int)
-    authority_updated = pyqtSignal(object)
-    occupancy_updated = pyqtSignal(bool)
-    crossing_signal_updated = pyqtSignal(bool)
-    light_signal_updated = pyqtSignal(bool)
-    under_maintenance_updated = pyqtSignal(bool)
-    track_failure_updated = pyqtSignal(TrackFailure)
-    switch_position_updated = pyqtSignal(int)
+    suggested_speed_updated = pyqtSignal(int, int)
+    authority_updated = pyqtSignal(int, object)
+    occupancy_updated = pyqtSignal(int, bool)
+    crossing_signal_updated = pyqtSignal(int, bool)
+    light_signal_updated = pyqtSignal(int, bool)
+    under_maintenance_updated = pyqtSignal(int, bool)
+    track_failure_updated = pyqtSignal(int, TrackFailure)
+    switch_position_updated = pyqtSignal(int, int)
 
     def __init__(self, line: str, section: str, number: int, length: int,
                  grade: float, speed_limit: int, elevation: float, 
@@ -123,7 +123,7 @@ class TrackBlock(QObject):
     def suggested_speed(self, value: int) -> None:
         if self._suggested_speed != value:
             self._suggested_speed = value
-            self.suggested_speed_updated.emit(value)
+            self.suggested_speed_updated.emit(self.number, value)
 
     @property
     def authority(self) -> Authority:
@@ -133,7 +133,7 @@ class TrackBlock(QObject):
     def authority(self, value: Authority) -> None:
         if self._authority != value:
             self._authority = value
-            self.authority_updated.emit(value)
+            self.authority_updated.emit(self.number, value)
 
     @property
     def occupancy(self) -> bool:
@@ -142,7 +142,7 @@ class TrackBlock(QObject):
     @occupancy.setter
     def occupancy(self, value: bool) -> None:
         self._occupancy = value
-        self.occupancy_updated.emit(value)
+        self.occupancy_updated.emit(self.number, value)
 
     @property
     def crossing_signal(self) -> bool:
@@ -152,7 +152,7 @@ class TrackBlock(QObject):
     def crossing_signal(self, value: bool) -> None:
         if self._crossing_signal != value:
             self._crossing_signal = value
-            self.crossing_signal_updated.emit(value)
+            self.crossing_signal_updated.emit(self.number, value)
             
     @property
     def light_signal(self) -> bool:
@@ -161,7 +161,7 @@ class TrackBlock(QObject):
     @light_signal.setter
     def light_signal(self, value: bool) -> None:
         self._light_signal = value
-        self.light_signal_updated.emit(value)
+        self.light_signal_updated.emit(self.number, value)
 
     @property
     def under_maintenance(self) -> bool:
@@ -170,7 +170,7 @@ class TrackBlock(QObject):
     @under_maintenance.setter
     def under_maintenance(self, value: bool) -> None:
         self._under_maintenance = value
-        self.under_maintenance_updated.emit(value)
+        self.under_maintenance_updated.emit(self.number, value)
 
     @property
     def track_failure(self) -> TrackFailure:
@@ -179,4 +179,4 @@ class TrackBlock(QObject):
     @track_failure.setter
     def track_failure(self, value: TrackFailure) -> None:
         self._track_failure = value
-        self.track_failure_updated.emit(value)
+        self.track_failure_updated.emit(self.number, value)

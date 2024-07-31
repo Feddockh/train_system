@@ -1,19 +1,29 @@
 # train_system/track_controller/track_controller.py
 
 import copy
-from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
-from train_system.common.track_block import TrackBlock
-from train_system.common.line import Line
 import sys
 import paramiko
 import time
+from typing import List
+from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
+
+from train_system.common.track_block import TrackBlock
+from train_system.common.line import Line
+from train_system.common.authority import Authority
 
 
 class TrackController(QObject):
-    def __init__(self, track_blocks: list, wayside_name, num_blocks):
+    def __init__(self, track_blocks: List[TrackBlock], wayside_name: str, num_blocks: int) -> None:
+
         """
         Initialize variables of the Track Controller.
+
+        Args:
+            track_blocks(list): List of track blocks
+            wayside_name(str): Name of the wayside
+            num_blocks(int): Number of blocks in the wayside
         """
+
         super().__init__()
 
         self.track_blocks = track_blocks
@@ -33,8 +43,6 @@ class TrackController(QObject):
             block.occupancy_updated.connect(self.handle_occupancy_update)
             block.suggested_speed_updated.connect(self.handle_speed_update)
                 
-
-    
     @pyqtSlot(bool)
     def handle_occupancy_update(self, new_occupancy: bool) -> None:
         block_number = self.sender().number
@@ -174,7 +182,6 @@ class TrackController(QObject):
             for i, track_block in enumerate(self.track_blocks):
                 track_block._authority = old_authority[i]
                 track_block._plc_unsafe = old_bool_unsafe[i]
-
 
     def check_PLC_program_crossing(self, x, curr_crossing, new_crossing):
         #Will only run if PLC program has been uploaded

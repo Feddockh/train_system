@@ -168,6 +168,7 @@ class Line(QObject):
     track_block_authority_updated = pyqtSignal(str, int, object)
     track_block_occupancy_updated = pyqtSignal(str, int, bool)
     track_block_crossing_signal_updated = pyqtSignal(str, int, int)
+    track_block_light_signal_updated = pyqtSignal(str, int, int)
     track_block_under_maintenance_updated = pyqtSignal(str, int, bool)
     track_block_track_failure_updated = pyqtSignal(str, int, int)
 
@@ -288,22 +289,25 @@ class Line(QObject):
         """
 
         track_block.suggested_speed_updated.connect(
-            lambda new_speed, blk=track_block: self.track_block_suggested_speed_updated.emit(self.name, blk.number, new_speed)
+            lambda blk_number, new_speed: self.track_block_suggested_speed_updated.emit(self.name, blk_number, new_speed)
         )
         track_block.authority_updated.connect(
-            lambda new_authority, blk=track_block: self.track_block_authority_updated.emit(self.name, blk.number, new_authority)
+            lambda blk_number, new_authority: self.track_block_authority_updated.emit(self.name, blk_number, new_authority)
         )
         track_block.occupancy_updated.connect(
-            lambda new_occupancy, blk=track_block: self.track_block_occupancy_updated.emit(self.name, blk.number, new_occupancy)
+            lambda blk_number, new_occupancy: self.track_block_occupancy_updated.emit(self.name, blk_number, new_occupancy)
         )
         track_block.crossing_signal_updated.connect(
-            lambda new_signal, blk=track_block: self.track_block_crossing_signal_updated.emit(self.name, blk.number, new_signal)
+            lambda blk_number, new_signal: self.track_block_crossing_signal_updated.emit(self.name, blk_number, new_signal)
+        )
+        track_block.light_signal_updated.connect(
+            lambda blk_number, new_signal: self.track_block_light_signal_updated.emit(self.name, blk_number, new_signal)
         )
         track_block.under_maintenance_updated.connect(
-            lambda new_maintenance, blk=track_block: self.track_block_under_maintenance_updated.emit(self.name, blk.number, new_maintenance)
+            lambda blk_number, new_maintenance: self.track_block_under_maintenance_updated.emit(self.name, blk_number, new_maintenance)
         )
         track_block.track_failure_updated.connect(
-            lambda new_failure, blk=track_block: self.track_block_track_failure_updated.emit(self.name, blk.number, new_failure)
+            lambda blk_number, new_failure: self.track_block_track_failure_updated.emit(self.name, blk_number, new_failure)
         )
 
     def add_switch(self, track_switch: TrackSwitch) -> None:
