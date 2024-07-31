@@ -6,11 +6,11 @@
         {"block_number": 153, "y1":  1, "y2":  2, "x1": 15, "x2": 17, "text_position": 3, "attribute": ""},
 
         {"block_number":  57, "y1":  2, "y2":  2, "x1":  3, "x2":  5, "text_position": 2, "attribute": ""},
-        {"block_number":  58, "y1":  2, "y2":  2, "x1":  5, "x2":  8, "text_position": 2, "attribute": ""},
+        {"block_number":  58, "y1":  2, "y2":  2, "x1":  5, "x2":  8, "text_position": 0, "attribute": ""},
         {"block_number":  59, "y1":  2, "y2":  2, "x1":  8, "x2": 10, "text_position": 2, "attribute": ""},
         {"block_number":  60, "y1":  2, "y2":  2, "x1": 10, "x2": 12, "text_position": 2, "attribute": ""},
         {"block_number":  61, "y1":  2, "y2":  2, "x1": 12, "x2": 14, "text_position": 2, "attribute": ""},
-        {"block_number":  62, "y1":  2, "y2":  2, "x1": 14, "x2": 17, "text_position": 2, "attribute": ""},
+        {"block_number":  62, "y1":  2, "y2":  2, "x1": 14, "x2": 17, "text_position": 0, "attribute": ""},
         {"block_number":  63, "y1":  2, "y2":  2, "x1": 17, "x2": 19, "text_position": 2, "attribute": ""},
         {"block_number":  64, "y1":  2, "y2":  2, "x1": 19, "x2": 21, "text_position": 2, "attribute": ""},
         {"block_number":  65, "y1":  2, "y2":  2, "x1": 21, "x2": 23, "text_position": 2, "attribute": ""},
