@@ -1,6 +1,7 @@
 import csv
 from csv import writer
 import os
+import pandas as pd
 import datetime
 from datetime import timedelta
 from datetime import datetime
@@ -150,14 +151,14 @@ class Schedules:
                                 if arrival_time > shift_end_time:
                                     break
 
-                                schedule.append([train_id, f"{end_station}", prev_block, start_block, end_block, arrival_time, driver, crew1, crew2])
+                                schedule.append([train_id, end_block, arrival_time, f"{end_station}",driver, crew1, crew2])
 
                                 # Adding time to stop at station for 30s
                                 train_current_time = arrival_time + timedelta(seconds=30)
 
                                 if ((train_current_time - shift_start) >= self.drive_length) and (break_taken == False):
                                     # Add yard stop for break
-                                    schedule.append([train_id, "Yard", end_block, end_block, self.route_blocks_green['yard'], train_current_time, driver, crew1, crew2])
+                                    schedule.append([train_id, self.route_blocks_green['yard'], train_current_time, "Yard",driver, crew1, crew2])
                                     train_current_time += self.break_length
                                     break_taken = True
                                     start_block = self.route_blocks_green['yard']  # Reset start_block to yard
@@ -179,7 +180,7 @@ class Schedules:
                                 train_current_time += travel_time # Time to pass yard and stop
 
                         # Add yard stop at the end of the shift
-                        schedule.append([train_id, "Yard", start_block, start_block, self.route_blocks_green['yard'], train_current_time, driver, crew1, crew2])
+                        schedule.append([train_id, self.route_blocks_green['yard'], train_current_time, "Yard" ,driver, crew1, crew2])
                         train_current_time = shift_end_time
                         
                         if train_current_time >= end_time:
@@ -187,16 +188,15 @@ class Schedules:
                         
                 print("printing schedule")
                 file_path = 'system_data/schedules/green_line_schedules'            
-                file_name = f"{selected_day}_green_{file_suffix}.csv"
-                
+                file_name = f"{selected_day}_green_{file_suffix}.xlsx"  
+
                 folder_path = os.path.join(file_path, file_name)
-                
-                with open(folder_path, 'w', newline='') as csvfile:
-                    schedule_writer = csv.writer(csvfile)
-                    schedule_writer.writerow(["Train", "Station", "Prev Block", "Start Block", "End Block","Arrival Time", "Driver", "Crew 1", "Crew 2"])
-                
-                    for t in schedule:
-                        schedule_writer.writerow(t)
+
+                # Convert your schedule to a DataFrame
+                schedule_df = pd.DataFrame(schedule, columns=["Train", "End Block", "Arrival Time", "Station", "Driver", "Crew 1", "Crew 2"])
+
+                # Write the DataFrame to an Excel file
+                schedule_df.to_excel(folder_path, index=False)
 
          # Create schedules for both sets of checked items
             print("calling create sched")
@@ -295,14 +295,14 @@ class Schedules:
                                 if arrival_time > shift_end_time:
                                     break
 
-                                schedule.append([train_id, f"{end_station}", prev_block, start_block, end_block, arrival_time, driver, crew1, crew2])
+                                schedule.append([train_id, end_block, arrival_time, f"{end_station}", driver, crew1, crew2])
 
                                 # Adding time to stop at station for 30s
                                 train_current_time = arrival_time + timedelta(seconds=30)
 
                                 if ((train_current_time - shift_start) >= self.drive_length) and (break_taken == False):
                                     # Add yard stop for break
-                                    schedule.append([train_id, "Yard", end_block, end_block, self.route_blocks_red['yard'], train_current_time, driver, crew1, crew2])
+                                    schedule.append([train_id, self.route_blocks_red['yard'], train_current_time, "Yard", driver, crew1, crew2])
                                     train_current_time += self.break_length
                                     break_taken = True
                                     start_block = self.route_blocks_red['yard']  # Reset start_block to yard
@@ -324,24 +324,25 @@ class Schedules:
                                 train_current_time += travel_time # Time to pass yard and stop
 
                         # Add yard stop at the end of the shift
-                        schedule.append([train_id, "Yard", start_block, start_block, self.route_blocks_red['yard'], train_current_time, driver, crew1, crew2])
-                        train_current_time = shift_end_time
+                        schedule.append([train_id, self.route_blocks_red['yard'], train_current_time, "Yard", driver, crew1, crew2])
+                        
+                        train_current_time = shift_end_time + timedelta(minutes=5)
                         
                         if train_current_time >= end_time:
                             break
                         
+                        
                 print("printing schedule")
                 file_path = 'system_data/schedules/red_line_schedules'            
-                file_name = f"{selected_day}_red_{file_suffix}.csv"
-                
+                file_name = f"{selected_day}_red_{file_suffix}.xlsx"  
+
                 folder_path = os.path.join(file_path, file_name)
-                
-                with open(folder_path, 'w', newline='') as csvfile:
-                    schedule_writer = csv.writer(csvfile)
-                    schedule_writer.writerow(["Train", "Station", "Prev Block", "Start Block", "End Block","Arrival Time", "Driver", "Crew 1", "Crew 2"])
-                
-                    for t in schedule:
-                        schedule_writer.writerow(t)
+
+                # Convert your schedule to a DataFrame
+                schedule_df = pd.DataFrame(schedule, columns=["Train", "End Block", "Arrival Time", "Station", "Driver", "Crew 1", "Crew 2"])
+
+                # Write the DataFrame to an Excel file
+                schedule_df.to_excel(folder_path, index=False)
 
          # Create schedules for both sets of checked items
             print("calling create sched")
