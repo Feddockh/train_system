@@ -7,6 +7,7 @@ from PyQt6.QtCore import Qt, pyqtSlot, pyqtSignal, QObject
 from train_system.common.line import Line
 from train_system.common.track_block import TrackBlock
 from train_system.common.station import Station
+from train_system.common.authority import Authority
 
 from train_system.train_model.train_model import TrainModel
 from train_system.train_controller.engineer import Engineer
@@ -104,8 +105,10 @@ class TrainController(QObject):
         self.current_speed = self.train_model.current_speed    # Current speed of the train
         self.commanded_speed = self.train_model.commanded_speed  # Commanded speed from the Train Model (CTC or MBO)
         self.authority, self.destination = None, None
-        self.AUTHORITY_PADDING = 0.25 * self.train_length  # Padding for authority
-        self.update_authority(self.train_model.authority)        # Authority and destination from the Train Model (CTC or MBO)
+        self.AUTHORITY_PADDING = 0 #0.25 * self.train_length  # Padding for authority
+        self.authority = 0        # Authority and destination from the Train Model (CTC or MBO)
+        self.destination = None     # Track block that the train should open its doors at
+        self.dropped_off = True     # Initialized to true so destination can receive a new value
         self.engine_fault = self.train_model.engine_fault           # Fault status from the Train Model
         self.brake_fault = self.train_model.brake_fault           # Fault status from the Train Model
         self.signal_fault = self.train_model.signal_fault           # Fault status from the Train Model
@@ -270,7 +273,10 @@ class TrainController(QObject):
             # If the destination is the current block number
             if self.destination == self.block_number:
                 # If we're in the center of the block, open doors
-                if abs(self.track_block.length / 2 - self.polarity) >= 0.25*self.track_block.length:
+                print(f"THIS IS THE SAME BLOCK")
+                print(f"Center Length: {abs(self.track_block.length / 2 - self.polarity)} should be >= {0.25*self.track_block.length}")
+                if abs(self.track_block.length / 2 - self.polarity) <= 0.25*self.track_block.length:
+                    print("AT STATION")
                     self.at_station()
         elif self.doors.get_status():
             self.doors.close_door()
@@ -363,17 +369,14 @@ class TrainController(QObject):
             self.authority = min(self.authority, station_pos)
         print(f"New authority: {self.authority}")
         self.authority_updated.emit(authority)
-    def parse_authority(self, authority: str):
-        print(f"String authority: {authority}")
-        try:
-            authority_str, destination_block_str = authority.split(":")
-            self.authority = abs(float(authority_str) + self.AUTHORITY_PADDING)
-            self.set_destination(int(destination_block_str))
-        except ValueError:
-            raise ValueError("Input string is not in the correct format 'authority:destination_block' or contains invalid values.")
-    def update_authority(self, authority: str):
+    def parse_authority(self, authority: Authority):
+        self.authority = abs(authority.get_distance() + self.AUTHORITY_PADDING)
+        self.set_destination(authority.get_stop_block())
+    @pyqtSlot(Authority)
+    def update_authority(self, authority: Authority):
         self.parse_authority(authority)
         self.set_authority(self.authority + self.position)
+        self.update_train_controller()
 
     # Check if the train needs to stop because of authority
     def stop_for_authority(self):
@@ -469,7 +472,7 @@ class TrainController(QObject):
         self.commanded_speed = speed
 
     @pyqtSlot(float)
-    def handle_authority_changed(self, authority: str) -> None:
+    def handle_authority_changed(self, authority: float) -> None:
         self.update_authority(authority)
 
     @pyqtSlot(bool)
@@ -596,7 +599,7 @@ class TrainController(QObject):
         def __init__(self, ssh):
             super().__init__()
             self.speed_limit = None  # Speed limit of the train
-            self.SL_PADDING = 4.4704    # Padding of 10 mph
+            self.SL_PADDING = 0 #4.4704    # Padding of 10 mph
             self.P_MAX = 120  # Maximum power (kW) = 120
             self.power_command = 0 # Power command
 
@@ -886,7 +889,7 @@ class MockTrainModel(QObject):
     brake_fault_updated = pyqtSignal(bool)
     signal_fault_updated = pyqtSignal(bool)
     # comm_speed_received = pyqtSignal(float)
-    authority_received = pyqtSignal(str)
+    authority_received = pyqtSignal(Authority)
     satellite_received = pyqtSignal(str, float) # Authority, commanded speed
     train_temp_updated = pyqtSignal(float)
     emergency_mode = pyqtSignal()
@@ -896,7 +899,7 @@ class MockTrainModel(QObject):
         # Train Model variables
         self.current_speed: float = 0
         self.commanded_speed: float = 10
-        self.authority: str = "10000000:65" # Authority and desination block number
+        self.authority: Authority = Authority(10000000,65) # Authority and desination block number
 
         self.power_command = 0
         self.position = 0
@@ -943,15 +946,14 @@ class MockTrainModel(QObject):
     def get_authority(self):
         # Logic to get the authority from the train model
         return self.authority
-    def set_authority(self, authority: str):
-        ### DECODE HERE ###
+    def set_authority(self, authority: Authority):
         self.authority = authority
         self.authority_received.emit(self.authority)
-
-    def set_satellite(self, authority: str, speed: float):
-        self.authority = authority
-        self.commanded_speed = speed
-        self.satellite_received.emit(self.authority, self.commanded_speed)
+    def decode_authority(self, authority: str):
+        ### Decode the authority string ###
+        new_authority = Authority()
+        new_authority.authority = authority
+        self.set_authority(authority)
 
     # Float
     def get_commanded_speed(self):
@@ -961,7 +963,9 @@ class MockTrainModel(QObject):
         self.commanded_speed = speed
         print("Train Model -- Commanded Speed: ", self.commanded_speed)
         # self.comm_speed_received.emit(self.commanded_speed)
-
+    def decode_commanded_speed(self, speed: str):
+        # String to float
+        self.set_commanded_speed(float(speed))
 
     def set_position(self, position: float):
         self.position = position
@@ -1066,38 +1070,44 @@ class TrainSystem:
     def small_run(self):
         self.controller.set_setpoint_speed(10)
         for _ in range(5):
-            self.controller.update_train_controller()
+            self.controller.update_authority(Authority(1000000000,65))
             print(f"Power Command: {self.controller.engine.power_command}, Current Speed: {self.controller.current_speed}, Position: {self.controller.position}")
 
     # Multiple laps around
     def long_run(self):
         self.controller.set_setpoint_speed(20)
         for _ in range(80):
-            self.controller.update_train_controller()
+            self.controller.update_authority(Authority(1000000000,65))
             print(f"Position: {self.controller.position}, Authority: {self.controller.authority}")
 
     def full_loop_run(self):
         self.controller.set_setpoint_speed(20)
         self.controller.set_position(19900)
         for _ in range(20):
-            self.controller.update_train_controller()
+            self.controller.update_authority(Authority(1000000000,65))
             print(f"Position: {self.controller.position}, Loop Length: {self.controller.loop_length}")
 
     def to_yard_run(self):
         self.controller.set_setpoint_speed(20)
         self.controller.set_position(19900)
-        self.controller.update_authority("1000000000:152")
+        for _ in range(20):
+            self.controller.update_authority(Authority(1000000000,152))
+            print(f"Position: {self.controller.position}")
+            print(f"Track Block Start: {self.controller.position + self.controller.polarity - self.controller.track_block.length}, Track Block End: {self.controller.position + self.controller.polarity}")
 
     def destination_run(self):
         self.controller.set_position(200)
-        self.controller.train_model.set_authority("100000:65")
         self.controller.set_setpoint_speed(20)
         for _ in range(30):
-            self.controller.update_train_controller()
-            print(f"Position: {self.controller.position}, Authority: {self.controller.authority}, Destination: {self.controller.destination}")
-            print("Doors are open. Exit Door: ", self.controller.doors.exit_door, "Left: ", self.controller.doors.get_left(), ", Right: ", self.controller.doors.get_right())
+            self.controller.update_authority(Authority(1000000000,65))
             print("Current Track Block: ", self.controller.track_block.number, ", Destination: ", self.controller.destination)
-            print(f"Track Block Start: {self.controller.position + self.controller.polarity - self.controller.track_block.length}, Track Block End: {self.controller.position + self.controller.polarity}")
+            print(f"Position: {self.controller.position}, Authority: {self.controller.authority}")
+            print("!!!!!!!!!!!!! Destination Counter: ", self.controller.destination_counter, "!!!!!!!!!!!!!!!!")
+            if self.controller.doors.get_left() or self.controller.doors.get_right():
+                print(f"Position: {self.controller.position}, Authority: {self.controller.authority}, Destination: {self.controller.destination}")
+                print("Doors are open. Exit Door: ", self.controller.doors.exit_door, "Left: ", self.controller.doors.get_left(), ", Right: ", self.controller.doors.get_right())
+                print("Current Track Block: ", self.controller.track_block.number, ", Destination: ", self.controller.destination)
+                print(f"Track Block Start: {self.controller.position + self.controller.polarity - self.controller.track_block.length}, Track Block End: {self.controller.position + self.controller.polarity}")
          
     # Can't move with emergency brake on
     def service_run(self):
@@ -1107,7 +1117,7 @@ class TrainSystem:
         for _ in range(5):
             print(f"Train Model Brake: Service: {self.controller.train_model.service_brake}, Emergency: {self.controller.train_model.emergency_brake}")
             print(f"Train Model Current Speed: {self.controller.train_model.current_speed}")
-            self.controller.update_train_controller()
+            self.controller.update_authority(Authority(1000000000,65))
 
     # Can't move with emergency brake on
     def emergency_run(self):
@@ -1117,14 +1127,14 @@ class TrainSystem:
         for _ in range(5):
             print(f"Train Model Brake: Service: {self.controller.train_model.service_brake}, Emergency: {self.controller.train_model.emergency_brake}")
             print(f"Train Model Current Speed: {self.controller.train_model.current_speed}")
-            self.controller.update_train_controller()
+            self.controller.update_authority(Authority(1000000000,65))
 
     # Desired speed follows the commanded speed and commanded speed updates
     def commanded_speed_run(self):
         self.controller.driver_mode = "automatic"
         for i in range(10):
             self.controller.train_model.set_commanded_speed(i)
-            self.controller.update_train_controller()
+            self.controller.update_authority(Authority(1000000000,65))
             print(f"Commanded Speed: {self.controller.train_model.commanded_speed}, Setpoint Speed: {self.controller.setpoint_speed}, Desired Speed: {self.controller.get_desired_speed()}")
             print(f"Train Model Current Speed: {self.controller.train_model.current_speed}")
 
@@ -1135,7 +1145,7 @@ class TrainSystem:
         for i in range(10):
             self.controller.driver_mode = "automatic" if i%2 == 0 else "manual"
             print(f"Driver Mode: {self.controller.driver_mode}, Desired Speed: {self.controller.get_desired_speed()}")
-            self.controller.update_train_controller()
+            self.controller.update_authority(Authority(1000000000,65))
             print(f"Train Model Current Speed: {self.controller.train_model.current_speed}")
 
     # Train should slow to 0 then continue after full stop
@@ -1145,7 +1155,7 @@ class TrainSystem:
         self.controller.set_setpoint_speed(10)
         print()
         for _ in range(5):
-            self.controller.update_train_controller()
+            self.controller.update_authority(Authority(1000000000,65))
             print(f"Maintenance mode: {self.controller.maintenance_mode}, Emergency brake: {self.controller.brake.get_emergency_brake()}")
             print(f"Current Speed: {self.controller.current_speed}")
             print(f"Train Model Faults: Engine: {self.controller.train_model.faults[0]}, Brake: {self.controller.train_model.faults[1]}, Signal: {self.controller.train_model.faults[2]}")
@@ -1156,7 +1166,7 @@ class TrainSystem:
         print("Commanded Temp: ", self.controller.ac.get_commanded_temp(), "\n")
         for _ in range(50):
             print(f"Current Temp: {self.controller.ac.get_current_temp()}")
-            self.controller.update_train_controller()
+            self.controller.update_authority(Authority(1000000000,65))
             
 
     

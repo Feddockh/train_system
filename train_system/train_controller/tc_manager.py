@@ -3,6 +3,7 @@ import paramiko
 from PyQt6.QtCore import Qt, pyqtSlot, pyqtSignal, QObject
 from train_system.train_controller.train_controller import TrainSystem
 from train_system.train_controller.engineer import Engineer
+from train_system.common.authority import Authority
 
 HOST= None  #'192.168.0.114'
 PORT = 22
@@ -72,7 +73,21 @@ class TrainManager(QObject):
                 return
         raise ValueError(f"Train {train_id} not found in the train list")
     
-    
+    @pyqtSlot(int, str, str)
+    def handle_MBO_update(self, train_id: int, authority: Authority, commanded_speed: str):
+        for train in self.train_list:
+            if train.id == train_id:
+                train.controller.train_model.decode_commanded_speed(commanded_speed)
+                train.controller.train_model.decode_authority(authority)
+                return
+            
+    @pyqtSlot(int, Authority, float)
+    def handle_CTC_update(self, train_id: int, authority: Authority, commanded_speed: str):
+        for train in self.train_list:
+            if train.id == train_id:
+                train.controller.train_model.set_commanded_speed(commanded_speed)
+                train.controller.train_model.set_authority(authority)
+                return
 
     def self_deletion_run(self):
         print(f"Train List Length: {len(manager.train_list)}")
