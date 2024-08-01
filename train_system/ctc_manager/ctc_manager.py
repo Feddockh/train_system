@@ -32,17 +32,19 @@ class CTCOffice(QObject):
         self.lines: List[Line] = []
 
         # Create the green line object
-        green_line = Line("green")
+        green_line = Line("green", time_keeper)
         green_line.load_defaults()
         green_line.track_block_occupancy_updated.connect(self.handle_occupancy_update)
         green_line.switch_position_updated.connect(self.handle_switch_position_update)
+        green_line.enable_signal_queue = True
         self.lines.append(green_line)
 
         # Create the red line object
-        red_line = Line("red")
+        red_line = Line("red", time_keeper)
         red_line.load_defaults()
         red_line.track_block_occupancy_updated.connect(self.handle_occupancy_update)
         red_line.switch_position_updated.connect(self.handle_switch_position_update)
+        red_line.enable_signal_queue = True
         self.lines.append(red_line)
 
         # Create a list of train objects indexed by the train ID and the line name
