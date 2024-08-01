@@ -77,10 +77,17 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         #Central widget layout
         self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName("centralwidget")
-        #self.centralwidget.setStyleSheet(f"""background-color: {Colors.WHITE};
-        #                                 font-family: 'Arial';
-        #                                 font-size: 15px;
-        #                                 """)
+        self.setStyleSheet(f"""
+            QMainWindow {{
+                background-color: {Colors.WHITE};
+            }}
+            QHeaderView::section {{
+                background-color: #EFEFEF;
+                font-family: 'Arial';
+                font-size: 15px;
+                font-weight: bold;
+            }}
+        """)
         self.setCentralWidget(self.centralwidget)
 
         #Used in multiple widgets
@@ -416,12 +423,21 @@ class TestBench(QtWidgets.QMainWindow):
         #Central widget layout
         self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName("centralwidget")
-        #self.centralwidget.setStyleSheet(f"background-color: {Colors.WHITE};")
+        self.setStyleSheet(f"""
+            QMainWindow {{
+                background-color: {Colors.WHITE};
+            }}
+            QHeaderView::section {{
+                background-color: #EFEFEF;
+                font-family: 'Arial';
+                font-size: 15px;
+                font-weight: bold;
+            }}
+        """)
         self.setCentralWidget(self.centralwidget)
 
         #Used in multiple widgets
         waysides = [track_controllers[0].wayside_name, track_controllers[1].wayside_name, track_controllers[2].wayside_name,track_controllers[3].wayside_name, track_controllers[4].wayside_name, track_controllers[5].wayside_name]
-        #waysides = [self.track_controllers[0].wayside_name, self.track_controllers[1].wayside_name, self.track_controllers[2].wayside_name]
         lines = ['Green Line', 'Red Line']
 
         #Creating universal font
@@ -707,7 +723,17 @@ class Maintenance(QtWidgets.QMainWindow):
         #Central widget layout
         self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName("centralwidget")
-        #self.centralwidget.setStyleSheet(f"background-color: {Colors.WHITE};")
+        self.setStyleSheet(f"""
+            QMainWindow {{
+                background-color: {Colors.WHITE};
+            }}
+            QHeaderView::section {{
+                background-color: #EFEFEF;
+                font-family: 'Arial';
+                font-size: 15px;
+                font-weight: bold;
+            }}
+        """)
         self.setCentralWidget(self.centralwidget)
 
         #Used in multiple widgets
