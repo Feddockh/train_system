@@ -1,7 +1,9 @@
 # train_system/common/track_block.py
 
+import copy
 from PyQt6.QtCore import QObject, pyqtSignal, pyqtSlot
 from typing import List
+
 from train_system.common.track_failures import TrackFailure
 from train_system.track_model.beacon import Beacon
 from train_system.common.track_switch import TrackSwitch
@@ -112,19 +114,19 @@ class TrackBlock(QObject):
             other.line, other.section, other.number
         )
 
-    def __deepcopy__(self, memo):
+    def __deepcopy__(self, memo) -> 'TrackBlock':
         # Create a new instance of TrackBlock
         new_copy = TrackBlock(
             self.line, self.section, self.number, self.length, 
             self.grade, self.speed_limit, self.elevation, 
             self.cumulative_elevation, self.underground, 
             self._crossing_signal is not None, self._light_signal is not None, 
-            self.connecting_blocks, self.station, self.switch, self.beacon
+            self.connecting_blocks, self.station, copy.deepcopy(self.switch), self.beacon
         )
         
         # Copy the dynamic attributes manually
         new_copy._suggested_speed = self._suggested_speed
-        new_copy._authority = Authority(self._authority.get_distance(), self._authority.get_stop_block())
+        new_copy._authority = copy.deepcopy(self._authority)
         new_copy._occupancy = self._occupancy
         new_copy._crossing_signal = self._crossing_signal
         new_copy._light_signal = self._light_signal

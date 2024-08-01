@@ -12,6 +12,9 @@ class Authority:
             return False
         return self.authority == value.authority
     
+    def __deepcopy__(self, memo) -> 'Authority':
+        return Authority(self.get_distance(), self.get_stop_block())
+    
     def set_distance(self, distance: float) -> None:
         self.authority = f"{distance}:{self.get_stop_block() if self.get_stop_block() is not None else ''}"
     

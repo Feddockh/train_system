@@ -6,11 +6,6 @@ from train_system.train_controller.tc_ui import *
 from train_system.common.time_keeper import TimeKeeper
 from PyQt6.QtWidgets import QApplication
 
-HOST= '192.168.0.114'
-PORT = 22
-USERNAME = 'danim'
-PASSWORD = 'danim'
-
 app = QApplication(sys.argv)
    
 # Create the time keeper object
@@ -20,7 +15,8 @@ time_keeper.start_timer()
 # Hardware
 # ts = TrainModelController(time_keeper, HOST, PORT, USERNAME, PASSWORD)
 # Software
-ts = TrainModelController(time_keeper)
+# ts = TrainModelController(time_keeper)
+# ts = TrainModelController(time_keeper)
 
 def tc_main(time_keeper: TimeKeeper, ts: TrainModelController):
     
@@ -72,6 +68,10 @@ def tc_main(time_keeper: TimeKeeper, ts: TrainModelController):
     driver.comm_temp_input.textChanged.connect(tc.handle_commanded_temp_changed) ###checked
     driver.setpoint_updated.connect(tc.handle_setpoint_edit_changed)
 
+    #ENGINEER TO DRIVER
+    engineer.kp_updated.connect(driver.handle_kp_update)
+    engineer.ki_updated.connect(driver.handle_ki_update)
+
     #TRAIN CONTROLLER TO DRIVER
     tc.setpoint_speed_updated.connect(driver.handle_setpoint_speed_update) ###checked
     tc.power_updated.connect(driver.handle_power_update)
@@ -91,7 +91,8 @@ def tc_main(time_keeper: TimeKeeper, ts: TrainModelController):
     tc.authority_updated.connect(driver.handle_authority_update)
     tc.position_updated.connect(driver.handle_position_update)
     tc.station_name_updated.connect(driver.handle_destination_update)
-    #tc.destination_updated.connect(driver.handle_station_name_update)
+    #tc.destination_updated.connect(driver.handle_destination_update)
+    tc.commanded_speed_updated.connect(driver.handle_comm_speed_update)
 
     #TRAIN CONTROLLER TO ENGINEER
     #tc.kp_updated_for_eng.connect(engineer.handle_kp_update)
@@ -120,7 +121,5 @@ def tc_main(time_keeper: TimeKeeper, ts: TrainModelController):
     print(tc.station_name)
 
 
-
-
-tc_main(time_keeper, ts)
-
+if __name__ == "__main__":
+    tc_main(time_keeper, ts)
