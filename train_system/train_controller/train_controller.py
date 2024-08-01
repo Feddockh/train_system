@@ -2,7 +2,7 @@
 import paramiko
 import json
 from collections import deque as dq
-
+from cryptography.fernet import Fernet
 from PyQt6.QtCore import Qt, pyqtSlot, pyqtSignal, QObject
 
 from train_system.common.time_keeper import TimeKeeper
@@ -1022,6 +1022,7 @@ class MockTrainModel(QObject):
         # print("Train Model -- Commanded Speed: ", self.commanded_speed)
         # self.comm_speed_received.emit(self.commanded_speed)
 
+
     def set_position(self, block: int, position: float):
         self.block_number = block
         self.position = position
@@ -1119,7 +1120,6 @@ class MockTrainModel(QObject):
     def handle_lights_update(self, status: bool) -> None:
         self.lights = status
     
-
 
     ##### INTEGRATION #####
     
