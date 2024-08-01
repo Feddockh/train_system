@@ -786,46 +786,6 @@ class Line(QObject):
             if line == self.name:
                 self.get_switch(switch).position = new_position
 
-    @pyqtSlot(str, int, int)
-    def handle_suggested_speed_updated(self, line: str, block: int, new_speed: int) -> None:
-        if line == self.name:
-            self.get_track_block(block).suggested_speed = new_speed
-
-    @pyqtSlot(str, int, object)
-    def handle_authority_updated(self, line: str, block: int, new_authority: Authority) -> None:
-        if line == self.name:
-            self.get_track_block(block).authority = new_authority
-
-    @pyqtSlot(str, int, bool)
-    def handle_occupancy_updated(self, line: str, block: int, new_occupancy: bool) -> None:
-        if line == self.name:
-            self.get_track_block(block).occupancy = new_occupancy
-
-    @pyqtSlot(str, int, int)
-    def handle_crossing_signal_updated(self, line: str, block: int, new_signal: int) -> None:
-        if line == self.name:
-            self.get_track_block(block).crossing_signal = new_signal
-
-    @pyqtSlot(str, int, bool)
-    def handle_light_signal_updated(self, line: str, block: int, new_signal: bool) -> None:
-        if line == self.name:
-            self.get_track_block(block).light_signal = new_signal
-
-    @pyqtSlot(str, int, bool)
-    def handle_under_maintenance_updated(self, line: str, block: int, new_maintenance: bool) -> None:
-        if line == self.name:
-            self.get_track_block(block).under_maintenance = new_maintenance
-
-    @pyqtSlot(str, int, int)
-    def handle_track_failure_updated(self, line: str, block: int, new_failure: int) -> None:
-        if line == self.name:
-            self.get_track_block(block).track_failure = new_failure
-
-    @pyqtSlot(str, int)
-    def handle_switch_position_updated(self, line: str, switch: int) -> None:
-        if line == self.name:
-            self.get_switch(switch).toggle()
-
 
 if __name__ == "__main__":
 
