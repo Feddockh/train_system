@@ -212,6 +212,8 @@ class TestBenchWindow(QMainWindow):
         self.tm_authority_stat.setPlaceholderText("Enter TM Authority")
 
 
+
+
         #add stat lines and labels to left_out layout
         left_out_layout.addWidget(curr_speed_label)
         left_out_layout.addWidget(self.curr_speed_stat)
@@ -686,6 +688,10 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.destination = 0
         self.station_name = ""
 
+        temp_eng = Engineer()
+        self.kp = temp_eng.get_kp()
+        self.ki = temp_eng.get_ki()
+
         #input validators
         dec_validator = QDoubleValidator()
         dec_validator.setNotation(QDoubleValidator.Notation.StandardNotation)
@@ -816,7 +822,11 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.time_keeper = time_keeper
         self.time_keeper_widget = TimeKeeperWidget(self.time_keeper)
 
+        self.kp_and_ki_label = QLabel("Kp: " + str(self.kp) + " Ki: " + str(self.ki))
+        self.kp_and_ki_label.setFixedSize(150, 50)
+
         #add stat lines and labels to left_out layout
+        left_out_layout.addWidget(self.kp_and_ki_label)
         left_out_layout.addWidget(curr_speed_label)
         left_out_layout.addWidget(self.curr_speed_stat)
         left_out_layout.addWidget(comm_speed_label)
@@ -1319,6 +1329,15 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.destination = des
         self.des_label.setText(self.destination)
 
+    @pyqtSlot(int)
+    def handle_kp_update(self, kp: int):
+        self.kp = kp
+        self.kp_and_ki_label.setText("Kp: " + str(self.kp) + " Ki: " + str(self.ki))
+
+    @pyqtSlot(int)
+    def handle_ki_update(self, ki: int):
+        self.ki = ki
+        self.kp_and_ki_label.setText("Kp: " + str(self.kp) + " Ki: " + str(self.ki))
 
     """
     @pyqtSlot(str)

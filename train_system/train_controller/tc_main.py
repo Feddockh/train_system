@@ -72,6 +72,10 @@ def tc_main(time_keeper: TimeKeeper, ts: TrainModelController):
     driver.comm_temp_input.textChanged.connect(tc.handle_commanded_temp_changed) ###checked
     driver.setpoint_updated.connect(tc.handle_setpoint_edit_changed)
 
+    #ENGINEER TO DRIVER
+    engineer.kp_updated.connect(driver.handle_kp_update)
+    engineer.ki_updated.connect(driver.handle_ki_update)
+
     #TRAIN CONTROLLER TO DRIVER
     tc.setpoint_speed_updated.connect(driver.handle_setpoint_speed_update) ###checked
     tc.power_updated.connect(driver.handle_power_update)
