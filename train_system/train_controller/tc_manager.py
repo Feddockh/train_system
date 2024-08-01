@@ -161,7 +161,7 @@ if __name__ == "__main__":
     manager.engineer_table[0].set_engineer(25, 0.5)
     manager.handle_dispatch(0, "green")
 
-    manager.multiple_window_run()
+    #manager.multiple_window_run()
     # manager.multiple_windows_and_trains_run()
 
     # manager.train_list[0].small_run()
