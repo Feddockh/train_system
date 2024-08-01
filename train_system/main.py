@@ -15,11 +15,7 @@ from train_system.track_controller.sw_ui import ProgrammerUI
 # from train_system.train_controller.tc_manager import TrainManager
 # from train_system.track_model.track_model import TrackModel
 
-<<<<<<< HEAD
 # from train_system.train_controller.train_controller import TrainSystem
-=======
-from train_system.train_controller.train_controller import TrainModelController
->>>>>>> origin/main
 
 def main():
 
