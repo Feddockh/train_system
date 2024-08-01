@@ -12,9 +12,10 @@ from train_system.track_controller.track_controller_manager import TrackControll
 from train_system.track_controller.sw_ui import ProgrammerUI
 from train_system.track_model.track_model import TrackModel
 
+
 # from train_system.mbo_manager.mbo_manager import MBOOffice
 # from train_system.mbo_manager.mbo_ui import MBOWindow
-# from train_system.train_controller.tc_manager import TrainManager
+from train_system.train_controller.tc_manager import TrainManager
 # from train_system.track_model.track_model import TrackModel
 
 # from train_system.train_controller.train_controller import TrainSystem
@@ -45,7 +46,8 @@ def main():
     ctc_manager.green_line.under_maintenance_queue_signal.connect(track_controller_manager.green_line.handle_under_maintenance_queue)
     ctc_manager.green_line.switch_position_queue_signal.connect(track_controller_manager.green_line.handle_switch_position_queue)
 
-    ctc_manager.green_line.occupancy_queue_signal.connect(track_controller_manager.green_line.handle_occupancy_queue)
+    # This was added for testing purposes
+    # ctc_manager.green_line.occupancy_queue_signal.connect(track_controller_manager.green_line.handle_occupancy_queue)
 
     # Connect the CTC's line signals to the Track Controller Manager's red line handler
     ctc_manager.red_line.authority_queue_signal.connect(track_controller_manager.red_line.handle_authority_queue)
@@ -57,8 +59,6 @@ def main():
     track_controller_manager.green_line.track_block_occupancy_updated.connect(ctc_manager.green_line.handle_occupancy_update)
     track_controller_manager.green_line.switch_position_updated.connect(ctc_manager.green_line.handle_switch_position_update)
 
-    track_controller_manager.green_line.switch_position_updated.connect(ctc_manager.green_line.handle_switch_position_update)
-
     # Connect the red line Track Controller Manager's signals to the CTC's red line handler
     track_controller_manager.red_line.track_block_occupancy_updated.connect(ctc_manager.red_line.handle_occupancy_update)
     track_controller_manager.red_line.switch_position_updated.connect(ctc_manager.red_line.handle_switch_position_update)
@@ -66,21 +66,35 @@ def main():
     ### Instantiate the TrackModel object and the track's UI ###
     track_model = TrackModel()
 
-    # Connect the green line Track Model's signals to the green line Track Controller Manager's signals
-    # track_model.green_line.track_block_occupancy_updated.connect(track_controller_manager.green_line.occupancy_queue)
+    # Connect the green line Track Model's signals to the green line Track Controller Manager's slots
+    track_model.green_line.occupancy_queue_signal.connect(track_controller_manager.green_line.handle_occupancy_queue)
+    track_model.green_line.authority_queue_signal.connect(track_controller_manager.green_line.handle_authority_queue)
 
-    # Connect the red line Track Model's signals to the red line Track Controller Manager's signals
-    # track_model.red_line.track_block_occupancy_updated.connect(track_controller_manager.red_line.occupancy_queue)
+    # Connect the red line Track Model's signals to the red line Track Controller Manager's slots
+    track_model.red_line.occupancy_queue_signal.connect(track_controller_manager.red_line.handle_occupancy_queue)
+    track_model.red_line.authority_queue_signal.connect(track_controller_manager.red_line.handle_authority_queue)
 
+    # Connect the green line Track Controller Manager's signals to the green line Track Model's slots
+    track_controller_manager.green_line.track_block_authority_updated.connect(track_model.green_line.handle_authority_update)
+    track_controller_manager.green_line.track_block_suggested_speed_updated.connect(track_model.green_line.handle_suggested_speed_update)
 
-
-    # Coneect the track model's signals to the Track Controller Manager's signals
-    # track_model.green_line.track_block_occupancy_updated.connect(track_controller_manager.green_line.occupancy_queue)
+    # Connect the red line Track Controller Manager's signals to the red line Track Model's slots
+    track_controller_manager.red_line.track_block_authority_updated.connect(track_model.red_line.handle_authority_update)
+    track_controller_manager.red_line.track_block_suggested_speed_updated.connect(track_model.red_line.handle_suggested_speed_update)
 
     ### Instantiate the TrainController object and the driver's UI ###
-    # train_manager = TrainManager(time_keeper)
-    # track_model.track_to_train.connect(train_manager.handle_CTC_update)
-    # train_manager.passengers_to_train.connect(train_manager.handle_passenger_update)
+
+
+
+
+
+
+    ### Instantiate the TrainController object and the driver's UI ###
+    train_manager = TrainManager(time_keeper)
+    track_model.track_to_train.connect(train_manager.handle_CTC_update)
+    track_model.passengers_to_train.connect(train_manager.handle_passenger_update)
+    train_manager.train_dispatched.connect(track_model.handle_new_train)
+    ctc_manager.train_dispatched.connect(train_manager.handle_dispatch)
     
     '''
     # train_manager.train_dispatched.connect(mbo.handle_dispatch)   # Signal to make more connections for the Train Model speaks to MBO

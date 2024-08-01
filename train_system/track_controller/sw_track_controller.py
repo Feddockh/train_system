@@ -90,29 +90,29 @@ class TrackController(QObject):
 
         # Send the authority signal if the authority has changed
         if block_instance.authority != prev_block_instance.authority:
-            block_instance.authority = block_instance.authority
             prev_block_instance._authority = block_instance.authority
+            block_instance.authority_updated.emit(block_instance.number, block_instance.authority)
             updated = True
 
         # Send the light signal if the light signal has changed
         if block_instance.light_signal != prev_block_instance.light_signal:
-            block_instance.light_signal = block_instance.light_signal
             prev_block_instance._light_signal = block_instance.light_signal
+            block_instance.light_signal_updated.emit(block_instance.number, block_instance.light_signal)
             updated = True
 
         # Send the crossing signal if the crossing signal has changed
         if block_instance.crossing_signal != prev_block_instance.crossing_signal:
-            block_instance.crossing_signal = block_instance.crossing_signal
             prev_block_instance._crossing_signal = block_instance.crossing_signal
+            block_instance.crossing_signal_updated.emit(block_instance.number, block_instance.crossing_signal)
             updated = True
 
         # Send the switch signal if the switch signal has changed (only on parent block)
         if block_instance.switch is not None and block_instance.number == block_instance.switch.parent_block:
             if block_instance.switch.position != prev_block_instance.switch.position:
-                block_instance.switch.position = block_instance.switch.position
                 prev_block_instance.switch._position = block_instance.switch.position
+                block_instance.switch.position_updated.emit(block_instance.switch.number, block_instance.switch.position)
                 updated = True
-                print(f"Switch {block_instance.switch.number} toggled to: {block_instance.switch.position}")
+                # print(f"Switch {block_instance.switch.number} toggled to: {block_instance.switch.position}")
 
         return updated
 
