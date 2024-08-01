@@ -43,11 +43,25 @@ def main():
     ctc_manager.green_line.under_maintenance_queue_signal.connect(track_controller_manager.green_line.handle_under_maintenance_queue)
     ctc_manager.green_line.switch_position_queue_signal.connect(track_controller_manager.green_line.handle_switch_position_queue)
 
+    ctc_manager.green_line.occupancy_queue_signal.connect(track_controller_manager.green_line.handle_occupancy_queue)
+
     # Connect the CTC's line signals to the Track Controller Manager's red line handler
     ctc_manager.red_line.authority_queue_signal.connect(track_controller_manager.red_line.handle_authority_queue)
     ctc_manager.red_line.suggested_speed_queue_signal.connect(track_controller_manager.red_line.handle_suggested_speed_queue)
     ctc_manager.red_line.under_maintenance_queue_signal.connect(track_controller_manager.red_line.handle_under_maintenance_queue)
     ctc_manager.red_line.switch_position_queue_signal.connect(track_controller_manager.red_line.handle_switch_position_queue)
+
+    # Connect the green line Track Controller Manager's signals to the CTC's green line handler
+    track_controller_manager.green_line.track_block_occupancy_updated.connect(ctc_manager.green_line.handle_occupancy_update)
+    track_controller_manager.green_line.switch_position_updated.connect(ctc_manager.green_line.handle_switch_position_update)
+
+    track_controller_manager.green_line.switch_position_updated.connect(ctc_manager.green_line.handle_switch_position_update)
+
+    # Connect the red line Track Controller Manager's signals to the CTC's red line handler
+    track_controller_manager.red_line.track_block_occupancy_updated.connect(ctc_manager.red_line.handle_occupancy_update)
+    track_controller_manager.red_line.switch_position_updated.connect(ctc_manager.red_line.handle_switch_position_update)
+
+
 
     # Assuming track_controller_manager and ctc_manager are already defined and initialized
     # Connect the signal to the print_authority slot function

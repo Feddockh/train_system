@@ -134,16 +134,6 @@ class TrackController(QObject):
             updated = updated or _updated
         return updated
 
-    @pyqtSlot(int, bool)
-    def handle_occupancy_update(self, block_number: int, new_occupancy: bool) -> None:
-
-        print("occupancy updated")
-
-    @pyqtSlot(int)
-    def handle_authority_update(self, block_number: int, new_authority: Authority) -> None:
-
-        print("authority updated")
-
     @pyqtSlot(int)
     def handle_tick(self, tick: int):       
 

@@ -321,6 +321,7 @@ class Line(QObject):
         
         self.switches.append(track_switch)
         self.connect_switch_signals(track_switch)
+        self.connect_switch_signals_queue(track_switch)
 
         # Connect the switch to the corresponding track blocks
         for block_id in track_switch.connected_blocks:
@@ -339,7 +340,7 @@ class Line(QObject):
             TrackSwitch: The retrieved TrackSwitch object.
         """
 
-        if number < len(self.switches) and number > 0:
+        if number <= len(self.switches) and number > 0:
             return self.switches[number - 1]
         print(f"Switch {number} does not exist.")
         return None
@@ -754,11 +755,9 @@ class Line(QObject):
 
     @pyqtSlot(list)
     def handle_authority_queue(self, queue):
-        print("Handling Authority Queue")
         for line, block, new_authority in queue:
             if line.lower() == self.name.lower():
                 self.get_track_block(block)._authority = new_authority
-                print(f"Authority for block {block}: {new_authority}")
             else:
                 print(f"Line {line} does not exist.")
 
@@ -807,8 +806,144 @@ class Line(QObject):
         for line, switch, new_position in queue:
             if line.lower() == self.name.lower():
                 self.get_switch(switch).position = new_position
+                print("switch position updated")
             else:
                 print(f"Line {line} does not exist.")
+
+    @pyqtSlot(str, int, int)
+    def handle_suggested_speed_update(self, line: str, block: int, new_speed: int) -> None:
+            
+        """
+        Handles the suggested speed update signal from the track block.
+        
+        Args:
+            line (str): The name of the line.
+            block (int): The block number.
+            new_speed (int): The new suggested speed.
+        """
+
+        if line.lower() == self.name.lower():
+            self.get_track_block(block).suggested_speed = new_speed
+        else:
+            print(f"Line {line} does not exist.")
+
+    @pyqtSlot(str, int, object)
+    def handle_authority_update(self, line: str, block: int, new_authority: Authority) -> None:
+            
+        """
+        Handles the authority update signal from the track block.
+        
+        Args:
+            line (str): The name of the line.
+            block (int): The block number.
+            new_authority (Authority): The new authority.
+        """
+
+        if line.lower() == self.name.lower():
+            self.get_track_block(block).authority = new_authority
+        else:
+            print(f"Line {line} does not exist.")
+
+    @pyqtSlot(str, int, bool)
+    def handle_occupancy_update(self, line: str, block: int, new_occupancy: bool) -> None:
+                
+        """
+        Handles the occupancy update signal from the track block.
+        
+        Args:
+            line (str): The name of the line.
+            block (int): The block number.
+            new_occupancy (bool): The new occupancy status.
+        """
+
+        if line.lower() == self.name.lower():
+            self.get_track_block(block).occupancy = new_occupancy
+        else:
+            print(f"Line {line} does not exist.")
+
+    @pyqtSlot(str, int, int)
+    def handle_crossing_signal_update(self, line: str, block: int, new_signal: int) -> None:
+                    
+        """
+        Handles the crossing signal update signal from the track block.
+        
+        Args:
+            line (str): The name of the line.
+            block (int): The block number.
+            new_signal (int): The new crossing signal.
+        """
+
+        if line.lower() == self.name.lower():
+            self.get_track_block(block).crossing_signal = new_signal
+        else:
+            print(f"Line {line} does not exist.")
+
+    @pyqtSlot(str, int, bool)
+    def handle_light_signal_update(self, line: str, block: int, new_signal: bool) -> None:
+                            
+        """
+        Handles the light signal update signal from the track block.
+        
+        Args:
+            line (str): The name of the line.
+            block (int): The block number.
+            new_signal (bool): The new light signal.
+        """
+
+        if line.lower() == self.name.lower():
+            self.get_track_block(block).light_signal = new_signal
+        else:
+            print(f"Line {line} does not exist.")
+
+    @pyqtSlot(str, int, bool)
+    def handle_under_maintenance_update(self, line: str, block: int, new_maintenance: bool) -> None:
+                                    
+        """
+        Handles the under maintenance update signal from the track block.
+        
+        Args:
+            line (str): The name of the line.
+            block (int): The block number.
+            new_maintenance (bool): The new maintenance status.
+        """
+
+        if line.lower() == self.name.lower():
+            self.get_track_block(block).under_maintenance = new_maintenance
+        else:
+            print(f"Line {line} does not exist.")
+
+    @pyqtSlot(str, int, int)
+    def handle_track_failure_update(self, line: str, block: int, new_track_failure: int) -> None:
+                                            
+        """
+        Handles the track failure update signal from the track block.
+        
+        Args:
+            line (str): The name of the line.
+            block (int): The block number.
+            new_track_failure (int): The new track failure.
+        """
+
+        if line.lower() == self.name.lower():
+            self.get_track_block(block).track_failure = new_track_failure
+        else:
+            print(f"Line {line} does not exist.")
+
+    @pyqtSlot(str, int)
+    def handle_switch_position_update(self, line: str, switch: int) -> None:
+                                                
+        """
+        Handles the switch position update signal from the switch.
+        
+        Args:
+            line (str): The name of the line.
+            switch (int): The switch number.
+        """
+
+        if line.lower() == self.name.lower():
+            self.get_switch(switch).toggle()
+        else:
+            print(f"Line {line} does not exist.")
 
     @pyqtSlot(int)
     def handle_tick(self, current_time: int) -> None:
@@ -840,7 +975,6 @@ class Line(QObject):
             self.under_maintenance_queue.clear()
             self.track_failure_queue.clear()
             self.switch_position_queue.clear()
-
 
 if __name__ == "__main__":
 
