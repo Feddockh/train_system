@@ -65,6 +65,7 @@ class TrainController(QObject):
         self.time_keeper = TimeKeeper()
         self.time_keeper.start_timer()
         self.train_model = train_model if train_model else MockTrainModel(self.time_keeper)  # Used to store data received from Train Model. No computations done in the object
+
         self.train_model.engine_fault_updated.connect(self.handle_fault_update)
         self.train_model.brake_fault_updated.connect(self.handle_fault_update)
         self.train_model.signal_fault_updated.connect(self.handle_fault_update)
@@ -1343,6 +1344,7 @@ class TrainModelController:
     
 
             
+
 
 if __name__ == "__main__":
     # train_system = TrainModelController(HOST, PORT, USERNAME, PASSWORD)

@@ -14,7 +14,7 @@ USERNAME = 'danim'
 PASSWORD = 'danim'
 
 # Create the time keeper object
-time_keeper = TimeKeeper()
+
 
 class TrainManager(QObject):
 
@@ -57,6 +57,7 @@ class TrainManager(QObject):
             """
             FUNCTION WITH ALL CONNECTIONS FOR TRAIN CONTROLLER, MOCK TRAIN MODEL, AND UI
             """
+
         else:
             # Add software train to the train list
             print("Software Train")
