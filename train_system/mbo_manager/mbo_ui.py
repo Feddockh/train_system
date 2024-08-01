@@ -300,17 +300,21 @@ class MBOModeView(QMainWindow):
 
     def open_test_bench_view(self):
         if self.test_bench_window is None:
-            self.test_bench_window = TestBench()
+            time_keeper = TimeKeeper()
+            time_keeper.start_timer()
+            self.test_bench_window = TestBench(time_keeper)
             self.test_bench_window.show()
         else:
             self.test_bench_window.close()
             self.test_bench_window = None
 
 class TestBench(QMainWindow):
-    def __init__(self):
-        super(TestBench,self).__init__()
+    def __init__(self, time_keeper: TimeKeeper):
         super(TestBench,self).__init__()
         
+        self.time_keeper = time_keeper
+        
+        self.timer_keeper_widget = TimeKeeperWidget(time_keeper)
         #label for page window 
         self.setWindowTitle("MBO Test Bench")
         self.setFixedSize(1222, 702)
@@ -320,8 +324,15 @@ class TestBench(QMainWindow):
         self.block_label.setFont(QFont('Times',12))
         self.block_label.setFixedSize(300,100)
         
+        
+        self.green_line = Line("Green")
+        self.green_line.load_defaults()
+        self.blocks_from_yard_to_yard = self.green_line.get_path(152, 152, 151)
+        string_blocks = [str(block) for block in self.blocks_from_yard_to_yard]
+        
         self.block_select = QComboBox()
-        self.block_select.addItems(['None','1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15'])
+        self.block_select.addItem('None')
+        self.block_select.addItems(string_blocks)
         self.block_select.setFixedSize(200,75)
         self.block_select.setFont(QFont('Times',12))
         
@@ -370,11 +381,11 @@ class TestBench(QMainWindow):
        
        
        #train id
-        self.train1_id = QLabel("Train1")
+        self.train1_id = QLabel("0")
         self.train1_id.setFont(QFont('Times',15))
-        self.train2_id = QLabel("Train2")
+        self.train2_id = QLabel("1")
         self.train2_id.setFont(QFont('Times',15))
-        self.train3_id = QLabel("Train3")
+        self.train3_id = QLabel("2")
         self.train3_id.setFont(QFont('Times',15))
         
         self.table.setCellWidget(0, 0, self.train1_id)
@@ -393,38 +404,38 @@ class TestBench(QMainWindow):
         self.table.setCellWidget(1, 1, self.line2)
         self.table.setCellWidget(2, 1, self.line3)
         
+        self.green_station_names = ['Yard', 'Glenbury 1', 'Dormont 1', 'Mt. Lebanon 1', 'Poplar', 'Castle Shannon', 'Mt. Lebanon 2', 'Dormont 2', 'Glenbury 2','Overbrook 1',
+                                    'Inglewood', 'Central 1', 'Whited 1', 'Edgebrook', 'Pioneer', 'Station', 'Whited 2', 'South Bank', 'Central 2', 'Overbrook 2']
         
-        #stations(for blue line)
         self.train1_station = QComboBox()
-
-        self.train1_station.addItems(['Glenbury', 'Dormont', 'Mt Lebanon', 'Poplar'])
+        self.train1_station.addItems(self.green_station_names)
         self.train1_station.setFont(QFont('Times',15))
         self.train2_station = QComboBox()
-        self.train2_station.addItems(['Glenbury', 'Dormont', 'Mt Lebanon', 'Poplar'])
+        self.train2_station.addItems(self.green_station_names)
         self.train2_station.setFont(QFont('Times',15))
         self.train3_station = QComboBox()
-        self.train3_station.addItems(['Glenbury', 'Dormont', 'Mt Lebanon', 'Poplar'])
+        self.train3_station.addItems(self.green_station_names)
         self.train3_station.setFont(QFont('Times',15))
         
         self.table.setCellWidget(0,2, self.train1_station)
         self.table.setCellWidget(1,2, self.train2_station)
         self.table.setCellWidget(2,2, self.train3_station)
 
-        
         #text boxes to edit train position
         self.train1_position = QTextEdit('0')
         self.train1_position.setFont(QFont('Times',15))
+        self.train1_position.setValidator(QIntValidator(0, 19550))
         self.train2_position = QTextEdit('0')
         self.train2_position.setFont(QFont('Times',15))
+        self.train2_position.setValidator(QIntValidator(0, 19550))
         self.train3_position = QTextEdit('0')
         self.train3_position.setFont(QFont('Times',15))
+        self.train3_position.setValidator(QIntValidator(0, 19550))
         
         self.table.setCellWidget(0, 3, self.train1_position)
         self.table.setCellWidget(1, 3, self.train2_position)
         self.table.setCellWidget(2, 3, self.train3_position)
 
-       
-       
         #place holders for authority 
         self.train1_authority = QLabel('---')
         self.train1_authority.setFont(QFont('Times',15))
@@ -460,6 +471,7 @@ class TestBench(QMainWindow):
        
         #aligning labels and text edit boxes 
         self.window_layout = QVBoxLayout()
+        self.window_layout.addWidget(self.timer_keeper_widget)
         self.window_layout.addLayout(self.block_layout)
         self.window_layout.addWidget(self.title)
         self.window_layout.addWidget(self.direction)
@@ -474,8 +486,22 @@ class TestBench(QMainWindow):
         #show authority and commanded speed being enabled and disabled?
     
     def run_test_bench(self):
-        """will run a test for commanded speed and authority
+        """ 
+            Running test bench with information the user input 
         """
+        #create train 0,1,2 with a position - use position to determine block number 
+            #station = destination block for the train 
+        
+        #create line object? if block is under maint. update it in my line object? 
+        
+        #use this line object to find unobstructed path to stop 
+        #send this as init authority and assume train is leaving from the yard?? 
+            #yard to destination to yard?
+        
+        #assume each tick the train is moving for 1 sec at its set commanded speed and send this back encrypted 
+        #print encrypted value 
+        #show decrypt on UI
+        
         
 
 
