@@ -53,3 +53,14 @@ class TrackSwitch(QObject):
             return False
         else:
             return True
+        
+    def set_child_index(self, new_child_index: bool) -> None:
+
+        # If the new child index is the current child index, return
+        if self.get_child_index == new_child_index:
+            return
+        
+        # If the new child index is not the current child index, toggle the child
+        else:
+            self.position = self.child_blocks[new_child_index]
+            self.position_updated.emit(self.position)

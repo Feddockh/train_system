@@ -61,6 +61,10 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         #Setting track controller
         self.track_controllers = track_controllers
 
+        #Adding handler for each track controller
+        for track_controller in self.track_controllers:
+            track_controller.plc_ran.connect(self.update_ui)
+
         #Programmer UI name & size
         self.setObjectName("Programmer UI")
         self.resize(1222, 702)
@@ -69,19 +73,6 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName("centralwidget")
         self.setCentralWidget(self.centralwidget)
-
-
-        '''
-        
-        Central Time here
-        
-        '''
-        #Creating a timer to update UI - updates every 3 seconds
-        if(~self.isHidden()):
-            self.timer = QTimer(self)
-            
-            #self.timer.timeout.connect(self.update_ui)
-            self.timer.start(3000)
 
         #Used in multiple widgets
         waysides = [track_controllers[0].wayside_name, track_controllers[1].wayside_name, track_controllers[2].wayside_name,track_controllers[3].wayside_name, track_controllers[4].wayside_name, track_controllers[5].wayside_name]
