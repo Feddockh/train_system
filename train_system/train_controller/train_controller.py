@@ -5,6 +5,8 @@ from collections import deque as dq
 
 from PyQt6.QtCore import Qt, pyqtSlot, pyqtSignal, QObject
 
+from train_system.common.time_keeper import TimeKeeper
+
 from train_system.common.line import Line
 from train_system.common.track_block import TrackBlock
 from train_system.common.station import Station
@@ -60,10 +62,11 @@ class TrainController(QObject):
         self.train_length = 32.2  # 32.2 meters
 
         ## Initialize objects
-        self.train_model = MockTrainModel()  # Used to store data received from Train Model. No computations done in the object
+        self.train_model = MockTrainModel(time_keeper)  # Used to store data received from Train Model. No computations done in the object
         self.train_model.engine_fault_updated.connect(self.handle_fault_update)
         self.train_model.brake_fault_updated.connect(self.handle_fault_update)
         self.train_model.signal_fault_updated.connect(self.handle_fault_update)
+        self.train_model.override_tc_update.connect(self.update_train_controller)
         self.faults_fixed.connect(self.train_model.handle_faults_fixed)
         # self.train_model.comm_speed_received.connect(self.handle_comm_speed_changed)
         self.train_model.authority_received.connect(self.update_authority)
@@ -126,7 +129,7 @@ class TrainController(QObject):
         if self.emergency_mode:
             self.brake.set_service_brake(True)
         if self.destination_counter > 0:
-            print("Destination Counter: ", self.destination_counter)
+            print(">>>> Destination Counter: ", self.destination_counter)
             self.brake.set_service_brake(True)
             self.destination_counter -= 1
         else:
@@ -166,7 +169,7 @@ class TrainController(QObject):
         self.block_number = None
         self.station = None
         self.destination_counter = 0
-        self.yard_block = 152
+        self.yard_block = self.line.yard #####
         self.finished = False
         self.update_track_block()
 
@@ -186,20 +189,22 @@ class TrainController(QObject):
 
         self.block_number = self.track_block.number
         self.lights.update_underground(self.track_block.underground)
+        print(f"Underground: {self.track_block.underground}, Lights: {self.lights.get_lights()}")
 
     def increment_track_block(self):
         # Pop to get next track block
         self.route.popleft()
-        print(f"Route Length: {len(self.route)}")
+        print(f"Route Length: {len(self.route)}, Finished: {self.finished}")
 
         # If not next to finish, continue
         if len(self.route) == 0 and not self.finished:
             ## Look at authority to see whether to circle or to end route
             if self.destination == self.yard_block:
+                print("------------------------------ Going to Yard --------------------------------")
                 self.route.extend(self.line.route.to_yard)    ## If authority is negative, go back to yard
                 self.finished = True
             else:
-                print("------------------------------ Finished Route --------------------------------")
+                print("------------------------------ Circling Route Again --------------------------------")
                 # Append past_yard and append default route again
                 self.route.extend(self.line.route.past_yard)
                 self.route.extend(self.line.route.default_route)
@@ -208,6 +213,10 @@ class TrainController(QObject):
         elif self.finished:
             #### DELETE TRAIN CONTROLLER ####
             self.delete_train.emit(self.id)
+            self.train_model.current_speed = 0
+            self.brake.set_emergency_brake(True)
+            print("!!!!!!!!!!!!!!!!!!!!! Train Controller Deleted !!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            self.polarity = 100000
             return
             
         # Increment track block
@@ -366,7 +375,7 @@ class TrainController(QObject):
 
         # Go to destination station if at destination block
         # Only go to destination station if this is the destination block and train hasn't dropped off yet
-        if self.destination == self.block_number and self.dropped_off == False:
+        if self.destination == self.block_number and self.dropped_off == False and self.destination != self.yard_block:
             # Calculate position of the station
             station_pos = self.position + self.polarity - 0.5*self.track_block.length
             print(f"Station Position: {station_pos}")
@@ -513,7 +522,7 @@ class TrainController(QObject):
         #do this to keep from being recursive
         #self.engineer.kp = kp
         self.engineer.kp = kp
-        self.kp_updated_for_eng.emit(kp)
+        #self.kp_updated_for_eng.emit(kp)
 
     @pyqtSlot(int)
     def handle_ki_changed(self, ki: int) -> None:
@@ -629,7 +638,9 @@ class TrainController(QObject):
         def __init__(self, ssh):
             super().__init__()
             self.speed_limit = None  # Speed limit of the train
-            self.SL_PADDING = 4.4704    # Padding of 10 mph
+
+            self.SL_PADDING = 1 # 4.4704    # Padding of 10 mph
+
             self.P_MAX = 120  # Maximum power (kW) = 120
             self.power_command = 0 # Power command
 
@@ -918,14 +929,20 @@ class MockTrainModel(QObject):
     engine_fault_updated = pyqtSignal(bool)
     brake_fault_updated = pyqtSignal(bool)
     signal_fault_updated = pyqtSignal(bool)
+    override_tc_update = pyqtSignal()   # TM -> TC
+
     # comm_speed_received = pyqtSignal(float)
     authority_received = pyqtSignal(Authority)
     satellite_received = pyqtSignal(str, float) # Authority, commanded speed
     train_temp_updated = pyqtSignal(float)
     emergency_mode = pyqtSignal()
 
-    def __init__(self):
+    def __init__(self, time_keeper: TimeKeeper = None):
         super().__init__() 
+
+        self.time_keeper = time_keeper
+        self.time_keeper.tick.connect(self.handle_signal_failure)
+
         # Train Model variables
         self.current_speed: float = 0
         self.commanded_speed: float = 10
@@ -1044,6 +1061,11 @@ class MockTrainModel(QObject):
         self.set_engine_fault(False)
         self.set_brake_fault(False)
         self.set_signal_fault(False)
+    @pyqtSlot()
+    def handle_signal_failure(self):
+        print("Faults: ", self.faults)
+        if self.faults[2]:
+            self.override_tc_update.emit()
 
     def set_engine_fault(self, status: bool):
         self.faults[0] = status
@@ -1086,10 +1108,10 @@ class MockTrainModel(QObject):
 
 
 class TrainSystem:
-    def __init__(self, engineer: Engineer = None, line_name: str = "green", id: int = 0, ssh=None):
+    def __init__(self, time_keeper: TimeKeeper = None, engineer: Engineer = None, line_name: str = "green", id: int = 0, ssh=None):
         self.line = line_name
         self.id = id
-        self.train_model = MockTrainModel()
+        self.train_model = MockTrainModel(time_keeper)
         self.engineer = engineer if engineer else Engineer()
         print(f"Engineer: {self.engineer.kp}, {self.engineer.ki}")
         self.ssh = ssh
@@ -1107,16 +1129,22 @@ class TrainSystem:
     # Multiple laps around
     def long_run(self):
         self.controller.set_setpoint_speed(20)
-        for _ in range(80):
-            self.controller.update_authority(Authority(1000000000,65))
-            print(f"Position: {self.controller.position}, Authority: {self.controller.authority}")
+        self.controller.set_position(15000)
+        position = []
+        for _ in range(8000):
+            self.controller.update_authority(Authority(1000000000,152))
+            if self.controller.track_block.underground:
+                position.append(self.controller.position)
 
-    def full_loop_run(self):
+    def past_yard_run(self):
         self.controller.set_setpoint_speed(20)
         self.controller.set_position(19900)
         for _ in range(20):
+            position = self.controller.position
             self.controller.update_authority(Authority(1000000000,65))
             print(f"Position: {self.controller.position}, Loop Length: {self.controller.loop_length}")
+            if self.controller.position < position:
+                print("WENT IN A LOOP")
 
     def to_yard_run(self):
         self.controller.set_setpoint_speed(20)
@@ -1131,9 +1159,11 @@ class TrainSystem:
         self.controller.set_setpoint_speed(20)
         authority = Authority(1000000000,65)
         for _ in range(60):
+            position = self.controller.position
             self.controller.update_authority(authority)
             print("Current Track Block: ", self.controller.track_block.number, ", Destination: ", self.controller.destination)
             print(f"Position: {self.controller.position}, Authority: {self.controller.authority}")
+
             if self.controller.track_block.number == self.controller.destination:
                 authority = Authority(1000000000,152)
                 print(f"~~~~~ Dropped off: {self.controller.dropped_off} ~~~~~")
@@ -1172,7 +1202,7 @@ class TrainSystem:
 
         self.controller.update_authority(Authority(1000000000,65))
         self.controller.train_model.handle_emergency_stop()
-        
+
         for _ in range(5):
             self.controller.update_authority(Authority(1000000000,65))
             self.controller.train_model.handle_emergency_stop()
@@ -1210,7 +1240,6 @@ class TrainSystem:
             print(f"Maintenance mode: {self.controller.maintenance_mode}, Emergency brake: {self.controller.brake.get_emergency_brake()}")
             print(f"Current Speed: {self.controller.current_speed}")
             print(f"Train Model Faults: Engine: {self.controller.train_model.faults[0]}, Brake: {self.controller.train_model.faults[1]}, Signal: {self.controller.train_model.faults[2]}")
-            
 
     def ac_run(self):
         self.controller.ac.set_commanded_temp(82)
@@ -1218,6 +1247,8 @@ class TrainSystem:
         for _ in range(50):
             print(f"Current Temp: {self.controller.ac.get_current_temp()}")
             self.controller.update_authority(Authority(1000000000,65))
+
+    
             
 
     
@@ -1226,15 +1257,21 @@ class TrainSystem:
 
 if __name__ == "__main__":
     # train_system = TrainSystem(HOST, PORT, USERNAME, PASSWORD)
-    train_system = TrainSystem()
+    time_keeper = TimeKeeper()
+    time_keeper.start_timer()
+    train_system = TrainSystem(time_keeper)
+
     # train_system.small_run()
     # train_system.long_run()
-    # train_system.full_loop_run()
-    train_system.destination_run()
+    # train_system.past_yard_run()
+    train_system.to_yard_run()
+    # train_system.destination_run()
     # train_system.service_brake_run()
     # train_system.emergency_brake_run()
-    train_system.emergency_run()
+    # train_system.emergency_run()
     # train_system.commanded_speed_run()
     # train_system.switch_modes_run()
     # train_system.fault_run()
+    # train_system.signal_fault_run()
     # train_system.ac_run()
+
