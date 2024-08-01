@@ -1123,18 +1123,34 @@ class MockTrainModel(QObject):
 
     ##### INTEGRATION #####
     
-    def decrypt_commanded_speed(self, speed: str):
+    def decrypt_commanded_speed(self, encrypted_speed: str):
         # String to float
+        speed = self.decrypt(encrypted_speed)
         self.set_commanded_speed(float(speed))
 
-    def decrypt_authority(self, authority: str):
+    def decrypt_authority(self, encrypted_authority: str):
         ### Decode the authority string ###
+        authority = self.decrypt(authority)
         new_authority = Authority()
         new_authority.authority = authority
         self.set_authority(authority)
 
-    def encrypt(self, data) -> str:
-        return str(data)
+    def set_cipher_suite(self, key_value):
+        self.key = key_value 
+        self.cipher_suite = Fernet(self.key)
+        
+    #need to pass in or create slot to get cipher_suite with key from main 
+    def encrypt(self, plain_text):
+    
+        cipher_text = self.cipher_suite.encrypt(plain_text.encode())
+        
+        return (cipher_text)
+
+    def decrypt(self, cipher_text):
+            
+        plain_text = self.cipher_suite.decrypt(cipher_text.decode())
+            
+        return (plain_text)
         
     def set_passengers(self, passengers: int):
         self.passengers = passengers
