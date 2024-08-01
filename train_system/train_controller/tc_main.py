@@ -9,8 +9,8 @@ from PyQt6.QtWidgets import QApplication
 app = QApplication(sys.argv)
    
 # Create the time keeper object
-time_keeper = TimeKeeper()
-time_keeper.start_timer()   
+tk = TimeKeeper()
+tk.start_timer()   
 
 # Hardware
 # ts = TrainModelController(time_keeper, HOST, PORT, USERNAME, PASSWORD)
@@ -122,4 +122,4 @@ def tc_main(time_keeper: TimeKeeper, ts: TrainModelController):
 
 
 if __name__ == "__main__":
-    tc_main(time_keeper, ts)
+    tc_main(tk, TrainModelController(tk))

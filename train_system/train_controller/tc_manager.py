@@ -156,8 +156,9 @@ if __name__ == "__main__":
     manager = TrainManager(time_keeper)
 
     manager.engineer_table[0].set_engineer(25, 0.5) # Software
+    manager.handle_dispatch(0, "green")
     # manager.engineer_table[1].set_engineer(30, 0.5) # Hardware
-    manager.handle_dispatch(1, "green")
+    # manager.handle_dispatch(1, "green")
 
     # manager.multiple_window_run()
     # manager.multiple_windows_and_trains_run()
