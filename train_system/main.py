@@ -64,14 +64,30 @@ def main():
     track_controller_manager.red_line.switch_position_updated.connect(ctc_manager.red_line.handle_switch_position_update)
 
     ### Instantiate the TrackModel object and the track's UI ###
-    track_model = TrackModel()
+    # track_model = TrackModel()
 
-    # Connect the green line Track Model's signals to the green line Track Controller Manager's signals
-    # track_model.green_line.track_block_occupancy_updated.connect(track_controller_manager.green_line.occupancy_queue)
+    # # Connect the green line Track Model's signals to the green line Track Controller Manager's slots
+    # track_model.green_line.occupancy_queue_signal.connect(track_controller_manager.green_line.handle_occupancy_queue)
+    # track_model.green_line.authority_queue_signal.connect(track_controller_manager.green_line.handle_authority_queue)
 
-    # Connect the red line Track Model's signals to the red line Track Controller Manager's signals
-    # track_model.red_line.track_block_occupancy_updated.connect(track_controller_manager.red_line.occupancy_queue)
+    # # Connect the red line Track Model's signals to the red line Track Controller Manager's slots
+    # track_model.red_line.occupancy_queue_signal.connect(track_controller_manager.red_line.handle_occupancy_queue)
+    # track_model.red_line.authority_queue_signal.connect(track_controller_manager.red_line.handle_authority_queue)
 
+    # Connect the green line Track Controller Manager's signals to the green line Track Model's slots
+    # track_controller_manager.green_line.track_block_authority_updated.connect(track_model.green_line.handle_authority_update)
+    # track_controller_manager.green_line.track_block_suggested_speed_updated.connect(track_model.green_line.handle_suggested_speed_update)
+
+    # track_controller_manager.green_line.track_block_authority_updated.connect(
+    #     lambda line, block, authority: print(f"Green Line Authority Update - Line: {line}, Block: {block}, Authority: {authority}")
+    # )
+    # track_controller_manager.green_line.track_block_suggested_speed_updated.connect(
+    #     lambda line, block, speed: print(f"Green Line Speed Update - Line: {line}, Block: {block}, Speed: {speed}")
+    # )
+
+    # Connect the red line Track Controller Manager's signals to the red line Track Model's slots
+    # track_controller_manager.red_line.track_block_authority_updated.connect(track_model.red_line.handle_authority_update)
+    # track_controller_manager.red_line.track_block_suggested_speed_updated.connect(track_model.red_line.handle_suggested_speed_update)
 
 
     # Coneect the track model's signals to the Track Controller Manager's signals

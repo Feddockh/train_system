@@ -22,6 +22,10 @@ class TrackSwitch(QObject):
     def __repr__(self) -> str:
         return f"Track Switch: {self.parent_block} -> {self.position}"
 
+    def __deepcopy__(self, memo) -> 'TrackSwitch':
+        return TrackSwitch(self.line, self.number, self.parent_block, 
+                           self.child_blocks, self.position)
+
     def toggle(self) -> None:
         if self.position == self.child_blocks[0]:
             self.position = self.child_blocks[1]

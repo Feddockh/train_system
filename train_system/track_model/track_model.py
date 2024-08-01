@@ -106,7 +106,8 @@ class TrackModel(QObject):
                 trk_block = self.lines[train.line].get_track_block(train.block)
                 if trk_block.track_failure != TrackFailure.CIRCUIT:
                     self.track_to_train.emit(train.id, trk_block.suggested_speed, trk_block.authority, trk_block.grade, self._temperature)
-    
+        print("Speed and authority updated for train on block", block)
+
     def update_heaters(self) -> None:
 
         """
