@@ -26,12 +26,15 @@ def main():
     dispatcher_ui.show()
 
     ### Instantiate the TrackController object and the programmer's UI ###
+    
 
     ### Instantiate the TrackModel object and the track's UI ###
 
 
     ### Instantiate the TrainController object and the driver's UI ###
-    train_manager = TrainManager()
+    train_manager = TrainManager(time_keeper)
+    # Connect Track model's outputs to manager
+    # Connect MBO's outputs to manager
 
     # Connect the CTC's dispatch signal to the Train Manager's dispatch handler
     

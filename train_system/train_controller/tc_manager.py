@@ -1,6 +1,7 @@
 import paramiko
 
 from PyQt6.QtCore import Qt, pyqtSlot, pyqtSignal, QObject
+from train_system.common.time_keeper import TimeKeeper
 from train_system.train_controller.train_controller import TrainSystem
 from train_system.train_controller.engineer import Engineer
 from train_system.common.authority import Authority
@@ -19,10 +20,11 @@ class TrainManager(QObject):
 
     test_signal = pyqtSignal(bool)
 
-    def __init__(self):
+    def __init__(self, time_keeper: TimeKeeper = None):
         super().__init__()
 
         self.ssh_client = None
+        self.time_keeper = time_keeper
         self.train_count = 40
         self.engineer_table: list[Engineer] = [Engineer()] * self.train_count
         self.train_list: list[TrainSystem] = []

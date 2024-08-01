@@ -1317,7 +1317,6 @@ class DriverWindow(QMainWindow): ###DriverWindow
     @pyqtSlot(str)
     def handle_destination_update(self, des: str):
         self.destination = des
-
         self.des_label.setText(self.destination)
 
 

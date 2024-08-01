@@ -1,19 +1,29 @@
 # train_system/track_controller/track_controller.py
 
 import copy
-from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
-from train_system.common.track_block import TrackBlock
-from train_system.common.line import Line
 import sys
 import paramiko
 import time
+from typing import List
+from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
+
+from train_system.common.track_block import TrackBlock
+from train_system.common.line import Line
+from train_system.common.authority import Authority
 
 
 class TrackController(QObject):
-    def __init__(self, track_blocks: list, wayside_name, num_blocks):
+    def __init__(self, track_blocks: List[TrackBlock], wayside_name: str, num_blocks: int) -> None:
+
         """
         Initialize variables of the Track Controller.
+
+        Args:
+            track_blocks(list): List of track blocks
+            wayside_name(str): Name of the wayside
+            num_blocks(int): Number of blocks in the wayside
         """
+
         super().__init__()
 
         self.track_blocks = track_blocks
@@ -29,37 +39,93 @@ class TrackController(QObject):
         self.port = 22
 
         for block in self.track_blocks:
+
+            # Connect the block signal with the number to the handler
+            block.authority_updated.connect(self.handle_authority_update)
+
+
             #block.authority_updated.connect(self.handle_authority_update)
-            block.occupancy_updated.connect(self.handle_occupancy_update)
-            block.suggested_speed_updated.connect(self.handle_speed_update)
-                
+            # block.occupancy_updated.connect(self.handle_occupancy_update)
+            # block.suggested_speed_updated.connect(self.handle_speed_update)
 
-    
-    @pyqtSlot(bool)
-    def handle_occupancy_update(self, new_occupancy: bool) -> None:
-        block_number = self.sender().number
-        for x in range(len(self.track_blocks)):
-            if(block_number) == self.track_blocks[x].number:
-                print(f"Block {block_number} occupancy updated to {new_occupancy}")
-                self.track_blocks[x]._occupancy = new_occupancy
-                if(self.plc_program_uploaded == True):
-                    self.run_PLC_program()
+    def get_block(self, block_number: int) -> TrackBlock:
+
+        """
+        Get the block object given the block number.
+
+        Args:
+            block_number(int): The block number
+
+        Returns:
+            TrackBlock: The block object
+        """
+
+        for block in self.track_blocks:
+            if block.number == block_number:
+                return block
+        return None
+
+    def update_block(self, new_block: TrackBlock) -> None:
+
+        """
+        Update the block object in the track controller.
+
+        Args:
+            block(TrackBlock): The block object
+        """
+
+        # Find the block in our list of track blocks
+        block = self.get_block(new_block.number)
+
+        # Check if the block's authority has changed
+        if block.authority != new_block.authority:
+            block.authority = new_block.authority
+
+        # Check if the light signal has changed
+        if block.light_signal != new_block.light_signal:
+            block.light_signal = new_block.light_signal
+
+        # Check if the crossing signal has changed
+        if block.crossing_signal != new_block.crossing_signal:
+            block.crossing_signal = new_block.crossing_signal
+
+        # Check if the switch position has changed
+        if block.switch.get_child_index != new_block.switch.get_child_index:
+            block.switch.toggle()
+
+    def update_blocks(self, new_blocks: List[TrackBlock]) -> None:
+
+        """
+        Update the block objects in the track controller.
+
+        Args:
+            blocks(list): List of block objects
+        """
+
+        for new_block in new_blocks:
+            self.update_block(new_block)
+
+    @pyqtSlot(int, bool)
+    def handle_occupancy_update(self, block_number: int, new_occupancy: bool) -> None:
+
+        # Run the PLC program to update the track blocks
+        self.run_PLC_program()
 
     @pyqtSlot(int)
-    def handle_speed_update(self, new_speed: int) -> None:
-        block_number = self.sender().number
-        for x in range(len(self.track_blocks)):
-            if(block_number) == self.track_blocks[x].number:
-                print(f"Block {block_number} speed updated to {new_speed}")
-                self.track_blocks[x].suggested_speed = new_speed
+    def handle_authority_update(self, block_number: int, new_authority: Authority) -> None:
 
-    @pyqtSlot(int)
-    def handle_authority_update(self, new_authority: int) -> None:
-        block_number = self.sender().number
-        for x in range(len(self.track_blocks)):
-            if(block_number) == self.track_blocks[x].number:
-                print(f"Block {block_number} authority updated to {new_authority}")
-                self.track_blocks[x].authority = new_authority
+        # Get the block object
+        block = self.get_block(block_number)
+
+        # Set the authority of the block without triggering the signal
+        block._authority = new_authority
+
+        # Run the PLC program to update the track blocks
+        self.run_PLC_program()
+
+        # Check if the authority is unchanged, set it and such that the signal is propagated
+        if block.authority == new_authority:
+            block.authority = new_authority
 
     def get_PLC_program(self, plc_program):
         """
@@ -75,25 +141,18 @@ class TrackController(QObject):
             self.plc_program = plc_program
             print(self.plc_program)
 
-    def run_PLC_program(self):
-        """
-        Continuously runs the PLC program.
+    def run_PLC_program(self) -> None:
+
+        # Check if the plc program has been uploaded
+        if(self.plc_program_uploaded == False):
+            print(f"ERROR: No PLC program uploaded")
+            return None
         
-        """
-        #Will only run if PLC program has been uploaded
-        if (self.plc_program_uploaded == True):
-            #Opening & running PLC code
-            with open (self.plc_program, mode = "r", encoding="utf-8") as plc_code:
-                code = plc_code.read()
-            local_vars = {
-                    "track_blocks": self.track_blocks
-                }
-            exec(code, {}, local_vars)
-
-            self.track_blocks = local_vars["track_blocks"]
-
-            #Added by Garrett, for sending the data to the pi to run computations
-            #self.send_to_pi()
+        # Opening & running PLC code
+        with open (self.plc_program, mode = "r", encoding="utf-8") as plc_code:
+            code = plc_code.read()
+        local_vars = {"track_blocks": self.track_blocks}
+        exec(code, {}, local_vars)
 
     def check_PLC_program_switch(self, x, old_pos, new_pos):
         #Will only run if PLC program has been uploaded
@@ -174,7 +233,6 @@ class TrackController(QObject):
             for i, track_block in enumerate(self.track_blocks):
                 track_block._authority = old_authority[i]
                 track_block._plc_unsafe = old_bool_unsafe[i]
-
 
     def check_PLC_program_crossing(self, x, curr_crossing, new_crossing):
         #Will only run if PLC program has been uploaded
