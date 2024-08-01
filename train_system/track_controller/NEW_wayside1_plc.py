@@ -1,4 +1,4 @@
-print("Wayside 1: ")
+# print("Wayside 1: ")
 """
 POST INDEX CHANGE
 """
@@ -48,14 +48,14 @@ if(track_blocks[19].occupancy or track_blocks[18].occupancy or track_blocks[17].
     #set crossing signal 
     track_blocks[18]._crossing_signal = True
 
-    print("Crossing Signal: Down\n")
+    # print("Crossing Signal: Down\n")
 
 if(track_blocks[19].occupancy == False and track_blocks[18].occupancy == False and track_blocks[17].occupancy == False):
 
     #set crossing signal
     track_blocks[18]._crossing_signal = False
 
-    print("Crossing Signal: Up\nPedestrians May Cross\n")
+    # print("Crossing Signal: Up\nPedestrians May Cross\n")
 
 #SWITCH AT BLOCK 29
 #Scenario 1: 29-> 30, block 150 is not occupied

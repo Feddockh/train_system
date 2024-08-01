@@ -97,41 +97,41 @@ if(track_blocks[33].occupancy and track_blocks[34].occupancy and track_blocks[10
 # Consolidated print statements for error checking
 
 #SWITCH AT BLOCK 57
-print("Switch  57:\n")
+# print("Switch  57:\n")
 
-# Block 57
-print("Block 57 (Switch) Information: ")
-print(f"Switch Position: {track_blocks[28].switch.position}")
-print(f"Light Signal: {track_blocks[28]._light_signal}")
-print(f"Authority: {track_blocks[28].authority}\n")
+# # Block 57
+# print("Block 57 (Switch) Information: ")
+# print(f"Switch Position: {track_blocks[28].switch.position}")
+# print(f"Light Signal: {track_blocks[28]._light_signal}")
+# print(f"Authority: {track_blocks[28].authority}\n")
 
-# Block 58
-print("Block 58 Information: ")
-print(f"Light Signal: {track_blocks[29]._light_signal}")
-print(f"Authority: {track_blocks[29].authority}\n")
+# # Block 58
+# print("Block 58 Information: ")
+# print(f"Light Signal: {track_blocks[29]._light_signal}")
+# print(f"Authority: {track_blocks[29].authority}\n")
 
-# Block 151
-print("Block 151 Information: ")
-print(f"Light Signal: {track_blocks[107]._light_signal}")
-print(f"Authority: {track_blocks[107].authority}\n")
+# # Block 151
+# print("Block 151 Information: ")
+# print(f"Light Signal: {track_blocks[107]._light_signal}")
+# print(f"Authority: {track_blocks[107].authority}\n")
 
 
-# Switch at BLOCK 63
-print("Switch 63: \n")
-print("Block 63 (Switch) Information: ")
-print(f"Switch Position: {track_blocks[34].switch.position}")
-print(f"Light Signal: {track_blocks[34]._light_signal}")
-print(f"Authority: {track_blocks[34].authority}\n")
+# # Switch at BLOCK 63
+# print("Switch 63: \n")
+# print("Block 63 (Switch) Information: ")
+# print(f"Switch Position: {track_blocks[34].switch.position}")
+# print(f"Light Signal: {track_blocks[34]._light_signal}")
+# print(f"Authority: {track_blocks[34].authority}\n")
 
-# Block 62
-print("Block 62 Information: ")
-print(f"Light Signal: {track_blocks[33]._light_signal}")
-print(f"Authority: {track_blocks[33].authority}\n")
+# # Block 62
+# print("Block 62 Information: ")
+# print(f"Light Signal: {track_blocks[33]._light_signal}")
+# print(f"Authority: {track_blocks[33].authority}\n")
 
-# Block 153
-print("Block 153 Information: ")
-print(f"Light Signal: {track_blocks[109]._light_signal}")
-print(f"Authority: {track_blocks[109].authority}\n")
+# # Block 153
+# print("Block 153 Information: ")
+# print(f"Light Signal: {track_blocks[109]._light_signal}")
+# print(f"Authority: {track_blocks[109].authority}\n")
 
 
 

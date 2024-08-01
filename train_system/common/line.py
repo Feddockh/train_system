@@ -174,8 +174,8 @@ class Line(QObject):
     track_block_under_maintenance_updated = pyqtSignal(str, int, bool)
     track_block_track_failure_updated = pyqtSignal(str, int, int)
 
-    # Signals to notify switch updates (line name, switch number)
-    switch_position_updated = pyqtSignal(str, int)
+    # Signals to notify switch updates (line name, switch number, child block)
+    switch_position_updated = pyqtSignal(str, int, int)
 
     # Signals to emit the queued updates
     suggested_speed_queue_signal = pyqtSignal(list)
@@ -707,7 +707,7 @@ class Line(QObject):
         """
 
         # Connect to the line signal
-        switch.position_updated.connect(lambda new_position, sw=switch: self.switch_position_updated.emit(self.name, sw.number))
+        switch.position_updated.connect(lambda switch_number, new_position: self.switch_position_updated.emit(self.name, switch_number, new_position))
 
     def connect_switch_signals_queue(self, switch: TrackSwitch) -> None:
 
@@ -720,7 +720,7 @@ class Line(QObject):
 
         # Connect to the line signal
         switch.position_updated.connect(
-            lambda new_position, sw=switch: self.queue_update('switch_position', self.name, sw.number, new_position)
+            lambda switch_number, new_position: self.queue_update('switch_position', self.name, switch_number, new_position)
         )
 
     def queue_update(self, update_type, line, block_or_switch, value):
@@ -803,10 +803,9 @@ class Line(QObject):
 
     @pyqtSlot(list)
     def handle_switch_position_queue(self, queue):
-        for line, switch, new_position in queue:
+        for line, switch_number, new_position in queue:
             if line.lower() == self.name.lower():
-                self.get_switch(switch).position = new_position
-                print("switch position updated")
+                self.get_switch(switch_number).position = new_position
             else:
                 print(f"Line {line} does not exist.")
 
@@ -930,18 +929,19 @@ class Line(QObject):
             print(f"Line {line} does not exist.")
 
     @pyqtSlot(str, int)
-    def handle_switch_position_update(self, line: str, switch: int) -> None:
+    def handle_switch_position_update(self, line: str, switch_number: int, new_position: int) -> None:
                                                 
         """
         Handles the switch position update signal from the switch.
         
         Args:
             line (str): The name of the line.
-            switch (int): The switch number.
+            switch_number (int): The switch number.
+            new_position (int): The new switch position.
         """
 
         if line.lower() == self.name.lower():
-            self.get_switch(switch).toggle()
+            self.get_switch(switch_number).position = new_position
         else:
             print(f"Line {line} does not exist.")
 
