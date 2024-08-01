@@ -9,6 +9,11 @@ class Authority:
     def __repr__(self) -> str:
         return f"{self.authority}"
     
+    def __eq__(self, value: object) -> bool:
+        if not isinstance(value, Authority):
+            return False
+        return self.authority == value.authority
+    
     def set_distance(self, distance: float) -> None:
         self.authority = f"{distance}:{self.get_stop_block()}"
     

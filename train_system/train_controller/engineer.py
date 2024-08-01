@@ -1,8 +1,8 @@
 from PyQt6.QtCore import QObject, pyqtSignal, pyqtSlot
 
 class Engineer(QObject):
-        # kp_updated = pyqtSignal(int)
-        # ki_updated = pyqtSignal(int)
+        kp_updated = pyqtSignal(int)
+        ki_updated = pyqtSignal(int)
         
         def __init__(self, kp=400, ki=20):
             # super().__init__()
