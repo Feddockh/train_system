@@ -64,7 +64,7 @@ class TrainController(QObject):
         ## Initialize objects
         self.time_keeper = TimeKeeper()
         self.time_keeper.start_timer()
-        self.train_model = train_model if train_model else TrainModel(self.time_keeper)  # Used to store data received from Train Model. No computations done in the object
+        self.train_model = train_model if train_model else MockTrainModel(self.time_keeper)  # Used to store data received from Train Model. No computations done in the object
         self.train_model.engine_fault_updated.connect(self.handle_fault_update)
         self.train_model.brake_fault_updated.connect(self.handle_fault_update)
         self.train_model.signal_fault_updated.connect(self.handle_fault_update)
@@ -518,7 +518,7 @@ class TrainController(QObject):
         if ':' in authority:
             new_authority = Authority(0)
             new_authority.authority = authority
-            self.update_authority(new_authority)
+            self.train_model.set_authority(new_authority)
 
     @pyqtSlot(bool)
     def handle_light_status_changed(self, light: bool) -> None:
@@ -553,7 +553,9 @@ class TrainController(QObject):
 
     @pyqtSlot()
     def handle_tick(self) -> None:
-        self.update_train_controller()
+        if(self.train_model.authority):
+            self.train_model.set_authority(self.train_model.authority)
+        # self.update_train_controller()
 
     ## Engineer class to hold Kp and Ki
     # class Engineer(QObject):
@@ -967,7 +969,7 @@ class MockTrainModel(QObject):
         # Train Model variables
         self.current_speed: float = 0
         self.commanded_speed: float = 0
-        self.authority: Authority = Authority(10000000,65) # Authority and desination block number
+        self.authority: Authority = None # Authority and desination block number
 
         self.power_command = 0
         self.position = 0
