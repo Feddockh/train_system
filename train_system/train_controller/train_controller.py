@@ -391,7 +391,7 @@ class TrainController(QObject):
             
             self.authority = min(self.authority, station_pos)
         print(f"New authority: {self.authority}")
-        self.authority_updated.emit(authority)
+        self.authority_updated.emit(self.authority)
     def parse_authority(self, authority: Authority):
         self.authority = abs(authority.get_distance() + self.AUTHORITY_PADDING)
         self.set_destination(authority.get_stop_block())
