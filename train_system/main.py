@@ -4,16 +4,18 @@ import sys
 from PyQt6.QtWidgets import QApplication
 from cryptography.fernet import Fernet
 
+from train_system.common.line import Line
 from train_system.common.time_keeper import TimeKeeper
 from train_system.ctc_manager.ctc_manager import CTCOffice
 from train_system.ctc_manager.dispatcher_ui import DispatcherUI
 from train_system.track_controller.track_controller_manager import TrackControllerManager
-from train_system.mbo_manager.mbo_manager import MBOOffice
-from train_system.mbo_manager.mbo_ui import MBOWindow
-from train_system.train_controller.tc_manager import TrainManager
-from train_system.track_model.track_model import TrackModel
+from train_system.track_controller.sw_ui import ProgrammerUI
+# from train_system.mbo_manager.mbo_manager import MBOOffice
+# from train_system.mbo_manager.mbo_ui import MBOWindow
+# from train_system.train_controller.tc_manager import TrainManager
+# from train_system.track_model.track_model import TrackModel
 
-from train_system.train_controller.train_controller import TrainSystem
+# from train_system.train_controller.train_controller import TrainSystem
 
 def main():
 
@@ -30,15 +32,19 @@ def main():
     ctc_manager.connect_dispatcher_ui(dispatcher_ui)
     dispatcher_ui.show()
     
-
     ### Instantiate the TrackController object and the programmer's UI ###
     track_controller_manager = TrackControllerManager(time_keeper)
+    programmer_ui = ProgrammerUI(track_controller_manager.waysides)
+    programmer_ui.show()
+
+    # Connect the CTC's line signals to the Track Controller Manager's line handler
+    ctc_manager.green_line.authority_queue_signal.connect(track_controller_manager.green_line.handle_authority_queue)
 
     ### Instantiate the TrackModel object and the track's UI ###
-    track_model = TrackModel(time_keeper)
+    # track_model = TrackModel(time_keeper)
 
     ### Instantiate the TrainController object and the driver's UI ###
-    train_manager = TrainManager(time_keeper)
+    # train_manager = TrainManager(time_keeper)
     # track_model.track_to_train.connect(train_manager.handle_CTC_update)
     # train_manager.passengers_to_train.connect(train_manager.handle_passenger_update)
     
@@ -65,24 +71,24 @@ def main():
     # Connect MBO to Train Model
     # Connect Train Model to MBO
     # Function to generate and store a key
-    def write_key():
-        key = Fernet.generate_key()
-        with open("key.key", "wb") as key_file:
-            key_file.write(key)
+    # def write_key():
+    #     key = Fernet.generate_key()
+    #     with open("key.key", "wb") as key_file:
+    #         key_file.write(key)
             
-    def load_key():
-        return open("key.key", "rb").read()
-    write_key()
-    key = load_key()
+    # def load_key():
+    #     return open("key.key", "rb").read()
+    # write_key()
+    # key = load_key()
     
-    mbo_manager = MBOOffice(time_keeper)
-    mbo_satellite = mbo_manager.Satellite()
-    mbo_ui = MBOWindow()
+    # mbo_manager = MBOOffice(time_keeper)
+    # mbo_satellite = mbo_manager.Satellite()
+    # mbo_ui = MBOWindow()
     # mbo_ui.show()
     
-    mbo_satellite.key_recieved.emit(key)
+    # mbo_satellite.key_recieved.emit(key)
     #emit key to train_manager?
-    train_manager.key_recieved.emit(key)
+    # train_manager.key_recieved.emit(key)
 
     sys.exit(app.exec())
 
