@@ -11,7 +11,7 @@ from train_system.mbo_manager.mbo_ui import MBOWindow
 from train_system.train_controller.tc_manager import TrainManager
 from train_system.track_model.track_model import TrackModel
 
-from train_system.train_controller.train_controller import TrainSystem
+from train_system.train_controller.train_controller import TrainModelController
 
 def main():
 
@@ -44,7 +44,7 @@ def main():
     # train_manager.train_dispatched.connect(mbo.handle_dispatch)   # Signal to make more connections for the Train Model speaks to MBO
     # mbo.send_satellite.connect(train_manager.handle_MBO_update)   # MBO speaks to Train Model
 
-    # def handle_dispatch(train_system: TrainSystem):
+    # def handle_dispatch(train_system: TrainModelController):
     #     train_system.satellite_sent.connect(mbo.satellite_receive)
 
     # Connect Track model's outputs to manager
