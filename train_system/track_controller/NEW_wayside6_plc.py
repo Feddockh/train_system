@@ -106,8 +106,8 @@ elif(track_blocks[3].occupancy == True and
     track_blocks[24].occupancy == False and  
     track_blocks[25].occupancy == False and  
     track_blocks[26].occupancy == False)):  
-    track_blocks[4].switch.position = track_blocks[4].switch.child_blocks[0] 
-    track_blocks[12].switch.position = track_blocks[12].switch.child_blocks[0]  
+    track_blocks[4].switch.set_child_index(0) 
+    track_blocks[12].switch.set_child_index(0)  
     track_blocks[4]._plc_unsafe = False
     track_blocks[12]._plc_unsafe = False
 
@@ -121,8 +121,8 @@ elif(track_blocks[3].occupancy == True and
     track_blocks[10].occupancy == False and
     track_blocks[11].occupancy == False) and
     track_blocks[13].occupancy == False):  
-    track_blocks[4].switch.position = track_blocks[4].switch.child_blocks[0]  
-    track_blocks[12].switch.position = track_blocks[12].switch.child_blocks[0]  
+    track_blocks[4].switch.set_child_index(0)  
+    track_blocks[12].switch.set_child_index(0)  
     track_blocks[4]._plc_unsafe = False
     track_blocks[12]._plc_unsafe = False
 
@@ -150,8 +150,8 @@ elif(track_blocks[13].occupancy == True and
     track_blocks[24].occupancy == True and  
     track_blocks[25].occupancy == True and  
     track_blocks[26].occupancy == True))):  
-    track_blocks[4].switch.position = track_blocks[4].switch.child_blocks[1] 
-    track_blocks[12].switch.position = track_blocks[12].switch.child_blocks[1]  
+    track_blocks[4].switch.set_child_index(1) 
+    track_blocks[12].switch.set_child_index(1)  
     track_blocks[4]._plc_unsafe = False
     track_blocks[12]._plc_unsafe = False
 
@@ -167,8 +167,8 @@ elif(track_blocks[13].occupancy == True and
     track_blocks[4].switch.get_child_index() == True and  
     track_blocks[12].switch.get_child_index() == True and  
     (track_blocks[27].occupancy == False)):  
-    track_blocks[4].switch.position = track_blocks[4].switch.child_blocks[1]  
-    track_blocks[12].switch.position = track_blocks[12].switch.child_blocks[1]  
+    track_blocks[4].switch.set_child_index(1)  
+    track_blocks[12].switch.set_child_index(1)
     track_blocks[4]._plc_unsafe = False
     track_blocks[12]._plc_unsafe = False
  

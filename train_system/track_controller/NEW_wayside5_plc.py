@@ -71,8 +71,8 @@ elif(track_blocks[7].occupancy == True and
     track_blocks[4].occupancy == True and 
     track_blocks[5].occupancy == True and 
     track_blocks[6].occupancy == True))):
-    track_blocks[8].switch.position = track_blocks[8].switch.child_blocks[0]
-    track_blocks[11].switch.position = track_blocks[11].switch.child_blocks[0]
+    track_blocks[8].switch.set_child_index(0)
+    track_blocks[11].switch.set_child_index(0)
     track_blocks[8]._plc_unsafe = False
     track_blocks[11]._plc_unsafe = False
 
@@ -93,8 +93,8 @@ elif(track_blocks[2].occupancy == True and
     track_blocks[4].occupancy == False and 
     track_blocks[5].occupancy == False and 
     track_blocks[6].occupancy == False))):
-    track_blocks[8].switch.position = track_blocks[8].switch.child_blocks[1]
-    track_blocks[11].switch.position = track_blocks[11].switch.child_blocks[1]
+    track_blocks[8].switch.set_child_index(1)
+    track_blocks[11].switch.set_child_index(1)
     track_blocks[8]._plc_unsafe = False
     track_blocks[11]._plc_unsafe = False
 
