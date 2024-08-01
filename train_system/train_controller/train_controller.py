@@ -51,7 +51,7 @@ class TrainController(QObject):
 
     curr_speed_updated = pyqtSignal(float)
     
-    def __init__(self, engineer: Engineer = None, train_model=None, line_name: str = "green", id: int = 0, ssh=None) -> None:
+    def __init__(self, engineer: Engineer = None, train_model = None, line_name: str = "green", id: int = 0, ssh=None) -> None:
         super().__init__()
         self.line = line_name
         self.id = id
@@ -62,7 +62,9 @@ class TrainController(QObject):
         self.train_length = 32.2  # 32.2 meters
 
         ## Initialize objects
-        self.train_model = MockTrainModel(time_keeper)  # Used to store data received from Train Model. No computations done in the object
+        self.time_keeper = TimeKeeper()
+        self.time_keeper.start_timer()
+        self.train_model = train_model if train_model else TrainModel(self.time_keeper)  # Used to store data received from Train Model. No computations done in the object
         self.train_model.engine_fault_updated.connect(self.handle_fault_update)
         self.train_model.brake_fault_updated.connect(self.handle_fault_update)
         self.train_model.signal_fault_updated.connect(self.handle_fault_update)
@@ -947,7 +949,7 @@ class MockTrainModel(QObject):
         self.train_id = train_id
 
         self.time_keeper = time_keeper
-        self.time_keeper.tick.connect(self.handle_signal_failure)
+        # self.time_keeper.tick.connect(self.handle_signal_failure) ##### GET WORKING LATER
 
         # Train Model variables
         self.current_speed: float = 0
@@ -1280,7 +1282,7 @@ class TrainSystem:
             print(f"Train Model Faults: Engine: {self.controller.train_model.faults[0]}, Brake: {self.controller.train_model.faults[1]}, Signal: {self.controller.train_model.faults[2]}")
 
     def signal_fault_run(self):
-        self.controller.train_model.up(True)
+        self.controller.train_model.set_signal_fault(True)
         self.controller.train_model.current_speed = 10
         self.controller.set_setpoint_speed(20)
         print()
@@ -1313,7 +1315,7 @@ if __name__ == "__main__":
     # train_system.small_run()
     # train_system.long_run()
     # train_system.past_yard_run()
-    train_system.to_yard_run()
+    # train_system.to_yard_run()
     # train_system.destination_run()
     # train_system.service_brake_run()
     # train_system.emergency_brake_run()
@@ -1321,6 +1323,6 @@ if __name__ == "__main__":
     # train_system.commanded_speed_run()
     # train_system.switch_modes_run()
     # train_system.fault_run()
-    # train_system.signal_fault_run()
-    # train_system.ac_run()
+    train_system.signal_fault_run()
+    train_system.ac_run()
 
