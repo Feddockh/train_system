@@ -115,7 +115,7 @@ class TrackSwitchWidget(QWidget):
                 option_1 if switch.position == switch.child_blocks[0] else option_2
             )
             status_cell.currentTextChanged.connect(
-                lambda state, sw=switch: self.update_switch_position(sw, state)
+                lambda state, sw=switch: sw.toggle()
             )
             status_cell.setStyleSheet(
                 f"background-color: {Colors.WHITE}; color: {Colors.BLACK};"
@@ -132,7 +132,6 @@ class TrackSwitchWidget(QWidget):
             state (str): The new position.
         """
 
-        switch.toggle()
         self.update_table_data()
 
     def set_line(self, line: Line) -> None:

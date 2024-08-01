@@ -14,6 +14,7 @@ from train_system.common.line import Line
 from train_system.common.track_block import TrackBlock
 
 
+# Depricated
 class TrackVisualTableWidget(QWidget):
     def __init__(self, line: Line, parent: Optional[QWidget] = None) -> None:
 
@@ -139,9 +140,17 @@ class TrackVisualTableWidget(QWidget):
             status_item.setForeground(QColor("#000000"))
             self.table.setItem(i, 1, status_item)
 
+
 class TrackVisualWidget(QWidget):
     def __init__(self, line: Line):
         super().__init__()
+
+        """
+        Initializes the TrackVisualWidget.
+        
+        Args:
+            line (Line): The line object containing track blocks.
+        """
 
         # Line parameters
         self.line = line
@@ -167,8 +176,15 @@ class TrackVisualWidget(QWidget):
         QToolTip.setFont(QFont('SansSerif', 12))
         self.setStyleSheet(str("QToolTip { color: " + str(Colors.BLACK) + "; background-color: " + str(Colors.WHITE) + "; border: 1px solid black; }"))
 
-
     def find_max_y(self):
+
+        """
+        Finds the maximum y value of the blocks.
+
+        Returns:
+            int: The maximum y value of the blocks.
+        """
+
         max_y = 0
         for block in self.blocks:
             if block['y2'] > max_y:
@@ -176,6 +192,14 @@ class TrackVisualWidget(QWidget):
         return max_y
     
     def find_max_x(self):
+
+        """
+        Finds the maximum x value of the blocks.
+        
+        Returns:
+            int: The maximum x value of the blocks.
+        """
+
         max_x = 0
         for block in self.blocks:
             if block['x2'] > max_x:
@@ -183,6 +207,13 @@ class TrackVisualWidget(QWidget):
         return max_x
 
     def resizeEvent(self, event):
+
+        """
+        Resizes the visual when the window is resized.
+        
+        Args:
+            event (QResizeEvent): The resize event.
+        """
 
         # Update the scaling values
         self.x_scale = self.width() // (self.max_x + 2)
@@ -192,6 +223,14 @@ class TrackVisualWidget(QWidget):
         self.update()
 
     def paintEvent(self, event):
+
+        """
+        Paints the visual.
+        
+        Args:
+            event (QPaintEvent): The paint event.
+        """
+
         painter = QPainter(self)
         painter.fillRect(self.rect(), QColor(Colors.BLACK))
         font_metrics = QFontMetrics(painter.font())
@@ -291,6 +330,13 @@ class TrackVisualWidget(QWidget):
             painter.drawEllipse(QPoint(x, y), min(self.x_scale, self.y_scale) // 3, min(self.x_scale, self.y_scale) // 3)
             
     def mousePressEvent(self, event: QMouseEvent):
+
+        """
+        Handles the mouse press event.
+        
+        Args:
+            event (QMouseEvent): The mouse event.
+        """
 
         # Check if the mouse is over a station
         for station in self.stations:
