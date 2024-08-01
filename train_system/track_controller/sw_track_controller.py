@@ -22,6 +22,7 @@ class TrackController(QObject):
         Initialize variables of the Track Controller.
 
         Args:
+            time_keeper(TimeKeeper): Time keeper used in modules to share tick
             track_blocks(list): List of track blocks
             wayside_name(str): Name of the wayside
             num_blocks(int): Number of blocks in the wayside
@@ -29,9 +30,11 @@ class TrackController(QObject):
 
         super().__init__()
 
+        #Saving time_keeper to variables
         self.time_keeper = time_keeper
         time_keeper.tick.connect(self.handle_tick)
 
+        #Variables needed for track controller
         self.track_blocks = track_blocks
         self.prev_track_blocks = copy.deepcopy(track_blocks)
         self.plc_program_uploaded = False
@@ -45,15 +48,6 @@ class TrackController(QObject):
         self.password = 'Cornell@26'
         self.port = 22
 
-        # for block in self.track_blocks:
-
-            # Connect the block signal with the number to the handler
-            # block.authority_updated.connect(self.handle_authority_update)
-
-
-            #block.authority_updated.connect(self.handle_authority_update)
-            # block.occupancy_updated.connect(self.handle_occupancy_update)
-            # block.suggested_speed_updated.connect(self.handle_speed_update)
 
     def get_block(self, block_number: int) -> TrackBlock:
 
@@ -136,7 +130,14 @@ class TrackController(QObject):
         return updated
 
     @pyqtSlot(int)
-    def handle_tick(self, tick: int):       
+    def handle_tick(self, tick: int):    
+        """
+        Uses the time keeper to run plc program and update track block variables each tick. 
+
+        Args:
+            tick(int): Timestep
+
+        """   
 
         # Run the plc code every tick if a program is loaded
         if self.plc_program_uploaded == True:
@@ -145,12 +146,6 @@ class TrackController(QObject):
 
         # Update the last known states of the track blocks
         updated = self.update_blocks(self.prev_track_blocks, self.track_blocks)
-        # print("Updated: ", updated)
-        
-
-
-
-
         
 
     def get_PLC_program(self, plc_program):
@@ -168,6 +163,10 @@ class TrackController(QObject):
             print(self.plc_program)
 
     def run_PLC_program(self) -> None:
+        """
+        Runs the PLC program & alters track block variables if necessary. 
+        
+        """
 
         # Check if the plc program has been uploaded
         if(self.plc_program_uploaded == False):
@@ -181,6 +180,11 @@ class TrackController(QObject):
         exec(code, {}, local_vars)
 
     def check_PLC_program_switch(self, x, old_pos, new_pos):
+        """
+        Runs the PLC program  to check if changing switch is safe & alters track block variables if necessary. 
+        
+        """
+
         #Will only run if PLC program has been uploaded
         if (self.plc_program_uploaded == True):
             #Disabling signals
@@ -221,6 +225,11 @@ class TrackController(QObject):
                 track_block._plc_unsafe = old_bool_unsafe[i]
     
     def check_PLC_program_signal(self, x, curr_signal, new_signal):
+        """
+        Runs the PLC program  to check if changing signal is safe & alters track block variables if necessary. 
+        
+        """
+
         #Will only run if PLC program has been uploaded
         if (self.plc_program_uploaded == True):
             #Disabling signals
@@ -261,6 +270,11 @@ class TrackController(QObject):
                 track_block._plc_unsafe = old_bool_unsafe[i]
 
     def check_PLC_program_crossing(self, x, curr_crossing, new_crossing):
+        """
+        Runs the PLC program  to check if changing crossing is safe & alters track block variables if necessary. 
+        
+        """
+
         #Will only run if PLC program has been uploaded
         if (self.plc_program_uploaded == True):
             #Disabling signals
