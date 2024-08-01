@@ -111,7 +111,7 @@ python -m train_system.track_model.track_model
 
 ### Train Model
 ```bash
-python -m train_system.train_model.
+python -m train_system.train_model.train_model_ui_v3
 ```
 
 ### Train Controller
