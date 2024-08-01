@@ -25,15 +25,15 @@ class TrainManager(QObject):
     def __init__(self, time_keeper: TimeKeeper = None):
         super().__init__()
 
-        self.ssh_client = paramiko.SSHClient()
         self.time_keeper = time_keeper
         self.train_count = 40
         self.engineer_table: list[Engineer] = [Engineer()] * self.train_count
         self.train_list: list[TrainModelController] = []
-        if(HOSTNAME and PORT and USERNAME and PASSWORD):
+        if HOST and PORT and USERNAME and PASSWORD:
             print("Host: ", HOST, "Port: ", PORT, "Username: ", USERNAME, "Password: ", PASSWORD)
-            # self.ssh_client.connect(HOSTNAME, PORT, USERNAME, PASSWORD)
-            self.ssh_client = self.create_ssh_connection(HOST, PORT, USERNAME, PASSWORD)
+            self.ssh_client = self.create_ssh_connection(HOSTNAME, PORT, USERNAME, PASSWORD)
+        else:
+            self.ssh_client = None
 
     # Example usage
     def create_ssh_connection(self, host, port=22, username='danim', password='danim'):
