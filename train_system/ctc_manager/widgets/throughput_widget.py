@@ -23,10 +23,10 @@ class ThroughputWidget(QWidget):
         layout.addWidget(self.throughput_label)
         self.setLayout(layout)
 
-        self.update_throughput(0)
+        self.handle_throughput_update(0)
 
     @pyqtSlot(int)
-    def update_throughput(self, throughput: int):
+    def handle_throughput_update(self, throughput: int):
         self.throughput_label.setText(f"Throughput: {throughput} tickets/hr")
 
     def set_line(self, line: Line):

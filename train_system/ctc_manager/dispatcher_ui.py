@@ -287,7 +287,7 @@ class DispatcherUI(QMainWindow):
     @pyqtSlot(str, int, bool)
     def handle_maintenance_update(self, line_name: str, block_number: int, maintenance: bool) -> None:
         self.track_visual_widget.update()
-
+        
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

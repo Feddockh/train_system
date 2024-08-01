@@ -16,6 +16,7 @@ from train_system.common.authority import Authority
 class CTCOffice(QObject):
     mbo_train_info = pyqtSignal(TrainRouteUpdate)
     train_dispatched = pyqtSignal(int, str)
+    throughput_updated = pyqtSignal(int)
 
     def __init__(self, time_keeper: TimeKeeper) -> None:
 
@@ -58,6 +59,9 @@ class CTCOffice(QObject):
         self.automatic_mode: bool = False
         self.dispatching_line_name: str = self.lines[0].name
 
+        self.green_line_throughput = 0
+        self.red_line_throughput = 0
+
     def line_exists(self, line_name: str) -> bool:
         for line in self.lines:
             if line.name == line_name:
@@ -92,6 +96,9 @@ class CTCOffice(QObject):
         if self.train_exists(train_id, line_name):
             return self.trains[(train_id, line_name)]
         return None
+
+    def get_trains(self, line_name: str) -> List[CTCTrainDispatch]:
+        return [train for (train_id, _), train in self.trains.items() if train.line.name.lower() == line_name.lower()]
 
     def get_trains_ordered_by_lag(self, trains: Optional[List[CTCTrainDispatch]] = None) -> List[CTCTrainDispatch]:
         if trains is None:
@@ -255,6 +262,9 @@ class CTCOffice(QObject):
         self.lines[0].track_block_under_maintenance_updated.connect(dispatcher_ui.handle_maintenance_update)
         self.lines[1].track_block_under_maintenance_updated.connect(dispatcher_ui.handle_maintenance_update)
 
+        # Connect the throughput signal to the DispatcherUI slot
+        self.throughput_updated.connect(dispatcher_ui.throughput_widget.handle_throughput_update)
+
     @pyqtSlot(int)
     def handle_time_update(self, tick: int) -> None:
         
@@ -285,6 +295,14 @@ class CTCOffice(QObject):
         # Run the test bench simulation if the test bench mode is enabled
         if self.test_bench_mode:
             self.test_bench_simulation()
+
+        # Update the throughput of the line (demo)
+        self.green_line_throughput = len(self.get_trains("green")) * 50
+        self.red_line_throughput = len(self.get_trains("red")) * 25
+        if self.dispatching_line_name == "green":
+            self.throughput_updated.emit(self.green_line_throughput)
+        else:
+            self.throughput_updated.emit(self.red_line_throughput)
 
     @pyqtSlot(bool)
     def handle_test_bench_toggle(self, state: bool) -> None:
@@ -392,6 +410,16 @@ class CTCOffice(QObject):
             train = self.get_train(update.train_id, update.line_name)
             train.handle_route_update(update)
 
+    @pyqtSlot(str, int)
+    def handle_throughput_update(self, line_name: str, throughput: int) -> None:
+        if line_name.lower() == "green":
+            self.green_line_throughput = throughput
+        else:
+            self.red_line_throughput = throughput
+        
+        if self.dispatching_line_name.lower() == line_name.lower():
+            self.throughput_updated.emit(throughput)
+        
 
 if __name__ == "__main__":
 
