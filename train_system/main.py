@@ -7,6 +7,7 @@ from cryptography.fernet import Fernet
 from train_system.common.time_keeper import TimeKeeper
 from train_system.ctc_manager.ctc_manager import CTCOffice
 from train_system.ctc_manager.dispatcher_ui import DispatcherUI
+from train_system.track_controller.track_controller_manager import TrackControllerManager
 from train_system.mbo_manager.mbo_manager import MBOOffice
 from train_system.mbo_manager.mbo_ui import MBOWindow
 from train_system.train_controller.tc_manager import TrainManager
@@ -31,7 +32,7 @@ def main():
     
 
     ### Instantiate the TrackController object and the programmer's UI ###
-    
+    track_controller_manager = TrackControllerManager(time_keeper)
 
     ### Instantiate the TrackModel object and the track's UI ###
     track_model = TrackModel(time_keeper)
@@ -77,7 +78,7 @@ def main():
     mbo_manager = MBOOffice(time_keeper)
     mbo_satellite = mbo_manager.Satellite()
     mbo_ui = MBOWindow()
-    mbo_ui.show()
+    # mbo_ui.show()
     
     mbo_satellite.key_recieved.emit(key)
     #emit key to train_manager?
