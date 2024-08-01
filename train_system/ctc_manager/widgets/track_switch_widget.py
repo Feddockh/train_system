@@ -132,7 +132,6 @@ class TrackSwitchWidget(QWidget):
             state (str): The new position.
         """
 
-        # switch.toggle()
         self.update_table_data()
 
     def set_line(self, line: Line) -> None:
