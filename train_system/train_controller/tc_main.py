@@ -6,11 +6,6 @@ from train_system.train_controller.tc_ui import *
 from train_system.common.time_keeper import TimeKeeper
 from PyQt6.QtWidgets import QApplication
 
-HOST= '192.168.0.114'
-PORT = 22
-USERNAME = 'danim'
-PASSWORD = 'danim'
-
 app = QApplication(sys.argv)
    
 # Create the time keeper object
@@ -20,6 +15,7 @@ time_keeper.start_timer()
 # Hardware
 # ts = TrainModelController(time_keeper, HOST, PORT, USERNAME, PASSWORD)
 # Software
+# ts = TrainModelController(time_keeper)
 # ts = TrainModelController(time_keeper)
 
 def tc_main(time_keeper: TimeKeeper, ts: TrainModelController):
@@ -125,7 +121,5 @@ def tc_main(time_keeper: TimeKeeper, ts: TrainModelController):
     print(tc.station_name)
 
 
-
 if __name__ == "__main__":
     tc_main(time_keeper, ts)
-
