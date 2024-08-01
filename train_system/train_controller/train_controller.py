@@ -307,6 +307,7 @@ class TrainController(QObject):
             self.dropped_off = True
             self.destination_counter = 30
             self.destination_name = self.track_block.station.name
+            self.station_name_updated.emit(self.destination_name)
             print(f"Destination Name: {self.destination_name}")
         
     ## Setpoint and Commanded Speed Functions

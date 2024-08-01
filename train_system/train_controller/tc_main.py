@@ -95,7 +95,7 @@ def tc_main(time_keeper: TimeKeeper, ts: TrainModelController):
     tc.authority_updated.connect(driver.handle_authority_update)
     tc.position_updated.connect(driver.handle_position_update)
     tc.station_name_updated.connect(driver.handle_destination_update)
-    #tc.destination_updated.connect(driver.handle_station_name_update)
+    #tc.destination_updated.connect(driver.handle_destination_update)
 
     #TRAIN CONTROLLER TO ENGINEER
     #tc.kp_updated_for_eng.connect(engineer.handle_kp_update)

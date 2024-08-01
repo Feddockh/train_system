@@ -1000,7 +1000,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         loc_and_des_label.setFont(header_font)
 
         self.loc_label = QLabel("Location: " + str(self.position)) 
-        self.loc_label.setFixedSize(100, 50)
+        self.loc_label.setFixedSize(200, 50)
 
         self.des_label = QLabel(str(self.destination))
         self.des_label.setFixedSize(200, 50)
@@ -1320,9 +1320,9 @@ class DriverWindow(QMainWindow): ###DriverWindow
 
     @pyqtSlot(float)
     def handle_position_update(self, pos: float) -> None:
-        self.position = pos
+        self.position = self.convert_to_ft(pos)
 
-        self.loc_label.setText("Location: " + str(self.position))
+        self.loc_label.setText("Location: " + str(self.position) + " ft")
 
     @pyqtSlot(str)
     def handle_destination_update(self, des: str):
