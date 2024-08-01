@@ -10,10 +10,13 @@ from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
 from train_system.common.track_block import TrackBlock
 from train_system.common.line import Line
 from train_system.common.authority import Authority
+from train_system.common.time_keeper import TimeKeeper
 
 
 class TrackController(QObject):
-    def __init__(self, track_blocks: List[TrackBlock], wayside_name: str, num_blocks: int) -> None:
+    plc_ran = pyqtSignal(bool)
+
+    def __init__(self, time_keeper: TimeKeeper, track_blocks: List[TrackBlock], wayside_name: str, num_blocks: int) -> None:
 
         """
         Initialize variables of the Track Controller.
@@ -26,7 +29,11 @@ class TrackController(QObject):
 
         super().__init__()
 
+        self.time_keeper = time_keeper
+        time_keeper.tick.connect(self.handle_tick)
+
         self.track_blocks = track_blocks
+        self.prev_track_blocks = copy.deepcopy(track_blocks)
         self.plc_program_uploaded = False
         self.plc_program = ""
         self.wayside_name = wayside_name
@@ -38,10 +45,10 @@ class TrackController(QObject):
         self.password = 'Cornell@26'
         self.port = 22
 
-        for block in self.track_blocks:
+        # for block in self.track_blocks:
 
             # Connect the block signal with the number to the handler
-            block.authority_updated.connect(self.handle_authority_update)
+            # block.authority_updated.connect(self.handle_authority_update)
 
 
             #block.authority_updated.connect(self.handle_authority_update)
@@ -65,67 +72,86 @@ class TrackController(QObject):
                 return block
         return None
 
-    def update_block(self, new_block: TrackBlock) -> None:
+    def update_block(self, prev_block_instance: TrackBlock, block_instance: TrackBlock) -> bool:
 
         """
-        Update the block object in the track controller.
+        Uses the setter functions to send signals for the block object when the block parameters are updated.
+        Also updated the previous block instance without triggering the signal.
 
         Args:
-            block(TrackBlock): The block object
+            prev_block_instance(TrackBlock): The previous block object
+            block_instance(TrackBlock): The new block object
+
+        Returns:
+            bool: True if the block parameters are updated, False otherwise
         """
 
-        # Find the block in our list of track blocks
-        block = self.get_block(new_block.number)
+        updated = False
 
-        # Check if the block's authority has changed
-        if block.authority != new_block.authority:
-            block.authority = new_block.authority
+        # Send the authority signal if the authority has changed
+        if block_instance.authority != prev_block_instance.authority:
+            block_instance.authority = block_instance.authority
+            prev_block_instance._authority = block_instance.authority
+            updated = True
 
-        # Check if the light signal has changed
-        if block.light_signal != new_block.light_signal:
-            block.light_signal = new_block.light_signal
+        # Send the light signal if the light signal has changed
+        if block_instance.light_signal != prev_block_instance.light_signal:
+            block_instance.light_signal = block_instance.light_signal
+            prev_block_instance._light_signal = block_instance.light_signal
+            updated = True
 
-        # Check if the crossing signal has changed
-        if block.crossing_signal != new_block.crossing_signal:
-            block.crossing_signal = new_block.crossing_signal
+        # Send the crossing signal if the crossing signal has changed
+        if block_instance.crossing_signal != prev_block_instance.crossing_signal:
+            block_instance.crossing_signal = block_instance.crossing_signal
+            prev_block_instance._crossing_signal = block_instance.crossing_signal
+            updated = True
 
-        # Check if the switch position has changed
-        if block.switch.get_child_index != new_block.switch.get_child_index:
-            block.switch.toggle()
+        # Send the switch signal if the switch signal has changed (only on parent block)
+        if block_instance.switch is not None and block_instance.number == block_instance.switch.parent_block:
+            if block_instance.switch.position != prev_block_instance.switch.position:
+                block_instance.switch.position = block_instance.switch.position
+                prev_block_instance.switch._position = block_instance.switch.position
+                updated = True
+                print(f"Switch {block_instance.switch.number} toggled to: {block_instance.switch.position}")
 
-    def update_blocks(self, new_blocks: List[TrackBlock]) -> None:
+        return updated
+
+    def update_blocks(self, prev_block_instances: List[TrackBlock], block_instances: List[TrackBlock]) -> bool:
 
         """
-        Update the block objects in the track controller.
+        Uses the setter functions to send signals for the block objects when the block parameters are updated.
 
         Args:
-            blocks(list): List of block objects
+            prev_block_instances(list): The previous block objects
+            block_instances(list): The new block objects
+
+        Returns:
+            bool: True if the block parameters are updated, False otherwise
         """
 
-        for new_block in new_blocks:
-            self.update_block(new_block)
-
-    @pyqtSlot(int, bool)
-    def handle_occupancy_update(self, block_number: int, new_occupancy: bool) -> None:
-
-        # Run the PLC program to update the track blocks
-        self.run_PLC_program()
+        updated = False
+        for prev_block, block in zip(prev_block_instances, block_instances):
+            _updated = self.update_block(prev_block, block)
+            updated = updated or _updated
+        return updated
 
     @pyqtSlot(int)
-    def handle_authority_update(self, block_number: int, new_authority: Authority) -> None:
+    def handle_tick(self, tick: int):       
 
-        # Get the block object
-        block = self.get_block(block_number)
+        # Run the plc code every tick if a program is loaded
+        if self.plc_program_uploaded == True:
+            self.run_PLC_program()
+            self.plc_ran.emit(True)
 
-        # Set the authority of the block without triggering the signal
-        block._authority = new_authority
+        # Update the last known states of the track blocks
+        updated = self.update_blocks(self.prev_track_blocks, self.track_blocks)
+        # print("Updated: ", updated)
+        
 
-        # Run the PLC program to update the track blocks
-        self.run_PLC_program()
 
-        # Check if the authority is unchanged, set it and such that the signal is propagated
-        if block.authority == new_authority:
-            block.authority = new_authority
+
+
+        
 
     def get_PLC_program(self, plc_program):
         """

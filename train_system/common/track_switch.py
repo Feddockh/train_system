@@ -1,10 +1,12 @@
 # train_system/common/track_switch.py
 
-from PyQt6.QtCore import pyqtSignal, QObject
+from PyQt6.QtCore import pyqtSignal, QObject, pyqtSlot
 from typing import List
 
 class TrackSwitch(QObject):
-    position_updated = pyqtSignal(int)
+
+    # Signal to update the switch position (parent block, child block)
+    position_updated = pyqtSignal(int, int)
 
     def __init__(self, line: str, number: int, parent_block: int, 
                  child_blocks: List[int], initial_child: int) -> None:
@@ -15,7 +17,7 @@ class TrackSwitch(QObject):
         self.parent_block = parent_block
         self.child_blocks = child_blocks
         self.connected_blocks = [parent_block] + child_blocks
-        self.position = initial_child
+        self._position = initial_child
     
     def __repr__(self) -> str:
         return f"Track Switch: {self.parent_block} -> {self.position}"
@@ -25,7 +27,6 @@ class TrackSwitch(QObject):
             self.position = self.child_blocks[1]
         else:
             self.position = self.child_blocks[0]
-        self.position_updated.emit(self.position)
 
     def is_connected(self, block_a: int, block_b: int) -> bool:
         
@@ -53,3 +54,28 @@ class TrackSwitch(QObject):
             return False
         else:
             return True
+        
+    def set_child_index(self, new_child_index: bool) -> None:
+
+        # If the new child index is the current child index, return
+        if self.get_child_index == new_child_index:
+            return
+        
+        # If the new child index is not the current child index, toggle the child
+        self.position = self.child_blocks[new_child_index]
+
+    @property
+    def position(self) -> bool:
+        return self._position
+
+    @position.setter
+    def position(self, new_position: int) -> None:
+        if new_position not in self.child_blocks:
+            raise ValueError(
+                f"Invalid switch position: {new_position}. "
+                f"Expected one of {self.child_blocks}"
+            )
+
+        if self._position != new_position:
+            self._position = new_position
+            self.position_updated.emit(self.number, self._position)
