@@ -296,18 +296,20 @@ class TrainController(QObject):
             if self.destination == self.block_number:
                 # If we're in the center of the block, open doors
                 if abs(self.track_block.length / 2 - self.polarity) <= 0.25*self.track_block.length:
-                    self.at_station()
-        elif self.doors.get_status():
-            self.doors.close_door()
-            self.destination_name = None
+                    # Only open or close doors if counter is 0
+                    if self.destination_counter == 0:  
+                        if self.dropped_off == False:
+                            self.at_station()
+                        else:
+                            self.doors.close_door()
+                            self.destination_name = None
         
     def at_station(self):
         self.doors.open_door()
-        if self.dropped_off == False:
-            self.dropped_off = True
-            self.destination_counter = 30
-            self.destination_name = self.track_block.station.name
-            print(f"Destination Name: {self.destination_name}")
+        self.dropped_off = True
+        self.destination_counter = 30
+        self.destination_name = self.track_block.station.name
+        print(f"Destination Name: {self.destination_name}")
         
     ## Setpoint and Commanded Speed Functions
     def set_setpoint_speed(self, speed: float):
@@ -1211,7 +1213,7 @@ class TrainModelController:
                 print(f"~~~~~ Dropped off: {self.controller.dropped_off} ~~~~~")
             
             if self.controller.doors.get_left() or self.controller.doors.get_right():
-                print("!!!!!!!!!!!!! Destination Counter: ", self.controller.destination_counter, "!!!!!!!!!!!!!!!!")
+                print("!!!!!!!!!!!!! Destination Counter: ", self.controller.destination_counter, "Destination Name: ", self.controller.destination_name, "!!!!!!!!!!!!!!!!")
                 print(f"Position: {self.controller.position}, Authority: {self.controller.authority}, Destination: {self.controller.destination}")
                 print("Doors are open. Exit Door: ", self.controller.doors.exit_door, "Left: ", self.controller.doors.get_left(), ", Right: ", self.controller.doors.get_right())
                 print("Current Track Block: ", self.controller.track_block.number, ", Destination: ", self.controller.destination)
