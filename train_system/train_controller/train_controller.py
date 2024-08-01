@@ -50,6 +50,7 @@ class TrainController(QObject):
     #emergency_brake_updated = pyqtSignal(bool) -> in brakes class
 
     curr_speed_updated = pyqtSignal(float)
+    commanded_speed_updated = pyqtSignal(float)
     
     def __init__(self, engineer: Engineer = None, train_model = None, line_name: str = "green", id: int = 0, ssh=None) -> None:
         super().__init__()
@@ -330,8 +331,8 @@ class TrainController(QObject):
         return self.commanded_speed       
     def update_commanded_speed(self, speed: float):
         self.commanded_speed = speed
+        self.commanded_speed_updated.emit(self.commanded_speed)
 
-    
     ## Power Functions (assumes commanded speed has already been updated)
     # Input) TrainModel object
     # Output) float: desired speed (Commanded speed if mode=automatic, Setpoint speed if mode=manual)
@@ -522,6 +523,7 @@ class TrainController(QObject):
     @pyqtSlot(float)
     def handle_comm_speed_changed(self, speed: float) -> None:
         self.train_model.commanded_speed = speed
+        self.update_commanded_speed(speed)
 
     @pyqtSlot(str)
     def handle_authority_changed(self, authority: str) -> None:

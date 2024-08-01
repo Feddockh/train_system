@@ -64,14 +64,13 @@ def main():
     track_controller_manager.red_line.switch_position_updated.connect(ctc_manager.red_line.handle_switch_position_update)
 
     ### Instantiate the TrackModel object and the track's UI ###
-    track_model = TrackModel(time_keeper)
+    track_model = TrackModel()
 
     # Connect the green line Track Model's signals to the green line Track Controller Manager's signals
-    track_model.green_line.track_block_occupancy_updated.connect(track_controller_manager.green_line.occupancy_queue)
-    # track_model
+    # track_model.green_line.track_block_occupancy_updated.connect(track_controller_manager.green_line.occupancy_queue)
 
     # Connect the red line Track Model's signals to the red line Track Controller Manager's signals
-    track_model.red_line.track_block_occupancy_updated.connect(track_controller_manager.red_line.occupancy_queue)
+    # track_model.red_line.track_block_occupancy_updated.connect(track_controller_manager.red_line.occupancy_queue)
 
 
 

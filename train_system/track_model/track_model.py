@@ -1,15 +1,15 @@
 import copy
 import os
+from typing import Optional, Dict, List
 from dataclasses import dataclass
 from random import randint
-from PyQt6.QtCore import pyqtSignal, pyqtSlot
+from PyQt6.QtCore import pyqtSignal, pyqtSlot, QObject
 from train_system.common.authority import Authority
 from train_system.common.station import Station
 from train_system.common.track_block import TrackBlock
 from train_system.common.line import Line
 from train_system.common.track_failures import TrackFailure
 from train_system.train_controller.train_controller import TrainModelController
-from train_system.train_model.train_model import TrainModel
 
 @dataclass
 class Train:
@@ -21,7 +21,7 @@ class Train:
     pos_in_block: int = 0
     passengers: int = 0
 
-class TrackModel:
+class TrackModel(QObject):
 
     track_to_train = pyqtSignal(int, float, str, float, int) # train id, speed, authority, grade, temperature -> TrainManager -> TrainModel
     passengers_to_train = pyqtSignal(int, int) # train id, number of passengers -> TrainManager -> TrainModel
@@ -29,29 +29,35 @@ class TrackModel:
     heater_status = pyqtSignal(bool) # heater status -> TrackModelUI
     station_passengers = pyqtSignal(int) # people on platform -> TrackModelUI
 
-    def __init__(self, lines: list[Line]) -> None:
+    def __init__(self, lines: Optional[Dict[str, Line]] = {}) -> None:
 
-        self.lines: dict[str, Line] = {}
-        self.trains: list[Train] = []
+        super().__init__()
+
+        self.lines = lines
+        self.trains: List[Train] = []
         self._temperature: int = 85
         self.heaters: bool = False
         self.tickets_by_station: dict[str, int] = {}
 
         self.green_line = Line('Green')
         self.green_line.load_defaults()
-        self.lines.append(self.green_line)
+        self.lines[self.green_line.name] = self.green_line
+        self.green_line.track_block_authority_updated.connect(self.handle_a_update)
+        self.green_line.track_block_suggested_speed_updated.connect(self.handle_s_update)
 
         self.red_line = Line('Red')
         self.red_line.load_defaults()
-        self.lines.append(self.red_line)
+        self.lines[self.red_line.name] = self.red_line
+        self.red_line.track_block_authority_updated.connect(self.handle_a_update)
+        self.red_line.track_block_suggested_speed_updated.connect(self.handle_s_update)
 
         # Prepare lines
-        for line in lines:
-            self.lines[line.name] = line
-        for _, line in self.lines.items():
-            line.load_defaults()
-            line.track_block_authority_updated.connect(self.handle_s_a_update)
-            line.track_block_suggested_speed_updated.connect(self.handle_s_a_update)
+        # for line in lines:
+        #     self.lines[line.name] = line
+        # for _, line in self.lines.items():
+        #     line.load_defaults()
+        #     line.track_block_authority_updated.connect(self.handle_s_a_update)
+        #     line.track_block_suggested_speed_updated.connect(self.handle_s_a_update)
 
         # Sell tickets at stations
         for _, line in self.lines.items():
@@ -59,12 +65,12 @@ class TrackModel:
                 self.tickets_by_station[station.name] = randint(0, 50)
 
     @pyqtSlot(str, int, object)
-    def handle_s_a_update(self, line: str, block: int, _: object):
-        for train in self.trains:
-            if train.line == line and train.block == block:
-                trk_block = self.lines[train.line].get_track_block(train.block)
-                if trk_block.track_failure != TrackFailure.CIRCUIT:
-                    self.track_to_train.emit(train.id, trk_block.suggested_speed, trk_block.authority, trk_block.grade, self._temperature)
+    def handle_a_update(self, line: str, block: int, authority: Authority) -> None:
+        self.s_a_update(line, block)
+
+    @pyqtSlot(str, int, int)
+    def handle_s_update(self, line: str, block: int, speed: int) -> None:
+        self.s_a_update(line, block)
 
     @pyqtSlot(int, float)
     def handle_position(self, id: int, position: float):
@@ -93,6 +99,13 @@ class TrackModel:
     @pyqtSlot(str)
     def handle_passengers_to_ui(self, station: str):
         self.station_passengers.emit(self.tickets_by_station[station])
+
+    def s_a_update(self, line: str, block: int) -> None:
+        for train in self.trains:
+            if train.line == line and train.block == block:
+                trk_block = self.lines[train.line].get_track_block(train.block)
+                if trk_block.track_failure != TrackFailure.CIRCUIT:
+                    self.track_to_train.emit(train.id, trk_block.suggested_speed, trk_block.authority, trk_block.grade, self._temperature)
     
     def update_heaters(self) -> None:
 
