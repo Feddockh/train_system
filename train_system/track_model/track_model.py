@@ -2,27 +2,40 @@ import copy
 import os
 from dataclasses import dataclass
 from random import randint
+from PyQt6.QtCore import pyqtSignal, pyqtSlot
+from train_system.common.authority import Authority
+from train_system.common.station import Station
 from train_system.common.track_block import TrackBlock
 from train_system.common.line import Line
 from train_system.common.track_failures import TrackFailure
+from train_system.train_controller.train_controller import TrainModelController
+from train_system.train_model.train_model import TrainModel
 
 @dataclass
 class Train:
     id: int
     line: str
     block: int
-    pos: int = 0
+    prev_block: int
+    pos: int
+    pos_in_block: int = 0
     passengers: int = 0
+
 class TrackModel:
+
+    track_to_train = pyqtSignal(int, float, str, float, int) # train id, speed, authority, grade, temperature -> TrainManager -> TrainModel
+    passengers_to_train = pyqtSignal(int, int) # train id, number of passengers -> TrainManager -> TrainModel
+    pass_auth_back = pyqtSignal(int, Authority) # block, authority -> TrackController
+    heater_status = pyqtSignal(bool) # heater status -> TrackModelUI
+    station_passengers = pyqtSignal(int) # people on platform -> TrackModelUI
 
     def __init__(self, lines: list[Line]) -> None:
 
-        self.lines = lines
+        self.lines: dict[str, Line] = {}
         self.trains: list[Train] = []
-        self.dispatch_blocks: dict[str, int] = {}   #line, block num
         self._temperature: int = 85
         self.heaters: bool = False
-        self.stations_by_line: dict[str, dict[str, int]] = {}
+        self.tickets_by_station: dict[str, int] = {}
 
         self.green_line = Line('Green')
         self.green_line.load_defaults()
@@ -32,71 +45,54 @@ class TrackModel:
         self.red_line.load_defaults()
         self.lines.append(self.red_line)
 
-        for line in self.lines:
-            stations: dict[str, int] = {}
-            for block in line.track_blocks:
-                if block.section == 'Yard':
-                    self.dispatch_blocks[line.name] = block.next_blocks[0]
-                elif block.station.isascii():
-                    stations[block.station] = randint(0, 50)
-            self.stations_by_line[line.name] = stations
+        # Prepare lines
+        for line in lines:
+            self.lines[line.name] = line
+        for _, line in self.lines.items():
+            line.load_defaults()
+            line.track_block_authority_updated.connect(self.handle_s_a_update)
+            line.track_block_suggested_speed_updated.connect(self.handle_s_a_update)
 
+        # Sell tickets at stations
+        for _, line in self.lines.items():
+            for station in line.stations:
+                self.tickets_by_station[station.name] = randint(0, 50)
 
-    def create_failure(self, block: TrackBlock, failure: TrackFailure) -> None:
+    @pyqtSlot(str, int, object)
+    def handle_s_a_update(self, line: str, block: int, _: object):
+        for train in self.trains:
+            if train.line == line and train.block == block:
+                trk_block = self.lines[train.line].get_track_block(train.block)
+                if trk_block.track_failure != TrackFailure.CIRCUIT:
+                    self.track_to_train.emit(train.id, trk_block.suggested_speed, trk_block.authority, trk_block.grade, self._temperature)
 
-        """
-        Creates a track failure on a track block.
+    @pyqtSlot(int, float)
+    def handle_position(self, id: int, position: float):
+        self.move_train(id, position)
 
-        Args:
-            block (TrackBlock): The block to create a failure on.
-            failure (TrackFailure): The type of failure to create on the track block.
-        """
+    @pyqtSlot(str, int, TrainModelController)
+    def handle_new_train(self, line: str, id: int, train: TrainModelController):
+        self.create_train(id, line)
+        train.train_model.position_updated.connect(self.handle_position)
 
-        block.track_failure(failure)
+    @pyqtSlot(int, Authority)
+    def handle_mbo_authority(self, id: int, authority: Authority):
+        for train in self.trains:
+            if train.id == id:
+                self.pass_auth_back.emit(train.block, authority)
+                return
+            
+    @pyqtSlot(str, int, TrackFailure)
+    def handle_failure_update(self, line: str, block: int, failure: TrackFailure):
+        self.lines[line].get_track_block(block).track_failure = failure
 
+    @pyqtSlot(int)
+    def handle_temperature_update(self, temp: int):
+        self.temperature = temp
 
-    def fix_failure(self, block: TrackBlock) -> None:
-
-        """
-        Remove any failure from a track block.
-
-        Args:
-            block (TrackBlock): The block to remove a failure from.
-        """
-
-        block.track_failure(TrackFailure.NONE)
-
-
-    def sell_tickets(self, line: str, station: str, num: int) -> None:
-
-        """
-        Sell tickets at a station.
-
-        Args:
-            line (str): The name of the line that contains the station.
-            station (str): The name of the station to sell tickets from.
-            num (int): The number of tickets to sell.
-        """
-
-        if station in self.stations_by_line[line]:
-            self.stations_by_line[line][station] += num
-
-    def get_tickets(self, line: str) -> dict[str, int]:
-
-        """
-        Get tickets sold at stations and reset sales to 0.
-        
-        Args:
-            line (str): The name of the line.
-        Returns:
-            dict[str, int]: Number of tickets sold by stations on line.
-        """
-
-        temp = self.stations_by_line[line].copy()
-        for st in self.stations_by_line[line]:
-            self.stations_by_line[line][st] = 0
-
-        return temp
+    @pyqtSlot(str)
+    def handle_passengers_to_ui(self, station: str):
+        self.station_passengers.emit(self.tickets_by_station[station])
     
     def update_heaters(self) -> None:
 
@@ -108,6 +104,8 @@ class TrackModel:
             self.heaters = True
         else:
             self.heaters = False
+        
+        self.heater_status.emit(self.heaters)
 
     def create_train(self, id: int, line: str) -> None:
 
@@ -119,20 +117,25 @@ class TrackModel:
             line (str): The name of the line the train was dispatched onto.
         """
 
-        self.trains.append(Train(id, line, self.dispatch_blocks[line]))
-        for l in self.lines:
+        l: Line
+
+        for _, l in self.lines.items():
             if l.name == line:
-                l.get_track_block(self.dispatch_blocks[line]).occupancy = True
+                from_yard_block = l.get_track_block(l.route.from_yard[0])
+                from_yard_block.occupancy = True
                 break
 
-    def move_train(self, id: int, distance: float) -> None:
+        self.trains.append(Train(id, line, from_yard_block.number, l.yard, from_yard_block.length * -1))
+        
+
+    def move_train(self, id: int, position: float) -> None:
 
         """
-        Update a train's position on the track based on a traveled distance.
+        Update a train's position on the track.
         
         Args:
             id (int): The train's ID.
-            distance (float): Distance the train has traveled since last call of this function.
+            position (float): Position of the train on the line.
         """
 
         for train in self.trains:
@@ -140,27 +143,29 @@ class TrackModel:
                 moving_train = train
                 break
 
-        new_pos = distance + train.pos
+        # TODO Account for position resetting to 0 when train loops
+        distance_delta = abs(position - moving_train.pos)
+        moving_train.pos = position
         
-        for l in self.lines:
-            if l.name == train.line:
+        for name, l in self.lines.items():
+            if name == train.line:
                 curr_block = l.get_track_block(train.block)
-                curr_line = l
+                curr_line = name
                 break
 
-        if new_pos > curr_block.length:
+        # When train moves into next block
+        if distance_delta + moving_train.pos_in_block > curr_block.length:
 
-            #Determine which block train moves into
-            if len(curr_block.next_blocks) < 2:
-                new_block = curr_block.next_blocks[0]
-            else:
-                new_block = curr_block.switch_position
+            # Determine which block train moves into
+            new_block = self.lines[curr_line].get_next_block(moving_train.prev_block, moving_train.block)
 
-            curr_line.get_track_block(new_block).occupancy = True
-            moving_train.block = new_block
-            moving_train.pos = new_pos - curr_block.length
+            new_block.occupancy = True
+            
+            moving_train.prev_block = moving_train.block
+            moving_train.block = new_block.number
+            moving_train.pos_in_block -= curr_block.length
 
-            #Update occupancy of departed block
+            # Update occupancy of departed block
             curr_block_occ = False
             for train in self.trains:
                 if train.block == curr_block.number:
@@ -168,17 +173,17 @@ class TrackModel:
                     break
             curr_block.occupancy = curr_block_occ
 
-            
+            self.send_to_trains()
 
         else:
-            moving_train.pos = new_pos
+            moving_train.pos_in_block += distance_delta
 
-            #Determine if train is boarding from a station (stopped within 15 meters of center of station block)
-            if distance == 0 and curr_block.station.isascii() and (abs(moving_train.pos - curr_block.length/2) < 15):
-                self.board_at_station(curr_block.station, moving_train)
+            # Determine if train is boarding from a station (stopped within 32.5 meters of center of station block)
+            if distance_delta == 0 and curr_block.station != None and (abs(moving_train.pos_in_block - curr_block.length/2) < 32.5):
+                self.board_at_station(curr_block.station.name, moving_train)
 
 
-    def board_at_station(self, station: str, train: Train) -> None:
+    def board_at_station(self, station: str, train: Train) -> tuple[int, int]:
 
         """
         Board passengers from a station.
@@ -186,12 +191,18 @@ class TrackModel:
         Args:
             station (str): Name of the station to board at.
             train (Train): The train being boarded.
+        Returns:
+            tuple[int, int]: Number of passengers disembarked and boarded, respectively.
         """
 
-        train.passengers -= randint(0, train.passengers)
-        num_boarding = randint(0, self.stations_by_line[train.line][station])
-        self.stations_by_line[train.line][station] -= num_boarding
+        num_disembarked = randint(0, train.passengers)
+        train.passengers -= num_disembarked
+        num_boarding = randint(0, self.tickets_by_station[station])
+        self.tickets_by_station[station] -= num_boarding
         train.passengers += num_boarding
+        train.passengers_to_train.emit(train.id, train.passengers)
+
+        return num_disembarked, num_boarding
     
 
     @property
@@ -205,19 +216,19 @@ class TrackModel:
   
 
 if __name__ == "__main__":
-    line = Line('Green')
+    
+    line = Line('green')
     file_path = os.path.abspath(os.path.join("system_data/lines", "green_line.xlsx"))
     line.load_track_blocks(file_path)
 
     model = TrackModel([line])
-    print(model.get_tickets('Green'))
-    print(model.dispatch_blocks)
+    print(model.tickets_by_station)
 
     model.create_train(1, 'Green')
     model.create_train(2, 'Green')
-    model.move_train(2, 70)
+    # model.move_train(2, 70)
     model.move_train(1, 20)
-    model.move_train(2, 100)
+    # model.move_train(2, 100)
     model.move_train(1, 50)
 
     print('Occupied:')

@@ -66,6 +66,18 @@ def main():
     ### Instantiate the TrackModel object and the track's UI ###
     track_model = TrackModel(time_keeper)
 
+    # Connect the green line Track Model's signals to the green line Track Controller Manager's signals
+    track_model.green_line.track_block_occupancy_updated.connect(track_controller_manager.green_line.occupancy_queue)
+    # track_model
+
+    # Connect the red line Track Model's signals to the red line Track Controller Manager's signals
+    track_model.red_line.track_block_occupancy_updated.connect(track_controller_manager.red_line.occupancy_queue)
+
+
+
+    # Coneect the track model's signals to the Track Controller Manager's signals
+    # track_model.green_line.track_block_occupancy_updated.connect(track_controller_manager.green_line.occupancy_queue)
+
     ### Instantiate the TrainController object and the driver's UI ###
     # train_manager = TrainManager(time_keeper)
     # track_model.track_to_train.connect(train_manager.handle_CTC_update)
