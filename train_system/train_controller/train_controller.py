@@ -13,7 +13,7 @@ from train_system.common.station import Station
 from train_system.common.authority import Authority
 from train_system.common.authority import Authority
 
-from train_system.train_model.train_model import TrainModel
+from train_system.train_model.train_model_v4 import TrainModel
 from train_system.train_controller.engineer import Engineer
 
 
