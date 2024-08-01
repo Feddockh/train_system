@@ -203,7 +203,7 @@ class CTCOffice(QObject):
                     move_train = True
 
                 # Check if the train has exceeded the time per block
-                elif train.time_in_block >= current_block.length / train.suggested_speed:
+                elif train.suggested_speed != 0 and train.time_in_block >= current_block.length / train.suggested_speed:
                     move_train = True
 
                 # Check if the next block is clear and not under maintenance
