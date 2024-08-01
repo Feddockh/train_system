@@ -13,6 +13,8 @@ from train_system.common.track_block import TrackBlock
 from train_system.common.track_switch import TrackSwitch
 from train_system.common.station import Station
 from train_system.common.authority import Authority
+from train_system.common.time_keeper import TimeKeeper
+
 
 class Route:
     def __init__(self, line: str, yard: int, to_yard: List[int], from_yard: List[int], past_yard: List[int], default_route: List[int]) -> None:
@@ -185,7 +187,7 @@ class Line(QObject):
     track_failure_queue = pyqtSignal(list)
     switch_position_queue = pyqtSignal(list)
 
-    def __init__(self, name: str) -> None:
+    def __init__(self, name: str, time_keeper: TimeKeeper = None) -> None:
         super().__init__()
 
         """
@@ -193,6 +195,7 @@ class Line(QObject):
         
         Args:
             name (str): The name of the train line.
+            time_keeper (TimeKeeper, optional): The TimeKeeper object to use for time tracking. Defaults to None.
         
         Returns:
             None
@@ -215,7 +218,10 @@ class Line(QObject):
         self.track_failure_queue = []
         self.switch_position_queue = []
 
-        # Flag to enable queue
+        # Queuing parameters
+        self.time_keeper = time_keeper
+        if self.time_keeper is not None:
+            self.time_keeper.tick.connect(self.handle_tick)
         self.enable_signal_queue = False
 
     def __repr__(self) -> str:
@@ -785,6 +791,27 @@ class Line(QObject):
         for line, switch, new_position in queue:
             if line == self.name:
                 self.get_switch(switch).position = new_position
+
+    @pyqtSlot(int)
+    def handle_tick(self, current_time: int) -> None:
+            
+        """
+        Handles the tick signal from the time keeper by emitting the queued updates.
+        
+        Args:
+            current_time (int): The current time in seconds.
+        """
+
+        # Emit the queued updates
+        if self.enable_signal_queue:
+            self.suggested_speed_queue.emit()
+            self.authority_queue.emit()
+            self.occupancy_queue.emit()
+            self.crossing_signal_queue.emit()
+            self.light_signal_queue.emit()
+            self.under_maintenance_queue.emit()
+            self.track_failure_queue.emit()
+            self.switch_position_queue.emit()
 
 
 if __name__ == "__main__":
