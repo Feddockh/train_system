@@ -26,7 +26,7 @@ class MBOOffice(QObject):
         """
     
         self.time_keeper = time_keeper
-        self.time_keeper.tick.connect(self.handle_time_update)
+        #self.time_keeper.tick.connect(self.handle_time_update)
         
         self.green_line = Line('Green')
         self.green_line.load_defaults()
@@ -85,13 +85,7 @@ class MBOOffice(QObject):
         return(self.block_speed)
     
     def compute_authority(self, train_id, line_name, position, velocity, block):
-        """
-        Calculate trains authority such that more than one train can be in a block 
-        each train stops at it's desitnation and opens the doors, and stops before any block maintenance 
-        """
-        #if block is in 57 then train padding needs to be bigger
-        #block  in red 
-             
+        
         train = self.get_train(train_id, line_name)
         line = self.get_line(line_name)
         
@@ -100,11 +94,18 @@ class MBOOffice(QObject):
         path = train.get_route_to_next_stop()
         unobstructed_path = line.get_unobstructed_path(path)
         
-        #initial authority will be unobtructed path to destination 
-            #looking for blocks under maint, switch positions then will change
-        authority_distance = line.get_path_length(unobstructed_path)
-        #authority_distance -= start block length/2
-        #authority_distance += stop block length/2 +half of train ?? 
+        #TODO make authority distance here exact - account for where train currently is and where it needs to stop in destination block 
+        authority_distance = line.get_path_length(unobstructed_path) 
+        
+        #train has not left yard or stopped at station
+        if (train.dispathed == False) or (train.departed == False):
+            authority_distance = 0
+            
+        for trains in self.trains: 
+            if 0 <= trains.position - train.posion <= 100 :
+                authority_distance = (trains.position - train.position) - 65
+            
+        
         
         
         #make string 
