@@ -928,7 +928,7 @@ class Line(QObject):
         else:
             print(f"Line {line} does not exist.")
 
-    @pyqtSlot(str, int)
+    @pyqtSlot(str, int, int)
     def handle_switch_position_update(self, line: str, switch_number: int, new_position: int) -> None:
                                                 
         """

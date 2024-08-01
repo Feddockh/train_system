@@ -363,8 +363,8 @@ class CTCOffice(QObject):
         # Update the speed and authority of the trains (this is done on positive and negative occupancy signals)
         self.update_all_trains_speed_authority(line_name)
 
-    @pyqtSlot(str, int)
-    def handle_switch_position_update(self, line_name: str, switch_number: int) -> None:
+    @pyqtSlot(str, int, int)
+    def handle_switch_position_update(self, line_name: str, switch_number: int, new_position: int) -> None:
         self.update_all_trains_speed_authority(line_name)
 
     @pyqtSlot(int, int, int)

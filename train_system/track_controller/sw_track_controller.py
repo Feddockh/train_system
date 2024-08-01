@@ -108,9 +108,9 @@ class TrackController(QObject):
 
         # Send the switch signal if the switch signal has changed (only on parent block)
         if block_instance.switch is not None and block_instance.number == block_instance.switch.parent_block:
-            if block_instance.switch.get_child_index != prev_block_instance.switch.get_child_index:
-                block_instance.switch.toggle()
-                prev_block_instance.switch.toggle()
+            if block_instance.switch.position != prev_block_instance.switch.position:
+                block_instance.switch.position = block_instance.switch.position
+                prev_block_instance.switch._position = block_instance.switch.position
                 updated = True
                 print(f"Switch {block_instance.switch.number} toggled to: {block_instance.switch.position}")
 

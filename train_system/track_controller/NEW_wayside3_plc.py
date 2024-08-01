@@ -117,7 +117,7 @@ elif(track_blocks[2].occupancy == True and
     track_blocks[25].occupancy == False and  
     track_blocks[26].occupancy == False)):  
     track_blocks[3].switch.set_child_index(0) 
-    track_blocks[11].switch.set_child_index(1)  
+    track_blocks[11].switch.set_child_index(0)  
     track_blocks[3]._plc_unsafe = False  
     track_blocks[11]._plc_unsafe = False 
 
@@ -134,7 +134,7 @@ elif(track_blocks[2].occupancy == True and
     track_blocks[11].occupancy == False) and
     track_blocks[26].occupancy == False):  
     track_blocks[3].switch.set_child_index(0)  
-    track_blocks[11].switch.set_child_index(1) 
+    track_blocks[11].switch.set_child_index(0) 
     track_blocks[3]._plc_unsafe = False  
     track_blocks[11]._plc_unsafe = False  
 
