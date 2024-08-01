@@ -4,6 +4,7 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtGui import QPainter, QColor
 from PyQt6.QtCore import Qt, QRect, QTimer
 from PyQt6 import QtCore, QtGui, QtWidgets, uic, QtWidgets
+from train_system.common.palette import Colors
 from train_system.track_controller.sw_track_controller import TrackController
 
 #Colors
@@ -15,11 +16,17 @@ LIGHT_GREY = "#D5DBE3"
 
 
 class CenterDelegate(QtWidgets.QStyledItemDelegate):
+    """
+        Used to hold objects on UI. 
+    """
     def initStyleOption(self, option, index):
         super().initStyleOption(option, index)
         option.displayAlignment = QtCore.Qt.AlignmentFlag.AlignCenter
 
 class CrossingSignalWidget(QTableWidgetItem):
+    """
+        Used to display current color of each signal. 
+    """
     def __init__(self, text='', background_color=None):
         super().__init__(text)
         if background_color:
@@ -27,6 +34,9 @@ class CrossingSignalWidget(QTableWidgetItem):
             self.setFlags(self.flags() & ~Qt.ItemFlag.ItemIsEditable)
 
 class Rectangle(QWidget):
+    """
+        Used to create rectangles for UI. 
+    """
 
     def __init__(self, x, y, width, height, color, parent=None):
         super().__init__(parent)
@@ -56,6 +66,12 @@ class ProgrammerUI(QtWidgets.QMainWindow):
 
     #def setupUi(self, MainWindow):
     def __init__(self, track_controllers):
+        """
+        Sets up the Programmer UI.
+        
+        Args:
+            track_controllers(TrackController): List of waysides
+        """
         super().__init__()
 
         #Setting track controller
@@ -69,19 +85,29 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         self.setObjectName("Programmer UI")
         self.resize(1222, 702)
 
+        #Creating universal font
+        font = QtGui.QFont()
+        font.setPointSize(15)
+
         #Central widget layout
         self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName("centralwidget")
+        self.setStyleSheet(f"""
+            QMainWindow {{
+                background-color: {Colors.WHITE};
+            }}
+            QHeaderView::section {{
+                background-color: #EFEFEF;
+                font-family: 'Arial';
+                font-size: 15px;
+                font-weight: bold;
+            }}
+        """)
         self.setCentralWidget(self.centralwidget)
 
         #Used in multiple widgets
         waysides = [track_controllers[0].wayside_name, track_controllers[1].wayside_name, track_controllers[2].wayside_name,track_controllers[3].wayside_name, track_controllers[4].wayside_name, track_controllers[5].wayside_name]
-        #waysides = [track_controllers[0].wayside_name, track_controllers[1].wayside_name, track_controllers[2].wayside_name]
         lines = ['Green Line', 'Red Line']
-        
-        #Creating universal font
-        font = QtGui.QFont()
-        font.setPointSize(15)
 
         #FileUpload button
         self.fileUploadPushButton = QtWidgets.QPushButton(parent=self.centralwidget)
@@ -114,7 +140,7 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         waysideIndex = self.comboBox.currentIndex()
 
         #Create Rectangle for wayside selection
-        self.waysideRec = Rectangle(520, 30, 640, 50, DARK_GREY, self.centralwidget)
+        self.waysideRec = Rectangle(520, 30, 640, 50, Colors.GREY, self.centralwidget)
         self.waysideRec.lower()
         self.backWaysideBlkRec = Rectangle(520, 80, 640, 80, WHITE, self.centralwidget)
         self.backWaysideBlkRec.lower()
@@ -130,7 +156,7 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         lineIndex = self.comboBox_3.currentIndex()
 
         #Create Rectangle for Waysides and responsible blocks rectangles
-        self.waysideRec = Rectangle(60, 30, 415, 50, DARK_GREY, self.centralwidget)
+        self.waysideRec = Rectangle(60, 30, 415, 50, Colors.GREY, self.centralwidget)
         self.waysideRec.lower()
         self.backWaysideBlkRec = Rectangle(60, 80, 415, 130, WHITE, self.centralwidget)
         self.backWaysideBlkRec.lower()
@@ -154,7 +180,7 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         self.waysideBlkTable.setFont(font)
 
         #Block info rec
-        self.blockInfoRec = Rectangle(60, 270, 1100, 60, DARK_GREY, self.centralwidget)
+        self.blockInfoRec = Rectangle(60, 270, 1100, 60, Colors.GREY, self.centralwidget)
         self.blockInfoRec.lower()
         self.backBlockInfoRec = Rectangle(60, 330, 1100, 320, WHITE, self.centralwidget)
         self.backBlockInfoRec.lower()
@@ -219,6 +245,9 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         QtCore.QMetaObject.connectSlotsByName(self)
 
     def retranslateUi(self):
+        """
+        Retranslates the UI's widgets. 
+        """
         _translate = QtCore.QCoreApplication.translate
         self.setWindowTitle(_translate("ProgrammerUI", "ProgrammerUI"))
         self.fileUploadPushButton.setText(_translate("ProgrammerUI", "Upload File"))
@@ -227,15 +256,20 @@ class ProgrammerUI(QtWidgets.QMainWindow):
 
     #Updates UI values to reflect backend changes
     def update_ui(self):
+        """
+        Refreshes and updates the tables on the UI every time its called. 
+        """
         lineIndex = self.comboBox_3.currentIndex()
         waysideIndex = self.comboBox.currentIndex()
-        #self.track_controllers[waysideIndex].run_PLC_program()
         self.add_wayside_blk_table_data(lineIndex)
         self.add_block_info_table_data(waysideIndex)
         self.display_plc_uploaded(waysideIndex)
 
     #Allows User to select PLC Program from directory
     def getFileName(self):    
+        """
+        Gets filename once inputted by user. 
+        """
         waysideIndex = self.comboBox.currentIndex()
         file_filter = 'Data File (*.py)'
         response = QFileDialog.getOpenFileName (
@@ -256,6 +290,9 @@ class ProgrammerUI(QtWidgets.QMainWindow):
     
     #Using search box to filter table data
     def filter_table(self):
+        """
+        Performs a search on the wayside data table for matching block numbers. 
+        """
         filter_text = self.textEdit.text().strip().lower()
         for row in range(self.blockInfoTable.rowCount()):
             item = self.blockInfoTable.item(row, 0)
@@ -266,6 +303,9 @@ class ProgrammerUI(QtWidgets.QMainWindow):
 
     #Converts track_occupancies into "occupied/in operation"
     def display_occupied_tracks(self, i, waysideIndex):
+        """
+        Converts track occupancy to "Occupied" or "Not Occupied". 
+        """
         if (self.track_controllers[waysideIndex].track_blocks[i]._occupancy == False):
             return "Not Occupied"
         else:
@@ -273,12 +313,24 @@ class ProgrammerUI(QtWidgets.QMainWindow):
 
     #displays whether or not the plc has been uploaded
     def display_plc_uploaded(self, waysideIndex):
+        """
+        Displays a label once a PLC program has been uploaded. 
+
+        Args:
+            waysideIndex(int): index of wayside that needs to be updated. 
+        """
         self.plcUploadedLabel.setVisible(False)
         if(self.track_controllers[waysideIndex].plc_program_uploaded == True and self.track_controllers[waysideIndex].plc_program != ""):
             self.plcUploadedLabel.setVisible(True)
 
     #adds block info table data
     def add_block_info_table_data(self, waysideIndex):
+        """
+        Updates information in block info table. 
+        
+        Args:
+            waysideIndex(int): index of wayside that needs to be updated. 
+        """
         self.blockInfoTable.clearContents()
         self.blockInfoTable.setRowCount(len(self.track_controllers[waysideIndex].track_blocks))
 
@@ -305,6 +357,13 @@ class ProgrammerUI(QtWidgets.QMainWindow):
 
     #Converts switch_states into values they're connected to 
     def display_switch_pos(self, x, waysideIndex):
+        """
+        Displays switch position on UI.  
+        
+        Args:
+            x(int): Block number of switch is located
+            waysideIndex(int):index of wayside that needs to be updated
+        """
         
         #if there is a switch that exists at this block
         if((self.track_controllers[waysideIndex].track_blocks[x].switch != None) and (self.track_controllers[waysideIndex].track_blocks[x].switch.parent_block == self.track_controllers[waysideIndex].track_blocks[x].number)):
@@ -332,16 +391,18 @@ class ProgrammerUI(QtWidgets.QMainWindow):
             block.setBackground(QtGui.QColor(LIGHT_GREY))
             block.setFlags(block.flags() & ~Qt.ItemFlag.ItemIsEditable)
             self.blockInfoTable.setItem(x, 4, block)
-        """
-        elif(self.track_controllers[waysideIndex].track_blocks[x].switch == None):
-            block = QTableWidgetItem("-")
-            block.setFlags(block.flags() & ~Qt.ItemFlag.ItemIsEditable)
-            self.blockInfoTable.setItem(x, 4, block)
-        """
 
         self.blockInfoTable.viewport().update()
     
     def display_light_signal(self, x, waysideIndex):
+        """
+        Displays light signal on UI.  
+        
+        Args:
+            x(int): Block number of light signal is located
+            waysideIndex(int):index of wayside that needs to be updated
+        """
+
         #If light signal is red or green
         if(self.track_controllers[waysideIndex].track_blocks[x]._light_signal == True):
             self.blockInfoTable.setItem(x, 5, CrossingSignalWidget("", GREEN))
@@ -354,6 +415,13 @@ class ProgrammerUI(QtWidgets.QMainWindow):
 
     #Displays crossing signals
     def display_crossing_signal(self, x, waysideIndex):
+        """
+        Displays crossing signal on UI.  
+        
+        Args:
+            x(int): Block number of crossing signal is located.
+            waysideIndex(int):index of wayside that needs to be updated
+        """
         if (self.track_controllers[waysideIndex].track_blocks[x]._crossing_signal == False):
             return "Up"
         elif(self.track_controllers[waysideIndex].track_blocks[x]._crossing_signal == True):
@@ -363,6 +431,13 @@ class ProgrammerUI(QtWidgets.QMainWindow):
 
     #Adds info about waysides and the blocks they're responsible for
     def add_wayside_blk_table_data(self, lineIndex):
+        """
+        Updates wayside block table with respective line information 
+        
+        Args:
+            x(int): Block number of crossing signal is located.
+            lineIndex(int):index of line that needs to be updated
+        """
 
         if (lineIndex == 0):
             data = [
@@ -388,12 +463,18 @@ class ProgrammerUI(QtWidgets.QMainWindow):
 
     #Opens test bench
     def open_test_bench(self):
+        """
+        Opens test bench  
+        """
         self.test_bench = TestBench(self.track_controllers, self)
         self.test_bench.show()
         self.hide()
 
     #Opens maintenance 
     def open_maintenance(self):
+        """
+        Opens maintenance
+        """
         self.maintenance = Maintenance(self.track_controllers,self)
         self.maintenance.show()
         self.hide()
@@ -404,9 +485,16 @@ Test Bench UI - Can be brought here by selecting test bench from Programmer UI
 """
 class TestBench(QtWidgets.QMainWindow):
 
-    #def setupUi(self, MainWindow):
+    
     def __init__(self, track_controllers, programmer_ui):
         super().__init__()
+        """
+        Initialization for TestBench
+
+        Args:
+            track_controllers(TrackControllers): List of TrackControllers
+            programmer_ui(QMainWindow): Programmer UI so that it can go back 
+        """
 
         self.track_controllers = track_controllers
 
@@ -418,11 +506,21 @@ class TestBench(QtWidgets.QMainWindow):
         #Central widget layout
         self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName("centralwidget")
+        self.setStyleSheet(f"""
+            QMainWindow {{
+                background-color: {Colors.WHITE};
+            }}
+            QHeaderView::section {{
+                background-color: #EFEFEF;
+                font-family: 'Arial';
+                font-size: 15px;
+                font-weight: bold;
+            }}
+        """)
         self.setCentralWidget(self.centralwidget)
 
         #Used in multiple widgets
         waysides = [track_controllers[0].wayside_name, track_controllers[1].wayside_name, track_controllers[2].wayside_name,track_controllers[3].wayside_name, track_controllers[4].wayside_name, track_controllers[5].wayside_name]
-        #waysides = [self.track_controllers[0].wayside_name, self.track_controllers[1].wayside_name, self.track_controllers[2].wayside_name]
         lines = ['Green Line', 'Red Line']
 
         #Creating universal font
@@ -464,7 +562,7 @@ class TestBench(QtWidgets.QMainWindow):
         waysideIndex = self.comboBox.currentIndex()
 
         #Create Rectangle for wayside selection
-        self.waysideRec = Rectangle(520, 30, 640, 50, DARK_GREY, self.centralwidget)
+        self.waysideRec = Rectangle(520, 30, 640, 50, Colors.GREY, self.centralwidget)
         self.waysideRec.lower()
         self.backWaysideBlkRec = Rectangle(520, 80, 640, 80, WHITE, self.centralwidget)
         self.backWaysideBlkRec.lower()
@@ -480,7 +578,7 @@ class TestBench(QtWidgets.QMainWindow):
         lineIndex = self.comboBox_3.currentIndex()
 
         #Create Rectangle for Waysides and responsible blocks rectangles
-        self.waysideRec = Rectangle(60, 30, 415, 50, DARK_GREY, self.centralwidget)
+        self.waysideRec = Rectangle(60, 30, 415, 50, Colors.GREY, self.centralwidget)
         self.waysideRec.lower()
         self.backWaysideBlkRec = Rectangle(60, 80, 415, 130, WHITE, self.centralwidget)
         self.backWaysideBlkRec.lower()
@@ -508,7 +606,7 @@ class TestBench(QtWidgets.QMainWindow):
         self.comboBox_3.currentIndexChanged.connect(lambda: self.update_ui())
 
         #Block info rec
-        self.blockInfoRec = Rectangle(60, 270, 1100, 60, DARK_GREY, self.centralwidget)
+        self.blockInfoRec = Rectangle(60, 270, 1100, 60, Colors.GREY, self.centralwidget)
         self.blockInfoRec.lower()
         self.backBlockInfoRec = Rectangle(60, 330, 1100, 320, WHITE, self.centralwidget)
         self.backBlockInfoRec.lower()
@@ -562,6 +660,9 @@ class TestBench(QtWidgets.QMainWindow):
         QtCore.QMetaObject.connectSlotsByName(self)
 
     def retranslateUi(self):
+        """
+        Retranslate the UI for its widgets. 
+        """
         _translate = QtCore.QCoreApplication.translate
         self.setWindowTitle(_translate("TestBench", "Testbench"))
         self.fileUploadPushButton.setText(_translate("TestBench", "Upload File"))
@@ -580,6 +681,9 @@ class TestBench(QtWidgets.QMainWindow):
 
     #Allows User to select PLC Program from directory
     def getFileName(self):    
+        """
+        Get filename from user. 
+        """
         waysideIndex = self.comboBox.currentIndex()
         file_filter = 'Data File (*.py)'
         response = QFileDialog.getOpenFileName (
@@ -593,6 +697,9 @@ class TestBench(QtWidgets.QMainWindow):
 
     #Using search box to filter table data
     def filter_table(self):
+        """
+        Filters table and shows matching search critera.  
+        """
         filter_text = self.textEdit.text().strip().lower()
         for row in range(self.blockInfoTable.rowCount()):
             item = self.blockInfoTable.item(row, 0)
@@ -602,7 +709,12 @@ class TestBench(QtWidgets.QMainWindow):
                 self.blockInfoTable.setRowHidden(row, True)
     
     def add_wayside_blk_table_data(self, lineIndex):
+        """
+        Updates wayside block table. 
 
+        Args:
+            lineIndex(int): index of line to be updated
+        """
         if (lineIndex == 0):
             data = [
                 ['Wayside 1', '1 - 32, 150'],
@@ -627,6 +739,12 @@ class TestBench(QtWidgets.QMainWindow):
 
 
     def item_changed_blockInfo(self, item):
+        """
+        Called if item is changed within block info table. 
+
+        Args:
+            item(Object): item that was changed within the table.
+        """
         waysideIndex = self.comboBox.currentIndex()
         row = item.row()
         column = item.column()
@@ -656,6 +774,13 @@ class TestBench(QtWidgets.QMainWindow):
 
     #Converts track_occupancies into "occupied/in operation"
     def display_occupied_tracks(self, i, waysideIndex):
+        """
+        Takes block occupancy and displays as "Occupied" or "Not Occupied"
+
+        Args:
+            i(int): index of block
+            waysideIndex(int): index of wayside that needs to be changed 
+        """
         if (self.track_controllers[waysideIndex].track_blocks[i]._occupancy == False):
             return "Not Occupied"
         else:
@@ -663,6 +788,12 @@ class TestBench(QtWidgets.QMainWindow):
 
     #adds block info table data
     def add_block_info_table_data(self, waysideIndex):
+        """
+        Updates block info table
+
+        Args:
+            waysideIndex(int): index of wayside that needs to be changed 
+        """
         self.blockInfoTable.clearContents()
         self.blockInfoTable.setRowCount(len(self.track_controllers[waysideIndex].track_blocks))
 
@@ -683,6 +814,9 @@ class TestBench(QtWidgets.QMainWindow):
         
 
     #open programmer ui - close testbench
+    """
+        Open programmer UI and close Testbench
+    """
     def open_programmer_ui(self):
         self.programmer_ui.show()
         self.programmer_ui.update_ui()
@@ -696,6 +830,14 @@ class Maintenance(QtWidgets.QMainWindow):
 
     #def setupUi(self, MainWindow):
     def __init__(self, track_controllers, programmer_ui):
+        """
+        Initializes Maintenance window
+
+        Args:
+            track_controllers(TrackController): List of waysides
+            programmer_ui(QMainWindow): programmer ui
+        """
+
         super().__init__()
 
         self.track_controllers = track_controllers
@@ -708,6 +850,17 @@ class Maintenance(QtWidgets.QMainWindow):
         #Central widget layout
         self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName("centralwidget")
+        self.setStyleSheet(f"""
+            QMainWindow {{
+                background-color: {Colors.WHITE};
+            }}
+            QHeaderView::section {{
+                background-color: #EFEFEF;
+                font-family: 'Arial';
+                font-size: 15px;
+                font-weight: bold;
+            }}
+        """)
         self.setCentralWidget(self.centralwidget)
 
         #Used in multiple widgets
@@ -718,21 +871,6 @@ class Maintenance(QtWidgets.QMainWindow):
         #Creating universal font
         font = QtGui.QFont()
         font.setPointSize(15)
-
-        """
-        #FileUpload button
-        self.fileUploadPushButton = QtWidgets.QPushButton(parent=self.centralwidget)
-        self.fileUploadPushButton.setGeometry(QtCore.QRect(720, 100, 135, 40))
-        self.fileUploadPushButton.setObjectName("pushButton")
-        self.fileUploadPushButton.clicked.connect(self.getFileName)
-        self.fileUploadPushButton.setFont(font)
-
-        #Select PLC Program label
-        self.label = QtWidgets.QLabel(parent=self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(530, 100, 180, 40))
-        self.label.setObjectName("label")
-        self.label.setFont(font)
-        """
 
         #Combobox for wayside selection
         self.comboBox = QtWidgets.QComboBox(parent=self.centralwidget)
@@ -745,7 +883,7 @@ class Maintenance(QtWidgets.QMainWindow):
         waysideIndex = self.comboBox.currentIndex()
 
         #Create Rectangle for wayside selection
-        self.waysideRec = Rectangle(520, 30, 640, 50, DARK_GREY, self.centralwidget)
+        self.waysideRec = Rectangle(520, 30, 640, 50, Colors.GREY, self.centralwidget)
         self.waysideRec.lower()
         self.backWaysideBlkRec = Rectangle(520, 80, 640, 80, WHITE, self.centralwidget)
         self.backWaysideBlkRec.lower()
@@ -761,7 +899,7 @@ class Maintenance(QtWidgets.QMainWindow):
         lineIndex = self.comboBox_3.currentIndex()
 
         #Create Rectangle for Waysides and responsible blocks rectangles
-        self.waysideRec = Rectangle(60, 30, 415, 50, DARK_GREY, self.centralwidget)
+        self.waysideRec = Rectangle(60, 30, 415, 50, Colors.GREY, self.centralwidget)
         self.waysideRec.lower()
         self.backWaysideBlkRec = Rectangle(60, 80, 415, 130, WHITE, self.centralwidget)
         self.backWaysideBlkRec.lower()
@@ -789,7 +927,7 @@ class Maintenance(QtWidgets.QMainWindow):
         self.comboBox_3.currentIndexChanged.connect(lambda: self.update_ui())
 
         #Block info rec
-        self.blockInfoRec = Rectangle(60, 270, 1100, 60, DARK_GREY, self.centralwidget)
+        self.blockInfoRec = Rectangle(60, 270, 1100, 60, Colors.GREY, self.centralwidget)
         self.blockInfoRec.lower()
         self.backBlockInfoRec = Rectangle(60, 330, 1100, 320, WHITE, self.centralwidget)
         self.backBlockInfoRec.lower()
@@ -852,6 +990,9 @@ class Maintenance(QtWidgets.QMainWindow):
         QtCore.QMetaObject.connectSlotsByName(self)
 
     def retranslateUi(self):
+        """
+        Retranslates the widgets of the UI
+        """
         _translate = QtCore.QCoreApplication.translate
         self.setWindowTitle(_translate("Maintenance", "Maintenance"))
         #self.fileUploadPushButton.setText(_translate("Maintenance", "Upload File"))
@@ -860,6 +1001,9 @@ class Maintenance(QtWidgets.QMainWindow):
 
     #Updates UI values to reflect backend changes
     def update_ui(self):
+        """
+        Updates the UI & Refreshes its tables
+        """
         self.blockInfoTable.blockSignals(True)
         lineIndex = self.comboBox_3.currentIndex()
         waysideIndex = self.comboBox.currentIndex()
@@ -870,6 +1014,9 @@ class Maintenance(QtWidgets.QMainWindow):
     
     #Allows User to select PLC Program from directory
     def getFileName(self):    
+        """
+        Gets filename for PLC from the user. 
+        """
         waysideIndex = self.comboBox.currentIndex()
         file_filter = 'Data File (*.py)'
         response = QFileDialog.getOpenFileName (
@@ -881,9 +1028,11 @@ class Maintenance(QtWidgets.QMainWindow):
         )
         self.track_controllers[waysideIndex].get_PLC_program(response[0])
 
-
     #Using search box to filter table data
     def filter_table(self):
+        """
+        Searches block info table based on search criteria 
+        """
         filter_text = self.textEdit.text().strip().lower()
         for row in range(self.blockInfoTable.rowCount()):
             item = self.blockInfoTable.item(row, 0)
@@ -893,6 +1042,12 @@ class Maintenance(QtWidgets.QMainWindow):
                 self.blockInfoTable.setRowHidden(row, True)
 
     def add_wayside_blk_table_data(self, lineIndex):
+        """
+        Updates wayside block table
+
+        Args:
+            lineIndex(int): index of line that needs to be changed 
+        """
 
         if (lineIndex == 0):
             data = [
@@ -916,31 +1071,13 @@ class Maintenance(QtWidgets.QMainWindow):
                 text.setFlags(text.flags() & ~Qt.ItemFlag.ItemIsEditable)
                 self.waysideBlkTable.setItem(i, j, text)
 
-    """
-    def item_changed_blockInfo(self, item):
-        waysideIndex = self.comboBox.currentIndex()
-        row = item.row()
-        column = item.column()
-        new_item = item.text()
-        
-        match column:
-            #Switch
-            case 1:
-                new_switch = int(new_item)
-                self.check_switch(row, waysideIndex, new_switch)
-            #Crossing
-            case 2: 
-                print("")
-            case 3:
-                print("")
-            case _:
-                print("")
-        self.blockInfoTable.blockSignals(True)
-        self.update_ui()
-        self.blockInfoTable.blockSignals(False)
-    """
-
     def item_changed_blockInfo_Signal(self, item):
+        """
+        Called when there was an update to any of the items in block info table.
+
+        Args:
+            item(object): item that was changed in table
+        """
         waysideIndex = self.comboBox.currentIndex()
         #if switch
         if(item.column() == 1):
@@ -958,6 +1095,13 @@ class Maintenance(QtWidgets.QMainWindow):
             print("here")
 
     def check_crossing(self, x, waysideIndex):
+        """
+        Checks if potenial new crossing signal is safe by PLC standards. 
+
+        Args:
+            x(int): index of block
+            waysideIndex(int): index of wayside that needs to be changed 
+        """
         #checking to see if there is a crossing at this block
         if(self.track_controllers[waysideIndex].track_blocks[x]._crossing_signal != None):
             #Getting current signal
@@ -979,6 +1123,14 @@ class Maintenance(QtWidgets.QMainWindow):
             self.blockInfoTable.blockSignals(False)
 
     def check_signal(self, x, waysideIndex):
+        """
+        Checks if potenial new light signal is safe by PLC standards. 
+
+        Args:
+            x(int): index of block
+            waysideIndex(int): index of wayside that needs to be changed 
+        """
+
         #checking to see if there is a light signal at this block
         if(self.track_controllers[waysideIndex].track_blocks[x]._light_signal != None):
             #Getting current signal
@@ -1000,7 +1152,13 @@ class Maintenance(QtWidgets.QMainWindow):
 
 
     def check_switch(self, x, waysideIndex):
+        """
+        Checks if potenial new switch position is safe by PLC standards. 
 
+        Args:
+            x(int): index of block
+            waysideIndex(int): index of wayside that needs to be changed 
+        """
         #if this block has a switch
         if(self.track_controllers[waysideIndex].track_blocks[x].switch != None):
             #Getting current position & block switch is connected to
@@ -1029,7 +1187,13 @@ class Maintenance(QtWidgets.QMainWindow):
 
     #Converts switch_states into values they're connected to 
     def display_switch_pos(self, x, waysideIndex):
-        
+        """
+        Displays position of switch on UI in block info table
+
+        Args:
+            x(int): index of block
+            waysideIndex(int): index of wayside that needs to be changed 
+        """
         #if there is a switch that exists at this block
         if((self.track_controllers[waysideIndex].track_blocks[x].switch != None) and (self.track_controllers[waysideIndex].track_blocks[x].switch.parent_block == self.track_controllers[waysideIndex].track_blocks[x].number)):
             pos = self.track_controllers[waysideIndex].track_blocks[x].switch.get_child_index()
@@ -1056,16 +1220,17 @@ class Maintenance(QtWidgets.QMainWindow):
             block.setBackground(QtGui.QColor(LIGHT_GREY))
             block.setFlags(block.flags() | Qt.ItemFlag.ItemIsEditable)
             self.blockInfoTable.setItem(x, 1, block)
-        """
-        elif(self.track_controllers[waysideIndex].track_blocks[x].switch == None):
-            block = QTableWidgetItem("-")
-            block.setFlags(block.flags() & Qt.ItemFlag.ItemIsEditable)
-            self.blockInfoTable.setItem(x, 1, block)
-        """
 
         self.blockInfoTable.viewport().update()
     
     def display_light_signal(self, x, waysideIndex):
+        """
+        Displays light signals in block info table
+
+        Args:
+            x(int): index of block
+            waysideIndex(int): index of wayside that needs to be changed 
+        """
         #If light signal is red or green
         if(self.track_controllers[waysideIndex].track_blocks[x]._light_signal == True):
             self.blockInfoTable.setItem(x, 2, CrossingSignalWidget("", GREEN))
@@ -1078,6 +1243,13 @@ class Maintenance(QtWidgets.QMainWindow):
 
     #Displays crossing signals
     def display_crossing_signal(self, x, waysideIndex):
+        """
+        Displays crossing signals in block info table
+
+        Args:
+            x(int): index of block
+            waysideIndex(int): index of wayside that needs to be changed 
+        """
         if (self.track_controllers[waysideIndex].track_blocks[x]._crossing_signal == False):
             return "Up"
         elif(self.track_controllers[waysideIndex].track_blocks[x]._crossing_signal == True):
@@ -1087,6 +1259,12 @@ class Maintenance(QtWidgets.QMainWindow):
 
     #adds block info table data
     def add_block_info_table_data(self, waysideIndex):
+        """
+        Updates block info table data
+
+        Args:
+            waysideIndex(int): index of wayside that needs to be changed 
+        """
         self.blockInfoTable.clearContents()
         self.blockInfoTable.setRowCount(len(self.track_controllers[waysideIndex].track_blocks))
 
@@ -1112,6 +1290,9 @@ class Maintenance(QtWidgets.QMainWindow):
         
     
     def open_programmer_ui(self):
+        """
+        Open programmer UI and close Maintenance mode
+        """
         self.programmer_ui.show()
         self.programmer_ui.update_ui()
         self.close()

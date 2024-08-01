@@ -14,7 +14,8 @@ from train_system.common.authority import Authority
 
 
 class CTCOffice(QObject):
-    train_dispatch_updated = pyqtSignal(TrainRouteUpdate)
+    mbo_train_info = pyqtSignal(TrainRouteUpdate)
+    train_dispatched = pyqtSignal(int, str)
 
     def __init__(self, time_keeper: TimeKeeper) -> None:
 
@@ -32,20 +33,20 @@ class CTCOffice(QObject):
         self.lines: List[Line] = []
 
         # Create the green line object
-        green_line = Line("green", time_keeper)
-        green_line.load_defaults()
-        green_line.track_block_occupancy_updated.connect(self.handle_occupancy_update)
-        green_line.switch_position_updated.connect(self.handle_switch_position_update)
-        green_line.enable_signal_queue = True
-        self.lines.append(green_line)
+        self.green_line = Line("green", time_keeper)
+        self.green_line.load_defaults()
+        self.green_line.track_block_occupancy_updated.connect(self.handle_occupancy_update)
+        self.green_line.switch_position_updated.connect(self.handle_switch_position_update)
+        self.green_line.enable_signal_queue = True
+        self.lines.append(self.green_line)
 
         # Create the red line object
-        red_line = Line("red", time_keeper)
-        red_line.load_defaults()
-        red_line.track_block_occupancy_updated.connect(self.handle_occupancy_update)
-        red_line.switch_position_updated.connect(self.handle_switch_position_update)
-        red_line.enable_signal_queue = True
-        self.lines.append(red_line)
+        self.red_line = Line("red", time_keeper)
+        self.red_line.load_defaults()
+        self.red_line.track_block_occupancy_updated.connect(self.handle_occupancy_update)
+        self.red_line.switch_position_updated.connect(self.handle_switch_position_update)
+        self.red_line.enable_signal_queue = True
+        self.lines.append(self.red_line)
 
         # Create a list of train objects indexed by the train ID and the line name
         self.trains: Dict[Tuple[int, str], CTCTrainDispatch] = {}
@@ -103,12 +104,12 @@ class CTCOffice(QObject):
         ordered_trains = sorted(filtered_trains, key=lambda train: train.lag, reverse=True)
         return ordered_trains
 
-    def send_train_dispatch_update(self, train_id: int, line_name: str) -> None:
+    def send_mbo_train_info(self, train_id: int, line_name: str) -> None:
         if self.train_exists(train_id, line_name):
             train = self.get_train(train_id, line_name)
             line = self.get_line(line_name)
             update = TrainRouteUpdate(train.train_id, line, train.route, train.stop_priority_queue)
-            self.train_dispatch_updated.emit(update)
+            self.mbo_train_info.emit(update)
 
     def update_train_authority(self, train_id: int, line_name: str) -> None:
 
@@ -203,7 +204,7 @@ class CTCOffice(QObject):
                     move_train = True
 
                 # Check if the train has exceeded the time per block
-                elif train.time_in_block >= current_block.length / train.suggested_speed:
+                elif train.suggested_speed != 0 and train.time_in_block >= current_block.length / train.suggested_speed:
                     move_train = True
 
                 # Check if the next block is clear and not under maintenance
@@ -278,6 +279,7 @@ class CTCOffice(QObject):
             train = self.get_trains_ordered_by_lag(trains_to_dispatch)[0]
             self.update_train_suggested_speed(train_id, train.line.name)
             self.update_train_authority(train_id, train.line.name)
+            self.train_dispatched.emit(train.train_id, train.line.name)
             train.dispatched = True
 
         # Run the test bench simulation if the test bench mode is enabled
@@ -363,8 +365,8 @@ class CTCOffice(QObject):
         # Update the speed and authority of the trains (this is done on positive and negative occupancy signals)
         self.update_all_trains_speed_authority(line_name)
 
-    @pyqtSlot(str, int)
-    def handle_switch_position_update(self, line_name: str, switch_number: int) -> None:
+    @pyqtSlot(str, int, int)
+    def handle_switch_position_update(self, line_name: str, switch_number: int, new_position: int) -> None:
         self.update_all_trains_speed_authority(line_name)
 
     @pyqtSlot(int, int, int)

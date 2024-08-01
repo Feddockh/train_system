@@ -6,7 +6,7 @@ from train_system.train_controller.tc_widgets import CircleWidget, EngineerTable
 from train_system.common.time_keeper import TimeKeeper, TimeKeeperWidget
 from train_system.common.gui_features import CustomTable
 from train_system.train_controller.train_controller import MockTrainModel, TrainController
-from train_system.train_model.train_model import TrainModel
+from train_system.train_model.train_model_v4 import TrainModel
 from train_system.train_controller.engineer import Engineer
 from train_system.common.palette import Colors
 
@@ -210,6 +210,8 @@ class TestBenchWindow(QMainWindow):
         self.tm_authority_stat = QLineEdit()
         self.tm_authority_stat.setFixedSize(75, 25)
         self.tm_authority_stat.setPlaceholderText("Enter TM Authority")
+
+
 
 
         #add stat lines and labels to left_out layout
@@ -686,6 +688,10 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.destination = 0
         self.station_name = ""
 
+        temp_eng = Engineer()
+        self.kp = temp_eng.get_kp()
+        self.ki = temp_eng.get_ki()
+
         #input validators
         dec_validator = QDoubleValidator()
         dec_validator.setNotation(QDoubleValidator.Notation.StandardNotation)
@@ -816,7 +822,11 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.time_keeper = time_keeper
         self.time_keeper_widget = TimeKeeperWidget(self.time_keeper)
 
+        self.kp_and_ki_label = QLabel("Kp: " + str(self.kp) + " Ki: " + str(self.ki))
+        self.kp_and_ki_label.setFixedSize(150, 50)
+
         #add stat lines and labels to left_out layout
+        left_out_layout.addWidget(self.kp_and_ki_label)
         left_out_layout.addWidget(curr_speed_label)
         left_out_layout.addWidget(self.curr_speed_stat)
         left_out_layout.addWidget(comm_speed_label)
@@ -990,7 +1000,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         loc_and_des_label.setFont(header_font)
 
         self.loc_label = QLabel("Location: " + str(self.position)) 
-        self.loc_label.setFixedSize(100, 50)
+        self.loc_label.setFixedSize(200, 50)
 
         self.des_label = QLabel(str(self.destination))
         self.des_label.setFixedSize(200, 50)
@@ -1310,15 +1320,24 @@ class DriverWindow(QMainWindow): ###DriverWindow
 
     @pyqtSlot(float)
     def handle_position_update(self, pos: float) -> None:
-        self.position = pos
+        self.position = self.convert_to_ft(pos)
 
-        self.loc_label.setText("Location: " + str(self.position))
+        self.loc_label.setText("Location: " + str(self.position) + " ft")
 
     @pyqtSlot(str)
     def handle_destination_update(self, des: str):
         self.destination = des
         self.des_label.setText(self.destination)
 
+    @pyqtSlot(int)
+    def handle_kp_update(self, kp: int):
+        self.kp = kp
+        self.kp_and_ki_label.setText("Kp: " + str(self.kp) + " Ki: " + str(self.ki))
+
+    @pyqtSlot(int)
+    def handle_ki_update(self, ki: int):
+        self.ki = ki
+        self.kp_and_ki_label.setText("Kp: " + str(self.kp) + " Ki: " + str(self.ki))
 
     """
     @pyqtSlot(str)
