@@ -42,6 +42,9 @@ class TrainController(QObject):
 
     station_name_updated = pyqtSignal(str)
 
+    kp_updated = pyqtSignal(int)
+    ki_updated = pyqtSignal(int)
+
     #lights_updated = pyqtSignal(bool) -> in lights class
     #left_door_updated = pyqtSignal(bool) -> in doors class
     #right_door_updated = pyqtSignal(bool) -> in doors class
@@ -268,6 +271,7 @@ class TrainController(QObject):
         if self.polarity <= 0:
             self.increment_track_block()
         print(f"Position: {self.position}, Polarity: {self.polarity}")
+        print("SETPOINT SPEED " + str(self.get_setpoint_speed()))
         self.train_model.set_position(self.block_number, self.position)
         self.position_updated.emit(self.position)
 
@@ -480,8 +484,10 @@ class TrainController(QObject):
     @pyqtSlot(bool)
     def handle_service_brake_toggled(self, check: bool) -> None:
         if check:
+            print("user brake true")
             self.brake.set_user_service_brake(True)
         else:
+            print("user brake false")
             self.brake.set_user_service_brake(False)
 
     @pyqtSlot(bool)
@@ -541,6 +547,7 @@ class TrainController(QObject):
         #self.engineer.kp = kp
         if self.position == 0:
             self.engineer.kp = kp
+            self.kp_updated.emit(kp)
         #self.kp_updated_for_eng.emit(kp)
 
     @pyqtSlot(int)
@@ -548,6 +555,7 @@ class TrainController(QObject):
         #do this to keep from being recursive
         if self.position == 0:
             self.engineer.ki = ki
+            self.ki_updated.emit(ki)
 
     @pyqtSlot(int)
     def handle_position_changed(self, loc: int) -> None:
@@ -686,6 +694,7 @@ class TrainController(QObject):
             # Get kp and ki from engineer
             kp, ki = engineer.get_engineer()
             print(f"Kp: {kp}, Ki: {ki}")
+            
             
 
             # Calculate the error
