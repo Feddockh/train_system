@@ -178,14 +178,14 @@ class Line(QObject):
     switch_position_updated = pyqtSignal(str, int)
 
     # Signals to emit the queued updates
-    suggested_speed_queue = pyqtSignal(list)
-    authority_queue = pyqtSignal(list)
-    occupancy_queue = pyqtSignal(list)
-    crossing_signal_queue = pyqtSignal(list)
-    light_signal_queue = pyqtSignal(list)
-    under_maintenance_queue = pyqtSignal(list)
-    track_failure_queue = pyqtSignal(list)
-    switch_position_queue = pyqtSignal(list)
+    suggested_speed_queue_signal = pyqtSignal(list)
+    authority_queue_signal = pyqtSignal(list)
+    occupancy_queue_signal = pyqtSignal(list)
+    crossing_signal_queue_signal = pyqtSignal(list)
+    light_signal_queue_signal = pyqtSignal(list)
+    under_maintenance_queue_signal = pyqtSignal(list)
+    track_failure_queue_signal = pyqtSignal(list)
+    switch_position_queue_signal = pyqtSignal(list)
 
     def __init__(self, name: str, time_keeper: TimeKeeper = None) -> None:
         super().__init__()
@@ -804,14 +804,24 @@ class Line(QObject):
 
         # Emit the queued updates
         if self.enable_signal_queue:
-            self.suggested_speed_queue.emit()
-            self.authority_queue.emit()
-            self.occupancy_queue.emit()
-            self.crossing_signal_queue.emit()
-            self.light_signal_queue.emit()
-            self.under_maintenance_queue.emit()
-            self.track_failure_queue.emit()
-            self.switch_position_queue.emit()
+            self.suggested_speed_queue_signal.emit(self.suggested_speed_queue)
+            self.authority_queue_signal.emit(self.authority_queue)
+            self.occupancy_queue_signal.emit(self.occupancy_queue)
+            self.crossing_signal_queue_signal.emit(self.crossing_signal_queue)
+            self.light_signal_queue_signal.emit(self.light_signal_queue)
+            self.under_maintenance_queue_signal.emit(self.under_maintenance_queue)
+            self.track_failure_queue_signal.emit(self.track_failure_queue)
+            self.switch_position_queue_signal.emit(self.switch_position_queue)
+
+            # Clear the queues
+            self.suggested_speed_queue.clear()
+            self.authority_queue.clear()
+            self.occupancy_queue.clear()
+            self.crossing_signal_queue.clear()
+            self.light_signal_queue.clear()
+            self.under_maintenance_queue.clear()
+            self.track_failure_queue.clear()
+            self.switch_position_queue.clear()
 
 
 if __name__ == "__main__":
