@@ -119,25 +119,47 @@ class TrainManager(QObject):
         print(f"Train List Length should be 0 and position should not have reset")
         print(f"Train List Length: {len(manager.train_list)}")
 
+    def multiple_window_run(self):
+        manager.handle_dispatch(1, "green")
+        manager.handle_dispatch(2, "green")
+        manager.handle_dispatch(3, "green")
+
+    def multiple_windows_and_trains_run(self):
+        manager.handle_dispatch(1, "green")
+        manager.handle_dispatch(2, "green")
+        manager.handle_dispatch(3, "green")
+
+        for i in range(4):
+            manager.train_list[i].controller.set_setpoint_speed(20)
+        for i in range(4):
+            manager.train_list[i].controller.update_authority(Authority(1000000000,65))
+            print(f"Power Command: {manager.train_list[i].controller.engine.power_command}, Current Speed: {manager.train_list[i].controller.current_speed}, Position: {manager.train_list[i].controller.position}")
+
 if __name__ == "__main__":
     # train_system = TrainSystem(HOST, PORT, USERNAME, PASSWORD)
-    manager = TrainManager()
+    time_keeper = TimeKeeper()
+    time_keeper.start_timer()
+    manager = TrainManager(time_keeper)
+
     manager.engineer_table[0].set_engineer(5000, 1)
     manager.handle_dispatch(0, "green")
 
-    manager.self_deletion_run()
+    manager.multiple_window_run()
+    manager.multiple_windows_and_trains_run()
 
     # manager.train_list[0].small_run()
     # manager.train_list[0].long_run()
-    # manager.train_list[0].full_loop_run()
+    # manager.train_list[0].past_yard_run()
+    # manager.train_list[0].to_yard_run()
     # manager.train_list[0].destination_run()
-    # manager.train_list[0].service_run()
+    # manager.train_list[0].service_brake_run()
+    # manager.train_list[0].emergency_brake_run()
     # manager.train_list[0].emergency_run()
     # manager.train_list[0].commanded_speed_run()
     # manager.train_list[0].switch_modes_run()
     # manager.train_list[0].fault_run()
+    # manager.train_list[0].signal_fault_run()
     # manager.train_list[0].ac_run()
 
-    # manager.handle_train_removed(0)
-    # print(f"Train List Length: {len(manager.train_list)}")
+    # manager.self_deletion_run()
     
