@@ -3,6 +3,7 @@ import os
 from dataclasses import dataclass
 from random import randint
 from PyQt6.QtCore import pyqtSignal
+from train_system.common.authority import Authority
 from train_system.common.station import Station
 from train_system.common.track_block import TrackBlock
 from train_system.common.line import Line
@@ -21,7 +22,8 @@ class Train:
 class TrackModel:
 
     track_to_train = pyqtSignal(int, float, str, float, int) # train id, speed, authority, grade, temperature
-    passengers_to_train = pyqtSignal(int)
+    passengers_to_train = pyqtSignal(int) # number of passengers
+    pass_auth_back = pyqtSignal(int, Authority) # train id, authority
 
     def __init__(self, lines: list[Line]) -> None:
 
@@ -36,21 +38,30 @@ class TrackModel:
             self.lines[line.name] = line
         for _, line in self.lines.items():
             line.load_defaults()
-            line.track_block_authority_updated.connect(self.send_to_trains)
-            line.track_block_suggested_speed_updated.connect(self.send_to_trains)
+            line.track_block_authority_updated.connect(self.handle_s_a_update)
+            line.track_block_suggested_speed_updated.connect(self.handle_s_a_update)
 
         # Sell tickets at stations
         for _, line in self.lines.items():
             for station in line.stations:
                 self.tickets_by_station[station.name] = randint(0, 50)
 
-    def send_to_trains(self):
+    def handle_s_a_update(self):
         for train in self.trains:
             block = self.lines[train.line].get_track_block(train.block)
             self.track_to_train.emit(train.id, block.suggested_speed, block.authority, block.grade, self.temperature)
 
     def handle_position(self, id: int, position: float):
         self.move_train(id, position)
+
+    def handle_new_train(self, id: int, line: str):
+        self.create_train(id, line)
+
+    def handle_mbo_authority(self, id: int, authority: Authority):
+        for train in self.trains:
+            if train.id == id:
+                self.pass_auth_back.emit(train.block, authority)
+                break
 
     def create_failure(self, block: TrackBlock, failure: TrackFailure) -> None:
 
