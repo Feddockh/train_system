@@ -1,23 +1,32 @@
 import paramiko
 
 from PyQt6.QtCore import Qt, pyqtSlot, pyqtSignal, QObject
+from train_system.common.time_keeper import TimeKeeper
 from train_system.train_controller.train_controller import TrainSystem
 from train_system.train_controller.engineer import Engineer
+from train_system.common.authority import Authority
+from train_system.train_controller.tc_main import tc_main
+from train_system.common.time_keeper import TimeKeeper
 
 HOST= None  #'192.168.0.114'
 PORT = 22
 USERNAME = 'danim'
 PASSWORD = 'danim'
 
+# Create the time keeper object
+time_keeper = TimeKeeper()
+
 class TrainManager(QObject):
 
     test_signal = pyqtSignal(bool)
 
-    def __init__(self):
+    def __init__(self, time_keeper: TimeKeeper = None):
         super().__init__()
 
         self.ssh_client = None
-        self.engineer_table: list[Engineer] = [Engineer()] * 100
+        self.time_keeper = time_keeper
+        self.train_count = 40
+        self.engineer_table: list[Engineer] = [Engineer()] * self.train_count
         self.train_list: list[TrainSystem] = []
         if(HOST and PORT and USERNAME and PASSWORD):
             self.ssh_client = self.create_ssh_connection(HOST, PORT, USERNAME, PASSWORD)
@@ -44,10 +53,19 @@ class TrainManager(QObject):
             # Add hardware train to the train list
             print("Hardware Train")
             self.train_list.append(TrainSystem(self.engineer_table[train_id], line, train_id, self.ssh_client))
+
+            """
+            FUNCTION WITH ALL CONNECTIONS FOR TRAIN CONTROLLER, MOCK TRAIN MODEL, AND UI
+            """
+            tc_main(time_keeper,TrainSystem(self.engineer_table[train_id], line, train_id, self.ssh_client))
         else:
             # Add software train to the train list
             print("Software Train")
             self.train_list.append(TrainSystem(self.engineer_table[train_id], line, train_id))
+            """
+            FUNCTION WITH ALL CONNECTIONS FOR TRAIN CONTROLLER, MOCK TRAIN MODEL, AND UI
+            """
+            tc_main(time_keeper,TrainSystem(self.engineer_table[train_id], line, train_id, self.ssh_client))
             
         ##### ADD CONNECTIONS TO THE TRAIN SYSTEM #####
         self.train_list[-1].controller.delete_train.connect(self.handle_train_removed)
@@ -55,6 +73,7 @@ class TrainManager(QObject):
 
     # When train reaches the yard, it removes itself from the train list
     #### NEED TO MANUALLY DELETE CONNECTIONS AS THE CONNECTIONS AREN'T DELETED WHEN TRAIN IS REMOVED ####
+    @pyqtSlot(int)
     def handle_train_removed(self, train_id: int):
         for train in self.train_list:
             if train.id == train_id:
@@ -69,6 +88,22 @@ class TrainManager(QObject):
                 print(f"Train {train_id} removed. Train List Length: {len(self.train_list)}")
                 return
         raise ValueError(f"Train {train_id} not found in the train list")
+    
+    @pyqtSlot(int, str, str)
+    def handle_MBO_update(self, train_id: int, authority: Authority, commanded_speed: str):
+        for train in self.train_list:
+            if train.id == train_id:
+                train.controller.train_model.decode_commanded_speed(commanded_speed)
+                train.controller.train_model.decode_authority(authority)
+                return
+            
+    @pyqtSlot(int, Authority, float)
+    def handle_CTC_update(self, train_id: int, authority: Authority, commanded_speed: str):
+        for train in self.train_list:
+            if train.id == train_id:
+                train.controller.train_model.set_commanded_speed(commanded_speed)
+                train.controller.train_model.set_authority(authority)
+                return
 
     def self_deletion_run(self):
         print(f"Train List Length: {len(manager.train_list)}")
