@@ -9,7 +9,7 @@ from train_system.common.authority import Authority
 class TrainModel(QObject) :
 
     # establish pyqt signal connections to other modules
-    satellite_received = pyqtSignal(int, str, float) # id, authority, commanded speed
+    satellite_received = pyqtSignal(int, str, float) # ID, authority, commanded speed
     satellite_sent = pyqtSignal(int, str, str, str) # ID, track_block, position, Velocity
     authority_received = pyqtSignal(str)
     position_updated = pyqtSignal(int, float)
@@ -77,7 +77,8 @@ class TrainModel(QObject) :
 
         # train status variables
         self.line = line
-        self.authority = Authority(0, 0) # "authority , block destination number"
+#        self.authority = Authority(0, 0) # "authority , block destination number"
+        self.authority : float = 0
         self.key : bytes = 0
         self.cipher_suite = 0 
         self.commanded_speed : float = 0
@@ -90,9 +91,9 @@ class TrainModel(QObject) :
         self.exterior_lights : bool = False
         self.ac : bool = False
         self.heater : bool = False
-        self.commanded_temp : float = 69
-        self.train_temp : float = 69
-        self.outdoor_temp : int = 69
+        self.commanded_temp : float = 70
+        self.train_temp : float = 70
+        self.outdoor_temp : int = 70
 
 ################################
 #### ^^^^ Constructors ^^^^ ####
@@ -181,10 +182,13 @@ class TrainModel(QObject) :
     # vvvv train status variables vvvv
 
     # this function will set the authority variable
-    # parameters : str authority
-    def set_authority(self, authority : Authority) :
+    # parameters : Authority authority
+#    def set_authority(self, authority : Authority) :
+#        self.authority = authority
+#        self.authority_received.emit(self.authority)   
+    # parameters : float authority
+    def set_authority(self, authority : float) :
         self.authority = authority
-        self.authority_received.emit(self.authority)    
 
     # this function will set the commanded_speed variable
     # parameters : float commanded_speed
@@ -333,7 +337,8 @@ class TrainModel(QObject) :
     # vvvv train status variables vvvv
 
     # this function will return the authority variable ; "authority : block destination number"
-    # return : Authority authority
+#    # return : Authority authority
+    # return : float authority
     def get_authority(self) :
         return self.authority
     
