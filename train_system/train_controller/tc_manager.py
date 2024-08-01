@@ -14,6 +14,7 @@ PASSWORD = 'danim'
 class TrainManager(QObject):
 
     test_signal = pyqtSignal(bool)
+    train_dispatched = pyqtSignal(str, int, TrainSystem)    # line, train_id, train_system
 
     def __init__(self, time_keeper: TimeKeeper = None):
         super().__init__()
@@ -48,10 +49,12 @@ class TrainManager(QObject):
             # Add hardware train to the train list
             print("Hardware Train")
             self.train_list.append(TrainSystem(self.time_keeper, self.engineer_table[train_id], line, train_id, self.ssh_client))
+            self.train_dispatched.emit(line, train_id, self.train_list[-1])
         else:
             # Add software train to the train list
             print("Software Train")
             self.train_list.append(TrainSystem(self.time_keeper, self.engineer_table[train_id], line, train_id))
+            self.train_dispatched.emit(line, train_id, self.train_list[-1])
             
         ##### ADD CONNECTIONS TO THE TRAIN SYSTEM #####
         self.train_list[-1].controller.delete_train.connect(self.handle_train_removed)
@@ -75,21 +78,36 @@ class TrainManager(QObject):
                 return
         raise ValueError(f"Train {train_id} not found in the train list")
     
+
+    ##### TRACK MODEL HANDLERS #####
+
     @pyqtSlot(int, str, str)
-    def handle_MBO_update(self, train_id: int, authority: Authority, commanded_speed: str):
+    def handle_MBO_update(self, train_id: int, authority: str, commanded_speed: str):
         for train in self.train_list:
             if train.id == train_id:
                 train.controller.train_model.decode_commanded_speed(commanded_speed)
                 train.controller.train_model.decode_authority(authority)
                 return
             
-    @pyqtSlot(int, Authority, float)
-    def handle_CTC_update(self, train_id: int, authority: Authority, commanded_speed: str):
+    ##### TRACK MODEL HANDLERS #####
+
+    @pyqtSlot(int, float, Authority, float, int)
+    def handle_CTC_update(self, train_id: int, commanded_speed: float, authority: Authority, grade: float, temp: int):
         for train in self.train_list:
             if train.id == train_id:
                 train.controller.train_model.set_commanded_speed(commanded_speed)
+                train.controller.train_model.grade = grade
+                train.controller.train_model.outdoor_temp = temp
                 train.controller.train_model.set_authority(authority)
                 return
+            
+    @pyqtSlot(int, int)
+    def handle_CTC_update(self, train_id: int, passengers: int):
+        for train in self.train_list:
+            if train.id == train_id:
+                train.controller.train_model.passengers = passengers
+                return
+    
 
     def self_deletion_run(self):
         print(f"Train List Length: {len(manager.train_list)}")
