@@ -109,7 +109,11 @@ class TrainInfoWidget(QWidget):
             if train.dispatched:
                 block_id = train.get_current_block_id()
                 block_name = str(block_id)
-                station_name = train.line.get_track_block(block_id).station
+                station = train.line.get_track_block(block_id).station
+                if station is not None:
+                    station_name = station.name
+                else:
+                    station_name = None
                 if station_name is not None:
                     block_name += f" ({station_name})"
                 self.set_table_item(row, 1, block_name)
@@ -119,7 +123,11 @@ class TrainInfoWidget(QWidget):
             arrival_time, next_stop_id = train.get_next_stop()
             if next_stop_id is not None:
                 block_name = str(next_stop_id)
-                station_name = train.line.get_track_block(next_stop_id).station
+                station = train.line.get_track_block(next_stop_id).station
+                if station is not None:
+                    station_name = station.name
+                else:
+                    station_name = None
                 if station_name is not None:
                     block_name += f" ({station_name})"
                 self.set_table_item(row, 2, block_name)

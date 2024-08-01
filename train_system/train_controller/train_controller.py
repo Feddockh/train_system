@@ -217,11 +217,11 @@ class TrainController(QObject):
                 self.set_position(self.position)
         elif self.finished:
             #### DELETE TRAIN CONTROLLER ####
-            self.delete_train.emit(self.id)
             self.train_model.current_speed = 0
+            self.set_position(0)
             self.brake.set_emergency_brake(True)
             print("!!!!!!!!!!!!!!!!!!!!! Train Controller Deleted !!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            self.polarity = 100000
+            self.delete_train.emit(self.id)
             return
             
         # Increment track block
@@ -1161,7 +1161,8 @@ class TrainModelController:
         self.line = line_name
         self.id = id
         self.time_keeper = time_keeper
-        self.train_model = MockTrainModel(time_keeper)
+        self.train_model = MockTrainModel(self.time_keeper)    ##### PUT BACCK AFTER TESTING
+        # self.train_model = TrainModel(self.time_keeper, id, line_name)
         self.engineer = engineer if engineer else Engineer()
         print(f"Engineer: {self.engineer.kp}, {self.engineer.ki}")
         self.ssh = ssh
