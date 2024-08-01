@@ -1,6 +1,7 @@
 import sys
-from train_system.train_controller.train_controller import TrainController, TrainModel, TrainSystem
+from train_system.train_controller.train_controller import TrainController, TrainModel, TrainModelController
 # from train_system.train_controller.tc_manager import TrainManager
+
 from train_system.train_controller.tc_ui import *
 from train_system.common.time_keeper import TimeKeeper
 from PyQt6.QtWidgets import QApplication
@@ -17,12 +18,12 @@ time_keeper = TimeKeeper()
 time_keeper.start_timer()   
 
 # Hardware
-# ts = TrainSystem(HOST, PORT, USERNAME, PASSWORD)
+# ts = TrainModelController(time_keeper, HOST, PORT, USERNAME, PASSWORD)
 # Software
-ts = TrainSystem()
+ts = TrainModelController(time_keeper)
 
-def tc_main(time_keeper: TimeKeeper, ts: TrainSystem):
-
+def tc_main(time_keeper: TimeKeeper, ts: TrainModelController):
+    
     tm = ts.train_model
             
     tc = ts.controller
@@ -60,7 +61,7 @@ def tc_main(time_keeper: TimeKeeper, ts: TrainSystem):
     #test.kp_updated.connect(tc.handle_kp_changed) ###checked but needs to update table
     #test.ki_updated.connect(tc.handle_ki_changed) ###checked but needs to update table
     test.position_updated.connect(tc.handle_position_changed) ###checked
-    test.destination_updated.connect(tc.handle_destination_changed) ###checked
+    test.destination_updated.connect(tc.handle_destination_changed) ### DOESN"T WORK
     test.textSubmitted.connect(tc.handle_authority_changed)
 
     #DRIVER TO TRAIN CONTROLLER

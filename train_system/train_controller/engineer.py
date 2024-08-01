@@ -4,7 +4,7 @@ class Engineer(QObject):
         kp_updated = pyqtSignal(int)
         ki_updated = pyqtSignal(int)
         
-        def __init__(self, kp=400, ki=20):
+        def __init__(self, kp=25, ki=0.5):
             # super().__init__()
             self.kp = kp
             self.ki = ki

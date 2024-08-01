@@ -656,7 +656,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
 
         self.setWindowTitle("Driver") #Driver
 
-        self.tm = MockTrainModel()
+        self.tm = MockTrainModel(time_keeper)
         #temp ac for mins and maxes
 
 
