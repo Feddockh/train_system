@@ -2,6 +2,7 @@
 
 import sys
 from PyQt6.QtWidgets import QApplication
+from cryptography.fernet import Fernet
 
 from train_system.common.time_keeper import TimeKeeper
 from train_system.ctc_manager.ctc_manager import CTCOffice
@@ -48,20 +49,25 @@ def main():
     ### Instantiate the MBOController object and the operator's UI ###
     # Connect MBO to Train Model
     # Connect Train Model to MBO
+    # Function to generate and store a key
+    def write_key():
+        key = Fernet.generate_key()
+        with open("key.key", "wb") as key_file:
+            key_file.write(key)
+            
+    def load_key():
+        return open("key.key", "rb").read()
+    write_key()
+    key = load_key()
+    
     mbo_manager = MBOOffice(time_keeper)
     mbo_satellite = mbo_manager.Satellite()
-    
     mbo_ui = MBOWindow()
     mbo_ui.show()
     
-    
-
-
-    
-
-
-
-
+    mbo_satellite.key_recieved.emit(key)
+    #emit key to train_manager?
+    train_manager.key_recieved.emit(key)
 
     sys.exit(app.exec())
 

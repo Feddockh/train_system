@@ -2,7 +2,7 @@
 import paramiko
 import json
 from collections import deque as dq
-
+from cryptography.fernet import Fernet
 from PyQt6.QtCore import Qt, pyqtSlot, pyqtSignal, QObject
 
 from train_system.common.time_keeper import TimeKeeper
@@ -996,12 +996,7 @@ class MockTrainModel(QObject):
     def set_authority(self, authority: Authority):
         self.authority = authority
         self.authority_received.emit(self.authority)
-    def decode_authority(self, authority: str):
-        ### Decode the authority string ###
-        new_authority = Authority()
-        new_authority.authority = authority
-        self.set_authority(authority)
-
+    
     # Float
     def get_commanded_speed(self):
         # Logic to get commanded speed from the train model
@@ -1011,16 +1006,13 @@ class MockTrainModel(QObject):
         # self.comm_speed_received.emit(self.commanded_speed)
         print("Train Model -- Commanded Speed: ", self.commanded_speed)
         # self.comm_speed_received.emit(self.commanded_speed)
-    def decode_commanded_speed(self, speed: str):
-        # String to float
-        self.set_commanded_speed(float(speed))
+    
 
     def set_position(self, position: float):
         self.position = position
     @pyqtSlot(int)
     def handle_block_update(self, block: int) -> None:
         self.block_number = block
-
 
     # Float
     def get_commanded_temp(self):
@@ -1104,6 +1096,61 @@ class MockTrainModel(QObject):
     @pyqtSlot(bool)
     def handle_lights_update(self, status: bool) -> None:
         self.lights = status
+    
+    
+    #encrypt and decrypt for integration 
+    
+    ##slot to create self.cipher_suite with key initiated in top level
+        #or train manager needs to send to each train?? 
+    @pyqtSlot(str)
+    def create_cipher_suite(self, key):
+        key_value = key
+        self.cipher_suite.Fernet(key_value)
+        
+    def encrypt(self, plain_text):
+            """_summary_
+
+            Args:
+                key (_type_): _description_
+                plain_text (_type_): _description_
+
+            Returns:
+                _type_: _description_
+            """
+             
+            cipher_text = self.cipher_suite.encrypt(plain_text.encode())
+            
+            return (cipher_text)
+    
+    def decrypt(self, cipher_text):
+            """_summary_
+
+            Args:
+                key (_type_): _description_
+                cipher_text (_type_): _description_
+
+            Returns:
+                _type_: _description_
+            """
+            
+            plain_text = self.cipher_suite.decrypt(cipher_text.decode())
+            
+            return (plain_text)
+    
+    def decode_commanded_speed(self, speed: str):
+        # String to float
+        self.decrypt(speed)
+        self.set_commanded_speed(float(speed))
+    
+    def decode_authority(self, authority: str):
+        ### Decode the authority string ###
+        self.decrypt(authority)
+        new_authority = Authority()
+        new_authority.authority = authority
+        self.set_authority(authority)
+    
+    
+    
         
 
 
