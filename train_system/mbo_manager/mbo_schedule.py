@@ -49,8 +49,7 @@ class Schedules:
                                     'Inglewood': 131, 'Central 1': 140, 'Whited 1' : 23, 'Edgebrook': 1,
                                     'Pioneer': 3, 'Station': 15, 'Whited 2': 21,
                                     'South Bank': 30, 'Central 2' : 38, 'Overbrook 2' : 56, 'past_yard': 62, 'to_yard': 57}
-            
-            #TODO update red line block info 
+          
             # Route blocks for the red line
             self.route_blocks_red = {'Herron': 16, 'Swissville' : 21,'Penn Station' : 25, 'Steel Plaza': 35, 'First Ave': 45, 'Station Square': 48,
                                     'South Hills Junction': 60, 'Shadyside': 7, 'yard': 78 }
@@ -113,10 +112,9 @@ class Schedules:
                 driver_index = 0
                 schedule = []
 
-                for train_id in range(1, num_of_trains + 1):
+                for train_id in range(0, num_of_trains):
                     train_current_time = start_time + (train_id - 1) * train_departure_interval
 
-                    
                     while train_current_time < end_time:
                         driver = self.drivers[driver_index % len(self.drivers)]
                         crew1 = self.crew[crew_index % len(self.crew)]
@@ -257,7 +255,7 @@ class Schedules:
                 driver_index = 0
                 schedule = []
 
-                for train_id in range(1, num_of_trains + 1):
+                for train_id in range(20, num_of_trains + 20):
                     train_current_time = start_time + (train_id - 1) * train_departure_interval
 
                     

@@ -24,11 +24,14 @@ class MBOOffice(QObject):
         """
         Initialize the MBO Office
         """
+    
         self.time_keeper = time_keeper
-        self.green_line = Line('Green')
+        #self.time_keeper.tick.connect(self.handle_time_update)
+        
+        self.green_line = Line("green", time_keeper)
         self.green_line.load_defaults()
         
-        self.red_line = Line('Red')
+        self.red_line = Line("red", time_keeper)
         self.red_line.load_defaults()
         
         #list of trains 
@@ -82,63 +85,79 @@ class MBOOffice(QObject):
         return(self.block_speed)
     
     def compute_authority(self, train_id, line_name, position, velocity, block):
-        """
-        Calculate trains authority such that more than one train can be in a block 
-        each train stops at it's desitnation and opens the doors, and stops before any block maintenance 
-        """
-        # "authority:destination_block"
-            #where authority is the m to it needs to stop 
-            #where destination block is next station 
+        """Compute authority for trains such that 2 trains can be in the same block 
 
-        #if block is in 57 then train padding needs to be bigger
-        #block  in red 
+        Args:
+            train_id (int): identifier of the train
+            line_name (str): the line the train is one
+            position (float): the current distance the train has traveld since leaving from yard
+            velocity (float): current velocity of the train
+            block (int): the current block the train is in
 
-        #initial authority will be unobtructed path to destination 
-            #looking for blocks under maint, switch positions then will change 
-            
-        #if train infront is within certain distance of the train then set authority tooooo
-            # service breaking distance? 
-            #set to back of train infront with some wiggle room 
+        Returns:
+            str: authority and destination block packed together to send to train
+        """
         
-        #use mbo_train_dispatch to adjust the departure time and next stop for the train once it reaches it's destination 
-
+        #load in train info and trains destination
         train = self.get_train(train_id, line_name)
-        line = self.get_line(line_name)
-        
         destination_block = train.get_next_stop()[1]
         
-        path = train.get_route_to_next_stop()
-        unobstructed_path = line.get_unobstructed_path(path)
+        #load in line info
+        if line_name == "Green":
+            line = self.green_line
+        elif line_name == "Red":
+            line = self.red_line    
         
-        authority_distance = line.get_path_length(unobstructed_path)
-        #authority_distance -= distance traveled from previous station 
-        #authority_distance += stop block length/2 +half of train ?? 
-        
-        #check 2 trains will not be to close 
-            #if within 40m + 33m (back of train) to next train 
-                #authority goes to 10m from back of next train 
-                
-            #if within 10m train
-                #authoirity goes to 0? 
-        
-        #for trains on line in self.trains:
-            #if (trains.position - train.position <= )  
+        #if train has not left yard or station = 0 
+        if train.departed == False or train.dispatched == False:
+            authority_distance = 0
             
-            #if (line = green line) and block = 57?     
-                #make padding bigger 
-            #if (line = red line) and block = ? 
-                #make padding bigger
-                
-        #if (current block == next_stop) and (velocity == 0) and (train.departed == False)    
+        #find path and unobstructed path
+        path = train.get_route_to_next_stop()
+        path_length = line.get_path_length(path)
         
-        #make string 
-        # authority = "authority_distance:destination_block"
-        return (self.authority)
+        unobstructed_path = line.get_unobstructed_path(path)
+        unobstructed_path_length = line.get_path_length(unobstructed_path)
+        
+        path_current_block = line.get_path(152, 152, block)
+        distance_to_block = line.get_path_length(path_current_block)
+        
+        #if no line obstacle to destination, else unobstructed path
+        if(unobstructed_path == path):
+            #path length - distance traveled in current block - distance needed to stop at station
+            authority_distance = path_length - ( (destination_block.get_length / 2) - (.5 * 32.2) ) - (position - distance_to_block)
+        else:
+            authority_distance = unobstructed_path_length 
+        
+        #for trains in train 
+        for (train_id, line_name), train_1 in self.trains.items():
+            if train_1.line == line_name:
+                #greean line to yard check
+                if(block == 57 or block == 58 or block == 59 or block == 61):
+                    #allow wiggle room for switch to go back into position and when position is off regular count
+                    if(train_1.current_block == path[1] or train_1.current_block == unobstructed_path[1]):
+                        authority_distance = 0
+                    #extra authority to make sure train gets back to the yard
+                    elif (destination_block == line.yard):
+                        authority_distance += 50
+                
+                elif(0 <= train_1.position - position <= 65):
+                    #trains are to close together back one needs to slow down/stop
+                    authority_distance = 0
+                
+                elif(0 <= train_1 - position <= 125):
+                    #train behind has authority to back of next train w/ some wiggle room 
+                    authority_distance = (train_1.position - position) - 65
+                                     
+        # authority = "authority_distance:destination_block"     
+        authority = str(authority_distance) + ":" + str(destination_block)
+
+        return (authority)
              
     class Satellite(QObject):
         
-        #"trainid", "authority:destination_block", "commanded_speed"
-        send_data_signal = pyqtSignal(str, str, str)
+        #train_id, "authority:destination_block", "commanded_speed"
+        send_data_signal = pyqtSignal(int, str, str)
         
         def __init__(self):
             super().__init__()
@@ -146,32 +165,28 @@ class MBOOffice(QObject):
             self.mbo_mode = True
             self.key = ''
             
-        @pyqtSlot(int, str)
-        def satellite_recieve(self, train_id: int, encrypted_train_information: str) -> None:
+        @pyqtSlot(int, str, str, str)
+        def satellite_recieve(self, train_id: int, encrypt_block: str, encrypt_position: str, encrypt_velocity:str ) -> None:
             """get updated information regarding the trains current position, velocity, and current block 
 
             Args:
                 encrypted_train_id (str): identifier of which train is being updating 
-                encrypted_train_information (str): "position:velocity:block"
+                "
             """
-            #decrypt information sent from the train model
-            train_id = self.decrypt(train_id)
-            train_information = self.decrypt(encrypted_train_information)
-        
-            #split train information to get position, velocity, and current block of the train
-            new_position = 0
-            new_velocity = 0
-            new_block = 0
             
-            if new_block != train.current_block :
-                train.move_train_to_next_block()
+            #decrypt information sent from the train model
+            new_position = self.decrypt(encrypt_position)
+            new_velocity = self.decrypt(encrypt_velocity)
+            new_block = self.decrypt(encrypt_block)
             
             #update the information for each train
             train = self.get_train(train_id)
-            train.position = new_position
-            train.velocity = new_velocity
-            train.current_block = new_block
+            train.position = float(new_position)
+            train.velocity = float(new_velocity)
+            train.current_block = int(new_block)
             
+            if new_block != train.current_block :
+                train.move_train_to_next_block()   
             
         def satellite_send(self, train_id: int):
             """send information about authority and commanded speed to the train model 
@@ -195,7 +210,7 @@ class MBOOffice(QObject):
             if (self.mbo_mode == True):
                 self.send_data_signal.emit(encrypt_train_id, encrypt_authority, encrypt_speed)
             
-        def encrypt(self, key, plain_text):
+        def encrypt(self, plain_text):
             """_summary_
 
             Args:
@@ -210,7 +225,7 @@ class MBOOffice(QObject):
             
             return (cipher_text)
             
-        def decrypt(self, key, cipher_text):
+        def decrypt(self, cipher_text):
             """_summary_
 
             Args:

@@ -37,6 +37,14 @@ class TrackModel:
         self.heaters: bool = False
         self.tickets_by_station: dict[str, int] = {}
 
+        self.green_line = Line('Green')
+        self.green_line.load_defaults()
+        self.lines.append(self.green_line)
+
+        self.red_line = Line('Red')
+        self.red_line.load_defaults()
+        self.lines.append(self.red_line)
+
         # Prepare lines
         for line in lines:
             self.lines[line.name] = line

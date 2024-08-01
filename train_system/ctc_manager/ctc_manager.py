@@ -32,18 +32,20 @@ class CTCOffice(QObject):
         self.lines: List[Line] = []
 
         # Create the green line object
-        green_line = Line("green")
-        green_line.load_defaults()
-        green_line.track_block_occupancy_updated.connect(self.handle_occupancy_update)
-        green_line.switch_position_updated.connect(self.handle_switch_position_update)
-        self.lines.append(green_line)
+        self.green_line = Line("green", time_keeper)
+        self.green_line.load_defaults()
+        self.green_line.track_block_occupancy_updated.connect(self.handle_occupancy_update)
+        self.green_line.switch_position_updated.connect(self.handle_switch_position_update)
+        self.green_line.enable_signal_queue = True
+        self.lines.append(self.green_line)
 
         # Create the red line object
-        red_line = Line("red")
-        red_line.load_defaults()
-        red_line.track_block_occupancy_updated.connect(self.handle_occupancy_update)
-        red_line.switch_position_updated.connect(self.handle_switch_position_update)
-        self.lines.append(red_line)
+        self.red_line = Line("red", time_keeper)
+        self.red_line.load_defaults()
+        self.red_line.track_block_occupancy_updated.connect(self.handle_occupancy_update)
+        self.red_line.switch_position_updated.connect(self.handle_switch_position_update)
+        self.red_line.enable_signal_queue = True
+        self.lines.append(self.red_line)
 
         # Create a list of train objects indexed by the train ID and the line name
         self.trains: Dict[Tuple[int, str], CTCTrainDispatch] = {}
@@ -201,7 +203,7 @@ class CTCOffice(QObject):
                     move_train = True
 
                 # Check if the train has exceeded the time per block
-                elif train.time_in_block >= current_block.length / train.suggested_speed:
+                elif train.suggested_speed != 0 and train.time_in_block >= current_block.length / train.suggested_speed:
                     move_train = True
 
                 # Check if the next block is clear and not under maintenance
@@ -362,8 +364,8 @@ class CTCOffice(QObject):
         # Update the speed and authority of the trains (this is done on positive and negative occupancy signals)
         self.update_all_trains_speed_authority(line_name)
 
-    @pyqtSlot(str, int)
-    def handle_switch_position_update(self, line_name: str, switch_number: int) -> None:
+    @pyqtSlot(str, int, int)
+    def handle_switch_position_update(self, line_name: str, switch_number: int, new_position: int) -> None:
         self.update_all_trains_speed_authority(line_name)
 
     @pyqtSlot(int, int, int)
