@@ -112,6 +112,29 @@ class TrackBlock(QObject):
             other.line, other.section, other.number
         )
 
+    def __deepcopy__(self, memo):
+        # Create a new instance of TrackBlock
+        new_copy = TrackBlock(
+            self.line, self.section, self.number, self.length, 
+            self.grade, self.speed_limit, self.elevation, 
+            self.cumulative_elevation, self.underground, 
+            self._crossing_signal is not None, self._light_signal is not None, 
+            self.connecting_blocks, self.station, self.switch, self.beacon
+        )
+        
+        # Copy the dynamic attributes manually
+        new_copy._suggested_speed = self._suggested_speed
+        new_copy._authority = Authority(self._authority.get_distance(), self._authority.get_stop_block())
+        new_copy._occupancy = self._occupancy
+        new_copy._crossing_signal = self._crossing_signal
+        new_copy._light_signal = self._light_signal
+        new_copy._under_maintenance = self._under_maintenance
+        new_copy._track_failure = self._track_failure
+        new_copy._plc_unsafe = self._plc_unsafe
+        
+        # Return the new instance
+        return new_copy
+
     @property
     def suggested_speed(self) -> int:
         return self._suggested_speed
@@ -138,8 +161,9 @@ class TrackBlock(QObject):
     
     @occupancy.setter
     def occupancy(self, value: bool) -> None:
-        self._occupancy = value
-        self.occupancy_updated.emit(self.number, value)
+        if self._occupancy != value:
+            self._occupancy = value
+            self.occupancy_updated.emit(self.number, value)
 
     @property
     def crossing_signal(self) -> bool:
@@ -157,8 +181,9 @@ class TrackBlock(QObject):
     
     @light_signal.setter
     def light_signal(self, value: bool) -> None:
-        self._light_signal = value
-        self.light_signal_updated.emit(self.number, value)
+        if self._light_signal != value:
+            self._light_signal = value
+            self.light_signal_updated.emit(self.number, value)
 
     @property
     def under_maintenance(self) -> bool:
@@ -166,8 +191,9 @@ class TrackBlock(QObject):
     
     @under_maintenance.setter
     def under_maintenance(self, value: bool) -> None:
-        self._under_maintenance = value
-        self.under_maintenance_updated.emit(self.number, value)
+        if self._under_maintenance != value:
+            self._under_maintenance = value
+            self.under_maintenance_updated.emit(self.number, value)
 
     @property
     def track_failure(self) -> TrackFailure:
@@ -175,5 +201,6 @@ class TrackBlock(QObject):
     
     @track_failure.setter
     def track_failure(self, value: TrackFailure) -> None:
-        self._track_failure = value
-        self.track_failure_updated.emit(self.number, value)
+        if self._track_failure != value:
+            self._track_failure = value
+            self.track_failure_updated.emit(self.number, value)

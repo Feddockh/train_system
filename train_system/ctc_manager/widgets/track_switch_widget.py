@@ -2,7 +2,7 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QTableWidget,
                              QTableWidgetItem, QHeaderView, QComboBox, 
                              QAbstractItemView)
 from PyQt6.QtGui import QColor, QPalette
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, pyqtSlot
 from typing import Optional
 
 from train_system.common.palette import Colors
@@ -84,6 +84,9 @@ class TrackSwitchWidget(QWidget):
         # Add data to the table
         self.update_table_data()
 
+        # Connect the line switch signal to the update switch position slot
+        self.line.switch_position_updated.connect(self.update_switch_position)
+
         layout.addWidget(self.table)
         self.setLayout(layout)
 
@@ -143,4 +146,19 @@ class TrackSwitchWidget(QWidget):
 
         self.line = line
         self.rows = len(line.switches)
+        self.update_table_data()
+
+    @pyqtSlot(str, int, int)
+    def update_switch_position(self, line_name: str, switch_number: int, new_position: int) -> None:
+
+        """
+        Updates the switch position of a track switch.
+        Used to updated options when switches are changed by track controller.
+
+        Args:
+            line_name (str): The name of the line.
+            switch_number (int): The number of the switch.
+            new_position (int): The new position.
+        """
+
         self.update_table_data()
