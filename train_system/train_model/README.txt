@@ -3,7 +3,17 @@ Train Model
 Jeremy Love
 8/1/2024
 
+
+README.txt
+train_system/train_system/train_model/README.txt
+
 This file will explain the purpose and implementation of each file found within the Train Model Module (train_system/train_system/train_model).
+
+
+__init__.py
+train_system/train_system/train_model/__init__.py
+
+This file is required for the implementation of the Train Model within itself and within the larger Train System.
 
 
 train_model_v4.py
@@ -22,6 +32,7 @@ train_system/train_system/train_model/train_model_ui_v3.py
 
 This file implements the user interface display for the Train Model module through implementation of PyQt.
 This user interface displays all key module inputs and outputs for each train model instance, as well as a test bench for intra-module testing.
+
 
 Older_Versions/
 train_system/train_system/train_model/Older_Versions
