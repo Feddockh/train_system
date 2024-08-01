@@ -2,13 +2,18 @@
 
 import sys
 from PyQt6.QtWidgets import QApplication
+from cryptography.fernet import Fernet
 
 from train_system.common.time_keeper import TimeKeeper
 from train_system.ctc_manager.ctc_manager import CTCOffice
 from train_system.ctc_manager.dispatcher_ui import DispatcherUI
+from train_system.track_controller.track_controller_manager import TrackControllerManager
+from train_system.mbo_manager.mbo_manager import MBOOffice
+from train_system.mbo_manager.mbo_ui import MBOWindow
 from train_system.train_controller.tc_manager import TrainManager
+from train_system.track_model.track_model import TrackModel
 
-from train_system.train_controller.train_controller import TrainSystem
+from train_system.train_controller.train_controller import TrainModelController
 
 def main():
 
@@ -24,17 +29,30 @@ def main():
     dispatcher_ui = DispatcherUI(time_keeper, ctc_manager.lines, ctc_manager.trains)
     ctc_manager.connect_dispatcher_ui(dispatcher_ui)
     dispatcher_ui.show()
-
-    ### Instantiate the TrackController object and the programmer's UI ###
     
 
-    ### Instantiate the TrackModel object and the track's UI ###
+    ### Instantiate the TrackController object and the programmer's UI ###
+    track_controller_manager = TrackControllerManager(time_keeper)
 
+    ### Instantiate the TrackModel object and the track's UI ###
+    track_model = TrackModel(time_keeper)
 
     ### Instantiate the TrainController object and the driver's UI ###
     train_manager = TrainManager(time_keeper)
+    # track_model.track_to_train.connect(train_manager.handle_CTC_update)
+    # train_manager.passengers_to_train.connect(train_manager.handle_passenger_update)
+    
+    '''
+    # train_manager.train_dispatched.connect(mbo.handle_dispatch)   # Signal to make more connections for the Train Model speaks to MBO
+    # mbo.send_satellite.connect(train_manager.handle_MBO_update)   # MBO speaks to Train Model
+
+    # def handle_dispatch(train_system: TrainModelController):
+    #     train_system.satellite_sent.connect(mbo.satellite_receive)
+    #     train_system.set_cipher_suite(key)
+
     # Connect Track model's outputs to manager
     # Connect MBO's outputs to manager
+    '''
 
     # Connect the CTC's dispatch signal to the Train Manager's dispatch handler
     
@@ -47,12 +65,23 @@ def main():
     ### Instantiate the MBOController object and the operator's UI ###
     # Connect MBO to Train Model
     # Connect Train Model to MBO
-
-
+    # Function to generate and store a key
+    def write_key():
+        key = Fernet.generate_key()
+        with open("key.key", "wb") as key_file:
+            key_file.write(key)
+            
+    def load_key():
+        return open("key.key", "rb").read()
+    write_key()
+    key = load_key()
     
-
-
-
+    mbo_manager = MBOOffice(time_keeper)
+    mbo_satellite = mbo_manager.Satellite()
+    mbo_ui = MBOWindow()
+    # mbo_ui.show()
+    
+    mbo_satellite.key_recieved.emit(key)
 
 
     sys.exit(app.exec())
