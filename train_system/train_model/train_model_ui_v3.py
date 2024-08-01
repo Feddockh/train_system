@@ -1,6 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QPushButton, QFormLayout, QLineEdit, QLabel
-from PyQt6.QtWidgets import QHeaderView
+from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QPushButton, QFormLayout, QLineEdit, QLabel, QHeaderView
 from train_system.common.palette import Colors
 from train_system.common.time_keeper import TimeKeeper
 from train_system.train_model.train_model_v4 import TrainModel
@@ -86,7 +85,7 @@ class TrainModelUI(QWidget) :
         # commanded speed testbech input
         self.cmd_speed_input = QLineEdit()
         self.cmd_speed_input.setStyleSheet(f"background-color: {Colors.GREY}; color: {Colors.BLACK};")
-        self.cmd_speed_input.setPlaceholderText("(miles per hour)")
+        self.cmd_speed_input.setPlaceholderText("(miles / hour)")
         label = QLabel("Enter Commanded Speed:")
         label.setStyleSheet(f"color: {Colors.BLACK};")
         input_form.addRow(label, self.cmd_speed_input)
