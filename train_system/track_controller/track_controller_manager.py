@@ -12,7 +12,10 @@ class TrackControllerManager(QObject):
         super().__init__()
 
         """
-        Initialize the Track Controller
+        Initialize the Track Controller Manager
+
+        Args:
+            time_keeper(TimerKeeper): Object used to handle tick and timestep
         """
         
         # Creating Green Line
