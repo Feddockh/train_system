@@ -685,7 +685,7 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.authority  = 0
 
         self.position = 0
-        self.destination = 0
+        self.destination = ""
         self.station_name = ""
 
         temp_eng = Engineer()
@@ -1320,9 +1320,8 @@ class DriverWindow(QMainWindow): ###DriverWindow
 
     @pyqtSlot(float)
     def handle_position_update(self, pos: float) -> None:
-        self.position = self.convert_to_ft(pos)
-
-        self.loc_label.setText("Location: " + str(self.position) + " ft")
+        # self.position = self.convert_to_ft(pos)
+        self.loc_label.setText("Location: " + str(pos) + " ft")
 
     @pyqtSlot(str)
     def handle_destination_update(self, des: str):

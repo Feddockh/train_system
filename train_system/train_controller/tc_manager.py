@@ -29,6 +29,7 @@ class TrainManager(QObject):
         self.train_count = 40
         self.engineer_table: list[Engineer] = [Engineer()] * self.train_count
         self.train_list: list[TrainModelController] = []
+
         if HOSTNAME and PORT and USERNAME and PASSWORD:
             print("Hostname: ", HOSTNAME, "Port: ", PORT, "Username: ", USERNAME, "Password: ", PASSWORD)
             self.ssh_client = self.create_ssh_connection(HOSTNAME, PORT, USERNAME, PASSWORD)
@@ -78,7 +79,7 @@ class TrainManager(QObject):
                 
                 # Disconnect signals
                 train.controller.delete_train.disconnect(self.handle_train_removed)
-                self.test_signal.disconnect(train.controller.handle_fault_update)
+                self.time_keeper.tick.disconnect(train.controller.handle_tick)
 
                 # Remove the train
                 self.train_list.remove(train)
@@ -154,8 +155,8 @@ if __name__ == "__main__":
     time_keeper.start_timer()
     manager = TrainManager(time_keeper)
 
-    # manager.engineer_table[0].set_engineer(25, 0.5) # Software
-    manager.engineer_table[1].set_engineer(30, 0.5) # Hardware
+    manager.engineer_table[0].set_engineer(25, 0.5) # Software
+    # manager.engineer_table[1].set_engineer(30, 0.5) # Hardware
     manager.handle_dispatch(1, "green")
 
     # manager.multiple_window_run()
