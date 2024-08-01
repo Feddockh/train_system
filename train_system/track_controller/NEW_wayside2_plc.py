@@ -50,7 +50,7 @@ if(track_blocks[28].occupancy and track_blocks[29].occupancy == False and track_
 if(track_blocks[29].occupancy and track_blocks[107].occupancy and track_blocks[107].authority > 0):
 
     # set authority at 57 to zero, and wait for those blocks to become unoccupied
-    track_blocks[28].authority = 0
+    track_blocks[28]._authority.set_distance(0)
 
     # set light signals 
     track_blocks[28]._light_signal = False
@@ -85,8 +85,8 @@ if(track_blocks[34].occupancy == False and track_blocks[33].occupancy == False a
 if(track_blocks[33].occupancy and track_blocks[34].occupancy and track_blocks[109].occupancy):
 
     # set authorities of 62 and 153 to zero
-    track_blocks[33].authority = 0
-    track_blocks[109].authority = 0
+    track_blocks[33]._authority.set_distance(0)
+    track_blocks[109]._authority.set_distance(0)
 
     # set lights to red
     track_blocks[33]._light_signal = False

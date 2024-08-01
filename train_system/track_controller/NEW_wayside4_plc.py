@@ -24,7 +24,7 @@ if(track_blocks[39].occupancy and (track_blocks[0].occupancy == False and track_
     #set switch position
     track_blocks[8].switch.set_child_index(1)
 
-    track_blocks[9].authority = 0
+    track_blocks[9]._authority.set_distance(0)
     #set ligth color
     track_blocks[8]._light_signal = True
     track_blocks[9]._light_signal = False
@@ -35,7 +35,7 @@ if(track_blocks[39].occupancy and (track_blocks[0].occupancy == False and track_
 if(track_blocks[8].occupancy and track_blocks[39].authority < 0):
     
     # set authority to zero
-    track_blocks[9].authority = 0
+    track_blocks[9]._authority.set_distance(0)
 
     # set switch pos
     track_blocks[8].switch.set_child_index(1)
@@ -53,7 +53,7 @@ if(track_blocks[39].occupancy and
      track_blocks[6].occupancy == False and track_blocks[7].occupancy == False and track_blocks[8].occupancy == False)):
 
     # set authority
-    track_blocks[9].authority = 0
+    track_blocks[9]._authority.set_distance(0)
 
     # set switch pos
     track_blocks[8].switch.set_child_index(1)
@@ -69,7 +69,7 @@ if(track_blocks[8].occupancy and track_blocks[38].occupancy and
     track_blocks[12].occupancy == False and track_blocks[14].occupancy == False)):
 
     # set authority
-    track_blocks[38].authority = 0
+    track_blocks[38]._authority.set_distance(0)
 
     # set switch pos
     track_blocks[8].switch.set_child_index(0)
@@ -105,9 +105,9 @@ if((track_blocks[0].occupancy or track_blocks[1].occupancy or track_blocks[2].oc
     print("EMERGENCY STOP")
 
     #Set Authority
-    track_blocks[0].authority = 0
-    track_blocks[14].authority = 0
-    track_blocks[15].authority = 0
+    track_blocks[0]._authority.set_distance(0)
+    track_blocks[14]._authority.set_distance(0)
+    track_blocks[15]._authority.set_distance(0)
 
     #set lights
     track_blocks[0]._light_signal = False
@@ -159,7 +159,7 @@ if(track_blocks[0].occupancy and track_blocks[15].occupancy == False and track_b
     track_blocks[15].switch.set_child_index(0)
 
     #set authority at 15
-    track_blocks[14].authority = 0
+    track_blocks[14]._authority.set_distance(0)
 
     #set light signal
     track_blocks[0]._light_signal = False
@@ -206,7 +206,7 @@ if(track_blocks[26].occupancy and track_blocks[27].occupancy == False and track_
     track_blocks[26].switch.set_child_index(0)
 
     #set authority at 76 to zero
-    track_blocks[38].authority = 0
+    track_blocks[38]._authority.set_distance(0)
 
     #set light color
     track_blocks[26]._light_signal = False
@@ -223,7 +223,7 @@ if(track_blocks[38].occupancy and (track_blocks[15].occupancy == False and track
     track_blocks[26].switch.set_child_index(1)
 
     #set authority to 0 at 28 jsut in case theres a trian coming form that direction
-    track_blocks[27].authority = 0
+    track_blocks[27]._authority.set_distance(0)
 
     #set lights
     track_blocks[26]._light_signal = True
@@ -239,7 +239,7 @@ if(track_blocks[26].occupancy and track_blocks[33].occupancy == False and track_
     track_blocks[26].switch.set_child_index(1)
 
     #set authority at 28 to zero
-    track_blocks[27].authority = 0
+    track_blocks[27]._authority.set_distance(0)
 
     #set lights
     track_blocks[26]._light_signal = False

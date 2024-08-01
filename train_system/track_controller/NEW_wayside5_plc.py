@@ -45,13 +45,13 @@ if (track_blocks[0].occupancy == False
 # emergency stop - elif(Q & H.M-H.B)
 elif(track_blocks[2].occupancy == True and 
     track_blocks[11].switch.get_child_index() == 0):
-    track_blocks[2]._authority = 0
+    track_blocks[2]._authority.set_distance(0)
     track_blocks[2]._plc_unsafe = False
 
 # emergency stop - elif(H.T & H-T)
 elif(track_blocks[7].occupancy == True and
     track_blocks[8].switch.get_child_index() == 1):
-    track_blocks[7]._authority = 0
+    track_blocks[7]._authority.set_distance(0)
     track_blocks[7]._plc_unsafe = False
 
 # Train coming down

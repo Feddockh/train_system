@@ -73,7 +73,7 @@ elif(track_blocks[2].occupancy == True and
     track_blocks[9].occupancy == True or
     track_blocks[10].occupancy == True or
     track_blocks[11].occupancy == True)):
-    track_blocks[2]._authority = 0 
+    track_blocks[2]._authority.set_distance(0)
     track_blocks[3]._plc_unsafe = False  
     track_blocks[11]._plc_unsafe = False 
 elif(track_blocks[12].occupancy == True and 
@@ -86,7 +86,7 @@ elif(track_blocks[12].occupancy == True and
     track_blocks[9].occupancy == True or
     track_blocks[10].occupancy == True or
     track_blocks[11].occupancy == True)):
-    track_blocks[12]._authority = 0  
+    track_blocks[12]._authority.set_distance(0)
     track_blocks[3]._plc_unsafe = False  
     track_blocks[11]._plc_unsafe = False 
 
@@ -191,13 +191,13 @@ elif(track_blocks[26].occupancy == True and
  
 #emergency stop - if(M.lastBlock & N-R)
 elif(track_blocks[2].occupancy == True and track_blocks[3].switch.get_child_index() == True): 
-    track_blocks[2]._authority = 0  
+    track_blocks[2]._authority.set_distance(0)
     track_blocks[3]._plc_unsafe = False  
     track_blocks[11]._plc_unsafe = False 
 
 #emergency stop - if(LOOP.lastBlock & N-O)
 elif(track_blocks[12].occupancy == True and track_blocks[11].switch.get_child_index() == False): 
-    track_blocks[12]._authority = 0  
+    track_blocks[12]._authority.set_distance(0)
     track_blocks[3]._plc_unsafe = False  
     track_blocks[11]._plc_unsafe = False 
 
@@ -402,7 +402,7 @@ elif(track_blocks[3].switch.get_child_index() == False
 elif(track_blocks[3].switch.get_child_index() == False
     and track_blocks[2].occupancy == True and
     track_blocks[2]._light_signal == False):
-    track_blocks[2]._authority = 0
+    track_blocks[2]._authority.set_distance(0)
     track_blocks[2]._plc_unsafe = False
 
 

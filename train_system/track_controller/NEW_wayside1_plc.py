@@ -21,7 +21,7 @@ if(track_blocks[12].occupancy and track_blocks[0].occupancy == False and track_b
     #set switch position
     track_blocks[12].switch.set_child_index(1)
 
-    track_blocks[0].authority = 0
+    track_blocks[0]._authority.set_distance(0)
 
     #set lights
     track_blocks[0]._light_signal = False
@@ -32,7 +32,7 @@ if(track_blocks[12].occupancy and track_blocks[0].occupancy == False and track_b
 if(track_blocks[12].occupancy and track_blocks[0].occupancy and track_blocks[11].occupancy == False):
     
     #set authority at 1 to 0
-    track_blocks[0].authority = 0
+    track_blocks[0]._authority.set_distance(0)
 
     #set switch position
     track_blocks[12].switch.set_child_index(1)
@@ -74,7 +74,7 @@ if(track_blocks[28].occupancy and track_blocks[32].occupancy == False and track_
 if(track_blocks[28].occupancy and track_blocks[32].occupancy and track_blocks[29].occupancy == False):
 
     #set authority at 150 to zero
-    track_blocks[32].authority = 0
+    track_blocks[32]._authority.set_distance(0)
 
     #set switch position
     track_blocks[28].switch.set_child_index(0)
@@ -109,7 +109,7 @@ if(track_blocks[32].occupancy and track_blocks[0].occupancy and (track_blocks[12
     #set switch position at 29 to 30, that will then allow the train to go through
     track_blocks[28].switch.set_child_index(0)
 
-    track_blocks[32].authority = 0
+    track_blocks[32]._authority.set_distance(0)
 
     track_blocks[0]._light_signal = False
     track_blocks[11]._light_signal = False

@@ -69,7 +69,7 @@ elif(track_blocks[3].occupancy == True and
     track_blocks[9].occupancy == True or
     track_blocks[10].occupancy == True or 
     track_blocks[11].occupancy == True)):
-    track_blocks[3]._authority = 0 
+    track_blocks[3]._authority.set_distance(0)
     track_blocks[3]._plc_unsafe = False
 
 elif(track_blocks[26].occupancy == True and 
@@ -80,7 +80,7 @@ elif(track_blocks[26].occupancy == True and
     track_blocks[9].occupancy == True or
     track_blocks[10].occupancy == True or 
     track_blocks[11].occupancy == True)):
-    track_blocks[26]._authority = 0  
+    track_blocks[26]._authority.set_distance(0)  
     track_blocks[26]._plc_unsafe = False
 
 #First train joining loop - if(M.lastBound & (N EMPTY) & (LOOP EMPTY))
@@ -174,12 +174,12 @@ elif(track_blocks[13].occupancy == True and
  
 #emergency stop - if(M.lastBlock & N-R)
 elif(track_blocks[3].occupancy == True and track_blocks[4].switch.get_child_index() == True): 
-    track_blocks[3]._authority = 0  
+    track_blocks[3]._authority.set_distance(0)
     track_blocks[3]._plc_unsafe = False 
 
 #emergency stop - if(LOOP.lastBlock & N-O)
 elif(track_blocks[13].occupancy == True and track_blocks[12].switch.get_child_index() == False): 
-    track_blocks[13]._authority = 0  
+    track_blocks[13]._authority.set_distance(0)
     track_blocks[13]._plc_unsafe = False
 
 #IF IN N - Don't change anything - automatic authority = 10,000
