@@ -86,6 +86,13 @@ pip install -r requirements.txt
 
 ## Usage
 Make sure you are at the top level of the repo
+```bash
+python -m train_system.main
+```
+or to run the ctc tc demo
+```bash
+python -m train_system.ctc_tc_demo
+```
 
 ### Centralized Traffic Control (CTC) Office
 ```bash
@@ -104,7 +111,7 @@ python -m train_system.track_model.track_model
 
 ### Train Model
 ```bash
-python -m train_system.train_model.
+python -m train_system.train_model.train_model_ui_v3
 ```
 
 ### Train Controller
