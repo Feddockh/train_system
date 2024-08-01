@@ -14,7 +14,7 @@ USERNAME = 'danim'
 PASSWORD = 'danim'
 
 # Create the time keeper object
-time_keeper = TimeKeeper()
+
 
 class TrainManager(QObject):
 
@@ -57,7 +57,7 @@ class TrainManager(QObject):
             """
             FUNCTION WITH ALL CONNECTIONS FOR TRAIN CONTROLLER, MOCK TRAIN MODEL, AND UI
             """
-            tc_main(time_keeper,TrainSystem(self.engineer_table[train_id], line, train_id, self.ssh_client))
+            tc_main(self.time_keeper,TrainSystem(self.engineer_table[train_id], line, train_id, self.ssh_client))
         else:
             # Add software train to the train list
             print("Software Train")
@@ -65,7 +65,7 @@ class TrainManager(QObject):
             """
             FUNCTION WITH ALL CONNECTIONS FOR TRAIN CONTROLLER, MOCK TRAIN MODEL, AND UI
             """
-            tc_main(time_keeper,TrainSystem(self.engineer_table[train_id], line, train_id, self.ssh_client))
+            tc_main(self.time_keeper,TrainSystem(self.engineer_table[train_id], line, train_id, self.ssh_client))
             
         ##### ADD CONNECTIONS TO THE TRAIN SYSTEM #####
         self.train_list[-1].controller.delete_train.connect(self.handle_train_removed)

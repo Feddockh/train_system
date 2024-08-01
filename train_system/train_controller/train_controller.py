@@ -62,7 +62,7 @@ class TrainController(QObject):
         self.train_length = 32.2  # 32.2 meters
 
         ## Initialize objects
-        self.train_model = MockTrainModel(time_keeper)  # Used to store data received from Train Model. No computations done in the object
+        self.train_model = train_model # Used to store data received from Train Model. No computations done in the object
         self.train_model.engine_fault_updated.connect(self.handle_fault_update)
         self.train_model.brake_fault_updated.connect(self.handle_fault_update)
         self.train_model.signal_fault_updated.connect(self.handle_fault_update)
@@ -1255,16 +1255,16 @@ class TrainSystem:
 
             
 
-if __name__ == "__main__":
+#if __name__ == "__main__":
     # train_system = TrainSystem(HOST, PORT, USERNAME, PASSWORD)
-    time_keeper = TimeKeeper()
-    time_keeper.start_timer()
-    train_system = TrainSystem(time_keeper)
+    #time_keeper = TimeKeeper()
+    #time_keeper.start_timer()
+    #train_system = TrainSystem(time_keeper)
 
     # train_system.small_run()
     # train_system.long_run()
     # train_system.past_yard_run()
-    train_system.to_yard_run()
+    #train_system.to_yard_run()
     # train_system.destination_run()
     # train_system.service_brake_run()
     # train_system.emergency_brake_run()
