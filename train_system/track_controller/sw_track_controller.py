@@ -14,6 +14,8 @@ from train_system.common.time_keeper import TimeKeeper
 
 
 class TrackController(QObject):
+    plc_ran = pyqtSignal(bool)
+
     def __init__(self, time_keeper: TimeKeeper, track_blocks: List[TrackBlock], wayside_name: str, num_blocks: int) -> None:
 
         """
@@ -109,6 +111,7 @@ class TrackController(QObject):
         for new_block in new_blocks:
             self.update_block(new_block)
 
+
     @pyqtSlot(int, bool)
     def handle_occupancy_update(self, block_number: int, new_occupancy: bool) -> None:
 
@@ -139,6 +142,7 @@ class TrackController(QObject):
         # Run the plc code every tick if a program is loaded
         if self.plc_program_uploaded == True:
             self.run_PLC_program()
+            self.plc_ran.emit(True)
 
 
         

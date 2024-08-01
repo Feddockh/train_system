@@ -25,10 +25,10 @@ Post Index Change
 
 
 #Scenario 1: heading to yard, authority at yard indicates that we're going to yard, check for it then set swithc position
-if(track_blocks[108].authority < 0 and track_blocks[28].occupancy):
+if(track_blocks[108]._authority.get_stop_block() == 152 and track_blocks[28].occupancy):
     
     #set switch position
-    track_blocks[28].switch.position = track_blocks[28].switch.child_blocks[1]
+    track_blocks[28].switch.set_child_index(1)
     
     #set light
     #track_blocks[28]._light_signal = False
@@ -36,10 +36,10 @@ if(track_blocks[108].authority < 0 and track_blocks[28].occupancy):
     track_blocks[107]._light_signal = True
 
 # Scenario 2: 57 stop, check if 58 is unoccupied continue straight along J
-if(track_blocks[28].occupancy and track_blocks[29].occupancy == False and track_blocks[108].authority >= 0):
+if(track_blocks[28].occupancy and track_blocks[29].occupancy == False and track_blocks[108]._authority.get_stop_block() == 152):
 
     # set switch position
-    track_blocks[28].switch.position = track_blocks[28].switch.child_blocks[0]
+    track_blocks[28].switch.set_child_index(0)
 
     # set light colors
     #track_blocks[28]._light_signal = False
@@ -47,10 +47,10 @@ if(track_blocks[28].occupancy and track_blocks[29].occupancy == False and track_
     track_blocks[107]._light_signal = False
 
 # Scenario 3: 57, 58 and 151 are occupied, temporary stop
-if(track_blocks[29].occupancy and track_blocks[107].occupancy and track_blocks[107].authority > 0):
+if(track_blocks[29].occupancy and track_blocks[107].occupancy and track_blocks[107]._authority.get_stop_block() == 152):
 
     # set authority at 57 to zero, and wait for those blocks to become unoccupied
-    track_blocks[28].authority = 0
+    track_blocks[28]._authority.set_distance(0)
 
     # set light signals 
     track_blocks[28]._light_signal = False
@@ -63,7 +63,7 @@ if(track_blocks[29].occupancy and track_blocks[107].occupancy and track_blocks[1
 if(track_blocks[33].occupancy and track_blocks[34].occupancy == False and track_blocks[109].occupancy == False):
 
     # set switch position
-    track_blocks[34].switch.position = track_blocks[34].switch.child_blocks[0]
+    track_blocks[34].switch.set_child_index(0)
 
     # set lights
     track_blocks[33]._light_signal = True
@@ -74,7 +74,7 @@ if(track_blocks[33].occupancy and track_blocks[34].occupancy == False and track_
 if(track_blocks[34].occupancy == False and track_blocks[33].occupancy == False and track_blocks[109].occupancy):
 
     # set switch position
-    track_blocks[34].switch.position = track_blocks[34].switch.child_blocks[1]
+    track_blocks[34].switch.set_child_index(1)
 
     # set light signals
     track_blocks[34]._light_signal = True
@@ -85,8 +85,8 @@ if(track_blocks[34].occupancy == False and track_blocks[33].occupancy == False a
 if(track_blocks[33].occupancy and track_blocks[34].occupancy and track_blocks[109].occupancy):
 
     # set authorities of 62 and 153 to zero
-    track_blocks[33].authority = 0
-    track_blocks[109].authority = 0
+    track_blocks[33]._authority.set_distance(0)
+    track_blocks[109]._authority.set_distance(0)
 
     # set lights to red
     track_blocks[33]._light_signal = False
