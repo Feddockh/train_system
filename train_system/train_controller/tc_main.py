@@ -1,6 +1,6 @@
 import sys
 from train_system.train_controller.train_controller import TrainController, TrainModel, TrainSystem
-from train_system.train_controller.tc_manager import TrainManager
+# from train_system.train_controller.tc_manager import TrainManager
 from train_system.train_controller.tc_ui import *
 from train_system.common.time_keeper import TimeKeeper
 from PyQt6.QtWidgets import QApplication
