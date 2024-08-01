@@ -32,8 +32,8 @@ if(track_blocks[108].authority < 0 and track_blocks[28].occupancy):
     
     #set light
     #track_blocks[28]._light_signal = False
-    track_blocks[29]._light_signal = False
-    track_blocks[107]._light_signal = True
+    track_blocks[29].light_signal = False
+    track_blocks[107].light_signal = True
 
 # Scenario 2: 57 stop, check if 58 is unoccupied continue straight along J
 if(track_blocks[28].occupancy and track_blocks[29].occupancy == False and track_blocks[108].authority >= 0):
@@ -43,8 +43,8 @@ if(track_blocks[28].occupancy and track_blocks[29].occupancy == False and track_
 
     # set light colors
     #track_blocks[28]._light_signal = False
-    track_blocks[29]._light_signal = True
-    track_blocks[107]._light_signal = False
+    track_blocks[29].light_signal = True
+    track_blocks[107].light_signal = False
 
 # Scenario 3: 57, 58 and 151 are occupied, temporary stop
 if(track_blocks[29].occupancy and track_blocks[107].occupancy and track_blocks[107].authority > 0):
@@ -53,9 +53,9 @@ if(track_blocks[29].occupancy and track_blocks[107].occupancy and track_blocks[1
     track_blocks[28].authority = 0
 
     # set light signals 
-    track_blocks[28]._light_signal = False
-    track_blocks[29]._light_signal = False
-    track_blocks[107]._light_signal = False
+    track_blocks[28].light_signal = False
+    track_blocks[29].light_signal = False
+    track_blocks[107].light_signal = False
 
 # SWITCH AT BLOCK 63
 
@@ -66,9 +66,9 @@ if(track_blocks[33].occupancy and track_blocks[34].occupancy == False and track_
     track_blocks[34].switch.position = track_blocks[34].switch.child_blocks[0]
 
     # set lights
-    track_blocks[33]._light_signal = True
-    track_blocks[34]._light_signal = True
-    track_blocks[109]._light_signal = False
+    track_blocks[33].light_signal = True
+    track_blocks[34].light_signal = True
+    track_blocks[109].light_signal = False
 
 # Scenario 2: 153 to 63, as long as none of block 62 is occupied and 63 is unoccupied
 if(track_blocks[34].occupancy == False and track_blocks[33].occupancy == False and track_blocks[109].occupancy):
@@ -77,9 +77,9 @@ if(track_blocks[34].occupancy == False and track_blocks[33].occupancy == False a
     track_blocks[34].switch.position = track_blocks[34].switch.child_blocks[1]
 
     # set light signals
-    track_blocks[34]._light_signal = True
-    track_blocks[33]._light_signal = False
-    track_blocks[109]._light_signal = True
+    track_blocks[34].light_signal = True
+    track_blocks[33].light_signal = False
+    track_blocks[109].light_signal = True
 
 # Scenario 3: 62, 63, 153 are all occupied, authority for 62 and 153 must turn red, then keep 63 green to allow
 if(track_blocks[33].occupancy and track_blocks[34].occupancy and track_blocks[109].occupancy):
@@ -89,9 +89,9 @@ if(track_blocks[33].occupancy and track_blocks[34].occupancy and track_blocks[10
     track_blocks[109].authority = 0
 
     # set lights to red
-    track_blocks[33]._light_signal = False
-    track_blocks[34]._light_signal = True
-    track_blocks[108]._light_signal = False
+    track_blocks[33].light_signal = False
+    track_blocks[34].light_signal = True
+    track_blocks[108].light_signal = False
 
 
 # Consolidated print statements for error checking
@@ -102,17 +102,17 @@ print("Switch  57:\n")
 # Block 57
 print("Block 57 (Switch) Information: ")
 print(f"Switch Position: {track_blocks[28].switch.position}")
-print(f"Light Signal: {track_blocks[28]._light_signal}")
+print(f"Light Signal: {track_blocks[28].light_signal}")
 print(f"Authority: {track_blocks[28].authority}\n")
 
 # Block 58
 print("Block 58 Information: ")
-print(f"Light Signal: {track_blocks[29]._light_signal}")
+print(f"Light Signal: {track_blocks[29].light_signal}")
 print(f"Authority: {track_blocks[29].authority}\n")
 
 # Block 151
 print("Block 151 Information: ")
-print(f"Light Signal: {track_blocks[107]._light_signal}")
+print(f"Light Signal: {track_blocks[107].light_signal}")
 print(f"Authority: {track_blocks[107].authority}\n")
 
 
@@ -120,17 +120,17 @@ print(f"Authority: {track_blocks[107].authority}\n")
 print("Switch 63: \n")
 print("Block 63 (Switch) Information: ")
 print(f"Switch Position: {track_blocks[34].switch.position}")
-print(f"Light Signal: {track_blocks[34]._light_signal}")
+print(f"Light Signal: {track_blocks[34].light_signal}")
 print(f"Authority: {track_blocks[34].authority}\n")
 
 # Block 62
 print("Block 62 Information: ")
-print(f"Light Signal: {track_blocks[33]._light_signal}")
+print(f"Light Signal: {track_blocks[33].light_signal}")
 print(f"Authority: {track_blocks[33].authority}\n")
 
 # Block 153
 print("Block 153 Information: ")
-print(f"Light Signal: {track_blocks[109]._light_signal}")
+print(f"Light Signal: {track_blocks[109].light_signal}")
 print(f"Authority: {track_blocks[109].authority}\n")
 
 

@@ -13,9 +13,9 @@ if(track_blocks[0].occupancy and track_blocks[12].occupancy == False and (track_
     
 
     #set lights
-    track_blocks[0]._light_signal = False
-    track_blocks[11]._light_signal = False
-    track_blocks[12]._light_signal = True
+    track_blocks[0].light_signal = False
+    track_blocks[11].light_signal = False
+    track_blocks[12].light_signal = True
 
 #Scenario 2: 13-->12, block 13 is occupied, A is unoccupied
 if(track_blocks[12].occupancy and track_blocks[0].occupancy == False and track_blocks[11].occupancy == False):
@@ -26,9 +26,9 @@ if(track_blocks[12].occupancy and track_blocks[0].occupancy == False and track_b
     track_blocks[0].authority.set_distance(0)
 
     #set lights
-    track_blocks[0]._light_signal = False
-    track_blocks[11]._light_signal = True
-    track_blocks[12]._light_signal = False
+    track_blocks[0].light_signal = False
+    track_blocks[11].light_signal = True
+    track_blocks[12].light_signal = False
 
 #Scenario 3: 13-->12, block 13 is occupied, 1 is occupied, load loop, until D through F is unoccupied, then send through train
 if(track_blocks[12].occupancy and track_blocks[0].occupancy and track_blocks[11].occupancy == False):
@@ -40,9 +40,9 @@ if(track_blocks[12].occupancy and track_blocks[0].occupancy and track_blocks[11]
     track_blocks[12].switch.position = track_blocks[12].switch.child_blocks[1]
 
     #set ligths
-    track_blocks[0]._light_signal = False
-    track_blocks[11]._light_signal = True
-    track_blocks[12]._light_signal = False
+    track_blocks[0].light_signal = False
+    track_blocks[11].light_signal = True
+    track_blocks[12].light_signal = False
 
 #CROSSING SIGNAL
 if(track_blocks[19].occupancy or track_blocks[18].occupancy or track_blocks[17].occupancy):
@@ -68,9 +68,9 @@ if(track_blocks[28].occupancy and track_blocks[32].occupancy == False and track_
     #track_blocks[28].switch.child_blocks[29]
 
     #set lights
-    track_blocks[28]._light_signal = False
-    track_blocks[29]._light_signal = True
-    track_blocks[32]._light_signal = False
+    track_blocks[28].light_signal = False
+    track_blocks[29].light_signal = True
+    track_blocks[32].light_signal = False
 
 #Scenario 2: 29-> 30, block 150 is occupied, set authority to zero at 150
 if(track_blocks[28].occupancy and track_blocks[32].occupancy and track_blocks[29].occupancy == False):
@@ -83,9 +83,9 @@ if(track_blocks[28].occupancy and track_blocks[32].occupancy and track_blocks[29
     #track_blocks[28].switch.child_blocks[29]
 
     #set lights
-    track_blocks[28]._light_signal = False
-    track_blocks[29]._light_signal = True
-    track_blocks[32]._light_signal = False
+    track_blocks[28].light_signal = False
+    track_blocks[29].light_signal = True
+    track_blocks[32].light_signal = False
 
 #Scenario 3: 150 -> 29, blocks 13 through 29 are unoccupied
 if(track_blocks[32].occupancy and (track_blocks[12].occupancy == False and track_blocks[13].occupancy == False and track_blocks[14].occupancy == False and track_blocks[15].occupancy == False and track_blocks[16].occupancy == False and track_blocks[17].occupancy == False and track_blocks[18].occupancy == False and track_blocks[19].occupancy == False and track_blocks[20].occupancy == False and track_blocks[21].occupancy == False
@@ -96,9 +96,9 @@ if(track_blocks[32].occupancy and (track_blocks[12].occupancy == False and track
     #track_blocks[28].switch.child_blocks[32]
 
     #set lights
-    track_blocks[28]._light_signal = False
-    track_blocks[32]._light_signal = True
-    track_blocks[29]._light_signal = False
+    track_blocks[28].light_signal = False
+    track_blocks[32].light_signal = True
+    track_blocks[29].light_signal = False
 
 #Emergency Scenario: block 150 is occupied, D through F be unoccupied, and block 1 be occupied, so let 1 go through first, set authority to zero at block 150
 if(track_blocks[32].occupancy and track_blocks[0].occupancy and (track_blocks[12].occupancy == False and track_blocks[13].occupancy == False and track_blocks[14].occupancy == False and track_blocks[15].occupancy == False and track_blocks[16].occupancy == False and track_blocks[17].occupancy == False
@@ -113,12 +113,12 @@ if(track_blocks[32].occupancy and track_blocks[0].occupancy and (track_blocks[12
 
     track_blocks[32].authority.set_distance(0)
 
-    track_blocks[0]._light_signal = False
-    track_blocks[11]._light_signal = False
-    track_blocks[12]._light_signal = True
-    track_blocks[28]._light_signal = False
-    track_blocks[29]._light_signal = True
-    track_blocks[32]._light_signal = False
+    track_blocks[0].light_signal = False
+    track_blocks[11].light_signal = False
+    track_blocks[12].light_signal = True
+    track_blocks[28].light_signal = False
+    track_blocks[29].light_signal = True
+    track_blocks[32].light_signal = False
     
 
 
@@ -126,34 +126,34 @@ if(track_blocks[32].occupancy and track_blocks[0].occupancy and (track_blocks[12
 print("Switch 13 Information:\n")
 # Block 1
 print("Block 1 Information: ")
-print(f"Light Signal: {track_blocks[0]._light_signal}")
+print(f"Light Signal: {track_blocks[0].light_signal}")
 print(f"Authority: {track_blocks[0].authority}")
 
 # Block 12
 print("Block 12 Information: ")
-print(f"Light Signal: {track_blocks[11]._light_signal}")
+print(f"Light Signal: {track_blocks[11].light_signal}")
 print(f"Authority: {track_blocks[11].authority}\n")
 
 # Block 13 (Switch)
 print("Block 13 (Switch) Information: ")
 print(f"Switch Position: {track_blocks[12].switch.position}")
-print(f"Light Signal: {track_blocks[12]._light_signal}")
+print(f"Light Signal: {track_blocks[12].light_signal}")
 print(f"Authority: {track_blocks[12].authority}\n")
 
 # Block 29 (Switch)
 print("Block 29 (Switch) Information: ")
 print(f"Switch Position: {track_blocks[28].switch.position}")
-print(f"Light Signal: {track_blocks[28]._light_signal}")
+print(f"Light Signal: {track_blocks[28].light_signal}")
 print(f"Authority: {track_blocks[28].authority}\n")
 
 #block 30
 print("Block 30 Information: ")
-print(f"Light Signal: {track_blocks[29]._light_signal}")
+print(f"Light Signal: {track_blocks[29].light_signal}")
 print(f"Authority: {track_blocks[29].authority}\n")
 
 #block 150
 print("Block 150 Information: ")
-print(f"Light Signal: {track_blocks[32]._light_signal}")
+print(f"Light Signal: {track_blocks[32].light_signal}")
 print(f"Authority: {track_blocks[32].authority}\n")
 
 

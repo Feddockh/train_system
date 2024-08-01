@@ -5,14 +5,20 @@ from train_system.track_controller.sw_track_controller import TrackController
 from train_system.common.track_block import TrackBlock
 from train_system.common.line import Line
 from train_system.track_controller.sw_ui import ProgrammerUI
+from train_system.common.time_keeper import TimeKeeper
 
 class TrackControllerManager(QObject):
-    def __init__(self) -> None:
+
+    def __init__(self, time_keeper: TimeKeeper) -> None:
         super().__init__()
 
         """
         Initialize the Track Controller
         """
+
+        #Adding time keeper
+        self.time_keeper = time_keeper
+        self.time_keeper.tick.connect(self.handle_time_update)
         
         # Creating Green Line
         self.green_line = Line("Green")
@@ -46,9 +52,24 @@ class TrackControllerManager(QObject):
         # Add waysides to be sent to UI
         self.waysides = [Wayside_1, Wayside_2, Wayside_3, Wayside_4, Wayside_5, Wayside_6]
 
+        @pyqtSlot(int)
+        def handle_time_update(self, tick: int) -> None:
+            """get speed and authority from CTC,
+                occupancies from Track Model,
+                run_PLC_program for each wayside 
+
+
+            Args:
+                tick (int): _description_
+            """
+            #every tick get info and run plc program
+
+            
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     track_controller_manager = TrackControllerManager()
     window = ProgrammerUI(track_controller_manager.waysides)
     window.show()
     app.exec()
+
