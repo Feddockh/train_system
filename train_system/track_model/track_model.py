@@ -24,6 +24,14 @@ class TrackModel:
         self.heaters: bool = False
         self.stations_by_line: dict[str, dict[str, int]] = {}
 
+        self.green_line = Line('Green')
+        self.green_line.load_defaults()
+        self.lines.append(self.green_line)
+
+        self.red_line = Line('Red')
+        self.red_line.load_defaults()
+        self.lines.append(self.red_line)
+
         for line in self.lines:
             stations: dict[str, int] = {}
             for block in line.track_blocks:

@@ -10,6 +10,8 @@ from train_system.ctc_manager.ctc_manager import CTCOffice
 from train_system.ctc_manager.dispatcher_ui import DispatcherUI
 from train_system.track_controller.track_controller_manager import TrackControllerManager
 from train_system.track_controller.sw_ui import ProgrammerUI
+from train_system.track_model.track_model import TrackModel
+
 # from train_system.mbo_manager.mbo_manager import MBOOffice
 # from train_system.mbo_manager.mbo_ui import MBOWindow
 # from train_system.train_controller.tc_manager import TrainManager
@@ -61,14 +63,8 @@ def main():
     track_controller_manager.red_line.track_block_occupancy_updated.connect(ctc_manager.red_line.handle_occupancy_update)
     track_controller_manager.red_line.switch_position_updated.connect(ctc_manager.red_line.handle_switch_position_update)
 
-
-
-    # Assuming track_controller_manager and ctc_manager are already defined and initialized
-    # Connect the signal to the print_authority slot function
-    # track_controller_manager.green_line.track_block_authority_updated.connect(print_authority)
-
     ### Instantiate the TrackModel object and the track's UI ###
-    # track_model = TrackModel(time_keeper)
+    track_model = TrackModel(time_keeper)
 
     ### Instantiate the TrainController object and the driver's UI ###
     # train_manager = TrainManager(time_keeper)
