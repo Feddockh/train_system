@@ -51,7 +51,7 @@ class TrainController(QObject):
 
     curr_speed_updated = pyqtSignal(float)
     
-    def __init__(self, engineer: Engineer = None, train_model=None, line_name: str = "green", id: int = 0, ssh=None) -> None:
+    def __init__(self, engineer: Engineer = None, train_model = None, line_name: str = "green", id: int = 0, ssh=None) -> None:
         super().__init__()
         self.line = line_name
         self.id = id
@@ -62,7 +62,9 @@ class TrainController(QObject):
         self.train_length = 32.2  # 32.2 meters
 
         ## Initialize objects
-        self.train_model = MockTrainModel(time_keeper)  # Used to store data received from Train Model. No computations done in the object
+        self.time_keeper = TimeKeeper()
+        self.time_keeper.start_timer()
+        self.train_model = train_model if train_model else TrainModel(self.time_keeper)  # Used to store data received from Train Model. No computations done in the object
         self.train_model.engine_fault_updated.connect(self.handle_fault_update)
         self.train_model.brake_fault_updated.connect(self.handle_fault_update)
         self.train_model.signal_fault_updated.connect(self.handle_fault_update)
@@ -261,7 +263,7 @@ class TrainController(QObject):
         if self.polarity <= 0:
             self.increment_track_block()
         print(f"Position: {self.position}, Polarity: {self.polarity}")
-        self.train_model.set_position(self.position)
+        self.train_model.set_position(self.block_number, self.position)
         self.position_updated.emit(self.position)
 
     ## Driver Mode Funtions
@@ -926,6 +928,8 @@ class TrainController(QObject):
 # Does beacon need to be encrypted
 # All information from MBO needs to be encrypted
 class MockTrainModel(QObject):
+    position_updated = pyqtSignal(int, float)
+
     engine_fault_updated = pyqtSignal(bool)
     brake_fault_updated = pyqtSignal(bool)
     signal_fault_updated = pyqtSignal(bool)
@@ -934,14 +938,18 @@ class MockTrainModel(QObject):
     # comm_speed_received = pyqtSignal(float)
     authority_received = pyqtSignal(Authority)
     satellite_received = pyqtSignal(str, float) # Authority, commanded speed
+    satellite_sent = pyqtSignal(int, str, str, str) # ID, track_block, Position, Velocity
     train_temp_updated = pyqtSignal(float)
     emergency_mode = pyqtSignal()
 
-    def __init__(self, time_keeper: TimeKeeper = None):
+    def __init__(self, time_keeper: TimeKeeper = None, train_id: int = 0, line: str = None):
         super().__init__() 
 
+        self.line = line
+        self.train_id = train_id
+
         self.time_keeper = time_keeper
-        self.time_keeper.tick.connect(self.handle_signal_failure)
+        # self.time_keeper.tick.connect(self.handle_signal_failure) ##### GET WORKING LATER
 
         # Train Model variables
         self.current_speed: float = 0
@@ -954,6 +962,8 @@ class MockTrainModel(QObject):
 
         self.commanded_temp = 69
         self.train_temp: float = 69
+        self.ac = False
+        self.heater = True
 
         self.faults: list[bool] = [False, False, False]
         self.engine_fault: bool = False
@@ -966,6 +976,10 @@ class MockTrainModel(QObject):
         self.left_door: bool = False
         self.right_door: bool = False
         self.lights: bool = False
+
+        self.grade = 0
+        self.outdoor_temp = 0
+        self.passengers = 0
 
     def set_power_command(self, power: float, speed_limit: float):
         self.power_command = power
@@ -988,6 +1002,7 @@ class MockTrainModel(QObject):
         self.current_speed = min(self.current_speed, speed_limit)
         self.update_current_speed(max(self.current_speed, 0))
         print("Power Command:", self.power_command, "Current Speed: ", self.current_speed, "\n")
+        self.send_all_outputs()
 
     # Iterative (float representing meters)? Absolute (position representing when to stop by)?
     def get_authority(self):
@@ -996,11 +1011,6 @@ class MockTrainModel(QObject):
     def set_authority(self, authority: Authority):
         self.authority = authority
         self.authority_received.emit(self.authority)
-    def decode_authority(self, authority: str):
-        ### Decode the authority string ###
-        new_authority = Authority()
-        new_authority.authority = authority
-        self.set_authority(authority)
 
     # Float
     def get_commanded_speed(self):
@@ -1009,18 +1019,12 @@ class MockTrainModel(QObject):
     def set_commanded_speed(self, speed: float):
         self.commanded_speed = speed
         # self.comm_speed_received.emit(self.commanded_speed)
-        print("Train Model -- Commanded Speed: ", self.commanded_speed)
+        # print("Train Model -- Commanded Speed: ", self.commanded_speed)
         # self.comm_speed_received.emit(self.commanded_speed)
-    def decode_commanded_speed(self, speed: str):
-        # String to float
-        self.set_commanded_speed(float(speed))
 
-    def set_position(self, position: float):
-        self.position = position
-    @pyqtSlot(int)
-    def handle_block_update(self, block: int) -> None:
+    def set_position(self, block: int, position: float):
         self.block_number = block
-
+        self.position = position
 
     # Float
     def get_commanded_temp(self):
@@ -1031,8 +1035,18 @@ class MockTrainModel(QObject):
     @pyqtSlot(int)
     def update_current_temp(self):
         if self.train_temp < self.commanded_temp:
+            if self.train_temp < self.outdoor_temp:
+                self.ac = False
+                self.heater = False
+            else:
+                self.heater = True
             self.train_temp += 0.25
         elif self.train_temp > self.commanded_temp:
+            if self.train_temp < self.outdoor_temp:
+                self.ac = False
+                self.heater = False
+            else:
+                self.ac = True
             self.train_temp -= 0.25
         else:
             return
@@ -1104,6 +1118,31 @@ class MockTrainModel(QObject):
     @pyqtSlot(bool)
     def handle_lights_update(self, status: bool) -> None:
         self.lights = status
+    
+
+
+    ##### INTEGRATION #####
+    
+    def decrypt_commanded_speed(self, speed: str):
+        # String to float
+        self.set_commanded_speed(float(speed))
+
+    def decrypt_authority(self, authority: str):
+        ### Decode the authority string ###
+        new_authority = Authority()
+        new_authority.authority = authority
+        self.set_authority(authority)
+
+    def encrypt(self, data) -> str:
+        return str(data)
+        
+    def set_passengers(self, passengers: int):
+        self.passengers = passengers
+
+    def send_all_outputs(self):
+        self.position_updated.emit(self.train_id, self.position)
+        self.satellite_sent.emit(self.train_id, self.encrypt(self.block_number), self.encrypt(self.position), self.encrypt(self.current_speed))
+
         
 
 
@@ -1111,6 +1150,7 @@ class TrainSystem:
     def __init__(self, time_keeper: TimeKeeper = None, engineer: Engineer = None, line_name: str = "green", id: int = 0, ssh=None):
         self.line = line_name
         self.id = id
+        self.time_keeper = time_keeper
         self.train_model = MockTrainModel(time_keeper)
         self.engineer = engineer if engineer else Engineer()
         print(f"Engineer: {self.engineer.kp}, {self.engineer.ki}")
@@ -1241,6 +1281,17 @@ class TrainSystem:
             print(f"Current Speed: {self.controller.current_speed}")
             print(f"Train Model Faults: Engine: {self.controller.train_model.faults[0]}, Brake: {self.controller.train_model.faults[1]}, Signal: {self.controller.train_model.faults[2]}")
 
+    def signal_fault_run(self):
+        self.controller.train_model.set_signal_fault(True)
+        self.controller.train_model.current_speed = 10
+        self.controller.set_setpoint_speed(20)
+        print()
+        for _ in range(5):
+            self.controller.update_authority(Authority(1000000000,65))
+            print(f"Maintenance mode: {self.controller.maintenance_mode}, Emergency brake: {self.controller.brake.get_emergency_brake()}")
+            print(f"Current Speed: {self.controller.current_speed}")
+            print(f"Train Model Faults: Engine: {self.controller.train_model.faults[0]}, Brake: {self.controller.train_model.faults[1]}, Signal: {self.controller.train_model.faults[2]}")
+
     def ac_run(self):
         self.controller.ac.set_commanded_temp(82)
         print("Commanded Temp: ", self.controller.ac.get_commanded_temp(), "\n")
@@ -1264,7 +1315,7 @@ if __name__ == "__main__":
     # train_system.small_run()
     # train_system.long_run()
     # train_system.past_yard_run()
-    train_system.to_yard_run()
+    # train_system.to_yard_run()
     # train_system.destination_run()
     # train_system.service_brake_run()
     # train_system.emergency_brake_run()
@@ -1272,6 +1323,6 @@ if __name__ == "__main__":
     # train_system.commanded_speed_run()
     # train_system.switch_modes_run()
     # train_system.fault_run()
-    # train_system.signal_fault_run()
-    # train_system.ac_run()
+    train_system.signal_fault_run()
+    train_system.ac_run()
 

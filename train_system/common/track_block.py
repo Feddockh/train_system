@@ -17,7 +17,6 @@ class TrackBlock(QObject):
     light_signal_updated = pyqtSignal(int, bool)
     under_maintenance_updated = pyqtSignal(int, bool)
     track_failure_updated = pyqtSignal(int, TrackFailure)
-    switch_position_updated = pyqtSignal(int, int)
 
     def __init__(self, line: str, section: str, number: int, length: int,
                  grade: float, speed_limit: int, elevation: float, 

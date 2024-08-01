@@ -13,6 +13,8 @@ from train_system.common.track_block import TrackBlock
 from train_system.common.track_switch import TrackSwitch
 from train_system.common.station import Station
 from train_system.common.authority import Authority
+from train_system.common.time_keeper import TimeKeeper
+
 
 class Route:
     def __init__(self, line: str, yard: int, to_yard: List[int], from_yard: List[int], past_yard: List[int], default_route: List[int]) -> None:
@@ -168,14 +170,24 @@ class Line(QObject):
     track_block_authority_updated = pyqtSignal(str, int, object)
     track_block_occupancy_updated = pyqtSignal(str, int, bool)
     track_block_crossing_signal_updated = pyqtSignal(str, int, int)
-    track_block_light_signal_updated = pyqtSignal(str, int, int)
+    track_block_light_signal_updated = pyqtSignal(str, int, bool)
     track_block_under_maintenance_updated = pyqtSignal(str, int, bool)
     track_block_track_failure_updated = pyqtSignal(str, int, int)
 
     # Signals to notify switch updates (line name, switch number)
     switch_position_updated = pyqtSignal(str, int)
 
-    def __init__(self, name: str) -> None:
+    # Signals to emit the queued updates
+    suggested_speed_queue_signal = pyqtSignal(list)
+    authority_queue_signal = pyqtSignal(list)
+    occupancy_queue_signal = pyqtSignal(list)
+    crossing_signal_queue_signal = pyqtSignal(list)
+    light_signal_queue_signal = pyqtSignal(list)
+    under_maintenance_queue_signal = pyqtSignal(list)
+    track_failure_queue_signal = pyqtSignal(list)
+    switch_position_queue_signal = pyqtSignal(list)
+
+    def __init__(self, name: str, time_keeper: TimeKeeper = None) -> None:
         super().__init__()
 
         """
@@ -183,6 +195,7 @@ class Line(QObject):
         
         Args:
             name (str): The name of the train line.
+            time_keeper (TimeKeeper, optional): The TimeKeeper object to use for time tracking. Defaults to None.
         
         Returns:
             None
@@ -194,6 +207,22 @@ class Line(QObject):
         self.stations: List[Station] = []
         self.yard: int = None
         self.route: Route = None
+
+        # Separate queues for each update type
+        self.suggested_speed_queue = []
+        self.authority_queue = []
+        self.occupancy_queue = []
+        self.crossing_signal_queue = []
+        self.light_signal_queue = []
+        self.under_maintenance_queue = []
+        self.track_failure_queue = []
+        self.switch_position_queue = []
+
+        # Queuing parameters
+        self.time_keeper = time_keeper
+        if self.time_keeper is not None:
+            self.time_keeper.tick.connect(self.handle_tick)
+        self.enable_signal_queue = False
 
     def __repr__(self) -> str:
 
@@ -232,6 +261,7 @@ class Line(QObject):
 
         self.track_blocks.append(track_block)
         self.connect_track_block_signals(track_block)
+        self.connect_track_block_signals_queue(track_block)
 
     def set_track_block(self, track_block: TrackBlock) -> None:
         
@@ -244,6 +274,7 @@ class Line(QObject):
         
         self.track_blocks[track_block.number - 1] = track_block
         self.connect_track_block_signals(track_block)
+        self.connect_track_block_signals_queue(track_block)
 
     def get_track_block(self, number: int) -> TrackBlock:
 
@@ -278,37 +309,6 @@ class Line(QObject):
 
         # Find the (prev, current) pair in the route tree
         return self.route.bfs_find_start_node(self.route.root, prev, current).children[0].name
-
-    def connect_track_block_signals(self, track_block: TrackBlock) -> None:
-
-        """
-        Connects the signals of a track block to the corresponding signals of the line.
-        
-        Args:
-            track_block (TrackBlock): The track block to connect signals for.
-        """
-
-        track_block.suggested_speed_updated.connect(
-            lambda blk_number, new_speed: self.track_block_suggested_speed_updated.emit(self.name, blk_number, new_speed)
-        )
-        track_block.authority_updated.connect(
-            lambda blk_number, new_authority: self.track_block_authority_updated.emit(self.name, blk_number, new_authority)
-        )
-        track_block.occupancy_updated.connect(
-            lambda blk_number, new_occupancy: self.track_block_occupancy_updated.emit(self.name, blk_number, new_occupancy)
-        )
-        track_block.crossing_signal_updated.connect(
-            lambda blk_number, new_signal: self.track_block_crossing_signal_updated.emit(self.name, blk_number, new_signal)
-        )
-        track_block.light_signal_updated.connect(
-            lambda blk_number, new_signal: self.track_block_light_signal_updated.emit(self.name, blk_number, new_signal)
-        )
-        track_block.under_maintenance_updated.connect(
-            lambda blk_number, new_maintenance: self.track_block_under_maintenance_updated.emit(self.name, blk_number, new_maintenance)
-        )
-        track_block.track_failure_updated.connect(
-            lambda blk_number, new_failure: self.track_block_track_failure_updated.emit(self.name, blk_number, new_failure)
-        )
 
     def add_switch(self, track_switch: TrackSwitch) -> None:
         
@@ -356,25 +356,6 @@ class Line(QObject):
         switch = self.get_switch(number)
         if switch is not None:
             switch.toggle()
-
-    def connect_switch_signals(self, switch: TrackSwitch) -> None:
-
-        """
-        Connects the signals of a switch to the corresponding signals of the line.
-        
-        Args:
-            switch (TrackSwitch): The switch to connect signals for.
-        """
-
-        # Connect to the line signal
-        switch.position_updated.connect(lambda new_position, sw=switch: self.switch_position_updated.emit(self.name, sw.number))
-
-        # Connect to the track block signals
-        for block_id in switch.connected_blocks:
-            block = self.get_track_block(block_id)
-            switch.position_updated.connect(
-                lambda new_position, blk=block: blk.switch_position_updated.emit(new_position)
-            )
 
     def add_station(self, station: Station) -> None:
         
@@ -660,111 +641,188 @@ class Line(QObject):
                     sides=sides
                 )
                 self.add_station(station)
-        
-    @pyqtSlot(str, int, int)
-    def handle_suggested_speed_updated(self, line: str, block: int, new_speed: int) -> None:
-        
-        """
-        Handles the suggested speed updated signal from a track block.
-        
-        Args:
-            line (str): The name of the line.
-            block (int): The block number.
-            new_speed (int): The new suggested speed.
-        """
-        
-        if line == self.name:
-            self.get_track_block(block).suggested_speed = new_speed
 
-    @pyqtSlot(str, int, int)
-    def handle_authority_updated(self, line: str, block: int, new_authority: Authority) -> None:
-        
-        """
-        Handles the authority updated signal from a track block.
-        
-        Args:
-            line (str): The name of the line.
-            block (int): The block number.
-            new_authority (Authority): The new authority.
-        """
-        
-        if line == self.name:
-            self.get_track_block(block).authority = new_authority
+    def connect_track_block_signals(self, track_block: TrackBlock) -> None:
 
-    @pyqtSlot(str, int, bool)
-    def handle_occupancy_updated(self, line: str, block: int, new_occupancy: bool) -> None:
-        
         """
-        Handles the occupancy updated signal from a track block.
+        Connects the signals of a track block to the corresponding signals of the line.
         
         Args:
-            line (str): The name of the line.
-            block (int): The block number.
-            new_occupancy (bool): The new occupancy status.
+            track_block (TrackBlock): The track block to connect signals for.
         """
-        
-        if line == self.name:
-            self.get_track_block(block).occupancy = new_occupancy
 
-    @pyqtSlot(str, int, int)
-    def handle_crossing_signal_updated(self, line: str, block: int, new_signal: int) -> None:
-        
-        """
-        Handles the crossing signal updated signal from a track block.
-        
-        Args:
-            line (str): The name of the line.
-            block (int): The block number.
-            new_signal (int): The new crossing signal.
-        """
-        
-        if line == self.name:
-            self.get_track_block(block).crossing_signal = new_signal
+        track_block.suggested_speed_updated.connect(
+            lambda blk_number, new_speed: self.track_block_suggested_speed_updated.emit(self.name, blk_number, new_speed)
+        )
+        track_block.authority_updated.connect(
+            lambda blk_number, new_authority: self.track_block_authority_updated.emit(self.name, blk_number, new_authority)
+        )
+        track_block.occupancy_updated.connect(
+            lambda blk_number, new_occupancy: self.track_block_occupancy_updated.emit(self.name, blk_number, new_occupancy)
+        )
+        track_block.crossing_signal_updated.connect(
+            lambda blk_number, new_signal: self.track_block_crossing_signal_updated.emit(self.name, blk_number, new_signal)
+        )
+        track_block.light_signal_updated.connect(
+            lambda blk_number, new_signal: self.track_block_light_signal_updated.emit(self.name, blk_number, new_signal)
+        )
+        track_block.under_maintenance_updated.connect(
+            lambda blk_number, new_maintenance: self.track_block_under_maintenance_updated.emit(self.name, blk_number, new_maintenance)
+        )
+        track_block.track_failure_updated.connect(
+            lambda blk_number, new_failure: self.track_block_track_failure_updated.emit(self.name, blk_number, new_failure)
+        )
 
-    @pyqtSlot(str, int, bool)
-    def handle_under_maintenance_updated(self, line: str, block: int, new_maintenance: bool) -> None:
-        
-        """
-        Handles the under maintenance updated signal from a track block.
-        
-        Args:
-            line (str): The name of the line.
-            block (int): The block number.
-            new_maintenance (bool): The new maintenance status.
-        """
-        
-        if line == self.name:
-            self.get_track_block(block).under_maintenance = new_maintenance
+    def connect_track_block_signals_queue(self, track_block: TrackBlock) -> None:
+        track_block.suggested_speed_updated.connect(
+            lambda blk_number, new_speed: self.queue_update('suggested_speed', self.name, blk_number, new_speed)
+        )
+        track_block.authority_updated.connect(
+            lambda blk_number, new_authority: self.queue_update('authority', self.name, blk_number, new_authority)
+        )
+        track_block.occupancy_updated.connect(
+            lambda blk_number, new_occupancy: self.queue_update('occupancy', self.name, blk_number, new_occupancy)
+        )
+        track_block.crossing_signal_updated.connect(
+            lambda blk_number, new_signal: self.queue_update('crossing_signal', self.name, blk_number, new_signal)
+        )
+        track_block.light_signal_updated.connect(
+            lambda blk_number, new_signal: self.queue_update('light_signal', self.name, blk_number, new_signal)
+        )
+        track_block.under_maintenance_updated.connect(
+            lambda blk_number, new_maintenance: self.queue_update('under_maintenance', self.name, blk_number, new_maintenance)
+        )
+        track_block.track_failure_updated.connect(
+            lambda blk_number, new_failure: self.queue_update('track_failure', self.name, blk_number, new_failure)
+        )
 
-    @pyqtSlot(str, int, int)
-    def handle_track_failure_updated(self, line: str, block: int, new_failure: int) -> None:
-        
-        """
-        Handles the track failure updated signal from a track block.
-        
-        Args:
-            line (str): The name of the line.
-            block (int): The block number.
-            new_failure (int): The new track failure status.
-        """
-        
-        if line == self.name:
-            self.get_track_block(block).track_failure = new_failure
+    def connect_switch_signals(self, switch: TrackSwitch) -> None:
 
-    @pyqtSlot(str, int)
-    def handle_switch_position_updated(self, line: str, switch: int) -> None:
-        
         """
-        Handles the switch position updated signal from a track switch.
+        Connects the signals of a switch to the corresponding signals of the line.
         
         Args:
-            line (str): The name of the line.
-            switch (int): The switch number.
+            switch (TrackSwitch): The switch to connect signals for.
         """
+
+        # Connect to the line signal
+        switch.position_updated.connect(lambda new_position, sw=switch: self.switch_position_updated.emit(self.name, sw.number))
+
+    def connect_switch_signals_queue(self, switch: TrackSwitch) -> None:
+
+        """
+        Connects the signals of a switch to the corresponding signals of the line.
         
-        if line == self.name:
-            self.get_switch(switch).toggle()
-    
+        Args:
+            switch (TrackSwitch): The switch to connect signals for.
+        """
+
+        # Connect to the line signal
+        switch.position_updated.connect(
+            lambda new_position, sw=switch: self.queue_update('switch_position', self.name, sw.number, new_position)
+        )
+
+    def queue_update(self, update_type, line, block_or_switch, value):
+
+        if not self.enable_signal_queue:
+            return
+
+        if update_type == 'suggested_speed':
+            self.suggested_speed_queue.append((line, block_or_switch, value))
+        elif update_type == 'authority':
+            self.authority_queue.append((line, block_or_switch, value))
+        elif update_type == 'occupancy':
+            self.occupancy_queue.append((line, block_or_switch, value))
+        elif update_type == 'crossing_signal':
+            self.crossing_signal_queue.append((line, block_or_switch, value))
+        elif update_type == 'light_signal':
+            self.light_signal_queue.append((line, block_or_switch, value))
+        elif update_type == 'under_maintenance':
+            self.under_maintenance_queue.append((line, block_or_switch, value))
+        elif update_type == 'track_failure':
+            self.track_failure_queue.append((line, block_or_switch, value))
+        elif update_type == 'switch_position':
+            self.switch_position_queue.append((line, block_or_switch, value))
+
+    @pyqtSlot(list)
+    def handle_suggested_speed_queue(self, queue):
+        for line, block, new_speed in queue:
+            if line == self.name:
+                self.get_track_block(block)._suggested_speed = new_speed
+
+    @pyqtSlot(list)
+    def handle_authority_queue(self, queue):
+        for line, block, new_authority in queue:
+            if line == self.name:
+                self.get_track_block(block)._authority = new_authority
+
+    @pyqtSlot(list)
+    def handle_occupancy_queue(self, queue):
+        for line, block, new_occupancy in queue:
+            if line == self.name:
+                self.get_track_block(block)._occupancy = new_occupancy
+
+    @pyqtSlot(list)
+    def handle_crossing_signal_queue(self, queue):
+        for line, block, new_signal in queue:
+            if line == self.name:
+                self.get_track_block(block)._crossing_signal = new_signal
+
+    @pyqtSlot(list)
+    def handle_light_signal_queue(self, queue):
+        for line, block, new_signal in queue:
+            if line == self.name:
+                self.get_track_block(block)._light_signal = new_signal
+
+    @pyqtSlot(list)
+    def handle_under_maintenance_queue(self, queue):
+        for line, block, new_maintenance in queue:
+            if line == self.name:
+                self.get_track_block(block)._under_maintenance = new_maintenance
+
+    @pyqtSlot(list)
+    def handle_track_failure_queue(self, queue):
+        for line, block, new_track_failure in queue:
+            if line == self.name:
+                self.get_track_block(block)._track_failure = new_track_failure
+
+    @pyqtSlot(list)
+    def handle_switch_position_queue(self, queue):
+        for line, switch, new_position in queue:
+            if line == self.name:
+                self.get_switch(switch).position = new_position
+
+    @pyqtSlot(int)
+    def handle_tick(self, current_time: int) -> None:
+            
+        """
+        Handles the tick signal from the time keeper by emitting the queued updates.
+        
+        Args:
+            current_time (int): The current time in seconds.
+        """
+
+        # Emit the queued updates
+        if self.enable_signal_queue:
+            self.suggested_speed_queue_signal.emit(self.suggested_speed_queue)
+            self.authority_queue_signal.emit(self.authority_queue)
+            self.occupancy_queue_signal.emit(self.occupancy_queue)
+            self.crossing_signal_queue_signal.emit(self.crossing_signal_queue)
+            self.light_signal_queue_signal.emit(self.light_signal_queue)
+            self.under_maintenance_queue_signal.emit(self.under_maintenance_queue)
+            self.track_failure_queue_signal.emit(self.track_failure_queue)
+            self.switch_position_queue_signal.emit(self.switch_position_queue)
+
+            # Clear the queues
+            self.suggested_speed_queue.clear()
+            self.authority_queue.clear()
+            self.occupancy_queue.clear()
+            self.crossing_signal_queue.clear()
+            self.light_signal_queue.clear()
+            self.under_maintenance_queue.clear()
+            self.track_failure_queue.clear()
+            self.switch_position_queue.clear()
+
 
 if __name__ == "__main__":
 
@@ -778,7 +836,7 @@ if __name__ == "__main__":
     line2.load_defaults()
 
     # Connect the signals between the two lines
-    line.track_block_suggested_speed_updated.connect(line2.handle_suggested_speed_updated)
+    # line.track_block_suggested_speed_updated.connect(line2.handle_suggested_speed_updated)
 
     # Test the signal connection
     block_number = 1
