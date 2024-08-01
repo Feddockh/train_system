@@ -215,6 +215,9 @@ class Line(QObject):
         self.track_failure_queue = []
         self.switch_position_queue = []
 
+        # Flag to enable queue
+        self.enable_signal_queue = False
+
     def __repr__(self) -> str:
 
         """
@@ -252,6 +255,7 @@ class Line(QObject):
 
         self.track_blocks.append(track_block)
         self.connect_track_block_signals(track_block)
+        self.connect_track_block_signals_queue(track_block)
 
     def set_track_block(self, track_block: TrackBlock) -> None:
         
@@ -264,6 +268,7 @@ class Line(QObject):
         
         self.track_blocks[track_block.number - 1] = track_block
         self.connect_track_block_signals(track_block)
+        self.connect_track_block_signals_queue(track_block)
 
     def get_track_block(self, number: int) -> TrackBlock:
 
@@ -712,6 +717,10 @@ class Line(QObject):
         )
 
     def queue_update(self, update_type, line, block_or_switch, value):
+
+        if not self.enable_signal_queue:
+            return
+
         if update_type == 'suggested_speed':
             self.suggested_speed_queue.append((line, block_or_switch, value))
         elif update_type == 'authority':
