@@ -362,6 +362,10 @@ class TrainController(QObject):
         ##### WILL GET RID OF SPEED LIMIT LATER
         self.train_model.set_power_command(self.engine.power_command, self.engine.speed_limit)  #self.train_model.set_power_command(self.engine.power_command)
 
+        #### THIS SHOULD BE BEFORE THE TRAIN MODEL UPDATE AFTER INTEGRATION ####
+        if self.brake.get_status():
+            self.engine.power_command = 0
+
         self.power_updated.emit(self.engine.power_command) # Emit power command to UI
         
     # Update the fault status of the train
@@ -720,10 +724,6 @@ class TrainController(QObject):
             
             # print(f"Power Command from Train Controller: {self.power_command}")
 
-            if brake.get_status():
-                #### THIS LINE IS FOR TESTING PURPOSES ONLY
-                self.power_command = -self.P_MAX    # self.power_command = 0
-
         
         def calculate_power_command_hardware(self, desired_speed: float, current_speed: float, time_step: float, engineer, brake):
             # Get kp and ki from engineer
@@ -757,9 +757,6 @@ class TrainController(QObject):
             #### This will be used after integration
             if self.power_command < 0:
                 brake.set_service_brake(True)
-                
-            if self.brake.get_status():
-                self.power_command = 0
         
         def set_speed_limit(self, speed_limit: float):
             self.speed_limit = speed_limit - self.SL_PADDING
@@ -1168,9 +1165,10 @@ class TrainModelController:
         self.engineer = engineer if engineer else Engineer()
         print(f"Engineer: {self.engineer.kp}, {self.engineer.ki}")
         self.ssh = ssh
+        if self.ssh:
+            print("SSH Connection Established")
         # Software if ssh, hardware if ssh=None
         self.controller = TrainController(self.engineer, self.train_model, line_name, id, self.ssh)
-
 
     # Move train forward
     def small_run(self):

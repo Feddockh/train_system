@@ -8,7 +8,8 @@ from train_system.common.authority import Authority
 from train_system.train_controller.tc_main import tc_main
 from train_system.common.time_keeper import TimeKeeper
 
-HOST= None  #'192.168.0.114'
+HOST= '192.168.0.77'
+HOSTNAME = 'rp'
 PORT = 22
 USERNAME = 'danim'
 PASSWORD = 'danim'
@@ -24,13 +25,15 @@ class TrainManager(QObject):
     def __init__(self, time_keeper: TimeKeeper = None):
         super().__init__()
 
-        self.ssh_client = None
         self.time_keeper = time_keeper
         self.train_count = 40
         self.engineer_table: list[Engineer] = [Engineer()] * self.train_count
         self.train_list: list[TrainModelController] = []
-        if(HOST and PORT and USERNAME and PASSWORD):
-            self.ssh_client = self.create_ssh_connection(HOST, PORT, USERNAME, PASSWORD)
+        if HOSTNAME and PORT and USERNAME and PASSWORD:
+            print("Hostname: ", HOSTNAME, "Port: ", PORT, "Username: ", USERNAME, "Password: ", PASSWORD)
+            self.ssh_client = self.create_ssh_connection(HOSTNAME, PORT, USERNAME, PASSWORD)
+        else:
+            self.ssh_client = None
 
     # Example usage
     def create_ssh_connection(self, host, port=22, username='danim', password='danim'):
@@ -49,27 +52,20 @@ class TrainManager(QObject):
 
     #### Might need to be engineer_table[id-1] ####
     @pyqtSlot(int, str)
-    def handle_dispatch(self, train_id: int = 1, line: str = "green"):
-        if train_id % 2:
+    def handle_dispatch(self, train_id: int = 0, line: str = "green"):
+        if train_id % 2 and self.ssh_client:
             # Add hardware train to the train list
             print("Hardware Train")
             self.train_list.append(TrainModelController(self.time_keeper, self.engineer_table[train_id], line, train_id, self.ssh_client))
-            """
-            FUNCTION WITH ALL CONNECTIONS FOR TRAIN CONTROLLER, MOCK TRAIN MODEL, AND UI
-            """
-
         else:
             # Add software train to the train list
             print("Software Train")
             self.train_list.append(TrainModelController(self.time_keeper, self.engineer_table[train_id], line, train_id))
-            """
-            FUNCTION WITH ALL CONNECTIONS FOR TRAIN CONTROLLER, MOCK TRAIN MODEL, AND UI
-            """
         self.train_dispatched.emit(line, train_id, self.train_list[-1])
-        # tc_main(self.time_keeper,TrainModelController(self.time_keeper, self.engineer_table[train_id], line, train_id, self.ssh_client))
             
         ##### ADD CONNECTIONS TO THE TRAIN SYSTEM #####
         self.train_list[-1].controller.delete_train.connect(self.handle_train_removed)
+        tc_main(self.time_keeper,TrainModelController(self.time_keeper, self.engineer_table[train_id], line, train_id, self.ssh_client))
         print("DISPATCHED TRAIN")
 
     # When train reaches the yard, it removes itself from the train list
@@ -158,8 +154,9 @@ if __name__ == "__main__":
     time_keeper.start_timer()
     manager = TrainManager(time_keeper)
 
-    manager.engineer_table[0].set_engineer(25, 0.5)
-    manager.handle_dispatch(0, "green")
+    # manager.engineer_table[0].set_engineer(25, 0.5) # Software
+    manager.engineer_table[1].set_engineer(30, 0.5) # Hardware
+    manager.handle_dispatch(1, "green")
 
     # manager.multiple_window_run()
     # manager.multiple_windows_and_trains_run()
@@ -168,7 +165,7 @@ if __name__ == "__main__":
     # manager.train_list[0].long_run()
     # manager.train_list[0].past_yard_run()
     # manager.train_list[0].to_yard_run()
-    manager.train_list[0].destination_run()
+    # manager.train_list[0].destination_run()
     # manager.train_list[0].service_brake_run()
     # manager.train_list[0].emergency_brake_run()
     # manager.train_list[0].emergency_run()
