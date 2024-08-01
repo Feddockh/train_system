@@ -448,8 +448,8 @@ class TrainController(QObject):
     @pyqtSlot(int)
     def set_destination(self, destination: int):
         # If new destination is received, reset dropped off variable
-        print("SETTING DESTINATION ", destination)
-        print("Current Destination: ", self.destination, "Dropped Off: ", self.dropped_off)
+        # print("SETTING DESTINATION ", destination)
+        # print("Current Destination: ", self.destination, "Dropped Off: ", self.dropped_off)
         if self.destination != destination and self.dropped_off:
             self.destination = destination
             self.destination_updated.emit(destination)
@@ -536,13 +536,15 @@ class TrainController(QObject):
     def handle_kp_changed(self, kp: int) -> None:
         #do this to keep from being recursive
         #self.engineer.kp = kp
-        self.engineer.kp = kp
+        if self.position == 0:
+            self.engineer.kp = kp
         #self.kp_updated_for_eng.emit(kp)
 
     @pyqtSlot(int)
     def handle_ki_changed(self, ki: int) -> None:
         #do this to keep from being recursive
-        self.engineer.ki = ki
+        if self.position == 0:
+            self.engineer.ki = ki
 
     @pyqtSlot(int)
     def handle_position_changed(self, loc: int) -> None:
@@ -557,39 +559,7 @@ class TrainController(QObject):
         if(self.train_model.authority):
             self.train_model.set_authority(self.train_model.authority)
         # self.update_train_controller()
-
-    ## Engineer class to hold Kp and Ki
-    # class Engineer(QObject):
-    #     kp_updated = pyqtSignal(int)
-    #     ki_updated = pyqtSignal(int)
-        
-    #     def __init__(self, kp=400, ki=20):
-    #         super().__init__()
-    #         self.kp = kp
-    #         self.ki = ki
-
-    #     ## Mutator functions
-    #     def set_kp(self, kp: float):
-    #         if kp >= 0:
-    #             self.kp = kp
-    #             self.kp_updated.emit(self.kp)
-    #         else: raise ValueError("kp must be non-negative")
-    #     def set_ki(self, ki: float):
-    #         if ki >= 0:
-    #             self.ki = ki
-    #             self.ki_updated.emit(self.ki)
-    #         else: raise ValueError("ki must be non-negative")
-    #     def set_engineer(self, kp: float, ki: float):
-    #         self.set_kp(kp)
-    #         self.set_ki(ki)
-
-    #     ## Accessor functions
-    #     def get_kp(self):
-    #         return self.kp
-    #     def get_ki(self):
-    #         return self.ki
-    #     def get_engineer(self):
-    #         return self.get_kp(), self.get_ki()
+    
 
     ## Brake class to hold brake status
     class Brake(QObject):
@@ -1018,7 +988,7 @@ class MockTrainModel(QObject):
         self.current_speed = min(self.current_speed, speed_limit)
         self.update_current_speed(max(self.current_speed, 0))
         print("Power Command:", self.power_command, "Current Speed: ", self.current_speed, "\n")
-        self.send_all_outputs()
+        # self.send_all_outputs() #####
 
     # Iterative (float representing meters)? Absolute (position representing when to stop by)?
     def get_authority(self):
