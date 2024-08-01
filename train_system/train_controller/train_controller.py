@@ -261,7 +261,7 @@ class TrainController(QObject):
         if self.polarity <= 0:
             self.increment_track_block()
         print(f"Position: {self.position}, Polarity: {self.polarity}")
-        self.train_model.set_position(self.position)
+        self.train_model.set_position(self.block_number, self.position)
         self.position_updated.emit(self.position)
 
     ## Driver Mode Funtions
@@ -934,6 +934,7 @@ class MockTrainModel(QObject):
     # comm_speed_received = pyqtSignal(float)
     authority_received = pyqtSignal(Authority)
     satellite_received = pyqtSignal(str, float) # Authority, commanded speed
+    satellite_sent = pyqtSignal(int, str, str, str) # ID, track_block, Position, Velocity
     train_temp_updated = pyqtSignal(float)
     emergency_mode = pyqtSignal()
 
@@ -997,6 +998,7 @@ class MockTrainModel(QObject):
         self.current_speed = min(self.current_speed, speed_limit)
         self.update_current_speed(max(self.current_speed, 0))
         print("Power Command:", self.power_command, "Current Speed: ", self.current_speed, "\n")
+        self.send_all_outputs()
 
     # Iterative (float representing meters)? Absolute (position representing when to stop by)?
     def get_authority(self):
@@ -1005,11 +1007,6 @@ class MockTrainModel(QObject):
     def set_authority(self, authority: Authority):
         self.authority = authority
         self.authority_received.emit(self.authority)
-    def decode_authority(self, authority: str):
-        ### Decode the authority string ###
-        new_authority = Authority()
-        new_authority.authority = authority
-        self.set_authority(authority)
 
     # Float
     def get_commanded_speed(self):
@@ -1020,11 +1017,9 @@ class MockTrainModel(QObject):
         # self.comm_speed_received.emit(self.commanded_speed)
         # print("Train Model -- Commanded Speed: ", self.commanded_speed)
         # self.comm_speed_received.emit(self.commanded_speed)
-    def decode_commanded_speed(self, speed: str):
-        # String to float
-        self.set_commanded_speed(float(speed))
 
-    def set_position(self, position: float):
+    def set_position(self, block: int, position: float):
+        self.block_number = block
         self.position = position
 
     # Float
@@ -1120,8 +1115,30 @@ class MockTrainModel(QObject):
     def handle_lights_update(self, status: bool) -> None:
         self.lights = status
     
+
+
+    ##### INTEGRATION #####
+    
+    def decrypt_commanded_speed(self, speed: str):
+        # String to float
+        self.set_commanded_speed(float(speed))
+
+    def decrypt_authority(self, authority: str):
+        ### Decode the authority string ###
+        new_authority = Authority()
+        new_authority.authority = authority
+        self.set_authority(authority)
+
+    def encrypt(self, data) -> str:
+        return str(data)
+        
+    def set_passengers(self, passengers: int):
+        self.passengers = passengers
+
     def send_all_outputs(self):
         self.position_updated.emit(self.train_id, self.position)
+        self.satellite_sent.emit(self.train_id, self.encrypt(self.block_number), self.encrypt(self.position), self.encrypt(self.current_speed))
+
         
 
 

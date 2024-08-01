@@ -102,10 +102,10 @@ class TrainManager(QObject):
                 return
             
     @pyqtSlot(int, int)
-    def handle_CTC_update(self, train_id: int, passengers: int):
+    def handle_passenger_update(self, train_id: int, passengers: int):
         for train in self.train_list:
             if train.id == train_id:
-                train.controller.train_model.passengers = passengers
+                train.controller.train_model.set_passengers(passengers)
                 return
     
 
