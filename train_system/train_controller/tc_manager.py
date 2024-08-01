@@ -5,11 +5,16 @@ from train_system.common.time_keeper import TimeKeeper
 from train_system.train_controller.train_controller import TrainSystem
 from train_system.train_controller.engineer import Engineer
 from train_system.common.authority import Authority
+from train_system.train_controller.tc_main import tc_main
+from train_system.common.time_keeper import TimeKeeper
 
 HOST= None  #'192.168.0.114'
 PORT = 22
 USERNAME = 'danim'
 PASSWORD = 'danim'
+
+# Create the time keeper object
+time_keeper = TimeKeeper()
 
 class TrainManager(QObject):
 
@@ -49,12 +54,18 @@ class TrainManager(QObject):
             # Add hardware train to the train list
             print("Hardware Train")
             self.train_list.append(TrainSystem(self.time_keeper, self.engineer_table[train_id], line, train_id, self.ssh_client))
-            self.train_dispatched.emit(line, train_id, self.train_list[-1])
+            """
+            FUNCTION WITH ALL CONNECTIONS FOR TRAIN CONTROLLER, MOCK TRAIN MODEL, AND UI
+            """
         else:
             # Add software train to the train list
             print("Software Train")
             self.train_list.append(TrainSystem(self.time_keeper, self.engineer_table[train_id], line, train_id))
-            self.train_dispatched.emit(line, train_id, self.train_list[-1])
+            """
+            FUNCTION WITH ALL CONNECTIONS FOR TRAIN CONTROLLER, MOCK TRAIN MODEL, AND UI
+            """
+        self.train_dispatched.emit(line, train_id, self.train_list[-1])
+        tc_main(time_keeper,TrainSystem(self.time_keeper, self.engineer_table[train_id], line, train_id, self.ssh_client))
             
         ##### ADD CONNECTIONS TO THE TRAIN SYSTEM #####
         self.train_list[-1].controller.delete_train.connect(self.handle_train_removed)

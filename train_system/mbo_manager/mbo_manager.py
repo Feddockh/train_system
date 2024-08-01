@@ -24,7 +24,10 @@ class MBOOffice(QObject):
         """
         Initialize the MBO Office
         """
+    
         self.time_keeper = time_keeper
+        self.time_keeper.tick.connect(self.handle_time_update)
+        
         self.green_line = Line('Green')
         self.green_line.load_defaults()
         
@@ -86,22 +89,9 @@ class MBOOffice(QObject):
         Calculate trains authority such that more than one train can be in a block 
         each train stops at it's desitnation and opens the doors, and stops before any block maintenance 
         """
-        # "authority:destination_block"
-            #where authority is the m to it needs to stop 
-            #where destination block is next station 
-
         #if block is in 57 then train padding needs to be bigger
         #block  in red 
-
-        #initial authority will be unobtructed path to destination 
-            #looking for blocks under maint, switch positions then will change 
-            
-        #if train infront is within certain distance of the train then set authority tooooo
-            # service breaking distance? 
-            #set to back of train infront with some wiggle room 
-        
-        #use mbo_train_dispatch to adjust the departure time and next stop for the train once it reaches it's destination 
-
+             
         train = self.get_train(train_id, line_name)
         line = self.get_line(line_name)
         
@@ -110,8 +100,10 @@ class MBOOffice(QObject):
         path = train.get_route_to_next_stop()
         unobstructed_path = line.get_unobstructed_path(path)
         
+        #initial authority will be unobtructed path to destination 
+            #looking for blocks under maint, switch positions then will change
         authority_distance = line.get_path_length(unobstructed_path)
-        #authority_distance -= distance traveled from previous station 
+        #authority_distance -= start block length/2
         #authority_distance += stop block length/2 +half of train ?? 
         
         #check 2 trains will not be to close 
@@ -128,7 +120,8 @@ class MBOOffice(QObject):
                 #make padding bigger 
             #if (line = red line) and block = ? 
                 #make padding bigger
-                
+        
+        #set authority to 0 while train is stopped at a station         
         #if (current block == next_stop) and (velocity == 0) and (train.departed == False)    
         
         #make string 
@@ -137,8 +130,8 @@ class MBOOffice(QObject):
              
     class Satellite(QObject):
         
-        #"trainid", "authority:destination_block", "commanded_speed"
-        send_data_signal = pyqtSignal(str, str, str)
+        #train_id, "authority:destination_block", "commanded_speed"
+        send_data_signal = pyqtSignal(int, str, str)
         
         def __init__(self):
             super().__init__()
@@ -155,22 +148,21 @@ class MBOOffice(QObject):
                 encrypted_train_information (str): "position:velocity:block"
             """
             #decrypt information sent from the train model
-            train_id = self.decrypt(train_id)
             train_information = self.decrypt(encrypted_train_information)
         
             #split train information to get position, velocity, and current block of the train
-            new_position = 0
-            new_velocity = 0
-            new_block = 0
-            
-            if new_block != train.current_block :
-                train.move_train_to_next_block()
+            new_position = train_information.split(":")[0]
+            new_velocity = train_information.split(":")[1]
+            new_block = train_information.split(":")[2]
             
             #update the information for each train
             train = self.get_train(train_id)
             train.position = new_position
             train.velocity = new_velocity
             train.current_block = new_block
+            
+            if new_block != train.current_block :
+                train.move_train_to_next_block()
             
             
         def satellite_send(self, train_id: int):
