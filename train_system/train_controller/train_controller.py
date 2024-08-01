@@ -46,7 +46,8 @@ class TrainController(QObject):
     #emergency_brake_updated = pyqtSignal(bool) -> in brakes class
 
     curr_speed_updated = pyqtSignal(float)
-    
+    station_name_updated = pyqtSignal(str)
+
     def __init__(self, engineer: Engineer = None, train_model=None, line_name: str = "green", id: int = 0, ssh=None) -> None:
         super().__init__()
         self.line = line_name
@@ -564,8 +565,10 @@ class TrainController(QObject):
 
     ## Brake class to hold brake status
     class Brake(QObject):
-        service_brake_updated = pyqtSignal(bool)
+        user_service_brake_updated = pyqtSignal(bool)
+        user_emergency_brake_updated = pyqtSignal(bool)
         emergency_brake_updated = pyqtSignal(bool)
+        service_brake_updated = pyqtSignal(bool)
         def __init__(self):
             super().__init__()
             # These are for outputting to the Train Model and for UI status
@@ -585,9 +588,12 @@ class TrainController(QObject):
             self.emergency_brake = status or self.user_emergency_brake
             self.emergency_brake_updated.emit(status) # For Train Model
         def set_user_service_brake(self, status: bool):
+            print("set brake")
             self.user_service_brake = status
+            self.user_service_brake_updated.emit(status)
         def set_user_emergency_brake(self, status: bool):
             self.user_emergency_brake = status
+            self.user_emergency_brake_updated.emit(status)
 
         ## Toggle Functions
         def toggle_service_brake(self):
@@ -595,9 +601,12 @@ class TrainController(QObject):
         def toggle_emergency_brake(self):
             self.set_emergency_brake(not self.emergency_brake)
         def toggle_user_service_brake(self):
-            self.set_user_service_brake(not self.user_service_brake)
+            self.user_service_brake = not self.user_service_brake
+            self.user_service_brake_updated.emit(self.user_service_brake)
         def toggle_user_emergency_brake(self):
-            self.set_user_emergency_brake(not self.user_emergency_brake)
+            self.user_emergency_brake = not self.user_emergency_brake
+            self.user_emergency_brake_updated.emit(self.user_emergency_brake)
+
 
         ## Accessor functions
         def get_service_brake(self):

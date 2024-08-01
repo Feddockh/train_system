@@ -21,7 +21,7 @@ time_keeper.start_timer()
 # Software
 ts = TrainSystem()
 
-def tc_main(self, time_keeper: TimeKeeper, ts: TrainSystem):
+def tc_main(time_keeper: TimeKeeper, ts: TrainSystem):
 
     tm = ts.train_model
             
@@ -86,7 +86,7 @@ def tc_main(self, time_keeper: TimeKeeper, ts: TrainSystem):
     tc.train_model.brake_fault_updated.connect(driver.handle_brake_fault_update)
     tc.train_model.signal_fault_updated.connect(driver.handle_signal_fault_update)
     tc.curr_speed_updated.connect(driver.handle_curr_speed_update)
-    tc.train_model.comm_speed_received.connect(driver.handle_comm_speed_update)
+    #tc.train_model.comm_speed_received.connect(driver.handle_comm_speed_update)
     tc.authority_updated.connect(driver.handle_authority_update)
     tc.position_updated.connect(driver.handle_position_update)
     tc.station_name_updated.connect(driver.handle_destination_update)
@@ -120,3 +120,5 @@ def tc_main(self, time_keeper: TimeKeeper, ts: TrainSystem):
 
 
 
+
+tc_main(time_keeper, ts)
