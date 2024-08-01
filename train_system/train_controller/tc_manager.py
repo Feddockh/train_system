@@ -70,7 +70,7 @@ class TrainManager(QObject):
             
         ##### ADD CONNECTIONS TO THE TRAIN SYSTEM #####
         self.train_list[-1].controller.delete_train.connect(self.handle_train_removed)
-        self.test_signal.connect(self.train_list[-1].controller.handle_fault_update)
+        print("DISPATCHED TRAIN")
 
     # When train reaches the yard, it removes itself from the train list
     #### NEED TO MANUALLY DELETE CONNECTIONS AS THE CONNECTIONS AREN'T DELETED WHEN TRAIN IS REMOVED ####
@@ -132,9 +132,14 @@ class TrainManager(QObject):
         print(f"Train List Length: {len(manager.train_list)}")
 
     def multiple_window_run(self):
+        print("!!!!!!!!!!!! FIRST TRAIN DISPATCHED !!!!!!!!!!!!")
         manager.handle_dispatch(1, "green")
+        print("!!!!!!!!!!!! SECOND TRAIN DISPATCHED !!!!!!!!!!!!")
         manager.handle_dispatch(2, "green")
+        print("!!!!!!!!!!!! THIRD TRAIN DISPATCHED !!!!!!!!!!!!")
         manager.handle_dispatch(3, "green")
+        print("!!!!!!!!!!!! FOURTH TRAIN DISPATCHED !!!!!!!!!!!!")
+
 
     def multiple_windows_and_trains_run(self):
         manager.handle_dispatch(1, "green")
@@ -156,7 +161,7 @@ if __name__ == "__main__":
     manager.engineer_table[0].set_engineer(25, 0.5)
     manager.handle_dispatch(0, "green")
 
-    # manager.multiple_window_run()
+    manager.multiple_window_run()
     # manager.multiple_windows_and_trains_run()
 
     # manager.train_list[0].small_run()
