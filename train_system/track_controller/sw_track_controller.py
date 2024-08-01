@@ -43,6 +43,7 @@ class TrackController(QObject):
             # Connect the block signal with the number to the handler
             block.authority_updated.connect(self.handle_authority_update)
             block.occupancy_updated.connect(self.handle_occupancy_update)
+            block.switch_position_updated.connect(self.handle_switch_position_update)
 
     def get_block(self, block_number: int) -> TrackBlock:
 
@@ -122,6 +123,20 @@ class TrackController(QObject):
         # Check if the authority is unchanged, set it and such that the signal is propagated
         if block.authority == new_authority:
             block.authority = new_authority
+
+    @pyqtSlot(int, int)
+    def handle_switch_position_update(self, block_number: int, new_position: int):
+
+        # Get the block object
+        block = self.get_block(block_number)
+
+        # Check that the block is the parent block
+        if block.switch.parent_block != block_number:
+            return
+        
+        # 
+        
+
 
     def get_PLC_program(self, plc_program):
         """
