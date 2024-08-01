@@ -161,14 +161,14 @@ if __name__ == "__main__":
     manager.engineer_table[0].set_engineer(25, 0.5)
     manager.handle_dispatch(0, "green")
 
-    #manager.multiple_window_run()
+    # manager.multiple_window_run()
     # manager.multiple_windows_and_trains_run()
 
     # manager.train_list[0].small_run()
     # manager.train_list[0].long_run()
     # manager.train_list[0].past_yard_run()
     # manager.train_list[0].to_yard_run()
-    # manager.train_list[0].destination_run()
+    manager.train_list[0].destination_run()
     # manager.train_list[0].service_brake_run()
     # manager.train_list[0].emergency_brake_run()
     # manager.train_list[0].emergency_run()
