@@ -10,7 +10,6 @@ from train_system.common.track_block import TrackBlock
 from train_system.common.line import Line
 from train_system.common.track_failures import TrackFailure
 from train_system.train_controller.train_controller import TrainModelController
-from train_system.train_model.train_model import TrainModel
 
 @dataclass
 class Train:
