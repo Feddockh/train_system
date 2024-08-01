@@ -33,7 +33,6 @@ def main():
     ### Instantiate the TrainController object and the driver's UI ###
     train_manager = TrainManager()
 
-    
     # Connect the CTC's dispatch signal to the Train Manager's dispatch handler
     
 
