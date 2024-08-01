@@ -48,6 +48,7 @@ def main():
 
     # def handle_dispatch(train_system: TrainSystem):
     #     train_system.satellite_sent.connect(mbo.satellite_receive)
+    #     train_system.set_cipher_suite(key)
 
     # Connect Track model's outputs to manager
     # Connect MBO's outputs to manager
@@ -81,8 +82,7 @@ def main():
     # mbo_ui.show()
     
     mbo_satellite.key_recieved.emit(key)
-    #emit key to train_manager?
-    train_manager.key_recieved.emit(key)
+
 
     sys.exit(app.exec())
 
