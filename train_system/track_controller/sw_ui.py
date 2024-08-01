@@ -4,6 +4,7 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtGui import QPainter, QColor
 from PyQt6.QtCore import Qt, QRect, QTimer
 from PyQt6 import QtCore, QtGui, QtWidgets, uic, QtWidgets
+from train_system.common.palette import Colors
 from train_system.track_controller.sw_track_controller import TrackController
 
 #Colors
@@ -69,19 +70,22 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         self.setObjectName("Programmer UI")
         self.resize(1222, 702)
 
+        #Creating universal font
+        font = QtGui.QFont()
+        font.setPointSize(15)
+
         #Central widget layout
         self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName("centralwidget")
+        #self.centralwidget.setStyleSheet(f"""background-color: {Colors.WHITE};
+        #                                 font-family: 'Arial';
+        #                                 font-size: 15px;
+        #                                 """)
         self.setCentralWidget(self.centralwidget)
 
         #Used in multiple widgets
         waysides = [track_controllers[0].wayside_name, track_controllers[1].wayside_name, track_controllers[2].wayside_name,track_controllers[3].wayside_name, track_controllers[4].wayside_name, track_controllers[5].wayside_name]
-        #waysides = [track_controllers[0].wayside_name, track_controllers[1].wayside_name, track_controllers[2].wayside_name]
         lines = ['Green Line', 'Red Line']
-        
-        #Creating universal font
-        font = QtGui.QFont()
-        font.setPointSize(15)
 
         #FileUpload button
         self.fileUploadPushButton = QtWidgets.QPushButton(parent=self.centralwidget)
@@ -114,7 +118,7 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         waysideIndex = self.comboBox.currentIndex()
 
         #Create Rectangle for wayside selection
-        self.waysideRec = Rectangle(520, 30, 640, 50, DARK_GREY, self.centralwidget)
+        self.waysideRec = Rectangle(520, 30, 640, 50, Colors.GREY, self.centralwidget)
         self.waysideRec.lower()
         self.backWaysideBlkRec = Rectangle(520, 80, 640, 80, WHITE, self.centralwidget)
         self.backWaysideBlkRec.lower()
@@ -130,7 +134,7 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         lineIndex = self.comboBox_3.currentIndex()
 
         #Create Rectangle for Waysides and responsible blocks rectangles
-        self.waysideRec = Rectangle(60, 30, 415, 50, DARK_GREY, self.centralwidget)
+        self.waysideRec = Rectangle(60, 30, 415, 50, Colors.GREY, self.centralwidget)
         self.waysideRec.lower()
         self.backWaysideBlkRec = Rectangle(60, 80, 415, 130, WHITE, self.centralwidget)
         self.backWaysideBlkRec.lower()
@@ -154,7 +158,7 @@ class ProgrammerUI(QtWidgets.QMainWindow):
         self.waysideBlkTable.setFont(font)
 
         #Block info rec
-        self.blockInfoRec = Rectangle(60, 270, 1100, 60, DARK_GREY, self.centralwidget)
+        self.blockInfoRec = Rectangle(60, 270, 1100, 60, Colors.GREY, self.centralwidget)
         self.blockInfoRec.lower()
         self.backBlockInfoRec = Rectangle(60, 330, 1100, 320, WHITE, self.centralwidget)
         self.backBlockInfoRec.lower()
@@ -332,12 +336,6 @@ class ProgrammerUI(QtWidgets.QMainWindow):
             block.setBackground(QtGui.QColor(LIGHT_GREY))
             block.setFlags(block.flags() & ~Qt.ItemFlag.ItemIsEditable)
             self.blockInfoTable.setItem(x, 4, block)
-        """
-        elif(self.track_controllers[waysideIndex].track_blocks[x].switch == None):
-            block = QTableWidgetItem("-")
-            block.setFlags(block.flags() & ~Qt.ItemFlag.ItemIsEditable)
-            self.blockInfoTable.setItem(x, 4, block)
-        """
 
         self.blockInfoTable.viewport().update()
     
@@ -418,6 +416,7 @@ class TestBench(QtWidgets.QMainWindow):
         #Central widget layout
         self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName("centralwidget")
+        #self.centralwidget.setStyleSheet(f"background-color: {Colors.WHITE};")
         self.setCentralWidget(self.centralwidget)
 
         #Used in multiple widgets
@@ -464,7 +463,7 @@ class TestBench(QtWidgets.QMainWindow):
         waysideIndex = self.comboBox.currentIndex()
 
         #Create Rectangle for wayside selection
-        self.waysideRec = Rectangle(520, 30, 640, 50, DARK_GREY, self.centralwidget)
+        self.waysideRec = Rectangle(520, 30, 640, 50, Colors.GREY, self.centralwidget)
         self.waysideRec.lower()
         self.backWaysideBlkRec = Rectangle(520, 80, 640, 80, WHITE, self.centralwidget)
         self.backWaysideBlkRec.lower()
@@ -480,7 +479,7 @@ class TestBench(QtWidgets.QMainWindow):
         lineIndex = self.comboBox_3.currentIndex()
 
         #Create Rectangle for Waysides and responsible blocks rectangles
-        self.waysideRec = Rectangle(60, 30, 415, 50, DARK_GREY, self.centralwidget)
+        self.waysideRec = Rectangle(60, 30, 415, 50, Colors.GREY, self.centralwidget)
         self.waysideRec.lower()
         self.backWaysideBlkRec = Rectangle(60, 80, 415, 130, WHITE, self.centralwidget)
         self.backWaysideBlkRec.lower()
@@ -508,7 +507,7 @@ class TestBench(QtWidgets.QMainWindow):
         self.comboBox_3.currentIndexChanged.connect(lambda: self.update_ui())
 
         #Block info rec
-        self.blockInfoRec = Rectangle(60, 270, 1100, 60, DARK_GREY, self.centralwidget)
+        self.blockInfoRec = Rectangle(60, 270, 1100, 60, Colors.GREY, self.centralwidget)
         self.blockInfoRec.lower()
         self.backBlockInfoRec = Rectangle(60, 330, 1100, 320, WHITE, self.centralwidget)
         self.backBlockInfoRec.lower()
@@ -708,6 +707,7 @@ class Maintenance(QtWidgets.QMainWindow):
         #Central widget layout
         self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName("centralwidget")
+        #self.centralwidget.setStyleSheet(f"background-color: {Colors.WHITE};")
         self.setCentralWidget(self.centralwidget)
 
         #Used in multiple widgets
@@ -718,21 +718,6 @@ class Maintenance(QtWidgets.QMainWindow):
         #Creating universal font
         font = QtGui.QFont()
         font.setPointSize(15)
-
-        """
-        #FileUpload button
-        self.fileUploadPushButton = QtWidgets.QPushButton(parent=self.centralwidget)
-        self.fileUploadPushButton.setGeometry(QtCore.QRect(720, 100, 135, 40))
-        self.fileUploadPushButton.setObjectName("pushButton")
-        self.fileUploadPushButton.clicked.connect(self.getFileName)
-        self.fileUploadPushButton.setFont(font)
-
-        #Select PLC Program label
-        self.label = QtWidgets.QLabel(parent=self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(530, 100, 180, 40))
-        self.label.setObjectName("label")
-        self.label.setFont(font)
-        """
 
         #Combobox for wayside selection
         self.comboBox = QtWidgets.QComboBox(parent=self.centralwidget)
@@ -745,7 +730,7 @@ class Maintenance(QtWidgets.QMainWindow):
         waysideIndex = self.comboBox.currentIndex()
 
         #Create Rectangle for wayside selection
-        self.waysideRec = Rectangle(520, 30, 640, 50, DARK_GREY, self.centralwidget)
+        self.waysideRec = Rectangle(520, 30, 640, 50, Colors.GREY, self.centralwidget)
         self.waysideRec.lower()
         self.backWaysideBlkRec = Rectangle(520, 80, 640, 80, WHITE, self.centralwidget)
         self.backWaysideBlkRec.lower()
@@ -761,7 +746,7 @@ class Maintenance(QtWidgets.QMainWindow):
         lineIndex = self.comboBox_3.currentIndex()
 
         #Create Rectangle for Waysides and responsible blocks rectangles
-        self.waysideRec = Rectangle(60, 30, 415, 50, DARK_GREY, self.centralwidget)
+        self.waysideRec = Rectangle(60, 30, 415, 50, Colors.GREY, self.centralwidget)
         self.waysideRec.lower()
         self.backWaysideBlkRec = Rectangle(60, 80, 415, 130, WHITE, self.centralwidget)
         self.backWaysideBlkRec.lower()
@@ -789,7 +774,7 @@ class Maintenance(QtWidgets.QMainWindow):
         self.comboBox_3.currentIndexChanged.connect(lambda: self.update_ui())
 
         #Block info rec
-        self.blockInfoRec = Rectangle(60, 270, 1100, 60, DARK_GREY, self.centralwidget)
+        self.blockInfoRec = Rectangle(60, 270, 1100, 60, Colors.GREY, self.centralwidget)
         self.blockInfoRec.lower()
         self.backBlockInfoRec = Rectangle(60, 330, 1100, 320, WHITE, self.centralwidget)
         self.backBlockInfoRec.lower()
@@ -881,7 +866,6 @@ class Maintenance(QtWidgets.QMainWindow):
         )
         self.track_controllers[waysideIndex].get_PLC_program(response[0])
 
-
     #Using search box to filter table data
     def filter_table(self):
         filter_text = self.textEdit.text().strip().lower()
@@ -915,30 +899,6 @@ class Maintenance(QtWidgets.QMainWindow):
                 text = QTableWidgetItem(item)
                 text.setFlags(text.flags() & ~Qt.ItemFlag.ItemIsEditable)
                 self.waysideBlkTable.setItem(i, j, text)
-
-    """
-    def item_changed_blockInfo(self, item):
-        waysideIndex = self.comboBox.currentIndex()
-        row = item.row()
-        column = item.column()
-        new_item = item.text()
-        
-        match column:
-            #Switch
-            case 1:
-                new_switch = int(new_item)
-                self.check_switch(row, waysideIndex, new_switch)
-            #Crossing
-            case 2: 
-                print("")
-            case 3:
-                print("")
-            case _:
-                print("")
-        self.blockInfoTable.blockSignals(True)
-        self.update_ui()
-        self.blockInfoTable.blockSignals(False)
-    """
 
     def item_changed_blockInfo_Signal(self, item):
         waysideIndex = self.comboBox.currentIndex()
@@ -1056,12 +1016,6 @@ class Maintenance(QtWidgets.QMainWindow):
             block.setBackground(QtGui.QColor(LIGHT_GREY))
             block.setFlags(block.flags() | Qt.ItemFlag.ItemIsEditable)
             self.blockInfoTable.setItem(x, 1, block)
-        """
-        elif(self.track_controllers[waysideIndex].track_blocks[x].switch == None):
-            block = QTableWidgetItem("-")
-            block.setFlags(block.flags() & Qt.ItemFlag.ItemIsEditable)
-            self.blockInfoTable.setItem(x, 1, block)
-        """
 
         self.blockInfoTable.viewport().update()
     
