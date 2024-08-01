@@ -747,50 +747,68 @@ class Line(QObject):
     @pyqtSlot(list)
     def handle_suggested_speed_queue(self, queue):
         for line, block, new_speed in queue:
-            if line == self.name:
+            if line.lower() == self.name.lower():
                 self.get_track_block(block)._suggested_speed = new_speed
+            else:
+                print(f"Line {line} does not exist.")
 
     @pyqtSlot(list)
     def handle_authority_queue(self, queue):
+        print("Handling Authority Queue")
         for line, block, new_authority in queue:
-            if line == self.name:
+            if line.lower() == self.name.lower():
                 self.get_track_block(block)._authority = new_authority
+                print(f"Authority for block {block}: {new_authority}")
+            else:
+                print(f"Line {line} does not exist.")
 
     @pyqtSlot(list)
     def handle_occupancy_queue(self, queue):
         for line, block, new_occupancy in queue:
-            if line == self.name:
+            if line.lower() == self.name.lower():
                 self.get_track_block(block)._occupancy = new_occupancy
+            else:
+                print(f"Line {line} does not exist.")
 
     @pyqtSlot(list)
     def handle_crossing_signal_queue(self, queue):
         for line, block, new_signal in queue:
-            if line == self.name:
+            if line.lower() == self.name.lower():
                 self.get_track_block(block)._crossing_signal = new_signal
+            else:
+                print(f"Line {line} does not exist.")
 
     @pyqtSlot(list)
     def handle_light_signal_queue(self, queue):
         for line, block, new_signal in queue:
-            if line == self.name:
+            if line.lower() == self.name.lower():
                 self.get_track_block(block)._light_signal = new_signal
+            else:
+                print(f"Line {line} does not exist.")
 
     @pyqtSlot(list)
     def handle_under_maintenance_queue(self, queue):
         for line, block, new_maintenance in queue:
-            if line == self.name:
+            if line.lower() == self.name.lower():
                 self.get_track_block(block)._under_maintenance = new_maintenance
+            else:
+                print(f"Line {line} does not exist.")
 
     @pyqtSlot(list)
     def handle_track_failure_queue(self, queue):
         for line, block, new_track_failure in queue:
-            if line == self.name:
+            if line.lower() == self.name.lower():
                 self.get_track_block(block)._track_failure = new_track_failure
+            else:
+                print(f"Line {line} does not exist.")
 
     @pyqtSlot(list)
     def handle_switch_position_queue(self, queue):
         for line, switch, new_position in queue:
-            if line == self.name:
+            if line.lower() == self.name.lower():
                 self.get_switch(switch).position = new_position
+            else:
+                print(f"Line {line} does not exist.")
 
     @pyqtSlot(int)
     def handle_tick(self, current_time: int) -> None:

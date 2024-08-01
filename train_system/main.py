@@ -37,8 +37,21 @@ def main():
     programmer_ui = ProgrammerUI(track_controller_manager.waysides)
     programmer_ui.show()
 
-    # Connect the CTC's line signals to the Track Controller Manager's line handler
+    # Connect the CTC's line signals to the Track Controller Manager's green line handler
     ctc_manager.green_line.authority_queue_signal.connect(track_controller_manager.green_line.handle_authority_queue)
+    ctc_manager.green_line.suggested_speed_queue_signal.connect(track_controller_manager.green_line.handle_suggested_speed_queue)
+    ctc_manager.green_line.under_maintenance_queue_signal.connect(track_controller_manager.green_line.handle_under_maintenance_queue)
+    ctc_manager.green_line.switch_position_queue_signal.connect(track_controller_manager.green_line.handle_switch_position_queue)
+
+    # Connect the CTC's line signals to the Track Controller Manager's red line handler
+    ctc_manager.red_line.authority_queue_signal.connect(track_controller_manager.red_line.handle_authority_queue)
+    ctc_manager.red_line.suggested_speed_queue_signal.connect(track_controller_manager.red_line.handle_suggested_speed_queue)
+    ctc_manager.red_line.under_maintenance_queue_signal.connect(track_controller_manager.red_line.handle_under_maintenance_queue)
+    ctc_manager.red_line.switch_position_queue_signal.connect(track_controller_manager.red_line.handle_switch_position_queue)
+
+    # Assuming track_controller_manager and ctc_manager are already defined and initialized
+    # Connect the signal to the print_authority slot function
+    # track_controller_manager.green_line.track_block_authority_updated.connect(print_authority)
 
     ### Instantiate the TrackModel object and the track's UI ###
     # track_model = TrackModel(time_keeper)
