@@ -106,23 +106,6 @@ class MBOOffice(QObject):
         #authority_distance -= start block length/2
         #authority_distance += stop block length/2 +half of train ?? 
         
-        #check 2 trains will not be to close 
-            #if within 40m + 33m (back of train) to next train 
-                #authority goes to 10m from back of next train 
-                
-            #if within 10m train
-                #authoirity goes to 0? 
-        
-        #for trains on line in self.trains:
-            #if (trains.position - train.position <= )  
-            
-            #if (line = green line) and block = 57?     
-                #make padding bigger 
-            #if (line = red line) and block = ? 
-                #make padding bigger
-        
-        #set authority to 0 while train is stopped at a station         
-        #if (current block == next_stop) and (velocity == 0) and (train.departed == False)    
         
         #make string 
         # authority = "authority_distance:destination_block"
@@ -139,21 +122,21 @@ class MBOOffice(QObject):
             self.mbo_mode = True
             self.key = ''
             
-        @pyqtSlot(int, str)
-        def satellite_recieve(self, train_id: int, encrypted_train_information: str) -> None:
+        @pyqtSlot(int, str, str, str)
+        def satellite_recieve(self, train_id: int, encrypt_block: str, encrypt_position: str, encrypt_velocity:str ) -> None:
             """get updated information regarding the trains current position, velocity, and current block 
 
             Args:
                 encrypted_train_id (str): identifier of which train is being updating 
-                encrypted_train_information (str): "position:velocity:block"
+                "
             """
             #decrypt information sent from the train model
-            train_information = self.decrypt(encrypted_train_information)
+        
         
             #split train information to get position, velocity, and current block of the train
-            new_position = train_information.split(":")[0]
-            new_velocity = train_information.split(":")[1]
-            new_block = train_information.split(":")[2]
+            new_position = self.decrypt(encrypt_position)
+            new_velocity = self.decrypt(encrypt_velocity)
+            new_block = self.decrypt(encrypt_block)
             
             #update the information for each train
             train = self.get_train(train_id)
@@ -187,7 +170,7 @@ class MBOOffice(QObject):
             if (self.mbo_mode == True):
                 self.send_data_signal.emit(encrypt_train_id, encrypt_authority, encrypt_speed)
             
-        def encrypt(self, key, plain_text):
+        def encrypt(self, plain_text):
             """_summary_
 
             Args:
@@ -202,7 +185,7 @@ class MBOOffice(QObject):
             
             return (cipher_text)
             
-        def decrypt(self, key, cipher_text):
+        def decrypt(self, cipher_text):
             """_summary_
 
             Args:
