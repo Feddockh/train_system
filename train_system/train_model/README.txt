@@ -22,3 +22,8 @@ train_system/train_system/train_model/train_model_ui_v3.py
 
 This file implements the user interface display for the Train Model module through implementation of PyQt.
 This user interface displays all key module inputs and outputs for each train model instance, as well as a test bench for intra-module testing.
+
+Older_Versions/
+train_system/train_system/train_model/Older_Versions
+
+This folder contains the older versions of the train_model_vx.py file as well as other older files used and created through the development of the Train Model module. None of the files contained within the Older_Versions/ directory are used in the final implementation of the Train Model and the larger Train System.
