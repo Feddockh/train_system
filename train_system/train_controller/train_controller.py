@@ -528,6 +528,7 @@ class TrainController(QObject):
     def handle_tick(self) -> None:
         self.update_train_controller()
 
+
     ## Engineer class to hold Kp and Ki
     # class Engineer(QObject):
     #     kp_updated = pyqtSignal(int)

@@ -560,8 +560,6 @@ class TestBenchWindow(QMainWindow):
     def authority_changed(self, x):
         if(x != ""):
             self.authority = float(x)
-            #self.train.train_model.set_authority(self.convert_to_m(int(x)))
-            #self.train.authority = self.convert_to_m(int(x))
             self.authority_updated.emit(x)
     
     def curr_temp_changed(self, x):
