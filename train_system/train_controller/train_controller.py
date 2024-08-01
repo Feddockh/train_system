@@ -1161,8 +1161,8 @@ class TrainModelController:
         self.line = line_name
         self.id = id
         self.time_keeper = time_keeper
-        # self.train_model = MockTrainModel(self.time_keeper)    ##### PUT BACCK AFTER TESTING
-        self.train_model = TrainModel(self.time_keeper, id, line_name)
+        self.train_model = MockTrainModel(self.time_keeper)    ##### PUT BACCK AFTER TESTING
+        # self.train_model = TrainModel(self.time_keeper, id, line_name)
         self.engineer = engineer if engineer else Engineer()
         print(f"Engineer: {self.engineer.kp}, {self.engineer.ki}")
         self.ssh = ssh
