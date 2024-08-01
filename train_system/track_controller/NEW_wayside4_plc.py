@@ -32,10 +32,10 @@ if(track_blocks[39].occupancy and (track_blocks[0].occupancy == False and track_
 
 #(Correct)
 # Scenario 1: C to yard, 9 to block 77, check yards authority if negative go to yard
-if(track_blocks[8].occupancy and track_blocks[39].authority < 0):
+if(track_blocks[8].occupancy and track_blocks[39]._authority.get_stop_block() == 78):
     
     # set authority to zero
-    track_blocks[9]._authority.set_distance(0)
+    #track_blocks[9]._authority.set_distance(0)
 
     # set switch pos
     track_blocks[8].switch.set_child_index(1)
