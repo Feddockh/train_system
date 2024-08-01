@@ -1,6 +1,7 @@
 import paramiko
 
 from PyQt6.QtCore import Qt, pyqtSlot, pyqtSignal, QObject
+from train_system.common.time_keeper import TimeKeeper
 from train_system.train_controller.train_controller import TrainSystem
 from train_system.train_controller.engineer import Engineer
 from train_system.common.authority import Authority
@@ -14,10 +15,11 @@ class TrainManager(QObject):
 
     test_signal = pyqtSignal(bool)
 
-    def __init__(self):
+    def __init__(self, time_keeper: TimeKeeper = None):
         super().__init__()
 
         self.ssh_client = None
+        self.time_keeper = time_keeper
         self.train_count = 40
         self.engineer_table: list[Engineer] = [Engineer()] * self.train_count
         self.train_list: list[TrainSystem] = []
@@ -45,11 +47,11 @@ class TrainManager(QObject):
         if train_id % 2:
             # Add hardware train to the train list
             print("Hardware Train")
-            self.train_list.append(TrainSystem(self.engineer_table[train_id], line, train_id, self.ssh_client))
+            self.train_list.append(TrainSystem(self.time_keeper, self.engineer_table[train_id], line, train_id, self.ssh_client))
         else:
             # Add software train to the train list
             print("Software Train")
-            self.train_list.append(TrainSystem(self.engineer_table[train_id], line, train_id))
+            self.train_list.append(TrainSystem(self.time_keeper, self.engineer_table[train_id], line, train_id))
             
         ##### ADD CONNECTIONS TO THE TRAIN SYSTEM #####
         self.train_list[-1].controller.delete_train.connect(self.handle_train_removed)
