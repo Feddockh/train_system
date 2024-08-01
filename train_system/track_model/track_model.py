@@ -23,7 +23,7 @@ class Train:
 
 class TrackModel(QObject):
 
-    track_to_train = pyqtSignal(int, float, str, float, int) # train id, speed, authority, grade, temperature -> TrainManager -> TrainModel
+    track_to_train = pyqtSignal(int, float, Authority, float, int) # train id, speed, authority, grade, temperature -> TrainManager -> TrainModel
     passengers_to_train = pyqtSignal(int, int) # train id, number of passengers -> TrainManager -> TrainModel
     pass_auth_back = pyqtSignal(int, Authority) # block, authority -> TrackController
     heater_status = pyqtSignal(bool) # heater status -> TrackModelUI
@@ -39,13 +39,13 @@ class TrackModel(QObject):
         self.heaters: bool = False
         self.tickets_by_station: dict[str, int] = {}
 
-        self.green_line = Line('Green')
+        self.green_line = Line('green')
         self.green_line.load_defaults()
         self.lines[self.green_line.name] = self.green_line
         self.green_line.track_block_authority_updated.connect(self.handle_a_update)
         self.green_line.track_block_suggested_speed_updated.connect(self.handle_s_update)
 
-        self.red_line = Line('Red')
+        self.red_line = Line('red')
         self.red_line.load_defaults()
         self.lines[self.red_line.name] = self.red_line
         self.red_line.track_block_authority_updated.connect(self.handle_a_update)
@@ -121,25 +121,25 @@ class TrackModel(QObject):
         
         self.heater_status.emit(self.heaters)
 
-    def create_train(self, id: int, line: str) -> None:
+    def create_train(self, id: int, line_name: str) -> None:
 
         """
         Create a local train to track its location on the line.
 
         Args:
             id (int): The train's ID.
-            line (str): The name of the line the train was dispatched onto.
+            line_name (str): The line the train is on.
         """
 
-        l: Line
+        l = self.lines[line_name]
 
         for _, l in self.lines.items():
-            if l.name == line:
+            if l.name == line_name:
                 from_yard_block = l.get_track_block(l.route.from_yard[0])
                 from_yard_block.occupancy = True
                 break
 
-        self.trains.append(Train(id, line, from_yard_block.number, l.yard, from_yard_block.length * -1))
+        self.trains.append(Train(id, line_name, from_yard_block.number, l.yard, from_yard_block.length * -1))
         
 
     def move_train(self, id: int, position: float) -> None:

@@ -66,7 +66,7 @@ class TrainManager(QObject):
             FUNCTION WITH ALL CONNECTIONS FOR TRAIN CONTROLLER, MOCK TRAIN MODEL, AND UI
             """
         self.train_dispatched.emit(line, train_id, self.train_list[-1])
-        tc_main(time_keeper,TrainModelController(self.time_keeper, self.engineer_table[train_id], line, train_id, self.ssh_client))
+        # tc_main(self.time_keeper,TrainModelController(self.time_keeper, self.engineer_table[train_id], line, train_id, self.ssh_client))
             
         ##### ADD CONNECTIONS TO THE TRAIN SYSTEM #####
         self.train_list[-1].controller.delete_train.connect(self.handle_train_removed)
@@ -161,7 +161,7 @@ if __name__ == "__main__":
     manager.engineer_table[0].set_engineer(25, 0.5)
     manager.handle_dispatch(0, "green")
 
-    #manager.multiple_window_run()
+    manager.multiple_window_run()
     # manager.multiple_windows_and_trains_run()
 
     # manager.train_list[0].small_run()

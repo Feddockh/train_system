@@ -20,7 +20,7 @@ time_keeper.start_timer()
 # Hardware
 # ts = TrainModelController(time_keeper, HOST, PORT, USERNAME, PASSWORD)
 # Software
-ts = TrainModelController(time_keeper)
+# ts = TrainModelController(time_keeper)
 
 def tc_main(time_keeper: TimeKeeper, ts: TrainModelController):
     
@@ -126,6 +126,6 @@ def tc_main(time_keeper: TimeKeeper, ts: TrainModelController):
 
 
 
-
-tc_main(time_keeper, ts)
+if __name__ == "__main__":
+    tc_main(time_keeper, ts)
 
