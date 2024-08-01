@@ -2,9 +2,7 @@
 
 class Authority:
     def __init__(self, distance: float, stop_block: int = None) -> None:
-        self.authority = f"{distance}:"
-        if stop_block:
-            self.authority = f"{distance}:{stop_block}"
+        self.authority = f"{distance}:{stop_block if stop_block is not None else ''}"
 
     def __repr__(self) -> str:
         return f"{self.authority}"
@@ -14,8 +12,11 @@ class Authority:
             return False
         return self.authority == value.authority
     
+    def __deepcopy__(self, memo) -> 'Authority':
+        return Authority(self.get_distance(), self.get_stop_block())
+    
     def set_distance(self, distance: float) -> None:
-        self.authority = f"{distance}:{self.get_stop_block()}"
+        self.authority = f"{distance}:{self.get_stop_block() if self.get_stop_block() is not None else ''}"
     
     def get_distance(self) -> float:
         return float(self.authority.split(":")[0])
@@ -24,7 +25,9 @@ class Authority:
         self.authority = f"{self.get_distance()}:{stop_block}"
     
     def get_stop_block(self) -> int:
-        if len(self.authority.split(":")[1]) > 1:
-            return int(self.authority.split(":")[1])
+        stop_block_str = self.authority.split(":")[1]
+        if stop_block_str:
+            return int(stop_block_str)
         return None
+
     

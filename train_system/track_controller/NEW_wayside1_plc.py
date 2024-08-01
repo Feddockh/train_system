@@ -1,4 +1,4 @@
-print("Wayside 1: ")
+# print("Wayside 1: ")
 """
 POST INDEX CHANGE
 """
@@ -48,14 +48,14 @@ if(track_blocks[19].occupancy or track_blocks[18].occupancy or track_blocks[17].
     #set crossing signal 
     track_blocks[18]._crossing_signal = True
 
-    print("Crossing Signal: Down\n")
+    # print("Crossing Signal: Down\n")
 
 if(track_blocks[19].occupancy == False and track_blocks[18].occupancy == False and track_blocks[17].occupancy == False):
 
     #set crossing signal
     track_blocks[18]._crossing_signal = False
 
-    print("Crossing Signal: Up\nPedestrians May Cross\n")
+    # print("Crossing Signal: Up\nPedestrians May Cross\n")
 
 #SWITCH AT BLOCK 29
 #Scenario 1: 29-> 30, block 150 is not occupied
@@ -120,39 +120,39 @@ if(track_blocks[32].occupancy and track_blocks[0].occupancy and (track_blocks[12
     
 
 
-# Consolidated print statements for error checking
-print("Switch 13 Information:\n")
-# Block 1
-print("Block 1 Information: ")
-print(f"Light Signal: {track_blocks[0]._light_signal}")
-print(f"Authority: {track_blocks[0].authority}")
+# # Consolidated print statements for error checking
+# print("Switch 13 Information:\n")
+# # Block 1
+# print("Block 1 Information: ")
+# print(f"Light Signal: {track_blocks[0]._light_signal}")
+# print(f"Authority: {track_blocks[0].authority}")
 
-# Block 12
-print("Block 12 Information: ")
-print(f"Light Signal: {track_blocks[11]._light_signal}")
-print(f"Authority: {track_blocks[11].authority}\n")
+# # Block 12
+# print("Block 12 Information: ")
+# print(f"Light Signal: {track_blocks[11]._light_signal}")
+# print(f"Authority: {track_blocks[11].authority}\n")
 
-# Block 13 (Switch)
-print("Block 13 (Switch) Information: ")
-print(f"Switch Position: {track_blocks[12].switch.position}")
-print(f"Light Signal: {track_blocks[12]._light_signal}")
-print(f"Authority: {track_blocks[12].authority}\n")
+# # Block 13 (Switch)
+# print("Block 13 (Switch) Information: ")
+# print(f"Switch Position: {track_blocks[12].switch.position}")
+# print(f"Light Signal: {track_blocks[12]._light_signal}")
+# print(f"Authority: {track_blocks[12].authority}\n")
 
-# Block 29 (Switch)
-print("Block 29 (Switch) Information: ")
-print(f"Switch Position: {track_blocks[28].switch.position}")
-print(f"Light Signal: {track_blocks[28]._light_signal}")
-print(f"Authority: {track_blocks[28].authority}\n")
+# # Block 29 (Switch)
+# print("Block 29 (Switch) Information: ")
+# print(f"Switch Position: {track_blocks[28].switch.position}")
+# print(f"Light Signal: {track_blocks[28]._light_signal}")
+# print(f"Authority: {track_blocks[28].authority}\n")
 
-#block 30
-print("Block 30 Information: ")
-print(f"Light Signal: {track_blocks[29]._light_signal}")
-print(f"Authority: {track_blocks[29].authority}\n")
+# #block 30
+# print("Block 30 Information: ")
+# print(f"Light Signal: {track_blocks[29]._light_signal}")
+# print(f"Authority: {track_blocks[29].authority}\n")
 
-#block 150
-print("Block 150 Information: ")
-print(f"Light Signal: {track_blocks[32]._light_signal}")
-print(f"Authority: {track_blocks[32].authority}\n")
+# #block 150
+# print("Block 150 Information: ")
+# print(f"Light Signal: {track_blocks[32]._light_signal}")
+# print(f"Authority: {track_blocks[32].authority}\n")
 
 
 
