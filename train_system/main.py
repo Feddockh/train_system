@@ -36,7 +36,6 @@ def main():
     # Connect Track model's outputs to manager
     # Connect MBO's outputs to manager
 
-
     # Connect the CTC's dispatch signal to the Train Manager's dispatch handler
     
 

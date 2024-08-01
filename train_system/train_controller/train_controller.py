@@ -522,7 +522,7 @@ class TrainController(QObject):
         #do this to keep from being recursive
         #self.engineer.kp = kp
         self.engineer.kp = kp
-        self.kp_updated_for_eng.emit(kp)
+        #self.kp_updated_for_eng.emit(kp)
 
     @pyqtSlot(int)
     def handle_ki_changed(self, ki: int) -> None:
@@ -638,7 +638,9 @@ class TrainController(QObject):
         def __init__(self, ssh):
             super().__init__()
             self.speed_limit = None  # Speed limit of the train
+
             self.SL_PADDING = 1 # 4.4704    # Padding of 10 mph
+
             self.P_MAX = 120  # Maximum power (kW) = 120
             self.power_command = 0 # Power command
 
@@ -1272,3 +1274,4 @@ if __name__ == "__main__":
     # train_system.fault_run()
     # train_system.signal_fault_run()
     # train_system.ac_run()
+
