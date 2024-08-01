@@ -8,7 +8,7 @@ README.txt
 train_system/train_system/train_model/README.txt
 
 This file will explain the purpose and implementation of each file found within the Train Model Module (train_system/train_system/train_model).
-In order to run the Train Model module, run the train_model_v4.py file in terminal with the command "python -m train_system.train_model.train_model_ui_v3.py".
+In order to run the Train Model module, run the train_model_v4.py file in terminal with the command "python -m train_system.train_model.train_model_ui_v3".
 
 
 __init__.py
