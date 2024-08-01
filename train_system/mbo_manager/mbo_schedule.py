@@ -18,12 +18,9 @@ class Schedules:
             """
             Init Schedules class
             """
+            self.drivers = []
+            self.crew_members = []
             
-            # Create set of drivers and crew - make excel file
-            self.drivers = ["Alejandro", "Bob", "Charlie", "David", "Eve", "Frank", "Grace", "Hannah", "Ivy", "Jack"]
-            self.crew = ["Alice", "Barbra", "Cole", "Dan", "Earl", "Fern", "George", "Hank", "Ian", "Jack",
-                        "Karen", "Leo", "Morgan", "Niel", "Ophelia", "Paul", "Quinn", "Roger", "Stacy", "Terry"]
-
             # Info about shifts
             self.shift_length = timedelta(hours=8, minutes=30)
             self.drive_length = timedelta(hours=4)
@@ -58,6 +55,18 @@ class Schedules:
             self.route_prev_blocks_red = {'Herron': 15, 'Swissville' : 20,'Penn Station' : 24, 'Steel Plaza': 34, 'First Ave': 44, 'Station Square': 47,
                                     'South Hills Junction': 59, 'Shadyside': 8, 'yard': 78}
 
+        def load_crew_profiles(self):
+            
+            driver_file_path = 'system_data/employees/drivers.xlsx'
+            df = pd.read_excel(driver_file_path, header=None)
+            # Convert the column to a list
+            self.drivers = df[0].tolist()
+            
+            crew_file_path = 'system_data/employees/crew_members.xlsx'
+            df = pd.read_excel(crew_file_path, header=None)
+            # Convert the column to a list
+            self.crew_members = df[0].tolist()
+            
         
         def create_schedules_green(self, date_time, train_throughput, checked_items1, checked_items2):
             """ Create schedule options with various station stops 
@@ -117,8 +126,8 @@ class Schedules:
 
                     while train_current_time < end_time:
                         driver = self.drivers[driver_index % len(self.drivers)]
-                        crew1 = self.crew[crew_index % len(self.crew)]
-                        crew2 = self.crew[(crew_index + 1) % len(self.crew)]
+                        crew1 = self.crew_members[crew_index % len(self.crew_members)]
+                        crew2 = self.crew_members[(crew_index + 1) % len(self.crew_members)]
                         crew_index += 2
                         driver_index += 1
 
@@ -261,8 +270,8 @@ class Schedules:
                     
                     while train_current_time < end_time:
                         driver = self.drivers[driver_index % len(self.drivers)]
-                        crew1 = self.crew[crew_index % len(self.crew)]
-                        crew2 = self.crew[(crew_index + 1) % len(self.crew)]
+                        crew1 = self.crew_members[crew_index % len(self.crew_members)]
+                        crew2 = self.crew_members[(crew_index + 1) % len(self.crew_members)]
                         crew_index += 2
                         driver_index += 1
 

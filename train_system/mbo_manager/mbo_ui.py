@@ -219,6 +219,7 @@ class MBOWindow(QMainWindow):
         throughput = self.train_throughput_selection.currentText()
         selected_datetime = self.schedule_date_time.dateTime()
         schedules = Schedules()
+        schedules.load_crew_profiles()
         schedules.create_schedules_green(selected_datetime, throughput, checked_items, checked_items2)
         schedules.create_schedules_red(selected_datetime, throughput, checked_items3, checked_items4)
         #self.schedule_created.emit(selected_datetime, throughput, checked_items, checked_items2)
