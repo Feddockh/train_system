@@ -65,8 +65,8 @@ class TrainManager(QObject):
             
         ##### ADD CONNECTIONS TO THE TRAIN SYSTEM #####
         self.train_list[-1].controller.delete_train.connect(self.handle_train_removed)
-        print("DISPATCHED TRAIN")
         tc_main(self.time_keeper,TrainModelController(self.time_keeper, self.engineer_table[train_id], line, train_id, self.ssh_client))
+        print("DISPATCHED TRAIN")
 
     # When train reaches the yard, it removes itself from the train list
     #### NEED TO MANUALLY DELETE CONNECTIONS AS THE CONNECTIONS AREN'T DELETED WHEN TRAIN IS REMOVED ####

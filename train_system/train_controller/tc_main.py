@@ -16,6 +16,7 @@ time_keeper.start_timer()
 # ts = TrainModelController(time_keeper, HOST, PORT, USERNAME, PASSWORD)
 # Software
 # ts = TrainModelController(time_keeper)
+# ts = TrainModelController(time_keeper)
 
 def tc_main(time_keeper: TimeKeeper, ts: TrainModelController):
     

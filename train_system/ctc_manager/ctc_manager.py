@@ -14,7 +14,8 @@ from train_system.common.authority import Authority
 
 
 class CTCOffice(QObject):
-    train_dispatch_updated = pyqtSignal(TrainRouteUpdate)
+    mbo_train_info = pyqtSignal(TrainRouteUpdate)
+    train_dispatched = pyqtSignal(int, str)
 
     def __init__(self, time_keeper: TimeKeeper) -> None:
 
@@ -103,12 +104,12 @@ class CTCOffice(QObject):
         ordered_trains = sorted(filtered_trains, key=lambda train: train.lag, reverse=True)
         return ordered_trains
 
-    def send_train_dispatch_update(self, train_id: int, line_name: str) -> None:
+    def send_mbo_train_info(self, train_id: int, line_name: str) -> None:
         if self.train_exists(train_id, line_name):
             train = self.get_train(train_id, line_name)
             line = self.get_line(line_name)
             update = TrainRouteUpdate(train.train_id, line, train.route, train.stop_priority_queue)
-            self.train_dispatch_updated.emit(update)
+            self.mbo_train_info.emit(update)
 
     def update_train_authority(self, train_id: int, line_name: str) -> None:
 
@@ -278,6 +279,7 @@ class CTCOffice(QObject):
             train = self.get_trains_ordered_by_lag(trains_to_dispatch)[0]
             self.update_train_suggested_speed(train_id, train.line.name)
             self.update_train_authority(train_id, train.line.name)
+            self.train_dispatched.emit(train.train_id, train.line.name)
             train.dispatched = True
 
         # Run the test bench simulation if the test bench mode is enabled
