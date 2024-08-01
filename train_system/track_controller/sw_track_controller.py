@@ -179,6 +179,8 @@ class TrackController(QObject):
         local_vars = {"track_blocks": self.track_blocks}
         exec(code, {}, local_vars)
 
+        self.send_to_pi()
+
     def check_PLC_program_switch(self, x, old_pos, new_pos):
         """
         Runs the PLC program  to check if changing switch is safe & alters track block variables if necessary. 
@@ -314,7 +316,7 @@ class TrackController(QObject):
                 track_block._authority = old_authority[i]
                 track_block._plc_unsafe = old_bool_unsafe[i]
     
-    """
+    
     def convert_to_strings(self):
     # Message for Switch 13
         self.message_switch13 = (
@@ -355,65 +357,7 @@ class TrackController(QObject):
         )
 
     # Print consolidated messages for error checking
-    """
 
-    """
-    def convert_to_strings(self):
-        # Check block 58 Switch Position
-        self.message_switch9 = (
-            "Wayside 4\n"
-            "#Switch at Block 9\n"
-            "Switch 9: \n"
-            f"Switch Position: {track_blocks[8].switch.position}\n"
-            f"Light Signal: {track_blocks[8]._light_signal}\n"
-            f"Authority: {track_blocks[8].authority}\n\n"
-    
-            "# Block 10\n"
-            "Block 16 Information: \n"
-            f"Light Signal: {track_blocks[9]._light_signal}\n"
-            f"Authority: {track_blocks[9].authority}\n\n"
-    
-            "# Block 27\n"
-            "Block 77 Information: \n"
-            f"Light Signal: {track_blocks[38]._light_signal}\n"
-            f"Authority: {track_blocks[38].authority}\n"
-        )
-
-        self.message_switch16 = (
-            "#Switch at BLOCK 16\n"
-            "Switch 16 Information: \n"
-            f"Switch Position: {track_blocks[15].switch.position}\n"
-            f"Light Signal: {track_blocks[15]._light_signal}\n"
-            f"Authority: {track_blocks[15].authority}\n\n"
-    
-            "# Block 1\n"
-            "Block 1 Information: \n"
-            f"Light Signal: {track_blocks[0]._light_signal}\n"
-            f"Authority: {track_blocks[0].authority}\n\n"
-    
-            "# Block 15\n"
-            "Block 15 Information: \n"
-            f"Light Signal: {track_blocks[14]._light_signal}\n"
-            f"Authority: {track_blocks[14].authority}\n"
-        )
-
-        self.message_switch29 = (
-            "#Switch at Block 29\n"
-            "Switch 27 Information: \n"
-            f"Switch Position: {track_blocks[26].switch.position}\n"
-            f"Light Signal: {track_blocks[26]._light_signal}\n"
-            f"Authority: {track_blocks[26].authority}\n\n"
-    
-            "# Block 28\n"
-            "Block 28 Information: \n"
-            f"Light Signal: {track_blocks[27]._light_signal}\n"
-            f"Authority: {track_blocks[27].authority}\n\n"
-    
-            "# Block 76\n"
-            "Block 76 Information: \n"
-            f"Light Signal: {track_blocks[37]._light_signal}\n"
-            f"Authority: {track_blocks[37].authority}\n"
-        )
 
     def send_to_pi(self):
         if self.wayside_name == "Wayside 1":
@@ -430,7 +374,6 @@ class TrackController(QObject):
                     "echo 'RUNNING PLC ON PI' > /home/garrett/pi_monitor.log",
                     f"echo '{self.wayside_name}' >> /home/garrett/pi_monitor.log",
                     f"echo '{self.message_switch13}' >> /home/garrett/pi_monitor.log",
-                    #f"echo '{self.message_switch16}' >> /home/garrett/pi_monitor.log",
                     f"echo '{self.message_switch29}' >> /home/garrett/pi_monitor.log"
                 ]
 
@@ -446,4 +389,4 @@ class TrackController(QObject):
             
             finally:
                 ssh.close()
-"""
+
