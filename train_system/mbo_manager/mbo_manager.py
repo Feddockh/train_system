@@ -36,7 +36,29 @@ class MBOOffice(QObject):
         
         #list of trains 
         self.trains: Dict[Tuple[int, str], MBOTrainDispatch] = {}
-              
+    
+    def train_exists(self, train_id: int, line_name: str) -> bool:
+        return (train_id, line_name) in self.trains
+
+    def add_train(self, train_id: int, line_name: str) -> MBOTrainDispatch:
+        
+        # Check if the line is valid
+        if not self.line_exists(line_name):
+            raise ValueError(f"Line {line_name} does not exist.")
+        
+        # Create the train dispatch object and add to the dictionary
+        train = MBOTrainDispatch(self.time_keeper, train_id, self.get_line(line_name))
+        self.trains[(train_id, line_name)] = train
+        return train
+
+    def remove_train(self, train_id: int, line_name: str) -> None:
+        if self.train_exists(train_id, line_name):
+            del self.trains[(train_id, line_name)]
+
+    def get_train(self, train_id: int, line_name: str) -> MBOTrainDispatch:
+        if self.train_exists(train_id, line_name):
+            return self.trains[(train_id, line_name)]
+                  
     def kmhr_to_ms(self, km_hr):
         """convert km/hr to m/s
 
@@ -71,14 +93,14 @@ class MBOOffice(QObject):
     
      return (breaking_distance)
             
-    def compute_commanded_speed(self, line, block):
+    def compute_commanded_speed(self, block):
         """Commanded speed for a train based off of the block it is currently in 
 
         Args:
             line (_type_): _description_
             block (_type_): _description_
         """
-        current_block = self.line.get_track_block(block)
+        current_block = self.green_line.get_track_block(block)
         if block: 
             self.block_speed = self.kmhr_to_ms(current_block.speed_limit)
             
@@ -153,6 +175,66 @@ class MBOOffice(QObject):
         authority = str(authority_distance) + ":" + str(destination_block)
 
         return (authority)
+    
+    def test_authority(self, train_id, position, velocity, block, destination_block, other_positions):
+        #load in train info and trains destination
+        train = self.get_train(train_id, self.green_line)
+        
+        #load in line info
+        line = self.green_line
+        route = self.green_line.get_path(152, 152, 151)
+        
+        current_block = self.green_line.get_track_block(block)
+        end_block = self.green_line.get_track_block(destination_block)
+        prev_blocks = []
+        previous_block = 0
+        
+        for blocks in route:
+            if blocks != block:
+                prev_blocks.append(blocks)
+            elif blocks == block:
+                length = len(prev_blocks)
+                previous_block = prev_blocks[length -1]
+        
+         
+        print("previous ", previous_block)
+        #find path and unobstructed path
+        path = line.get_path(previous_block, block, destination_block)
+        print("path", path)
+        path_length = current_block.length + line.get_path_length(path) + end_block.length
+        print("path length", path_length)
+        authority_distance = path_length
+    
+        path_current_block = line.get_path(152, 152, block)
+        distance_to_block = line.get_path_length(path_current_block)
+        authority_distance = path_length - ( (end_block.length / 2) - (.5 * 32.2) ) - (position - distance_to_block)
+        
+        print("check other trains")
+        #for trains in train 
+        """for (train_id, line_name), train_1 in self.trains.items():
+            print("checking ", train_1)
+            if (train_1 != train):
+                if(0 <= train_1.position - position <= 65):
+                    #trains are to close together back one needs to slow down/stop
+                    print("to close")
+                    authority_distance = 0
+                elif(0 <= train_1 - position <= 125):
+                    #train behind has authority to back of next train w/ some wiggle room 
+                    print("wiggle room 65")
+                    authority_distance = (train_1.position - position) - 65"""
+                    
+        for positions in other_positions:
+            if( 0 <= positions - position <= 65):
+                print("Train is to close!")
+                authority_distance = 0
+            elif(0<= positions - position <= 150):
+                print("Train set to back of front train")
+                authority_distance = (positions-position) - 65
+                                     
+        # authority = "authority_distance:destination_block"     
+        #authority = str(authority_distance) + ":" + str(destination_block)
+
+        return (authority_distance)
              
     class Satellite(QObject):
         
@@ -163,7 +245,7 @@ class MBOOffice(QObject):
             super().__init__()
             
             self.mbo_mode = True
-            self.key = ''
+            
             
         @pyqtSlot(int, str, str, str)
         def satellite_recieve(self, train_id: int, encrypt_block: str, encrypt_position: str, encrypt_velocity:str ) -> None:
@@ -275,7 +357,10 @@ class MBOOffice(QObject):
             self.cipher_suite = Fernet(self.key)
                                 
             
-# pass if __name__ == "__main__":
+if __name__ == "__main__":
+    mbo_manager = MBOOffice()
+    satellite = MBOOffice.Satellite()
+    
     
     
 
