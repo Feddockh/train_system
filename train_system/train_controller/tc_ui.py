@@ -6,7 +6,7 @@ from train_system.train_controller.tc_widgets import CircleWidget, EngineerTable
 from train_system.common.time_keeper import TimeKeeper, TimeKeeperWidget
 from train_system.common.gui_features import CustomTable
 from train_system.train_controller.train_controller import MockTrainModel, TrainController
-from train_system.train_model.train_model import TrainModel
+from train_system.train_model.train_model_v4 import TrainModel
 from train_system.train_controller.engineer import Engineer
 from train_system.common.palette import Colors
 
