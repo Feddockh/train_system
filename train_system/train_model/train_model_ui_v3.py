@@ -185,8 +185,8 @@ class TrainModelUI(QWidget) :
                 ("Commanded Power", lambda: str(round(self.train_model.get_power_command(), 2)) + " kW"),
                 ("Length", lambda: str(round(self.train_model.TRAIN_LENGTH * 3.28084, 2)) + " feet"),
                 ("Empty Train Mass", lambda: str(round(self.train_model.EMPTY_TRAIN_MASS / 907.185, 2)) + " tons"),
-                ("Train Mass with Passengers", lambda: str(round((self.train_model.EMPTY_TRAIN_MASS + (self.train_model.passengers * self.train_model.PASSENGER_MASS)) / 907.185, 2)) + " tons"),
-                ("Encrypted MBO Data Recieved", lambda: self.train_model.encrypted_speed + self.train_model.encrypted_authority)
+                ("Train Mass + Passengers", lambda: str(round((self.train_model.EMPTY_TRAIN_MASS + (self.train_model.passengers * self.train_model.PASSENGER_MASS)) / 907.185, 2)) + " tons"),
+                ("Encrypted MBO Data", lambda: self.train_model.encrypted_speed + self.train_model.encrypted_authority)
 #                ("Encrypted MBO Data Transmitting", lambda: str(self.train_model.send_mbo()))
             ],
             "Train Information: Non-Vital": [
