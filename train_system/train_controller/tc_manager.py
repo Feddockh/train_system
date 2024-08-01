@@ -29,8 +29,8 @@ class TrainManager(QObject):
         self.train_count = 40
         self.engineer_table: list[Engineer] = [Engineer()] * self.train_count
         self.train_list: list[TrainModelController] = []
-        if HOST and PORT and USERNAME and PASSWORD:
-            print("Host: ", HOST, "Port: ", PORT, "Username: ", USERNAME, "Password: ", PASSWORD)
+        if HOSTNAME and PORT and USERNAME and PASSWORD:
+            print("Hostname: ", HOSTNAME, "Port: ", PORT, "Username: ", USERNAME, "Password: ", PASSWORD)
             self.ssh_client = self.create_ssh_connection(HOSTNAME, PORT, USERNAME, PASSWORD)
         else:
             self.ssh_client = None
