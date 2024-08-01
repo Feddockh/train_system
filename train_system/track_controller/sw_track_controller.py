@@ -10,10 +10,11 @@ from PyQt6.QtCore import QObject, pyqtSlot, pyqtSignal
 from train_system.common.track_block import TrackBlock
 from train_system.common.line import Line
 from train_system.common.authority import Authority
+from train_system.common.time_keeper import TimeKeeper
 
 
 class TrackController(QObject):
-    def __init__(self, track_blocks: List[TrackBlock], wayside_name: str, num_blocks: int) -> None:
+    def __init__(self, time_keeper: TimeKeeper, track_blocks: List[TrackBlock], wayside_name: str, num_blocks: int) -> None:
 
         """
         Initialize variables of the Track Controller.
@@ -25,6 +26,9 @@ class TrackController(QObject):
         """
 
         super().__init__()
+
+        self.time_keeper = time_keeper
+        time_keeper.tick.connect(self.handle_tick)
 
         self.track_blocks = track_blocks
         self.plc_program_uploaded = False
@@ -109,7 +113,8 @@ class TrackController(QObject):
     def handle_occupancy_update(self, block_number: int, new_occupancy: bool) -> None:
 
         # Run the PLC program to update the track blocks
-        self.run_PLC_program()
+        # self.run_PLC_program()
+        print("occupancy updated")
 
     @pyqtSlot(int)
     def handle_authority_update(self, block_number: int, new_authority: Authority) -> None:
@@ -121,11 +126,22 @@ class TrackController(QObject):
         block._authority = new_authority
 
         # Run the PLC program to update the track blocks
-        self.run_PLC_program()
+        # self.run_PLC_program()
+        print("authority updated")
 
         # Check if the authority is unchanged, set it and such that the signal is propagated
         if block.authority == new_authority:
             block.authority = new_authority
+
+    @pyqtSlot(int)
+    def handle_tick(self, tick: int):
+
+        # Run the plc code every tick if a program is loaded
+        if self.plc_program_uploaded == True:
+            self.run_PLC_program()
+
+
+        
 
     def get_PLC_program(self, plc_program):
         """
