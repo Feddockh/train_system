@@ -362,8 +362,10 @@ class TrainController(QObject):
         ##### WILL GET RID OF SPEED LIMIT LATER
         self.train_model.set_power_command(self.engine.power_command, self.engine.speed_limit)  #self.train_model.set_power_command(self.engine.power_command)
 
+        #### THIS SHOULD BE BEFORE THE TRAIN MODEL UPDATE AFTER INTEGRATION ####
         if self.brake.get_status():
-            self.power_command = self.power_command = 0
+            self.engine.power_command = 0
+
         self.power_updated.emit(self.engine.power_command) # Emit power command to UI
         
     # Update the fault status of the train
