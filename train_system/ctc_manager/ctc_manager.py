@@ -63,21 +63,66 @@ class CTCOffice(QObject):
         self.red_line_throughput = 0
 
     def line_exists(self, line_name: str) -> bool:
+
+        """
+        Check if the line exists in the CTC Office.
+        
+        Args:
+            line_name (str): The name of the line.
+
+        Returns:
+            bool: True if the line exists, False otherwise.
+        """
+
         for line in self.lines:
             if line.name == line_name:
                 return True
         return False
     
     def get_line(self, line_name: str) -> Line:
+
+        """
+        Get the line object from the CTC Office.
+
+        Args:
+            line_name (str): The name of the line.
+
+        Returns:
+            Line: The line object.
+        """
+
         for line in self.lines:
             if line.name == line_name:
                 return line
         return None
 
     def train_exists(self, train_id: int, line_name: str) -> bool:
+
+        """
+        Check if the train exists in the CTC Office.
+
+        Args:
+            train_id (int): The train ID.
+            line_name (str): The name of the line.
+
+        Returns:
+            bool: True if the train exists, False otherwise.
+        """
+
         return (train_id, line_name) in self.trains
 
     def add_train(self, train_id: int, line_name: str) -> CTCTrainDispatch:
+
+        """
+        Add a train to the CTC Office.
+
+        Args:
+            train_id (int): The train ID.
+            line_name (str): The name of the line.
+
+        Returns:
+            CTCTrainDispatch: The train dispatch object.
+        """
         
         # Check if the line is valid
         if not self.line_exists(line_name):
@@ -89,18 +134,64 @@ class CTCOffice(QObject):
         return train
 
     def remove_train(self, train_id: int, line_name: str) -> None:
+
+        """
+        Remove a train from the CTC Office.
+
+        Args:
+            train_id (int): The train ID.
+            line_name (str): The name of the line.
+
+        Returns:
+            None
+        """
+
         if self.train_exists(train_id, line_name):
             del self.trains[(train_id, line_name)]
 
     def get_train(self, train_id: int, line_name: str) -> CTCTrainDispatch:
+
+        """
+        Get the train dispatch object from the CTC Office.
+
+        Args:
+            train_id (int): The train ID.
+            line_name (str): The name of the line.
+
+        Returns:
+            CTCTrainDispatch: The train dispatch object.
+        """
+
         if self.train_exists(train_id, line_name):
             return self.trains[(train_id, line_name)]
         return None
 
     def get_trains(self, line_name: str) -> List[CTCTrainDispatch]:
+
+        """
+        Get a list of trains on the line.
+        
+        Args:
+            line_name (str): The name of the line.
+        
+        Returns:
+            List[CTCTrainDispatch]: A list of train dispatch objects on the line.
+        """
+
         return [train for (train_id, _), train in self.trains.items() if train.line.name.lower() == line_name.lower()]
 
     def get_trains_ordered_by_lag(self, trains: Optional[List[CTCTrainDispatch]] = None) -> List[CTCTrainDispatch]:
+
+        """
+        Get a list of trains ordered by lag (latest first).
+
+        Args:
+            trains (Optional[List[CTCTrainDispatch]]): A list of train dispatch objects to order by lag.
+
+        Returns:
+            List[CTCTrainDispatch]: A list of train dispatch objects ordered by lag.
+        """
+
         if trains is None:
             trains = list(self.trains.values())
 
@@ -112,6 +203,15 @@ class CTCOffice(QObject):
         return ordered_trains
 
     def send_mbo_train_info(self, train_id: int, line_name: str) -> None:
+
+        """
+        Send the MBO train information to the MBO Office.
+        
+        Args:
+            train_id (int): The train ID.
+            line_name (str): The name of the line.
+        """
+
         if self.train_exists(train_id, line_name):
             train = self.get_train(train_id, line_name)
             line = self.get_line(line_name)
@@ -119,6 +219,14 @@ class CTCOffice(QObject):
             self.mbo_train_info.emit(update)
 
     def update_train_authority(self, train_id: int, line_name: str) -> None:
+
+        """
+        Update the authority of the train based on the current block and next stop.
+        
+        Args:
+            train_id (int): The train ID.
+            line_name (str): The name of the line.
+        """
 
         # Check if the train exists
         if not self.train_exists(train_id, line_name):
@@ -154,6 +262,14 @@ class CTCOffice(QObject):
         current_block.authority = Authority(_distance, next_stop_id)
 
     def update_train_suggested_speed(self, train_id: int, line_name: str) -> None:
+        
+        """
+        Update the suggested speed of the train based on the current block speed limit.
+        
+        Args:
+            train_id (int): The train ID.
+            line_name (str): The name of the line.
+        """
 
         # Check if the train exists
         if not self.train_exists(train_id, line_name):
@@ -180,6 +296,13 @@ class CTCOffice(QObject):
         current_block.suggested_speed = _suggested_speed
     
     def update_all_trains_speed_authority(self, line_name: str) -> None:
+        
+        """
+        Update the suggested speed and authority of all trains on the line.
+        
+        Args:
+            line_name (str): The name of the line.
+        """
 
         # Update the authority and suggested speed of each train (on the line)
         for (train_id, _line_name), train in self.trains.items():
@@ -190,6 +313,11 @@ class CTCOffice(QObject):
                 self.update_train_authority(train_id, line_name)
 
     def test_bench_simulation(self) -> None:
+        
+        """
+        Run the test bench simulation.
+        This method is called every second to simulate the test bench mode.
+        """
 
         # Get the sorted list of trains by lag
         ordered_trains = self.get_trains_ordered_by_lag()
@@ -268,6 +396,14 @@ class CTCOffice(QObject):
     @pyqtSlot(int)
     def handle_time_update(self, tick: int) -> None:
         
+        """
+        Handle the time update signal from the time keeper.
+        This method is called every second to update the CTC Office.
+        
+        Args:
+            tick (int): The current tick value.
+        """
+        
         # Check if it is time to depart or dispatch any trains
         # Add trains to dispatch to a list because we can only dispatch one train at a time (from yard conflict)
         trains_to_dispatch = []
@@ -306,6 +442,14 @@ class CTCOffice(QObject):
 
     @pyqtSlot(bool)
     def handle_test_bench_toggle(self, state: bool) -> None:
+        
+        """
+        Handle the test bench toggle switch signal from the GUI.
+        
+        Args:
+            state (bool): The state of the toggle switch.
+        """
+
         if state:
             self.test_bench_mode = True
         else:
@@ -313,6 +457,14 @@ class CTCOffice(QObject):
 
     @pyqtSlot(bool)
     def handle_maintenance_toggle(self, state: bool) -> None:
+        
+        """
+        Handle the maintenance toggle switch signal from the GUI.
+        
+        Args:
+            state (bool): The state of the toggle switch.
+        """
+
         if state:
             self.maintenance_mode = True
         else:
@@ -320,6 +472,14 @@ class CTCOffice(QObject):
 
     @pyqtSlot(bool)
     def handle_mbo_toggle(self, state: bool) -> None:
+        
+        """
+        Handle the MBO toggle switch signal from the GUI.
+        
+        Args:
+            state (bool): The state of the toggle switch.
+        """
+
         if state:
             self.mbo_mode = True
         else:
@@ -327,6 +487,14 @@ class CTCOffice(QObject):
 
     @pyqtSlot(bool)
     def handle_automatic_toggle(self, state: bool) -> None:
+        
+        """
+        Handle the automatic toggle switch signal from the GUI.
+
+        Args:
+            state (bool): The state of the toggle switch.
+        """
+
         if state:
             self.automatic_mode = True
         else:
@@ -334,7 +502,14 @@ class CTCOffice(QObject):
     
     @pyqtSlot(bool)
     def handle_line_toggle(self, state: bool) -> None:
-        # TODO: Switch this to take the line name as an argument instead of bool
+        
+        """
+        Handle the line toggle switch signal from the GUI.
+
+        Args:
+            state (bool): The state of the toggle switch.
+        """
+
         if state:
             self.dispatching_line_name = self.lines[1].name
         else:
@@ -342,6 +517,15 @@ class CTCOffice(QObject):
 
     @pyqtSlot(str, int, bool)
     def handle_occupancy_update(self, line_name: str, block_number: int, occupancy: bool) -> None:
+        
+        """
+        Handle the occupancy update signal from the line object.
+        
+        Args:
+            line_name (str): The name of the line.
+            block_number (int): The block number.
+            occupancy (bool): The occupancy status of the block.
+        """
 
         # Check if it is CTC's responsibility to update the speed and authority of the trains
         if self.mbo_mode:
@@ -385,10 +569,29 @@ class CTCOffice(QObject):
 
     @pyqtSlot(str, int, int)
     def handle_switch_position_update(self, line_name: str, switch_number: int, new_position: int) -> None:
+        
+        """
+        Handle the switch position update signal from the line object.
+        
+        Args:
+            line_name (str): The name of the line.
+            switch_number (int): The switch number.
+            new_position (int): The new position of the switch.
+        """
+
         self.update_all_trains_speed_authority(line_name)
 
     @pyqtSlot(int, int, int)
     def handle_dispatcher_command(self, train_id: int, target_block: int, arrival_time: int) -> None:
+        
+        """
+        Handle the dispatcher command signal from the GUI.
+
+        Args:
+            train_id (int): The train ID.
+            target_block (int): The target block number.
+            arrival_time (int): The arrival time at the target block.
+        """
 
         # If the train does not yet exist, add it and add the stop
         if not self.train_exists(train_id, self.dispatching_line_name):
@@ -404,6 +607,14 @@ class CTCOffice(QObject):
 
     @pyqtSlot(TrainRouteUpdate)
     def handle_train_route_update(self, update: TrainRouteUpdate):
+        
+        """
+        Handle the train route update signal from the MBO Office.
+        
+        Args:
+            update (TrainRouteUpdate): The train route update object.
+        """
+
         if self.mbo_mode:
             if not self.train_exists(update.train_id, update.line_name):
                 self.add_train(update.train_id, update.line_name)
@@ -412,6 +623,15 @@ class CTCOffice(QObject):
 
     @pyqtSlot(str, int)
     def handle_throughput_update(self, line_name: str, throughput: int) -> None:
+        
+        """
+        Handle the throughput update signal from the line object.
+
+        Args:
+            line_name (str): The name of the line.
+            throughput (int): The throughput value.
+        """
+
         if line_name.lower() == "green":
             self.green_line_throughput = throughput
         else:

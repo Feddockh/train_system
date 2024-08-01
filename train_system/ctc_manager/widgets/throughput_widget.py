@@ -9,6 +9,13 @@ class ThroughputWidget(QWidget):
     def __init__(self, line: Line):
         super().__init__()
 
+        """
+        Initializes the ThroughputWidget.
+        
+        Args:
+            line (Line): The line object containing track blocks.
+        """
+
         self.line = line
 
         self.throughput_label = QLabel()
@@ -27,9 +34,23 @@ class ThroughputWidget(QWidget):
 
     @pyqtSlot(int)
     def handle_throughput_update(self, throughput: int):
+
+        """
+        Updates the throughput label with the given throughput value.
+
+        Args:
+            throughput (int): The throughput value.
+        """
+
         self.throughput_label.setText(f"Throughput: {throughput} tickets/hr")
 
     def set_line(self, line: Line):
-        self.line = line
 
-    # TODO: Connect to line throughput signal
+        """
+        Sets the line object for the widget.
+        
+        Args:
+            line (Line): The line object containing track blocks.
+        """
+        
+        self.line = line

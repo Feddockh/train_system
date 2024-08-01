@@ -228,6 +228,14 @@ class DispatcherUI(QMainWindow):
 
     @pyqtSlot(bool)
     def handle_test_bench_toggle(self, state: bool) -> None:
+
+        """
+        Handles the test bench toggle switch signal.
+        
+        Args:
+            state (bool): The state of the toggle switch.
+        """
+
         if state:
             self.test_bench_track_switch_widget.show()
 
@@ -239,6 +247,14 @@ class DispatcherUI(QMainWindow):
 
     @pyqtSlot(bool)
     def handle_maintenance_toggle(self, state: bool) -> None:
+        
+        """
+        Handles the maintenance toggle switch signal.
+
+        Args:
+            state (bool): The state of the toggle switch.
+        """
+
         if state:
             self.bottom_stacked_widget.setCurrentWidget(self.maintenance_widget)
             self.dispatch_command_widget.setEnabled(False)
@@ -254,11 +270,27 @@ class DispatcherUI(QMainWindow):
 
     @pyqtSlot(bool)
     def handle_mbo_toggle(self, state: bool) -> None:
+        
+        """
+        Handles the MBO toggle switch signal.
+
+        Args:
+            state (bool): The state of the toggle switch.
+        """
+
         self.dispatch_command_widget.setEnabled(not state)
         self.schedule_selection_widget.setEnabled(not state)
 
     @pyqtSlot(bool)
     def handle_automatic_toggle(self, state: bool) -> None:
+        
+        """
+        Handles the automatic toggle switch signal.
+
+        Args:
+            state (bool): The state of the toggle switch.
+        """
+
         if state:
             self.stacked_widget.setCurrentWidget(
                 self.schedule_selection_widget)
@@ -268,6 +300,14 @@ class DispatcherUI(QMainWindow):
 
     @pyqtSlot(bool)
     def handle_line_toggle(self, state: bool) -> None:
+        
+        """
+        Handles the line toggle switch signal.
+
+        Args:
+            state (bool): The state of the toggle switch.
+        """
+
         if state:
             self.line = self.lines[1]
         else:
@@ -282,10 +322,30 @@ class DispatcherUI(QMainWindow):
 
     @pyqtSlot(str, int, bool)
     def handle_occupancy_update(self, line_name: str, block_number: int, occupancy: bool) -> None:
+        
+        """
+        Handles the occupancy update signal.
+
+        Args:
+            line_name (str): The name of the line.
+            block_number (int): The block number.
+            occupancy (bool): The occupancy status.
+        """
+
         self.track_visual_widget.update()
 
     @pyqtSlot(str, int, bool)
     def handle_maintenance_update(self, line_name: str, block_number: int, maintenance: bool) -> None:
+        
+        """
+        Handles the maintenance update signal.
+
+        Args:
+            line_name (str): The name of the line.
+            block_number (int): The block number.
+            maintenance (bool): The maintenance status.
+        """
+
         self.track_visual_widget.update()
         
 
