@@ -40,6 +40,8 @@ class TrainModel(QObject) :
         # mbo satellite variables
         self.encrypted_speed : str = "S"
         self.encrypted_authority : str = "A"
+        self.key = Fernet.generate_key()
+        self.cipher_suite = Fernet(self.key)
 
         # physics variables
         self.current_speed : float = 0
@@ -591,44 +593,34 @@ class TrainModel(QObject) :
 
     # this function will recieve the encoded information from the mbo, decrypt it, and update variables
     # parameters : str mbo_data
-    def receive_mbo(self, mbo_data : str) :
-        print("receive_mbo to be implemented")
-        ## code to decrypt
-        ## code to update variables
+#    def send_mbo(self) :
+#        return self.encrypt(str(self.authority)) + self.encrypt(str(self.position))
 
     # this function will decrypt the commanded speed received from the mbo
     # parameter: str encrypted_speed
-    def decrypt_commanded_speed(self, encrypted_speed : str) :
-        decrypted_speed = self.decrypt(encrypted_speed)
-        self.set_commanded_speed(float(decrypted_speed))
+#    def decrypt_commanded_speed(self, encrypted_speed : str) :
+#        decrypted_speed = self.decrypt(encrypted_speed)
+#        self.set_commanded_speed(float(decrypted_speed))
 
     # this function will decrupt the authority received from the mbo
     # parameter: str encrypted_authority
-    def decrypt_authority(self, encrypted_authority : str) :
-        decrypted_authority = self.decrypt(encrypted_authority)
-        new_authority = Authority()
-        new_authority.authority = decrypted_authority 
-        self.set_authority(new_authority)
-
-    # this functio will set the cipher key value for the encryption
-    # parameter: key value
-    def set_cipher_suite(self, key_value : bytes) :
-        self.key = key_value 
-        self.cipher_suite = Fernet(self.key)
+#    def decrypt_authority(self, encrypted_authority : str) :
+#        decrypted_authority = self.decrypt(encrypted_authority)
+#        self.set_authority(decrypted_authority)
 
     # this function will encrypt message text for transmission to mbo
     # parameters : str plain_text
     # return : str cipher_text 
-    def encrypt(self, plain_text : str) :    # need to pass in or create slot to get cipher_suite with key from main
-        cipher_text = self.cipher_suite.encrypt(plain_text.encode())
-        return (cipher_text)
+#    def encrypt(self, plain_text : str) :    # need to pass in or create slot to get cipher_suite with key from main
+#        cipher_text = self.cipher_suite.encrypt(plain_text.encode())
+#        return (cipher_text)
 
     # this fucntion will decrypt message text for transmission from mbo
     # parameters : str cipher_text
     # return : str plain_text
-    def decrypt(self, cipher_text : str) :
-        plain_text = self.cipher_suite.decrypt(cipher_text.encode())
-        return (plain_text)
+#    def decrypt(self, cipher_text : str) :
+#        plain_text = self.cipher_suite.decrypt(cipher_text.encode())
+#        return (plain_text)
 
     # this function will send all necessary data to mbo
     def send_all_outputs(self) :
@@ -671,6 +663,11 @@ class TrainModel(QObject) :
             # engine force = 0 if either brake engaged
             if self.service_brake or self.emergency_brake :
                 engine_force = 0
+
+            # check for engine failure
+            if self.get_engine_fault() == True :
+                engine_force = 0
+                self.set_power_command(0)
 
             # determine current mass
             current_mass = self.EMPTY_TRAIN_MASS + (self.passengers * self.PASSENGER_MASS)
