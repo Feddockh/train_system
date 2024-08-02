@@ -652,6 +652,7 @@ class TestBenchWindow(QMainWindow):
 
 class DriverWindow(QMainWindow): ###DriverWindow
     setpoint_updated = pyqtSignal(str)
+
     
     def __init__(self, time_keeper: TimeKeeper):
         super().__init__()
@@ -1086,9 +1087,6 @@ class DriverWindow(QMainWindow): ###DriverWindow
         self.train.setpoint_speed = self.convert_to_ms(x)
 
 
-    """
-    NEEDS ERROR CHECKING
-    """
     @pyqtSlot(str)
     def handle_setpoint_edit_changed(self, x: str) -> None:
         x_num = float(x)
@@ -1197,8 +1195,6 @@ class DriverWindow(QMainWindow): ###DriverWindow
         if self.user_serv_brake_status == True:
             self.service_brake_button.setChecked(True)
             self.speed_input.setEnabled(False)
-            self.setpoint_speed = 0
-            self.setpoint_updated.emit("0")
         else:
             self.speed_input.setEnabled(True)
 
@@ -1221,8 +1217,6 @@ class DriverWindow(QMainWindow): ###DriverWindow
         if self.user_emerg_brake_status == True:
             self.em_brake_button.setChecked(True)
             self.speed_input.setEnabled(False)
-            self.setpoint_speed = 0
-            self.setpoint_updated.emit("0")
         else:
             self.speed_input.setEnabled(True)
 
