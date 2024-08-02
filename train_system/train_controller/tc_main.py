@@ -69,11 +69,11 @@ def tc_main(time_keeper: TimeKeeper, ts: TrainModelController):
     driver.setpoint_updated.connect(tc.handle_setpoint_edit_changed)
 
     #ENGINEER TO DRIVER
-    engineer.kp_updated.connect(driver.handle_kp_update)
-    engineer.ki_updated.connect(driver.handle_ki_update)
+    engineer.kp_updated.connect(tc.handle_kp_changed)
+    engineer.ki_updated.connect(tc.handle_ki_changed)
 
     #TRAIN CONTROLLER TO DRIVER
-    tc.setpoint_speed_updated.connect(driver.handle_setpoint_speed_update) ###checked
+    #tc.setpoint_speed_updated.connect(driver.handle_setpoint_speed_update) ###checked
     tc.power_updated.connect(driver.handle_power_update)
     tc.lights.lights_updated.connect(driver.handle_light_status_update) ###checked but does not change ui
     tc.doors.left_door_updated.connect(driver.handle_left_door_update)
@@ -101,8 +101,8 @@ def tc_main(time_keeper: TimeKeeper, ts: TrainModelController):
     #str to int between engineer/train controller/test bench
 
     #ENGINEER TO TRAIN CONTROLLER
-    engineer.kp_updated.connect(tc.handle_kp_changed)
-    engineer.ki_updated.connect(tc.handle_ki_changed)
+    tc.kp_updated.connect(driver.handle_kp_update)
+    tc.ki_updated.connect(driver.handle_ki_update)
 
     driver_window = driver
     driver_window.show()
@@ -116,9 +116,8 @@ def tc_main(time_keeper: TimeKeeper, ts: TrainModelController):
     app.exec()
 
 
-    print("Driver UI: " + str(driver.user_serv_brake_status))
-    print("TC: " + str(tc.brake.user_service_brake))
-    print(tc.station_name)
+    print("Driver UI: " + str(driver.setpoint_speed))
+
 
 
 if __name__ == "__main__":
