@@ -57,11 +57,11 @@ def main():
     ctc_manager.red_line.switch_position_queue_signal.connect(track_controller_manager.red_line.handle_switch_position_queue)
 
     # Connect the green line Track Controller Manager's signals to the CTC's green line handler
-    track_controller_manager.green_line.track_block_occupancy_updated.connect(ctc_manager.green_line.handle_occupancy_update)
+    # track_controller_manager.green_line.track_block_occupancy_updated.connect(ctc_manager.green_line.handle_occupancy_update)
     track_controller_manager.green_line.switch_position_updated.connect(ctc_manager.green_line.handle_switch_position_update)
 
     # Connect the red line Track Controller Manager's signals to the CTC's red line handler
-    track_controller_manager.red_line.track_block_occupancy_updated.connect(ctc_manager.red_line.handle_occupancy_update)
+    # track_controller_manager.red_line.track_block_occupancy_updated.connect(ctc_manager.red_line.handle_occupancy_update)
     track_controller_manager.red_line.switch_position_updated.connect(ctc_manager.red_line.handle_switch_position_update)
 
     sys.exit(app.exec())
