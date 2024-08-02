@@ -94,8 +94,8 @@ class TrainManager(QObject):
     def handle_MBO_update(self, train_id: int, authority: str, commanded_speed: str):
         for train in self.train_list:
             if train.id == train_id:
-                train.controller.train_model.decode_commanded_speed(commanded_speed)
-                train.controller.train_model.decode_authority(authority)
+                train.controller.train_model.decrypt_commanded_speed(commanded_speed)
+                train.controller.train_model.decrypt_authority(authority)
                 return
             
     ##### TRACK MODEL HANDLERS #####
