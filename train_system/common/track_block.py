@@ -30,6 +30,27 @@ class TrackBlock(QObject):
 
         super().__init__()
 
+        """
+        Initializes a new TrackBlock object.
+        
+        Args:
+            line (str): The line that the track block is on.
+            section (str): The section that the track block is in.
+            number (int): The number of the track block.
+            length (int): The length of the track block in meters.
+            grade (float): The grade of the track block as a percentage.
+            speed_limit (int): The speed limit of the track block in km/h.
+            elevation (float): The elevation of the track block in meters.
+            cumulative_elevation (float): The cumulative elevation of the track block in meters.
+            underground (bool): True if the track block is underground, False otherwise.
+            crossing_signal (bool): True if the track block has a crossing signal, False otherwise.
+            light_signal (bool): True if the track block has a light signal, False otherwise.
+            connecting_blocks (List[int]): The numbers of the track blocks that this track block connects to.
+            station (Station): The station that the track block is at.
+            switch (TrackSwitch): The switch that the track block is at.
+            beacon (Beacon): The beacon that the track block has.
+        """
+
         # Static parameters
         self.line = line
         self.section = section
@@ -115,6 +136,17 @@ class TrackBlock(QObject):
         )
 
     def __deepcopy__(self, memo) -> 'TrackBlock':
+
+        """
+        Creates a deep copy of the TrackBlock object.
+        
+        Args:
+            memo: A dictionary that maps objects to their copies.
+            
+        Returns:
+            TrackBlock: A deep copy of the TrackBlock object.
+        """
+
         # Create a new instance of TrackBlock
         new_copy = TrackBlock(
             self.line, self.section, self.number, self.length, 
