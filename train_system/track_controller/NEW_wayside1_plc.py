@@ -99,10 +99,10 @@ if(track_blocks[19].occupancy or track_blocks[18].occupancy or track_blocks[17].
     track_blocks[18]._crossing_signal = True
     # print("Crossing Signal: Down\n")
 
-if((track_blocks[19].occupancy == False or track_blocks[18].occupancy == False or track_blocks[17].occupancy == False) and track_blocks[18]._crossing_signal == True):
+#if((track_blocks[19].occupancy == True or track_blocks[18].occupancy == True or track_blocks[17].occupancy == True) and track_blocks[18]._crossing_signal == True):
 
     #set crossing signal
-    track_blocks[18]._crossing_signal = False
+   
     # print("Crossing Signal: Up\nPedestrians May Cross\n")
 
 #SWITCH AT BLOCK 29
